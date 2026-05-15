@@ -106,6 +106,8 @@ const ScientificInput = ({
                 onPointerUp={() => setIsDragging(false)}
                 onPointerLeave={() => setIsDragging(false)}
               >
+
+                
                 <button type="button" style={{ color: 'var(--chem-border)', fontSize: '1.5rem' }} onClick={() => adjustExponent(1)}>▲</button>
                 <input
                   ref={expInputRef}
