@@ -102,7 +102,7 @@ function App() {
             </div>
 
             <p className="text-slate-500 text-lg max-w-2xl mx-auto mb-12 px-4">
-              Interactive tapplets aligned with the WJEC A-Level Chemistry specification.
+              Interactive applets aligned with the WJEC A-Level Chemistry specification.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl mx-auto">
