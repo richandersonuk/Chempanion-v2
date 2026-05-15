@@ -120,7 +120,7 @@ const ScientificInput = ({
                     textAlign: 'center', 
                     fontSize: '2.5rem', 
                     border: 'none', 
-                    background: 'transparent',
+                    
                     fontWeight: 'var(--font-mono)',
                     padding: 0
                   }}
