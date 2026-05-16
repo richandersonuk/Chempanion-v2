@@ -9,8 +9,9 @@ import AcidsAndBases from './AcidsAndBases';
 import BufferSolutions from './BufferSolutions';
 import AcidBaseTitration from './AcidBaseTitration';
 import IdealGas from './IdealGas';
-import FormulasFromIons from './FormulasFromIons'; // New
-import FormulasFromName from './FormulasFromName'; // New
+import FormulasFromIons from './FormulasFromIons';
+import ReactionRates from './ReactionRates';
+import FormulasFromName from './FormulasFromName'; 
 
 function App() {
   const [currentApplet, setCurrentApplet] = useState('dashboard');
@@ -26,7 +27,9 @@ function App() {
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '⚡' },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥' },
     { id: 'acids', label: 'pH & Weak Acids', short: 'pH Acids', unit: 'Unit 3.9', icon: '🍋' },
-    { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️' }
+    { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️' },
+    { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️' }
+
   ];
 
   const handleNav = (id) => {
