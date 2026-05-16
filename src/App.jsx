@@ -18,7 +18,6 @@ function App() {
   const [isDataBookletOpen, setIsDataBookletOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // ARRANGED BY SUBDIVISION: Keeping 1.1 before 1.2, and 3.1 -> 3.4 -> 3.5 -> 3.9
   const applets = [
     { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.' },
     { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.' },
@@ -31,7 +30,6 @@ function App() {
     { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' }
   ];
 
-  // WHOLE NUMBERS ONLY: Main dashboard headings
   const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
 
   const handleNav = (id) => {
@@ -131,19 +129,48 @@ function App() {
         
         {/* --- SYLLABUS-GROUPED DASHBOARD VIEW --- */}
         {currentApplet === 'dashboard' && (
-          <div className="py-4 animate-fade-in text-center flex flex-col items-center">
-            <div className="w-[60%] max-w-[450px] mb-6">
-              <Logo className="w-full h-auto object-contain" />
-            </div>
+          <div className="py-2 animate-fade-in flex flex-col items-center">
+            
+            {/* --- RESPONSIVE HERO CONTAINER (SPLIT ON DESKTOP, STACKED/CLEAN ON MOBILE) --- */}
+            <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm text-center md:text-left">
+              
+              {/* Left Column: Logo & Tagline */}
+              <div className="col-span-1 md:col-span-5 flex flex-col items-center md:items-start">
+                <div className="w-44 md:w-48 mb-3">
+                  <Logo className="w-full h-auto object-contain" />
+                </div>
+                <p className="text-slate-500 text-xs md:text-sm leading-relaxed px-2 md:px-0 font-medium">
+                  Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
+                </p>
+              </div>
 
-            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto mb-10 px-4 leading-relaxed">
-              Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
-            </p>
+              {/* Right Column: About & Updates Panel (Desktop Only) */}
+              <div className="hidden md:block col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm">✨</span>
+                  <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform About & Updates</h3>
+                </div>
+                <p className="text-slate-400 font-medium text-xs leading-relaxed mb-4">
+                  CHEMpanion generates unlimited custom calculation problem variants to help students master challenging A-Level numerical chemistry methods.
+                </p>
+                
+                <div className="border-t border-slate-200/80 pt-3">
+                  <span className="text-[9px] font-extrabold bg-blue-50 text-[#326fa0] px-2 py-0.5 rounded uppercase tracking-wider mb-2 inline-block">Newest Addition</span>
+                  <div className="flex items-start gap-2.5 text-xs text-slate-500">
+                    <span className="mt-0.5 text-sm">⏱️</span>
+                    <div>
+                      <strong className="text-slate-700 font-bold block">Unit 3.5: Reaction Rates Module Live</strong>
+                      Deduce reaction orders from chemical initial rates data tables and practice complete Arrhenius equation rearrangements.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
 
             {/* Loop through main whole-number units sequentially */}
             <div className="w-full max-w-5xl mx-auto text-left space-y-10">
               {mainUnits.map(unitRow => {
-                // Captures anything matching "Unit 1" (like 1.1, 1.2) while maintaining subdivision placement order
                 const filteredApplets = applets.filter(a => a.unit.startsWith(unitRow));
                 if (filteredApplets.length === 0) return null;
 
@@ -166,7 +193,7 @@ function App() {
                               <div className="w-10 h-10 bg-slate-50 text-[#326fa0] rounded-xl flex items-center justify-center text-2xl group-hover:bg-[#326fa0] group-hover:text-white transition-colors">
                                 {app.icon}
                               </div>
-                              <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all uppercase tracking-wider">{app.unit}</span>
+                              <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all uppercase tracking-wider">{app.unit}</span>
                             </div>
                             <div className="font-black text-base text-slate-800 leading-snug mb-1 group-hover:text-[#326fa0] transition-colors line-clamp-1">
                               {app.label}
