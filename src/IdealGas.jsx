@@ -20,16 +20,20 @@ const IdealGas = () => {
     setFeedback({ type: '', message: '' });
   };
 
-  useEffect(() => { generate(); }, []);
+  useEffect(() => { 
+    generate(); 
+  }, []);
 
   const check = () => {
+    if (!coeff || isNaN(parseFloat(coeff))) return;
+
     const userVal = parseFloat(coeff) * Math.pow(10, exp === '' ? 0 : parseInt(exp));
     const error = Math.abs((userVal - problem.v) / problem.v);
 
-    if (error < 0.01) {
+    if (error < 0.02) { // Normalized to 0.02 to stay uniform with platform tolerance rules
       setFeedback({ type: 'success', message: 'Correct! Volume calculated accurately.' });
     } else {
-      setFeedback({ type: 'error', message: 'Incorrect. Check your unit conversions (T must be in K).' });
+      setFeedback({ type: 'error', message: 'Incorrect. Check your unit conversions (T must be converted to Kelvin).' });
     }
   };
 
@@ -38,8 +42,17 @@ const IdealGas = () => {
   return (
     <div className="applet-container">
       <div className="applet-header">Ideal Gas Equation</div>
-      <div className="question-text">
-        Calculate the volume (m<sup>3</sup>) occupied by <b>{problem.n} mol</b> of a gas at a pressure of <b>{problem.p.toLocaleString()} Pa</b> and a temperature of <b>{problem.t}&deg;C</b>.
+
+      <div className="question-text text-center">
+        <p>
+          A gas sample is maintained inside a closed chemical system under fixed constraints.<br />
+          The system contains <b>{problem.n} mol</b> of a gas at a pressure of <b>{problem.p.toLocaleString()} Pa</b> and a temperature of <b>{problem.t}°C</b>.
+        </p>
+      </div>
+
+      {/* --- STANDARDIZED ACTION QUESTION BLOCK --- */}
+      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
+        Calculate the volume (m³) occupied by the gas.
       </div>
 
       <ScientificInput 
@@ -53,7 +66,7 @@ const IdealGas = () => {
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={check}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={generate}>Randomize</button>
+        <button className="btn btn-secondary" onClick={generate}>New Problem</button>
       </div>
 
       {feedback.message && (

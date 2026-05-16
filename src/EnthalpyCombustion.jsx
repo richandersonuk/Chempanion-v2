@@ -8,10 +8,10 @@ const EnthalpyCombustion = () => {
   const [feedback, setFeedback] = useState({ type: '', message: '' });
 
   const fuels = [
-    { name: 'methanol', formula: 'CH3OH', mr: 32.04 },
-    { name: 'ethanol', formula: 'C2H5OH', mr: 46.07 },
-    { name: 'propan-1-ol', formula: 'C3H7OH', mr: 60.10 },
-    { name: 'butan-1-ol', formula: 'C4H9OH', mr: 74.12 }
+    { name: 'methanol', formula: 'CH₃OH', mr: 32.04 },
+    { name: 'ethanol', formula: 'C₂H₅OH', mr: 46.07 },
+    { name: 'propan-1-ol', formula: 'C₃H₇OH', mr: 60.10 },
+    { name: 'butan-1-ol', formula: 'C₄H₉OH', mr: 74.12 }
   ];
 
   const generateProblem = () => {
@@ -33,16 +33,20 @@ const EnthalpyCombustion = () => {
     setFeedback({ type: '', message: '' });
   };
 
-  useEffect(() => { generateProblem(); }, []);
+  useEffect(() => { 
+    generateProblem(); 
+  }, []);
 
   const checkAnswer = () => {
+    if (!coeff || isNaN(parseFloat(coeff))) return;
+    
     const userVal = parseFloat(coeff) * Math.pow(10, exp === '' ? 0 : parseInt(exp));
     const error = Math.abs((userVal - problem.correctH) / problem.correctH);
 
     if (error < 0.02) {
       setFeedback({ 
         type: 'success', 
-        message: `Correct! ΔH = ${problem.correctH.toFixed(1)} kJ mol⁻¹. Don't forget the negative sign for exothermic reactions!` 
+        message: `Correct! ΔH = ${problem.correctH.toFixed(1)} kJ mol⁻¹. Don't forget the negative sign for exothermic processes!` 
       });
     } else if (Math.abs(userVal + problem.correctH) < Math.abs(problem.correctH * 0.02)) {
       setFeedback({ 
@@ -52,7 +56,7 @@ const EnthalpyCombustion = () => {
     } else {
       setFeedback({ 
         type: 'error', 
-        message: 'Incorrect. Calculate energy (mcΔT), then divide by moles burned and convert J to kJ.' 
+        message: 'Incorrect. Calculate energy change (mcΔT), then divide by moles burned and convert J to kJ.' 
       });
     }
   };
@@ -63,18 +67,20 @@ const EnthalpyCombustion = () => {
     <div className="applet-container">
       <div className="applet-header">Enthalpy of Combustion</div>
 
-      <div className="question-text">
+      <div className="question-text text-center">
         <p>
           In a calorimetry experiment, <b>{problem.massBurned} g</b> of <b>{problem.fuel.name}</b> ({problem.fuel.formula}) 
           was burned in air. The energy released was used to heat <b>{problem.massWater} g</b> of water. 
           The temperature of the water rose by <b>{problem.tempRise} °C</b>.
         </p>
-        <p className="mt-4">
-          Calculate the enthalpy of combustion for {problem.fuel.name} in <b>kJ mol<sup>-1</sup></b>.
+        <p className="text-xs italic mt-3" style={{ color: 'var(--chem-text-muted)' }}>
+          (Specific heat capacity of water, c = 4.18 J g⁻¹ °C⁻¹)
         </p>
-        <p className="text-sm italic mt-2" style={{ color: 'var(--chem-text-muted)' }}>
-          (Specific heat capacity of water, c = 4.18 J g<sup>-1</sup> °C<sup>-1</sup>)
-        </p>
+      </div>
+
+      {/* --- STANDARDIZED ACTION QUESTION BLOCK --- */}
+      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
+        Calculate the enthalpy of combustion for {problem.fuel.name} in kJ mol⁻¹.
       </div>
 
       <ScientificInput 
@@ -88,7 +94,7 @@ const EnthalpyCombustion = () => {
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={generateProblem}>Randomize</button>
+        <button className="btn btn-secondary" onClick={generateProblem}>New Problem</button>
       </div>
 
       {feedback.message && (

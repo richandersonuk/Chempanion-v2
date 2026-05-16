@@ -131,7 +131,7 @@ function App() {
         {currentApplet === 'dashboard' && (
           <div className="py-2 animate-fade-in flex flex-col items-center">
             
-            {/* --- RESPONSIVE HERO CONTAINER (RE-ALIGNED AND SCALED) --- */}
+            {/* --- RESPONSIVE HERO CONTAINER --- */}
             <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm">
               
               {/* Left Column: Centered & Enlarged Logo Panel */}
@@ -139,13 +139,12 @@ function App() {
                 <div className="w-44 md:w-56 transition-all duration-200">
                   <Logo className="w-full h-auto object-contain" />
                 </div>
-                {/* Mobile Tagline Text Only: Preserves the mobile layout you like */}
                 <p className="text-slate-500 text-xs leading-relaxed px-2 mt-2 font-medium md:hidden">
                   Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
                 </p>
               </div>
 
-              {/* Right Column: About & Updates Panel (Desktop Tagline Integrated) */}
+              {/* Right Column: About & Updates Panel */}
               <div className="hidden md:flex col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -153,7 +152,6 @@ function App() {
                     <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform About & Updates</h3>
                   </div>
                   
-                  {/* Tagline text shifted directly here for clean desktop hierarchy */}
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
                     Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
                   </p>

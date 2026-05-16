@@ -221,3 +221,61 @@
     max-width: 100%;
   }
 }
+/* --- HOUSESTYLE: EXPLICIT INTERACTIVE CHOICE SECTORS --- */
+
+/* The outer container wrapper tracking labeling headers */
+.chem-choice-section {
+  width: 100%;
+  max-w: 24rem;
+  margin: 0.75rem auto;
+  text-align: center;
+}
+
+/* Label descriptors hovering over options grids */
+.chem-choice-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #94a3b8; /* Slate-400 structural gray */
+  margin-bottom: 0.5rem;
+}
+
+/* The structural stack managing option alignments */
+.chem-choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+/* Baseline button styling rule overrides */
+.chem-choice-btn {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 0.75rem; /* 12px layout radius curve */
+  border: 1px solid #e2e8f0; /* slate-200 border line */
+  background-color: #ffffff;
+  color: #475569; /* Slate-600 baseline text font */
+  transition: all 150ms ease-in-out;
+  cursor: pointer;
+}
+
+/* Hover feedback mechanics on neutral tabs */
+.chem-choice-btn:hover {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* Boss Level Modifier: The Active/Selected Target State */
+.chem-choice-btn.active {
+  background-color: #f0f7ff; /* Blue-50 signature tint overlay */
+  border-color: #326fa0;     /* Primary brand blue accent color */
+  color: #326fa0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transform: scale(1.01);
+}

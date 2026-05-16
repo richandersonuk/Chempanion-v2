@@ -18,7 +18,6 @@ const ReactionRates = () => {
       const concA = (0.10 + Math.random() * 0.15).toFixed(2);
       const concB = (0.20 + Math.random() * 0.20).toFixed(2);
       const kVal = (0.5 + Math.random() * 2.5).toFixed(2);
-      
       const rate = parseFloat(kVal) * parseFloat(concA) * Math.pow(parseFloat(concB), 2);
       
       newProb = {
@@ -112,7 +111,6 @@ const ReactionRates = () => {
 
   const checkAnswer = () => {
     if (!problem) return;
-    
     const userAns = parseFloat(studentAnswer);
     const correctAns = parseFloat(problem.correctAnswer);
     const error = Math.abs((userAns - correctAns) / correctAns);
@@ -146,24 +144,27 @@ const ReactionRates = () => {
 
   return (
     <div className="applet-container">
-      {/* SELECTION BAR */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
-        <select 
-          value={mode === 'random' ? '' : mode} 
-          onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }} 
-          className="chem-input" 
-          style={{ width: 'auto' }}
-        >
-          <option value="calculate_k">Rate Constant (k)</option>
-          <option value="determine_order">Deduce Order</option>
-          <option value="arrhenius">Arrhenius (Eₐ)</option>
-        </select>
-        <button 
-          onClick={() => { setMode('random'); generateProblem('random'); }} 
-          className={`btn ${mode === 'random' ? 'btn-primary' : 'btn-secondary'}`}
-        >
-          Random
-        </button>
+      
+      {/* --- REFACTORED COMPONENT MODE SELECTION GRID --- */}
+      <div className="w-full max-w-md mx-auto mb-6 px-4">
+        <span className="chem-choice-label">Choose Practice Mode</span>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { id: 'calculate_k', label: 'Rate Constant' },
+            { id: 'determine_order', label: 'Deduce Order' },
+            { id: 'arrhenius', label: 'Arrhenius' },
+            { id: 'random', label: 'Random' }
+          ].map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => { setMode(m.id); generateProblem(m.id); }}
+              className={`chem-choice-btn ${mode === m.id ? 'active' : ''} text-center text-xs py-2 px-1`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="applet-header">{problem.title}</div>
@@ -173,8 +174,8 @@ const ReactionRates = () => {
         {problem.question}
       </div>
 
-      {/* INPUT INTERFACE */}
-      <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto mb-6">
+      {/* INPUT INTERFACE WRAPPER BLOCK */}
+      <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto mb-4">
         <div className="flex items-center justify-center w-full">
           <span style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>{problem.label}</span>
           <input 
@@ -188,13 +189,11 @@ const ReactionRates = () => {
           {!problem.hasUnits && <span style={{ marginLeft: '0.5rem', fontWeight: 'bold' }}>{problem.unit}</span>}
         </div>
 
-        {/* HIGH VISIBILITY UNIT TABS (Replaces the broken native dropdown) */}
+        {/* --- UNIFIED HOUSESTYLE COMPLIANT UNIT GRID SECTOR --- */}
         {problem.hasUnits && (
-          <div className="w-full text-center mt-2">
-            <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-              Select Units
-            </span>
-            <div className="flex flex-col gap-2 w-full px-4">
+          <div className="chem-choice-section mt-2">
+            <span className="chem-choice-label">Select Units</span>
+            <div className="chem-choice-group">
               {[
                 { id: 's-1', display: <>s<sup>-1</sup></> },
                 { id: 'mol-1 dm3 s-1', display: <>mol<sup>-1</sup> dm<sup>3</sup> s<sup>-1</sup></> },
@@ -204,11 +203,7 @@ const ReactionRates = () => {
                   key={opt.id}
                   type="button"
                   onClick={() => setStudentUnit(opt.id)}
-                  className={`w-full py-2.5 px-4 text-xs font-bold rounded-xl border transition-all duration-150 ${
-                    studentUnit === opt.id
-                      ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm scale-[1.01]'
-                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
+                  className={`chem-choice-btn ${studentUnit === opt.id ? 'active' : ''}`}
                 >
                   {opt.display}
                 </button>

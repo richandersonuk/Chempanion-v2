@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import ScientificInput from './ScientificInput';
 
 const BufferSolutions = () => {
   const [mode, setMode] = useState('acidic_buffer');
   const [problem, setProblem] = useState(null);
   const [coeff, setCoeff] = useState('');
-  const [exp, setExp] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['acidic_buffer', 'salt_addition'];
     const selection = forcedMode || mode;
-    const targetMode =
-      selection === 'random'
-        ? modes[Math.floor(Math.random() * modes.length)]
-        : selection;
+    const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
     let newProb = {};
     const kaVal = 1.74e-5; // Ethanoic acid
@@ -22,6 +17,7 @@ const BufferSolutions = () => {
     if (targetMode === 'acidic_buffer') {
       const concAcid = (0.1 + Math.random() * 0.2).toFixed(2);
       const concSalt = (0.05 + Math.random() * 0.1).toFixed(2);
+      
       // pH = pKa + log([Salt]/[Acid])
       const pKa = -Math.log10(kaVal);
       const ph = pKa + Math.log10(parseFloat(concSalt) / parseFloat(concAcid));
@@ -31,14 +27,9 @@ const BufferSolutions = () => {
         text: (
           <>
             A buffer solution contains ethanoic acid at a concentration of{' '}
-            <b>
-              {concAcid} mol dm<sup>-3</sup>
-            </b>{' '}
+            <b>{concAcid} mol dm<sup>-3</sup></b>{' '}
             and sodium ethanoate at{' '}
-            <b>
-              {concSalt} mol dm<sup>-3</sup>
-            </b>
-            .
+            <b>{concSalt} mol dm<sup>-3</sup></b>.
           </>
         ),
         question: 'Calculate the pH of this buffer solution.',
@@ -58,15 +49,10 @@ const BufferSolutions = () => {
         title: 'Buffer Preparation',
         text: (
           <>
-            A student adds <b>{massSalt} g</b> of sodium ethanoate (M
-            <sub>r</sub> = 82.0) to{' '}
-            <b>
-              500 cm<sup>3</sup>
-            </b>{' '}
+            A student adds <b>{massSalt} g</b> of sodium ethanoate (M<sub>r</sub> = 82.0) to{' '}
+            <b>500 cm<sup>3</sup></b>{' '}
             of{' '}
-            <b>
-              0.20 mol dm<sup>-3</sup>
-            </b>{' '}
+            <b>0.20 mol dm<sup>-3</sup></b>{' '}
             ethanoic acid.
           </>
         ),
@@ -78,7 +64,6 @@ const BufferSolutions = () => {
 
     setProblem(newProb);
     setCoeff('');
-    setExp('');
     setFeedback({ message: '', status: '' });
   };
 
@@ -88,6 +73,8 @@ const BufferSolutions = () => {
 
   const checkAnswer = () => {
     const userVal = parseFloat(coeff);
+    if (!coeff || isNaN(userVal)) return;
+
     if (userVal.toFixed(2) === parseFloat(problem.correct).toFixed(2)) {
       setFeedback({
         message: 'Correct! pH = ' + problem.correct,
@@ -95,8 +82,7 @@ const BufferSolutions = () => {
       });
     } else {
       setFeedback({
-        message:
-          'Incorrect. Check your pKa calculation and [Salt]/[Acid] ratio.',
+        message: 'Incorrect. Check your pKa calculation and [Salt]/[Acid] ratio.',
         status: 'error',
       });
     }
@@ -106,49 +92,45 @@ const BufferSolutions = () => {
 
   return (
     <div className="applet-container">
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '0.5rem',
-          marginBottom: '2rem',
-        }}
-      >
-        <select
-          value={mode === 'random' ? '' : mode}
-          onChange={(e) => {
-            setMode(e.target.value);
-            generateProblem(e.target.value);
-          }}
-          className="chem-input"
-          style={{ width: 'auto' }}
-        >
-          <option value="acidic_buffer">Standard Buffer</option>
-          <option value="salt_addition">Mass Addition</option>
-        </select>
-        <button
-          onClick={() => {
-            setMode('random');
-            generateProblem('random');
-          }}
-          className="btn btn-secondary"
-        >
-          Random
-        </button>
+      
+      {/* --- REFACTORED COMPONENT MODE SELECTION GRID --- */}
+      <div className="w-full max-w-md mx-auto mb-6 px-4">
+        <span className="chem-choice-label">Choose Practice Mode</span>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { id: 'acidic_buffer', label: 'Standard Buffer' },
+            { id: 'salt_addition', label: 'Mass Addition' },
+            { id: 'random', label: 'Random' }
+          ].map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => { setMode(m.id); generateProblem(m.id); }}
+              className={`chem-choice-btn ${mode === m.id ? 'active' : ''} text-center text-xs py-2 px-1`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="applet-header">{problem.title}</div>
-      <div className="question-text">{problem.text}</div>
-      <p className="font-bold mb-6 text-center">{problem.question}</p>
+      <div className="question-text text-center">{problem.text}</div>
+      
+      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
+        {problem.question}
+      </div>
 
+      {/* INPUT INTERFACE */}
       <div className="input-group">
-        <label>pH = </label>
+        <label style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>pH = </label>
         <input
           type="number"
           className={`chem-input ${feedback.status}`}
           value={coeff}
           onChange={(e) => setCoeff(e.target.value)}
           placeholder="0.00"
+          style={{ maxWidth: '12rem', textAlign: 'center' }}
         />
       </div>
 
@@ -162,13 +144,7 @@ const BufferSolutions = () => {
       </div>
 
       {feedback.message && (
-        <div
-          className={`feedback-box ${
-            feedback.status === 'success'
-              ? 'feedback-success'
-              : 'feedback-error'
-          }`}
-        >
+        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
           {feedback.message}
         </div>
       )}

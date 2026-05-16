@@ -1,7 +1,7 @@
 import React from 'react';
 
 const FormulaInput = ({ value, onChange, placeholder, status, onKeyDown }) => {
-  // Mapping standard digits to Unicode subscripts
+  // Mapping standard digits to Unicode subscripts for chemical formulas
   const subMap = {
     '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
     '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'
@@ -9,8 +9,8 @@ const FormulaInput = ({ value, onChange, placeholder, status, onKeyDown }) => {
 
   const handleChange = (e) => {
     const rawValue = e.target.value;
-    // We only want to convert numbers that follow a letter or a closing bracket
-    // But for simplicity in a formula box, we convert all numbers to subscripts
+    
+    // Convert numbers to subscripts automatically to assist chemical formula input typing
     let formatted = '';
     for (let char of rawValue) {
       if (subMap[char]) {
@@ -31,7 +31,12 @@ const FormulaInput = ({ value, onChange, placeholder, status, onKeyDown }) => {
         onChange={handleChange}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
-        style={{ fontSize: '1.4rem', letterSpacing: '0.05em' }}
+        style={{ 
+          fontSize: '1.4rem', 
+          letterSpacing: '0.05em', 
+          textAlign: 'center', 
+          maxWidth: '16rem' 
+        }}
       />
     </div>
   );

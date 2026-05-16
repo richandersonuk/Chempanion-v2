@@ -134,12 +134,12 @@ const DataBooklet = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const tabs = [
-    { id: 'constants', label: 'Constants', textLabel: 'Constants' },
-    { id: 'units', label: 'Units', textLabel: 'Units' },
-    { id: 'periodic', label: 'Periodic Table', textLabel: 'Periodic Table' },
-    { id: 'IR', label: 'IR Absorptions', textLabel: 'IR Absorptions' },
-    { id: '13C', label: <span><sup>13</sup>C NMR</span>, textLabel: '¹³C NMR Chemical Shifts' },
-    { id: '1H', label: <span><sup>1</sup>H NMR</span>, textLabel: '¹H NMR Chemical Shifts' }
+    { id: 'constants', label: 'Constants' },
+    { id: 'units', label: 'Units' },
+    { id: 'periodic', label: 'Periodic Table' },
+    { id: 'IR', label: 'IR Absorptions' },
+    { id: '13C', label: <span><sup>13</sup>C NMR</span> },
+    { id: '1H', label: <span><sup>1</sup>H NMR</span> }
   ];
 
   const constants = [
@@ -201,7 +201,6 @@ const DataBooklet = ({ isOpen, onClose }) => {
               <span className="text-[var(--chem-logo-lightblue)]">Book</span>
             </div>
           </div>
-          
           <button onClick={onClose} className="text-slate-400 hover:text-slate-800 p-2 rounded-md hover:bg-white transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -209,9 +208,10 @@ const DataBooklet = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* --- FIXED MENU SECTION --- */}
+        {/* --- DUAL INTERACTIVE NAVIGATION SECTOR --- */}
         <div className="border-b border-slate-200 bg-slate-50 shrink-0 px-2">
-          {/* Desktop Tabs */}
+          
+          {/* Desktop Tab Layout Bar */}
           <div className="hidden lg:flex overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button 
@@ -219,31 +219,35 @@ const DataBooklet = ({ isOpen, onClose }) => {
                 onClick={() => setActiveTab(tab.id)} 
                 className={`px-5 py-3 font-semibold transition-all whitespace-nowrap text-sm ${
                   activeTab === tab.id 
-                  ? 'border-b-4 border-[#326fa0] text-[#326fa0] bg-white' 
-                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
+                    ? 'border-b-4 border-[#326fa0] text-[#326fa0] bg-white' 
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
                 }`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-          {/* Mobile Dropdown */}
-          <div className="lg:hidden py-2 px-2">
-            <select 
-              className="w-full p-3 rounded-lg border border-slate-300 bg-white font-bold text-sm text-[#326fa0] outline-none focus:border-[#326fa0]" 
-              value={activeTab} 
-              onChange={(e) => setActiveTab(e.target.value)}
-            >
-              {tabs.map(tab => (
-                <option key={tab.id} value={tab.id}>
-                  {tab.textLabel}
-                </option>
+
+          {/* --- NEW HOUSESTYLE: COMPACT MOBILE MATRIX TOUCH GRID --- */}
+          <div className="lg:hidden py-3 px-2 bg-white">
+            <span className="chem-choice-label text-center">Select Data Section</span>
+            <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`chem-choice-btn text-center text-xs py-2 px-1 ${activeTab === tab.id ? 'active' : ''}`}
+                >
+                  {tab.label}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
+
         </div>
 
-        {/* --- CONTENT AREA --- */}
+        {/* --- DATA VIEWPORT SHEET AREA --- */}
         <div className="flex-1 overflow-y-auto p-3 md:p-6 bg-white">
           {activeTab === 'periodic' && <ZoomablePeriodicTable />}
 
@@ -378,6 +382,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

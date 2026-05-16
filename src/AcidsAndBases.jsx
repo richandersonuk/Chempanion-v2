@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './App.css';
 
 // Helper component to force correct chemical casing everywhere
 const KaLabel = () => <span><i>K</i><sub>a</sub></span>;
@@ -11,7 +10,7 @@ const AcidsAndBases = () => {
   const [exponent, setExponent] = useState('');
   const [showExpModal, setShowExpModal] = useState(false);
   const [feedback, setFeedback] = useState({ message: '', status: '' });
-  
+
   // Touch Scroller Logic
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
@@ -20,7 +19,6 @@ const AcidsAndBases = () => {
   // Auto-focus and auto-select logic
   useEffect(() => {
     if (showExpModal && expInputRef.current) {
-      // Small delay ensures the DOM has rendered the modal before focusing
       const timer = setTimeout(() => {
         expInputRef.current.focus();
         expInputRef.current.select();
@@ -62,7 +60,7 @@ const AcidsAndBases = () => {
         title: 'Strong Base Calculation',
         text: <>Calculate the pH of a <b>{conc} mol dm⁻³</b> solution of sodium hydroxide, NaOH, at 298 K.</>,
         data: [<><i>K</i><sub>w</sub> = 1.00 × 10⁻¹⁴ mol² dm⁻⁶ at 298 K</>],
-        question: "pH of the solution:",
+        question: "Calculate the pH of the solution:",
         label: "pH",
         correctAnswer: (14 + Math.log10(parseFloat(conc))).toFixed(2),
         type: 'ph'
@@ -101,7 +99,9 @@ const AcidsAndBases = () => {
     setFeedback({ message: '', status: '' });
   };
 
-  useEffect(() => { generateProblem('strong_acid'); }, []);
+  useEffect(() => { 
+    generateProblem('strong_acid'); 
+  }, []);
 
   const adjustExponent = (amount) => {
     setExponent(prev => {
@@ -114,7 +114,7 @@ const AcidsAndBases = () => {
   const handlePointerMove = (e) => {
     if (!isDragging) return;
     const diff = startY - e.clientY;
-    if (Math.abs(diff) > 25) { // Sensitivity threshold
+    if (Math.abs(diff) > 25) {
       adjustExponent(diff > 0 ? 1 : -1);
       setStartY(e.clientY);
     }
@@ -125,7 +125,6 @@ const AcidsAndBases = () => {
     const finalVal = (problem.type === 'ka' && exponent) 
       ? parseFloat(studentAnswer) * Math.pow(10, parseFloat(exponent)) 
       : parseFloat(studentAnswer);
-    
     const correctVal = parseFloat(problem.correctAnswer);
 
     if (problem.type === 'ph') {
@@ -147,65 +146,82 @@ const AcidsAndBases = () => {
 
   return (
     <div className="applet-container">
-      {/* Navigation */}
-      <div className="flex justify-center items-center gap-2 mb-10 no-select">
-        <select value={mode === 'random' ? '' : mode} onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }} className="w-fit bg-white border-2 border-slate-300 px-3 py-2 rounded-xl text-sm font-bold text-slate-700 outline-none">
-          <option value="strong_acid">Strong Acid</option>
-          <option value="strong_base">Strong Base</option>
-          <option value="weak_acid">Weak Acid</option>
-          <option value="ka_find">Find Ka</option>
-        </select>
-        <button onPointerDown={() => { setMode('random'); generateProblem('random'); }} className={`px-4 py-2 text-xs font-black uppercase rounded-xl transition-all ${mode === 'random' ? 'bg-[#326fa0] text-white' : 'bg-slate-200 text-slate-500'}`}>Random</button>
+      
+      {/* --- HOUSESTYLE COMPLIANT NAVIGATION SELECTION SECTOR --- */}
+      <div className="w-full max-w-xl mx-auto mb-8 px-4">
+        <span className="chem-choice-label">Choose Practice Mode</span>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {[
+            { id: 'strong_acid', label: 'Strong Acid' },
+            { id: 'strong_base', label: 'Strong Base' },
+            { id: 'weak_acid', label: 'Weak Acid' },
+            { id: 'ka_find', label: 'Find Ka' },
+            { id: 'random', label: 'Random' }
+          ].map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => { setMode(m.id); generateProblem(m.id); }}
+              className={`chem-choice-btn ${mode === m.id ? 'active' : ''} text-center text-xs py-2 px-1`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="exam-paper-flow animate-fade-in relative">
-        <div className="border-b-2 border-slate-900 mb-8 pb-2">
+        <div className="border-b-2 border-slate-900 mb-6 pb-2">
           <h2 className="text-xl font-black text-slate-900 tracking-tighter normal-case leading-none">
             {problem.title}
           </h2>
         </div>
 
-        <div className="text-slate-800 leading-relaxed text-lg mb-8">{problem.text}</div>
+        <div className="text-slate-800 leading-relaxed text-lg mb-6 text-center md:text-left">{problem.text}</div>
 
         {problem.data && problem.data.length > 0 && (
-          <div className="data-box mb-8">
+          <div className="data-box mb-6">
             <p className="text-xs font-black text-[#326fa0] uppercase mb-2 tracking-widest text-left">Data</p>
             {problem.data.map((d, i) => <div key={i} className="font-mono font-bold text-slate-700 text-left">{d}</div>)}
           </div>
         )}
 
-        <div className="pt-8 border-t border-slate-200">
-          <p className="text-lg font-bold text-slate-900 mb-6">{problem.question}</p>
+        <div className="pt-6 border-t border-slate-200">
+          <p className="text-base font-bold text-slate-900 mb-4 text-center md:text-left">{problem.question}</p>
           
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="flex items-center bg-white border-2 border-slate-200 rounded-xl px-4 py-2 focus-within:border-[#326fa0] transition-colors">
-              <span className="font-black text-[#326fa0] text-lg mr-2 leading-none">{problem.label} =</span>
-              
+          <div className="flex flex-col items-center gap-6">
+            {/* INPUT ELEMENT WRAPPER BLOCK */}
+            <div className="flex items-center bg-white border-2 border-slate-200 rounded-xl px-4 py-2.5 focus-within:border-[#326fa0] transition-colors shadow-sm">
+              <span className="font-black text-[#326fa0] text-lg mr-2 leading-none flex items-center">{problem.label} =</span>
               <div className="flex items-baseline gap-0 leading-none">
                 <input 
                   type="number" 
                   value={studentAnswer} 
                   onChange={(e) => setStudentAnswer(e.target.value)} 
-                  className="w-16 text-lg font-mono outline-none bg-transparent m-0 p-0" 
+                  className="w-20 text-lg font-mono outline-none bg-transparent m-0 p-0 text-center" 
                   placeholder="0.00" 
                 />
                 {problem.type === 'ka' && exponent && (
-                  <span className="text-lg font-mono m-0 p-0 leading-none select-none">×10<sup className="text-xs">{exponent}</sup></span>
+                  <span className="text-lg font-mono m-0 p-0 leading-none select-none ml-1">×10<sup className="text-xs">{exponent}</sup></span>
                 )}
               </div>
 
               {problem.type === 'ka' && (
                 <button 
-                  onPointerDown={() => { if(exponent === '') setExponent('-6'); setShowExpModal(true); }} 
-                  className="ml-3 bg-slate-100 text-[#326fa0] text-[10px] font-black px-2 py-1 rounded border border-slate-300"
+                  type="button"
+                  onClick={() => { if(exponent === '') setExponent('-6'); setShowExpModal(true); }} 
+                  className="ml-3 bg-slate-100 text-[#326fa0] text-[10px] font-black px-2 py-1 rounded border border-slate-300 transition-colors hover:bg-slate-200"
                 >
                   ×10<sup>x</sup>
                 </button>
               )}
             </div>
-            
-            <button onPointerDown={checkAnswer} className="btn btn-primary px-10 py-3">Submit</button>
-            <button onPointerDown={() => generateProblem()} className="p-2 text-slate-300">⟳</button>
+
+            {/* STANDARDIZED ACTION BUTTON ARRANGEMENT */}
+            <div className="button-group w-full">
+              <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+              <button className="btn btn-secondary" onClick={() => generateProblem()}>New Problem</button>
+            </div>
           </div>
         </div>
 
@@ -214,12 +230,8 @@ const AcidsAndBases = () => {
           <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex items-center justify-center rounded-2xl animate-fade-in">
             <div className="bg-white border-2 border-slate-900 p-8 rounded-3xl shadow-2xl max-w-xs w-full text-center">
               <p className="text-[10px] font-black uppercase tracking-widest text-[#326fa0] mb-6">Swipe or tap to adjust Index</p>
-              
               <div className="flex justify-center items-start mb-10 h-24">
-                {/* Fixed "10" Base - smaller and right next to index */}
                 <div className="text-4xl font-black text-slate-300 self-end leading-none translate-x-4 select-none">10</div>
-                
-                {/* The "Power" box - staggered position */}
                 <div 
                   className="flex flex-col items-center cursor-ns-resize select-none translate-x-4" 
                   onPointerDown={handlePointerDown} 
@@ -227,25 +239,28 @@ const AcidsAndBases = () => {
                   onPointerUp={() => setIsDragging(false)} 
                   onPointerLeave={() => setIsDragging(false)}
                 >
-                   <button onPointerDown={() => adjustExponent(1)} className="text-slate-300 hover:text-[#326fa0] p-1 text-xl">▲</button>
-                   <input 
+                  <button type="button" onClick={() => adjustExponent(1)} className="text-slate-300 hover:text-[#326fa0] p-1 text-xl">▲</button>
+                  <input 
                     ref={expInputRef} 
                     type="number" 
                     value={exponent} 
                     onChange={(e) => setExponent(e.target.value)} 
                     className="w-16 text-4xl font-mono outline-none bg-transparent text-center border-none p-0 m-0" 
                   />
-                  <button onPointerDown={() => adjustExponent(-1)} className="text-slate-300 hover:text-[#326fa0] p-1 text-xl">▼</button>
+                  <button type="button" onClick={() => adjustExponent(-1)} className="text-slate-300 hover:text-[#326fa0] p-1 text-xl">▼</button>
                 </div>
               </div>
-              
-              <button onPointerDown={() => setShowExpModal(false)} className="btn btn-primary w-full py-4 text-lg">Apply Index</button>
-              <button onPointerDown={() => {setExponent(''); setShowExpModal(false);}} className="text-xs font-bold text-slate-400 mt-4 block w-full text-center">Clear</button>
+              <button type="button" onClick={() => setShowExpModal(false)} className="btn btn-primary w-full py-4 text-lg">Apply Index</button>
+              <button type="button" onClick={() => {setExponent(''); setShowExpModal(false);}} className="text-xs font-bold text-slate-400 mt-4 block w-full text-center">Clear</button>
             </div>
           </div>
         )}
 
-        {feedback.message && <div className={`feedback-box mt-8 ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>{feedback.message}</div>}
+        {feedback.message && (
+          <div className={`feedback-box mt-6 ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+            {feedback.message}
+          </div>
+        )}
       </div>
     </div>
   );

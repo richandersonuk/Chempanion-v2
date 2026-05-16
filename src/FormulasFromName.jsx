@@ -6,16 +6,8 @@ import React, { useState, useEffect } from 'react';
  */
 const FormulaInput = ({ value, onChange, status, placeholder, onKeyDown }) => {
   const subMap = {
-    0: '₀',
-    1: '₁',
-    2: '₂',
-    3: '₃',
-    4: '₄',
-    5: '₅',
-    6: '₆',
-    7: '₇',
-    8: '₈',
-    9: '₉',
+    '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+    '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'
   };
 
   const handleChange = (e) => {
@@ -36,10 +28,11 @@ const FormulaInput = ({ value, onChange, status, placeholder, onKeyDown }) => {
         onKeyDown={onKeyDown}
         placeholder={placeholder}
         style={{
-          fontSize: '1.2rem',
+          fontSize: '1.3rem',
           letterSpacing: '0.05em',
           width: '100%',
           maxWidth: '14rem',
+          textAlign: 'center'
         }}
       />
     </div>
@@ -47,7 +40,7 @@ const FormulaInput = ({ value, onChange, status, placeholder, onKeyDown }) => {
 };
 
 const FormulasFromName = () => {
-  const [mode, setMode] = useState('roman');
+  const [mode, setMode] = useState('simple');
   const [problem, setProblem] = useState(null);
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
@@ -80,30 +73,16 @@ const FormulasFromName = () => {
 
   const normalize = (str) => {
     const reverseMap = {
-      '₀': '0',
-      '₁': '1',
-      '₂': '2',
-      '₃': '3',
-      '₄': '4',
-      '₅': '5',
-      '₆': '6',
-      '₇': '7',
-      '₈': '8',
-      '₉': '9',
+      '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4',
+      '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9'
     };
-    return str
-      .split('')
-      .map((char) => reverseMap[char] || char)
-      .join('');
+    return str.split('').map((char) => reverseMap[char] || char).join('');
   };
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['simple', 'roman', 'complex'];
     const selection = forcedMode || mode;
-    const targetMode =
-      selection === 'random'
-        ? modes[Math.floor(Math.random() * modes.length)]
-        : selection;
+    const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
     const filtered = database.filter((item) => item.type === targetMode);
     const picked = filtered[Math.floor(Math.random() * filtered.length)];
@@ -119,10 +98,12 @@ const FormulasFromName = () => {
 
   const checkAnswer = () => {
     const cleanInput = normalize(studentAnswer).trim();
+    if (!cleanInput) return;
+
     if (cleanInput === problem.formula) {
       setFeedback({ message: 'Correct!', status: 'success' });
     } else if (cleanInput.toLowerCase() === problem.formula.toLowerCase()) {
-      setFeedback({ message: 'Check your casing!', status: 'error' });
+      setFeedback({ message: 'Check your chemical symbol casing (e.g., Na, not na).', status: 'error' });
     } else {
       setFeedback({
         message: `Incorrect. The formula is ${problem.formula}`,
@@ -135,51 +116,39 @@ const FormulasFromName = () => {
 
   return (
     <div className="applet-container">
-      {/* SELECTION BAR */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '0.5rem',
-          marginBottom: '2rem',
-        }}
-      >
-        <select
-          value={mode === 'random' ? '' : mode}
-          onChange={(e) => {
-            setMode(e.target.value);
-            generateProblem(e.target.value);
-          }}
-          className="chem-input"
-          style={{ width: 'auto' }}
-        >
-          <option value="simple">Simple Names</option>
-          <option value="roman">Roman Numerals</option>
-          <option value="complex">Polyatomic</option>
-        </select>
-        <button
-          onClick={() => {
-            setMode('random');
-            generateProblem('random');
-          }}
-          className={`btn ${
-            mode === 'random' ? 'btn-primary' : 'btn-secondary'
-          }`}
-        >
-          Random
-        </button>
+      
+      {/* --- REFACTORED COMPONENT MODE SELECTION GRID --- */}
+      <div className="w-full max-w-md mx-auto mb-6 px-4">
+        <span className="chem-choice-label">Choose Practice Mode</span>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { id: 'simple', label: 'Simple' },
+            { id: 'roman', label: 'Roman' },
+            { id: 'complex', label: 'Polyatomic' },
+            { id: 'random', label: 'Random' }
+          ].map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => { setMode(m.id); generateProblem(m.id); }}
+              className={`chem-choice-btn ${mode === m.id ? 'active' : ''} text-center text-xs py-2 px-1`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="applet-header">Formulas from Names</div>
 
       <div className="question-text text-center">
-        Predict the chemical formula for:
+        Predict the systematic chemical formula for:
         <div
           style={{
-            fontSize: '1.5rem',
+            fontSize: '1.6rem',
             fontWeight: '800',
             margin: '1rem 0',
-            color: 'var(--chem-primary)',
+            color: '#1e293b',
           }}
         >
           {problem.name}
@@ -196,21 +165,15 @@ const FormulasFromName = () => {
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={checkAnswer}>
-          Check
+          Check Answer
         </button>
         <button className="btn btn-secondary" onClick={() => generateProblem()}>
-          Next
+          New Problem
         </button>
       </div>
 
       {feedback.message && (
-        <div
-          className={`feedback-box ${
-            feedback.status === 'success'
-              ? 'feedback-success'
-              : 'feedback-error'
-          }`}
-        >
+        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
           {feedback.message}
         </div>
       )}

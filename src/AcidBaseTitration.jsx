@@ -17,6 +17,7 @@ const AcidBaseTitration = () => {
       const volBase = 25.0;
       const concAcid = (0.05 + Math.random() * 0.1).toFixed(3);
       const titre = (15 + Math.random() * 15).toFixed(2);
+      
       // moles acid = conc * vol / 1000
       // 1:1 ratio for NaOH/HCl
       const concBase = (parseFloat(concAcid) * parseFloat(titre)) / volBase;
@@ -61,7 +62,9 @@ const AcidBaseTitration = () => {
     setFeedback({ message: '', status: '' });
   };
 
-  useEffect(() => { generateProblem('standard'); }, []);
+  useEffect(() => { 
+    generateProblem('standard'); 
+  }, []);
 
   const checkAnswer = () => {
     const userVal = parseFloat(studentAnswer);
@@ -79,31 +82,47 @@ const AcidBaseTitration = () => {
 
   return (
     <div className="applet-container">
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
-        <select 
-          value={mode === 'random' ? '' : mode} 
-          onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-          className="chem-input" style={{ width: 'auto' }}
-        >
-          <option value="standard">Standard (1:1)</option>
-          <option value="back_titration">Back Titration</option>
-        </select>
-        <button onClick={() => { setMode('random'); generateProblem('random'); }} className="btn btn-secondary">Random</button>
+      
+      {/* --- REFACTORED SELECTION GRID (HOUSESTYLE ALIGNED) --- */}
+      <div className="w-full max-w-md mx-auto mb-6 px-4">
+        <span className="chem-choice-label">Choose Practice Mode</span>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { id: 'standard', label: 'Standard (1:1)' },
+            { id: 'back_titration', label: 'Back Titration' },
+            { id: 'random', label: 'Random' }
+          ].map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => { setMode(m.id); generateProblem(m.id); }}
+              className={`chem-choice-btn ${mode === m.id ? 'active' : ''} text-center text-xs py-2 px-1`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="applet-header">{problem.title}</div>
-      <div className="question-text">{problem.text}</div>
-      
+      <div className="question-text text-center">{problem.text}</div>
+
+      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
+        {problem.question}
+      </div>
+
+      {/* INPUT INTERFACE */}
       <div className="input-group">
-        <label>{problem.label}</label>
+        <label style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>{problem.label}</label>
         <input 
           type="number" 
           className={`chem-input ${feedback.status}`}
           value={studentAnswer}
           onChange={(e) => setStudentAnswer(e.target.value)}
           placeholder="0.00"
+          style={{ maxWidth: '12rem', textAlign: 'center' }}
         />
-        <span>{problem.unit}</span>
+        <span style={{ marginLeft: '0.5rem', fontWeight: 'bold' }}>{problem.unit}</span>
       </div>
 
       <div className="button-group">
