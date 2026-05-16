@@ -1,0 +1,23 @@
+{
+    "short_name": "CHEMpanion",
+    "name": "CHEMpanion: A-Level Chemistry Applets",
+    "icons": [
+      {
+        "src": "/android-chrome-192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/android-chrome-512x512.png",
+        "type": "image/png",
+        "sizes": "512x512",
+        "purpose": "any maskable"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#f8fafc",
+    "theme_color": "#2d6388",
+    "display": "standalone",
+    "orientation": "portrait"
+  }
+  
