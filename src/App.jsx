@@ -18,6 +18,8 @@ import KpCalculations from './KpCalculations';
 import EntropyGibbs from './EntropyGibbs';
 import CellPotentials from './CellPotentials';
 import EmpiricalFormula from './EmpiricalFormula';
+import ThermometricTitration from './ThermometricTitration';
+
 
 // --- WJEC EXAM SPECIFICATION HOW-TO GUIDE COMPONENT ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
@@ -152,7 +154,17 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
         'Apply the EMF formula: E°cell = E°(Reduction Cathode) − E°(Oxidation Anode).'
       ],
       pitfalls: 'WJEC Examiner Alert: Standard cell EMF results must be stated to exactly two decimal places and must explicitly include the positive (+) sign to denote a feasible, spontaneous forward reaction (e.g., +1.10 V).'
+    },
+    'thermometric': {
+      title: 'Thermometric Titrations (Unit 2)',
+      steps: [
+        'Endpoint Extrapolation: Look closely at the scatter graph. Find the exact apex vertex where the upward temperature rise line intersects with the downward cooling line. Project down vertically to read the corresponding neutralisation volume on the horizontal x-axis.',
+        'Total Mass Calculation: To calculate heat energy, use Q = mcΔT. CRUCIAL: The mass (m) is the TOTAL combined volume of the mixture at the endpoint. You must add the initial volume of acid to your extrapolated endpoint volume of alkali (assuming a density of 1.00 g cm⁻³).',
+        'Molar Enthalpy Scale: Use the WJEC standard water heat capacity (c = 4.18 J g⁻¹ K⁻¹) to determine Q in Joules. Convert this to kJ (divide by 1000) and divide by the moles of water formed to find ΔH in kJ mol⁻¹.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: This is a double-trap module! First, weaker candidates routinely use only the volume of the acid instead of the combined mixture volume for the mass parameter. Second, because the temperature goes UP, the process is exothermic—forgetting to prefix your final calculated ΔH answer with an explicit negative (−) sign will instantly cost you the accuracy mark.'
     }
+
   };
 
   const currentGuide = guides[appletId];
@@ -237,6 +249,7 @@ function App() {
     { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.1', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.' },
     { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.1', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.' },
     { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.2', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.' },
+    { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.' },
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '⚡', desc: 'Analyze ratio pathways for complex transition elements.' },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.' },
     { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.4', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.' },
@@ -246,6 +259,7 @@ function App() {
     { id: 'acids', label: 'pH & Weak Acids', short: 'pH Acids', unit: 'Unit 3.9', icon: '🍋', desc: 'Determine Ka, pKa, and hydrogen ion parameters.' },
     { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' },
     { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 4.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.' }
+    
   ];
 
   const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
