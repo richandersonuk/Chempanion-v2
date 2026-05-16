@@ -6,24 +6,28 @@ const AcidBaseTitration = () => {
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
-  // Interactive Table State Elements (For Mode: table_practice)
+  // Interactive Table State Elements 
   const [tableTitres, setTableTitres] = useState({ rough: '', t1: '', t2: '', t3: '' });
-  const [concordantSelections, setConcordantSelections] = useState({ t1: false, t2: false, t3: false });
+  const [concordantSelections, setConcordantSelections] = useState({ rough: false, t1: false, t2: false, t3: false });
   const [studentMean, setStudentMean] = useState('');
   const [tableVerified, setTableVerified] = useState(false);
   const [tableFeedback, setTableFeedback] = useState({ message: '', status: '' });
 
+  // Helper utility to round generated parameters to standard laboratory 0.05 intervals
+  const roundTo05 = (val) => Math.round(val * 20) / 20;
+
   const generateProblem = (forcedMode = null) => {
-    const modes = ['standard', 'back_titration', 'double_titration', 'table_practice'];
+    const modes = ['standard', 'back_titration', 'double_titration', 'table_practice', 'read_burette'];
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
     setMode(targetMode);
 
     let newProb = {};
-    // Reset table states on regeneration
+    
+    // Total reset of state metrics across new questions
     setTableTitres({ rough: '', t1: '', t2: '', t3: '' });
-    setConcordantSelections({ t1: false, t2: false, t3: false });
+    setConcordantSelections({ rough: false, t1: false, t2: false, t3: false });
     setStudentMean('');
     setTableVerified(false);
     setTableFeedback({ message: '', status: '' });
@@ -34,7 +38,6 @@ const AcidBaseTitration = () => {
       const poolChoice = Math.random();
 
       if (poolChoice < 0.33) {
-        // Monoprotic standard (HCl + NaOH)
         const concAcid = parseFloat((0.05 + Math.random() * 0.1).toFixed(3));
         const concBase = (concAcid * titre) / volBase;
 
@@ -47,7 +50,6 @@ const AcidBaseTitration = () => {
           correct: concBase.toFixed(3)
         };
       } else if (poolChoice < 0.66) {
-        // Diprotic Stoichiometry Trap (H2SO4 + 2NaOH)
         const concAcid = parseFloat((0.025 + Math.random() * 0.05).toFixed(3));
         const concBase = (2 * concAcid * titre) / volBase;
 
@@ -60,12 +62,9 @@ const AcidBaseTitration = () => {
           correct: concBase.toFixed(3)
         };
       } else {
-        // WJEC Core Context: Ascorbic Acid (Vitamin C) Assay Analysis
-        const concNaOH = parseFloat((0.04 + Math.random() * 0.04).toFixed(3)); // ~0.05 mol dm-3
-        // moles NaOH = conc * titre / 1000
-        // moles Ascorbic acid in 25cm3 = moles NaOH
+        const concNaOH = parseFloat((0.04 + Math.random() * 0.04).toFixed(3)); 
         const molesAscorbic25 = (concNaOH * titre) / 1000;
-        const massAscorbicInTablet = molesAscorbic25 * 176.12; // Weak monoprotic C6H8O6
+        const massAscorbicInTablet = molesAscorbic25 * 176.12; 
 
         newProb = {
           title: "Ascorbic Acid (Vitamin C) Assay",
@@ -131,27 +130,59 @@ const AcidBaseTitration = () => {
       };
 
     } else if (targetMode === 'table_practice') {
-      // PREMIUM INTERACTIVE UNIT 1 RESULTS TABLE AND CONCORDANCE GENERATOR
-      const targetTitre = parseFloat((21.30 + Math.random() * 2).toFixed(2)); // true target mean
+      const baseTarget = roundTo05(21.10 + Math.random() * 3); 
       
-      // Generate initial/final combinations ending explicitly in .00 or .05 for realistic meniscus readings
-      const r_init = 0.00; const r_final = targetTitre + 0.85;
-      const t1_init = 0.50; const t1_final = t1_init + targetTitre - 0.05; // t1 = target - 0.05
-      const t2_init = 1.10; const t2_final = t2_init + targetTitre + 0.05; // t2 = target + 0.05
-      const t3_init = 0.00; const t3_final = t3_init + targetTitre + 0.65; // t3 = outlier (+0.65)
+      const r_init = 0.00; 
+      const r_final = baseTarget + roundTo05(0.65 + Math.random() * 0.5);
+
+      const t1_init = 0.50;
+      const t1_net = baseTarget - 0.05;
+      const t1_final = t1_init + t1_net;
+
+      let t2_init = roundTo05(t1_final + 0.40);
+      let t2_net = 0;
+      let t2_final = 0;
+      
+      let t3_init = 0;
+      let t3_net = 0;
+      let t3_final = 0;
+
+      const achievingConcordanceOnRun2 = Math.random() > 0.5;
+      let hasT3 = false;
+      let correctConcordant = {};
+      let expectedMean = 0;
+
+      if (achievingConcordanceOnRun2) {
+        t2_net = baseTarget + 0.05;
+        t2_final = t2_init + t2_net;
+        hasT3 = false;
+        correctConcordant = { rough: false, t1: true, t2: true, t3: false };
+        expectedMean = (t1_net + t2_net) / 2;
+      } else {
+        t2_net = baseTarget + 0.25; 
+        t2_final = t2_init + t2_net;
+        
+        t3_init = roundTo05(t2_final + 0.50);
+        t3_net = baseTarget + 0.05; 
+        t3_final = t3_init + t3_net;
+        
+        hasT3 = true;
+        correctConcordant = { rough: false, t1: true, t2: false, t3: true };
+        expectedMean = (t1_net + t3_net) / 2;
+      }
 
       const tableData = {
         rough: { init: r_init.toFixed(2), final: r_final.toFixed(2), correctNet: r_final - r_init },
-        t1: { init: t1_init.toFixed(2), final: t1_final.toFixed(2), correctNet: t1_final - t1_init },
-        t2: { init: t2_init.toFixed(2), final: t2_final.toFixed(2), correctNet: t2_final - t2_init },
-        t3: { init: t3_init.toFixed(2), final: t3_final.toFixed(2), correctNet: t3_final - t3_init }
+        t1: { init: t1_init.toFixed(2), final: t1_final.toFixed(2), correctNet: t1_net },
+        t2: { init: t2_init.toFixed(2), final: t2_final.toFixed(2), correctNet: t2_net },
+        t3: hasT3 ? { init: t3_init.toFixed(2), final: t3_final.toFixed(2), correctNet: t3_net } : null,
+        hasT3
       };
 
       const concNaOH = 0.100;
       const volFlaskAcid = 25.0;
-      // Mean of concordant trials (t1 and t2) = targetTitre exactly
-      const molesNaOH = (concNaOH * targetTitre) / 1000;
-      const concAcid = molesNaOH / (volFlaskAcid / 1000); // 1:1 HCl + NaOH
+      const molesNaOH = (concNaOH * expectedMean) / 1000;
+      const concAcid = molesNaOH / (volFlaskAcid / 1000);
 
       newProb = {
         title: "Burette Data Table & Concordance Practice",
@@ -160,7 +191,25 @@ const AcidBaseTitration = () => {
         label: "[HCl] =",
         unit: "mol dm⁻³",
         correct: concAcid.toFixed(3),
-        tableData
+        tableData,
+        correctConcordant,
+        expectedMean
+      };
+
+    } else if (targetMode === 'read_burette') {
+      // --- PREMIUM PRACTICE MODE: VISUAL MENISCUS INTERPRETATION ---
+      const targetReading = roundTo05(12.05 + Math.random() * 25); // Random reading between 12.00 and 37.00
+      const startInt = Math.floor(targetReading);
+      
+      newProb = {
+        title: "Burette Scale Interpretation Practice",
+        text: <>Observe the close-up vector diagram of the aqueous liquid level inside a standard analytical burette. WJEC specifications require readings to be estimated to the nearest <b>0.05 cm³</b>.</>,
+        question: "Record the volume shown on the burette scale down to the bottom of the meniscus curve.",
+        label: "Volume =",
+        unit: "cm³",
+        correct: targetReading.toFixed(2),
+        startInt,
+        targetReading
       };
     }
 
@@ -173,40 +222,45 @@ const AcidBaseTitration = () => {
     generateProblem('standard'); 
   }, []);
 
-  // Handler to verify intermediate data tables before final calculations unlock
   const handleVerifyTable = () => {
     const data = problem.tableData;
+    if (concordantSelections.rough) {
+      setTableFeedback({ 
+        message: "❌ Whoa there! Never include the Rough Titre as concordant! The rough trial is an intentional overshoot designed to give a ballpark location of the endpoint. It must NEVER be checked or averaged.", 
+        status: "error" 
+      });
+      return;
+    }
+
     const r_user = parseFloat(tableTitres.rough);
     const t1_user = parseFloat(tableTitres.t1);
     const t2_user = parseFloat(tableTitres.t2);
-    const t3_user = parseFloat(tableTitres.t3);
+    const t3_user = data.hasT3 ? parseFloat(tableTitres.t3) : 0;
     const mean_user = parseFloat(studentMean);
 
-    // 1. Check subtractions
     if (
       Math.abs(r_user - data.rough.correctNet) > 0.01 ||
       Math.abs(t1_user - data.t1.correctNet) > 0.01 ||
       Math.abs(t2_user - data.t2.correctNet) > 0.01 ||
-      Math.abs(t3_user - data.t3.correctNet) > 0.01
+      (data.hasT3 && Math.abs(t3_user - data.t3.correctNet) > 0.01)
     ) {
-      setTableFeedback({ message: "Incorrect net titre entries. Double check your subtractions (Final − Initial).", status: "error" });
+      setTableFeedback({ message: "Incorrect net titre entries. Double check your subtraction arithmetic (Final Volume − Initial Volume).", status: "error" });
       return;
     }
 
-    // 2. Validate concordant check marks (Titre 1 and Titre 2 are within 0.10 cm³)
-    if (!concordantSelections.t1 || !concordantSelections.t2 || concordantSelections.t3) {
-      setTableFeedback({ message: "Concordance check failure. Concordant titres must sit within 0.10 cm³ of each other.", status: "error" });
+    const checks = concordantSelections;
+    const targets = problem.correctConcordant;
+    if (checks.t1 !== targets.t1 || checks.t2 !== targets.t2 || checks.t3 !== targets.t3) {
+      setTableFeedback({ message: "Concordance tracking mismatch. Concordant trials must sit within 0.10 cm³ of each other. Re-check your values.", status: "error" });
       return;
     }
 
-    // 3. Check calculated mean titre
-    const expectedMean = (data.t1.correctNet + data.t2.correctNet) / 2;
-    if (Math.abs(mean_user - expectedMean) > 0.01) {
-      setTableFeedback({ message: "Incorrect mean titre. Calculate the average using only your selected concordant trials.", status: "error" });
+    if (Math.abs(mean_user - problem.expectedMean) > 0.01) {
+      setTableFeedback({ message: "Incorrect mean value. Calculate the average using only your checked concordant trials.", status: "error" });
       return;
     }
 
-    setTableFeedback({ message: "Results table data verified successfully! Final calculation block unlocked.", status: "success" });
+    setTableFeedback({ message: "Results table verified successfully! Final chemical concentration entry field is unlocked.", status: "success" });
     setTableVerified(true);
   };
 
@@ -215,8 +269,25 @@ const AcidBaseTitration = () => {
     const correctVal = parseFloat(problem.correct);
     
     if (isNaN(userVal)) return;
-    const error = Math.abs((userVal - correctVal) / correctVal);
 
+    if (mode === 'read_burette') {
+      const rawInputString = studentAnswer.trim();
+      // Enforce the strict 2 decimal place requirement noted in examiner logs
+      const decimalPart = rawInputString.split('.')[1];
+      if (!decimalPart || decimalPart.length !== 2) {
+        setFeedback({ message: "WJEC Trap! Burette readings must ALWAYS be recorded to exactly two decimal places, ending in .00 or .05 (e.g., 14.30 or 21.05).", status: 'error' });
+        return;
+      }
+
+      if (Math.abs(userVal - correctVal) < 0.01) {
+        setFeedback({ message: `Correct! Excellent reading. You read the scale downwards properly.`, status: 'success' });
+      } else {
+        setFeedback({ message: `Incorrect scale mapping. Remember numbers on a burette increase downwards! Expected reading: ${problem.correct} cm³.`, status: 'error' });
+      }
+      return;
+    }
+
+    const error = Math.abs((userVal - correctVal) / correctVal);
     if (error < 0.025) {
       setFeedback({ message: `Correct! The determined value is ${problem.correct} ${problem.unit}.`, status: 'success' });
     } else {
@@ -236,10 +307,14 @@ const AcidBaseTitration = () => {
 
   if (!problem) return null;
 
+  // Calculate high-fidelity pixel lines for custom burette SVG reading canvas rendering
+  const valDiff = problem.targetReading - problem.startInt;
+  const meniscusY = 30 + valDiff * 130;
+
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       
-      {/* --- DROPDOWN + RANDOM NAVIGATION ROW --- */}
+      {/* --- NAVIGATION ROW BLOCK --- */}
       <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
         <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
@@ -255,6 +330,7 @@ const AcidBaseTitration = () => {
             <option value="back_titration">Back Titration (Aliquot Volumetric)</option>
             <option value="double_titration">Double Titration (WJEC Mixture Assay)</option>
             <option value="table_practice">Burette Results Table & Concordance Practice</option>
+            <option value="read_burette">Burette Reading Scale Practice</option>
           </select>
           
           <button
@@ -272,64 +348,124 @@ const AcidBaseTitration = () => {
       <div className="applet-header" style={{ textTransform: 'none' }}>{problem.title}</div>
       <div className="question-text text-center px-2 leading-relaxed" style={{ textTransform: 'none' }}>{problem.text}</div>
 
-      {/* --- CONDITIONAL RENDERING FOR INTERACTIVE RESULTS MATRIX --- */}
+      {/* --- RENDER LOGIC: HIGH RESOLUTION VECTOR BURETTE INTERFACE --- */}
+      {mode === 'read_burette' && (
+        <div className="w-full flex flex-col items-center my-6 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 max-w-xs mx-auto shadow-inner relative">
+          <svg viewBox="0 0 120 200" className="w-28 h-auto select-none overflow-visible">
+            {/* Main Glass Tube Wall Lines */}
+            <line x1="40" y1="10" x2="40" y2="190" stroke="#64748b" strokeWidth="2.5" />
+            <line x1="80" y1="10" x2="80" y2="190" stroke="#64748b" strokeWidth="2.5" />
+            
+            {/* Generate procedural millimetre sub-division tick markers */}
+            {Array.from({ length: 11 }).map((_, i) => {
+              const yPos = 30 + i * 13;
+              const isMajor = i === 0 || i === 10;
+              const isMedium = i === 5;
+              
+              return (
+                <g key={i}>
+                  <line 
+                    x1={40} 
+                    y1={yPos} 
+                    x2={isMajor ? 62 : isMedium ? 54 : 48} 
+                    y2={yPos} 
+                    stroke="#1e293b" 
+                    strokeWidth={isMajor ? "1.5" : "1"} 
+                  />
+                  {isMajor && (
+                    <text x="70" y={yPos + 4} textAnchor="middle" className="text-[12px] font-mono font-black fill-slate-800">
+                      {problem.startInt + (i === 10 ? 1 : 0)}
+                    </text>
+                  )}
+                  {!isMajor && !isMedium && (
+                    <line x1="40" y1={yPos} x2="45" y2={yPos} stroke="#475569" strokeWidth="0.7" />
+                  )}
+                </g>
+              );
+            })}
+
+            {/* Liquid Fill Shading Column */}
+            <rect x="41.5" y={meniscusY} width="37" height={190 - meniscusY} fill="#e0f2fe" opacity="0.6" />
+
+            {/* Concave Meniscus Curve Vector Layer (Lowest boundary center dip matches meniscusY perfectly) */}
+            <path 
+              d={`M 40.5,${meniscusY - 4} Q 60,${meniscusY + 1} 79.5,${meniscusY - 4}`} 
+              fill="none" 
+              stroke="#0284c7" 
+              strokeWidth="3" 
+              strokeLinecap="round"
+            />
+          </svg>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Scale in cm³ (Top to Bottom)</span>
+        </div>
+      )}
+
+      {/* --- RESPONSIVE HORIZONTAL SCROLL INTERACTIVE RESULTS MATRIX --- */}
       {mode === 'table_practice' && (
         <div className="w-full max-w-2xl mx-auto my-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
-          <table className="w-full text-center text-xs font-bold border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
-                <th className="p-3 text-left">Burette Readings</th>
-                <th className="p-3">Rough</th>
-                <th className="p-3">Titre 1</th>
-                <th className="p-3">Titre 2</th>
-                <th className="p-3">Titre 3</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              <tr>
-                <td className="p-3 text-left bg-slate-50/50">Final Volume (cm³)</td>
-                <td className="p-3 font-mono">{problem.tableData.rough.final}</td>
-                <td className="p-3 font-mono">{problem.tableData.t1.final}</td>
-                <td className="p-3 font-mono">{problem.tableData.t2.final}</td>
-                <td className="p-3 font-mono">{problem.tableData.t3.final}</td>
-              </tr>
-              <tr>
-                <td className="p-3 text-left bg-slate-50/50">Initial Volume (cm³)</td>
-                <td className="p-3 font-mono">{problem.tableData.rough.init}</td>
-                <td className="p-3 font-mono">{problem.tableData.t1.init}</td>
-                <td className="p-3 font-mono">{problem.tableData.t2.init}</td>
-                <td className="p-3 font-mono">{problem.tableData.t3.init}</td>
-              </tr>
-              <tr className="bg-blue-50/20">
-                <td className="p-3 text-left font-black text-slate-800 bg-slate-50/50">Net Titre (cm³)</td>
-                <td className="p-2">
-                  <input type="number" step="any" value={tableTitres.rough} onChange={(e) => setTableTitres({...tableTitres, rough: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm" placeholder="0.00" disabled={tableVerified} />
-                </td>
-                <td className="p-2">
-                  <input type="number" step="any" value={tableTitres.t1} onChange={(e) => setTableTitres({...tableTitres, t1: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm" placeholder="0.00" disabled={tableVerified} />
-                </td>
-                <td className="p-2">
-                  <input type="number" step="any" value={tableTitres.t2} onChange={(e) => setTableTitres({...tableTitres, t2: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm" placeholder="0.00" disabled={tableVerified} />
-                </td>
-                <td className="p-2">
-                  <input type="number" step="any" value={tableTitres.t3} onChange={(e) => setTableTitres({...tableTitres, t3: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm" placeholder="0.00" disabled={tableVerified} />
-                </td>
-              </tr>
-              <tr>
-                <td className="p-3 text-left bg-slate-50/50">Concordant? (Tick)</td>
-                <td className="p-3 text-slate-300 text-[10px] italic">N/A</td>
-                <td className="p-3">
-                  <input type="checkbox" checked={concordantSelections.t1} onChange={(e) => setConcordantSelections({...concordantSelections, t1: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
-                </td>
-                <td className="p-3">
-                  <input type="checkbox" checked={concordantSelections.t2} onChange={(e) => setConcordantSelections({...concordantSelections, t2: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
-                </td>
-                <td className="p-3">
-                  <input type="checkbox" checked={concordantSelections.t3} onChange={(e) => setConcordantSelections({...concordantSelections, t3: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="w-full overflow-x-auto pb-1">
+            <table className="w-full min-w-[520px] text-center text-xs font-bold border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
+                  <th className="p-3 text-left">Burette Readings</th>
+                  <th className="p-3 bg-amber-50/40 text-amber-800">Rough</th>
+                  <th className="p-3">Titre 1</th>
+                  <th className="p-3">Titre 2</th>
+                  {problem.tableData.hasT3 && <th className="p-3 text-blue-800 bg-blue-50/30">Titre 3</th>}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tr>
+                  <td className="p-3 text-left bg-slate-50/50">Final Volume (cm³)</td>
+                  <td className="p-3 font-mono bg-amber-50/10 text-amber-900">{problem.tableData.rough.final}</td>
+                  <td className="p-3 font-mono">{problem.tableData.t1.final}</td>
+                  <td className="p-3 font-mono">{problem.tableData.t2.final}</td>
+                  {problem.tableData.hasT3 && <td className="p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.final}</td>}
+                </tr>
+                <tr>
+                  <td className="p-3 text-left bg-slate-50/50">Initial Volume (cm³)</td>
+                  <td className="p-3 font-mono bg-amber-50/10 text-amber-900">{problem.tableData.rough.init}</td>
+                  <td className="p-3 font-mono">{problem.tableData.t1.init}</td>
+                  <td className="p-3 font-mono">{problem.tableData.t2.init}</td>
+                  {problem.tableData.hasT3 && <td className="p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.init}</td>}
+                </tr>
+                <tr className="bg-blue-50/10">
+                  <td className="p-3 text-left font-black text-slate-800 bg-slate-50/50">Net Titre (cm³)</td>
+                  <td className="p-2 bg-amber-50/20">
+                    <input type="number" step="any" value={tableTitres.rough} onChange={(e) => setTableTitres({...tableTitres, rough: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white" placeholder="0.00" disabled={tableVerified} />
+                  </td>
+                  <td className="p-2">
+                    <input type="number" step="any" value={tableTitres.t1} onChange={(e) => setTableTitres({...tableTitres, t1: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white" placeholder="0.00" disabled={tableVerified} />
+                  </td>
+                  <td className="p-2">
+                    <input type="number" step="any" value={tableTitres.t2} onChange={(e) => setTableTitres({...tableTitres, t2: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white" placeholder="0.00" disabled={tableVerified} />
+                  </td>
+                  {problem.tableData.hasT3 && (
+                    <td className="p-2 bg-blue-50/20">
+                      <input type="number" step="any" value={tableTitres.t3} onChange={(e) => setTableTitres({...tableTitres, t3: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white" placeholder="0.00" disabled={tableVerified} />
+                    </td>
+                  )}
+                </tr>
+                <tr>
+                  <td className="p-3 text-left bg-slate-50/50">Concordant? (Tick)</td>
+                  <td className="p-3 bg-amber-50/10">
+                    <input type="checkbox" checked={concordantSelections.rough} onChange={(e) => setConcordantSelections({...concordantSelections, rough: e.target.checked})} className="w-4 h-4 accent-amber-600" disabled={tableVerified} />
+                  </td>
+                  <td className="p-3">
+                    <input type="checkbox" checked={concordantSelections.t1} onChange={(e) => setConcordantSelections({...concordantSelections, t1: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
+                  </td>
+                  <td className="p-3">
+                    <input type="checkbox" checked={concordantSelections.t2} onChange={(e) => setConcordantSelections({...concordantSelections, t2: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
+                  </td>
+                  {problem.tableData.hasT3 && (
+                    <td className="p-3 bg-blue-50/10">
+                      <input type="checkbox" checked={concordantSelections.t3} onChange={(e) => setConcordantSelections({...concordantSelections, t3: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
+                    </td>
+                  )}
+                </tr>
+              </tbody>
+            </table>
+          </div>
           
           <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2 whitespace-nowrap">
@@ -341,7 +477,7 @@ const AcidBaseTitration = () => {
             </button>
           </div>
           {tableFeedback.message && (
-            <div className={`text-center p-2 text-xs font-bold border-t ${tableFeedback.status === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>{tableFeedback.message}</div>
+            <div className={`text-center p-3 text-xs font-bold border-t leading-normal ${tableFeedback.status === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>{tableFeedback.message}</div>
           )}
         </div>
       )}
@@ -358,7 +494,7 @@ const AcidBaseTitration = () => {
         >
           <label className="text-sm font-black text-slate-600 select-none" style={{ textTransform: 'none' }}>{problem.label}</label>
           <input 
-            type="number" 
+            type={mode === 'read_burette' ? "text" : "number"} 
             step="any"
             className={`chem-input ${feedback.status}`}
             value={studentAnswer}
