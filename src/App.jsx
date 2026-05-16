@@ -18,7 +18,7 @@ function App() {
   const [isDataBookletOpen, setIsDataBookletOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Registry of all applets with custom descriptions for the structured grid layout
+  // ARRANGED BY SUBDIVISION: Keeping 1.1 before 1.2, and 3.1 -> 3.4 -> 3.5 -> 3.9
   const applets = [
     { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.' },
     { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.' },
@@ -31,8 +31,8 @@ function App() {
     { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' }
   ];
 
-  // Map array containing explicit WJEC syllabus structures to order the interface rows
-  const units = ['Unit 1.1', 'Unit 1.2', 'Unit 3.1', 'Unit 3.4', 'Unit 3.5', 'Unit 3.9'];
+  // WHOLE NUMBERS ONLY: Main dashboard headings
+  const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
 
   const handleNav = (id) => {
     setCurrentApplet(id);
@@ -51,7 +51,7 @@ function App() {
             <HeaderBrand />
           </button>
 
-          {/* Desktop Navigation Dropdown (Replaces horizontal row to avoid text collision) */}
+          {/* Desktop Dropdown Navigation */}
           <nav className="hidden md:flex items-center gap-2 shrink-0">
             <button 
               onClick={() => handleNav('dashboard')}
@@ -140,17 +140,18 @@ function App() {
               Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
             </p>
 
-            {/* Loop through specific syllabus units sequentially */}
+            {/* Loop through main whole-number units sequentially */}
             <div className="w-full max-w-5xl mx-auto text-left space-y-10">
-              {units.map(unitRow => {
-                const filteredApplets = applets.filter(a => a.unit === unitRow);
+              {mainUnits.map(unitRow => {
+                // Captures anything matching "Unit 1" (like 1.1, 1.2) while maintaining subdivision placement order
+                const filteredApplets = applets.filter(a => a.unit.startsWith(unitRow));
                 if (filteredApplets.length === 0) return null;
 
                 return (
                   <div key={unitRow} className="animate-fade-in">
                     <div className="border-b-2 border-slate-200 pb-2 mb-5 flex items-center gap-3">
-                      <span className="bg-slate-800 text-white text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider shadow-sm uppercase">{unitRow}</span>
-                      <h2 className="text-sm font-extrabold text-slate-500 tracking-wide uppercase">Practice Modules</h2>
+                      <span className="bg-slate-800 text-white text-xs font-black px-3 py-1 rounded-md tracking-wider shadow-sm uppercase">{unitRow}</span>
+                      <h2 className="text-sm font-extrabold text-slate-500 tracking-wide uppercase">Core Specification Modules</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -165,7 +166,7 @@ function App() {
                               <div className="w-10 h-10 bg-slate-50 text-[#326fa0] rounded-xl flex items-center justify-center text-2xl group-hover:bg-[#326fa0] group-hover:text-white transition-colors">
                                 {app.icon}
                               </div>
-                              <span className="text-[10px] text-slate-400 font-bold opacity-0 group-hover:opacity-100 group-hover:text-[#326fa0] transition-all">Launch →</span>
+                              <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all uppercase tracking-wider">{app.unit}</span>
                             </div>
                             <div className="font-black text-base text-slate-800 leading-snug mb-1 group-hover:text-[#326fa0] transition-colors line-clamp-1">
                               {app.label}
