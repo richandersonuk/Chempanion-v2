@@ -13,6 +13,8 @@ import IdealGas from './IdealGas';
 import FormulasFromIons from './FormulasFromIons';
 import ReactionRates from './ReactionRates';
 import FormulasFromName from './FormulasFromName'; 
+import KcCalculations from './KcCalculations';
+import KpCalculations from './KpCalculations';
 
 function App() {
   const [currentApplet, setCurrentApplet] = useState('dashboard');
@@ -27,6 +29,8 @@ function App() {
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '⚡', desc: 'Analyze ratio pathways for complex transition elements.' },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.' },
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.' },
+    { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.' },
+    { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.' },
     { id: 'acids', label: 'pH & Weak Acids', short: 'pH Acids', unit: 'Unit 3.9', icon: '🍋', desc: 'Determine Ka, pKa, and hydrogen ion parameters.' },
     { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' }
   ];
@@ -39,7 +43,7 @@ function App() {
     window.scrollTo(0, 0);
   };
 
-  // --- NEW CENTRAL FIX: AUTOMATIC SMOOTH SCROLL TO FEEDBACK ---
+  // --- CENTRAL FIX: AUTOMATIC SMOOTH SCROLL TO FEEDBACK ---
   React.useEffect(() => {
     if (currentApplet === 'dashboard') return;
 
@@ -61,14 +65,12 @@ function App() {
     return () => observer.disconnect();
   }, [currentApplet]);
 
-
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       
       {/* --- STICKY HEADER NAVIGATION --- */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          
           <button onClick={() => handleNav('dashboard')} className="hover:opacity-80 transition-opacity shrink min-w-0 text-left">
             <HeaderBrand />
           </button>
@@ -157,8 +159,7 @@ function App() {
             
             {/* --- RESPONSIVE HERO CONTAINER --- */}
             <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm">
-              
-              {/* Left Column: Centered & Enlarged Logo Panel */}
+              {/* Left Column: Centered Logo Panel */}
               <div className="col-span-1 md:col-span-5 flex flex-col items-center justify-center text-center border-b border-slate-100 pb-4 md:pb-0 md:border-b-0 md:border-r md:border-slate-100 md:pr-4">
                 <div className="w-44 md:w-56 transition-all duration-200">
                   <Logo className="w-full h-auto object-contain" />
@@ -175,28 +176,24 @@ function App() {
                     <span className="text-sm">✨</span>
                     <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform About & Updates</h3>
                   </div>
-                  
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
                     Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
                   </p>
-                  
                   <p className="text-slate-400 font-medium text-xs leading-relaxed mb-4">
                     CHEMpanion generates unlimited custom calculation problem variants to help students master challenging A-Level numerical chemistry methods.
                   </p>
                 </div>
-                
                 <div className="border-t border-slate-200/80 pt-3">
                   <span className="text-[9px] font-extrabold bg-blue-50 text-[#326fa0] px-2 py-0.5 rounded uppercase tracking-wider mb-2 inline-block">Newest Addition</span>
                   <div className="flex items-start gap-2.5 text-xs text-slate-500">
-                    <span className="mt-0.5 text-sm">⏱️</span>
+                    <span className="mt-0.5 text-sm">🧪</span>
                     <div>
-                      <strong className="text-slate-700 font-bold block">Unit 3.5: Reaction Rates Module Live</strong>
-                      Deduce reaction orders from chemical initial rates data tables and practice complete Arrhenius equation rearrangements.
+                      <strong className="text-slate-700 font-bold block">Unit 3.8: Kc & Kp Equilibrium Constants Active</strong>
+                      Practice complete gaseous partial pressures expansions, mole fraction tracking, and ICE table matrix operations.
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
 
             {/* Loop through main whole-number units sequentially */}
@@ -266,6 +263,8 @@ function App() {
           {currentApplet === 'acids' && <AcidsAndBases />}
           {currentApplet === 'buffers' && <BufferSolutions />}
           {currentApplet === 'rates' && <ReactionRates />}
+          {currentApplet === 'kc-calc' && <KcCalculations />}
+          {currentApplet === 'kp-calc' && <KpCalculations />}
         </div>
       </main>
 

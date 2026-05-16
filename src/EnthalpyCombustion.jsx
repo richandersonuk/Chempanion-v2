@@ -31,7 +31,7 @@ const EnthalpyCombustion = () => {
     const tempRise = (Math.random() * 15 + 10).toFixed(1); // 10-25 C
     const massBurned = (Math.random() * 0.5 + 0.5).toFixed(2); // 0.5-1.0g
     
-    // Q = mcΔT
+    // Q = mcΔT (c = 4.18 J g⁻¹ °C⁻¹)
     const q_joules = massWater * 4.18 * parseFloat(tempRise);
     // n = m / Mr
     const moles = parseFloat(massBurned) / fuel.mr;
@@ -97,7 +97,7 @@ const EnthalpyCombustion = () => {
     } else {
       setFeedback({ 
         type: 'error', 
-        message: 'Incorrect. Remember to calculate energy transferred to water (mcΔT), convert Joules to kJ, then divide by total moles of alcohol fuel consumed.' 
+        message: 'Incorrect. Calculate the energy transferred to the water (mcΔT), convert Joules to kJ, then divide by the total moles of alcohol fuel consumed.' 
       });
     }
   };
@@ -110,40 +110,15 @@ const EnthalpyCombustion = () => {
     <div className="applet-container">
       <div className="applet-header">Enthalpy of Combustion</div>
 
-      {/* --- REFACTORED LABORATORY QUESTION INTRO --- */}
-      <div className="question-text text-center">
-        <p className="mb-4">
+      {/* --- LABORATORY QUESTION INTRO --- */}
+      <div className="question-text text-center mb-4">
+        <p>
           A student configures a copper calorimetry system to establish the empirical enthalpy changes of straight-chain alcohols.<br />
           The apparatus is initialized with a beaker containing <b>{problem.massWater} g</b> of water directly above a spirit burner filled with <b>{problem.fuel.name}</b> ({problem.fuel.formula}).
         </p>
-        
-        {/* DATA METRIC NOTEBOOK DISPLAY PANEL */}
-        <div className="w-full max-w-md mx-auto grid grid-cols-2 gap-3 bg-slate-100 border border-slate-200 p-3 rounded-2xl mb-2">
-          <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm">
-            <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Mass of Fuel Burned</span>
-            {simCompleted ? (
-              <span className="text-base font-black text-slate-800">{problem.massBurned} g</span>
-            ) : (
-              <span className="text-xs font-bold text-amber-600 animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200/40 inline-block">Awaiting Lab Run</span>
-            )}
-          </div>
-          
-          <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm">
-            <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Temperature Rise (ΔT)</span>
-            {simCompleted ? (
-              <span className="text-base font-black text-slate-800">+{problem.tempRise} °C</span>
-            ) : (
-              <span className="text-xs font-bold text-amber-600 animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200/40 inline-block">Awaiting Lab Run</span>
-            )}
-          </div>
-        </div>
-
-        <p className="text-[11px] italic text-slate-400">
-          (Specific heat capacity of water, c = 4.18 J g⁻¹ °C⁻¹)
-        </p>
       </div>
 
-      {/* --- SIMULATION CANVAS BOX --- */}
+      {/* --- SIMULATION CANVAS BOX (Sits directly underneath intro text) --- */}
       <div className="w-full max-w-sm mx-auto bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 mb-6 flex flex-col items-center shadow-inner relative overflow-hidden">
         <svg viewBox="0 0 200 180" className="w-48 h-auto select-none">
           <style>{`
@@ -182,7 +157,7 @@ const EnthalpyCombustion = () => {
           <rect x="115" y="15" width="8" height="70" rx="4" fill="#ffffff" stroke="#475569" strokeWidth="2" />
           <circle cx="119" cy="85" r="7" fill="#ffffff" stroke="#475569" strokeWidth="2" />
           
-          {/* Mercury / Alcohol fluid gauge adjustments */}
+          {/* Fluid gauge adjustments */}
           <rect x="117.5" y={85 - thermPercent * 0.7} width="3" height={thermPercent * 0.7} fill="#ef4444" />
           <circle cx="119" cy="85" r="5" fill="#ef4444" />
 
@@ -223,6 +198,27 @@ const EnthalpyCombustion = () => {
         >
           {simCompleted ? 'Data Harvested ✓' : isSimulating ? 'Combusting Alcohol...' : 'Run Simulation 🧪'}
         </button>
+      </div>
+
+      {/* --- DATA METRIC NOTEBOOK DISPLAY PANEL (Sits below simulation card) --- */}
+      <div className="w-full max-w-md mx-auto grid grid-cols-2 gap-3 bg-slate-100 border border-slate-200 p-3 rounded-2xl mb-6">
+        <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm text-center">
+          <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Mass of Fuel Burned</span>
+          {simCompleted ? (
+            <span className="text-base font-black text-slate-800">{problem.massBurned} g</span>
+          ) : (
+            <span className="text-xs font-bold text-amber-600 animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200/40 inline-block">Awaiting Lab Run</span>
+          )}
+        </div>
+        
+        <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm text-center">
+          <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Temperature Rise (ΔT)</span>
+          {simCompleted ? (
+            <span className="text-base font-black text-slate-800">+{problem.tempRise} °C</span>
+          ) : (
+            <span className="text-xs font-bold text-amber-600 animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200/40 inline-block">Awaiting Lab Run</span>
+          )}
+        </div>
       </div>
 
       {/* --- CONDITIONALLY RENDERED INTERACTIVE CALCULATION HOOKS --- */}
