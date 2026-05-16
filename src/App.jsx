@@ -39,6 +39,29 @@ function App() {
     window.scrollTo(0, 0);
   };
 
+  // --- NEW CENTRAL FIX: AUTOMATIC SMOOTH SCROLL TO FEEDBACK ---
+  React.useEffect(() => {
+    if (currentApplet === 'dashboard') return;
+
+    // Watch the DOM for the exact moment a feedback box appears
+    const observer = new MutationObserver(() => {
+      const feedbackEl = document.querySelector('.feedback-box');
+      if (feedbackEl) {
+        feedbackEl.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'nearest' // Keeps it clean without fighting mobile keyboards
+        });
+      }
+    });
+
+    // Start listening across the entire active viewport area
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    // Clean up the listener when navigating away
+    return () => observer.disconnect();
+  }, [currentApplet]);
+
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       
