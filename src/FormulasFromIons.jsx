@@ -114,27 +114,36 @@ const FormulasFromIons = () => {
   return (
     <div className="applet-container">
       
-      {/* --- REFACTORED COMPONENT MODE SELECTION GRID --- */}
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="chem-choice-label">Choose Practice Mode</span>
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { id: 'simple', label: 'Simple' },
-            { id: 'transition', label: 'Transition' },
-            { id: 'polyatomic', label: 'Polyatomic' },
-            { id: 'random', label: 'Random' }
-          ].map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => { setMode(m.id); generateProblem(m.id); }}
-              className={`chem-choice-btn ${mode === m.id ? 'active' : ''} text-center text-xs py-2 px-1`}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* --- COMPACT DROPDOWN + RANDOM LAYOUT --- */}
+<div className="w-full max-w-md mx-auto mb-6 px-4">
+  <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+    Choose Practice Mode
+  </span>
+  <div className="flex items-center gap-2">
+    <select
+      value={mode === 'random' ? '' : mode}
+      onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
+      className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm"
+    >
+      <option value="simple">Simple Ionic Balancing</option>
+      <option value="transition">Transition Element Complexes</option>
+      <option value="polyatomic">Polyatomic Ion Groupings</option>
+    </select>
+    
+    <button
+      type="button"
+      onClick={() => { setMode('random'); generateProblem('random'); }}
+      className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
+        mode === 'random'
+          ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
+          : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+      }`}
+    >
+      Random 🎲
+    </button>
+  </div>
+</div>
+
 
       <div className="applet-header">Formulas from Ions</div>
 
