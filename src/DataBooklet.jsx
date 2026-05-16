@@ -118,7 +118,7 @@ const ZoomablePeriodicTable = () => {
                 <span className="text-[10px] font-bold text-slate-700 leading-none">{el.m}</span>
                 <span className="text-2xl font-black text-slate-900 leading-none">{el.s}</span>
                 <span className={`uppercase text-slate-500 font-bold text-center leading-tight overflow-hidden ${el.n.length > 10 ? 'text-[5.5px]' : 'text-[7px]'}`}>{el.n}</span>
-                <span className="text-[10px] font-bold text-slate-500 leading-none">{el.z}</span>
+                <span className="text-[10px] font-bold text-slate-500,- none">{el.z}</span>
               </div>
             ))}
           </div>
@@ -133,13 +133,14 @@ const DataBooklet = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  // Added flat textLabel keys for flawless mobile select option support
   const tabs = [
-    { id: 'constants', label: 'Constants' },
-    { id: 'units', label: 'Units' },
-    { id: 'periodic', label: 'Periodic Table' },
-    { id: 'IR', label: 'IR Absorptions' },
-    { id: '13C', label: <span><sup>13</sup>C NMR</span> },
-    { id: '1H', label: <span><sup>1</sup>H NMR</span> }
+    { id: 'constants', label: 'Constants', textLabel: 'Constants' },
+    { id: 'units', label: 'Units', textLabel: 'Units' },
+    { id: 'periodic', label: 'Periodic Table', textLabel: 'Periodic Table' },
+    { id: 'IR', label: 'IR Absorptions', textLabel: 'IR Absorptions' },
+    { id: '13C', label: <span><sup>13</sup>C NMR</span>, textLabel: '13C NMR Shifts' },
+    { id: '1H', label: <span><sup>1</sup>H NMR</span>, textLabel: '1H NMR Shifts' }
   ];
 
   const constants = [
@@ -228,21 +229,22 @@ const DataBooklet = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          {/* --- HOUSESTYLE: COMPACT MOBILE MATRIX TOUCH GRID --- */}
-          <div className="lg:hidden py-3 px-2 bg-white">
-            <span className="chem-choice-label text-center">Select Data Section</span>
-            <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+          {/* --- REVERTED BACK: MOBILE OPTIMIZED STYLED DROPDOWN --- */}
+          <div className="lg:hidden py-3 px-4 bg-white border-b border-slate-100">
+            <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+              Select Data Section
+            </span>
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="w-full max-w-md mx-auto block bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
+            >
               {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`chem-choice-btn text-center text-xs py-2 px-1 ${activeTab === tab.id ? 'active' : ''}`}
-                >
-                  {tab.label}
-                </button>
+                <option key={tab.id} value={tab.id}>
+                  {tab.textLabel}
+                </option>
               ))}
-            </div>
+            </select>
           </div>
 
         </div>
