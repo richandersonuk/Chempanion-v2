@@ -118,7 +118,7 @@ const EmpiricalFormula = () => {
         Determine the complete <b>{mode === 'empirical' ? 'Empirical' : 'Molecular'} formula</b> for this system compound.
       </div>
 
-      <FormulaInput value={studentAnswer} onChange={setStudentAnswer} status={feedback.status} placeholder="e.g. C₆H₁₂O₆" onKeyDown={(e) => e.key === 'Enter' && checkAnswer()} />
+      <FormulaInput value={studentAnswer} onChange={setStudentAnswer} status={feedback.status} placeholder="e.g. CH₂O" onKeyDown={(e) => e.key === 'Enter' && checkAnswer()} />
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
