@@ -331,8 +331,8 @@ const ThermometricTitration = () => {
             ))}
 
             {/* Plotted Trend Lines */}
-            <line x1={getX(0)} y1={getY(tStart)} x2={getX(endpointVol)} y2={getY(tMax)} stroke="#326fa0" strokeWidth="2" strokeDasharray="3 1.5" />
-            <line x1={getX(endpointVol)} y1={getY(tMax)} x2={getX(50)} y2={getY(tEnd)} stroke="#e11d48" strokeWidth="2" strokeDasharray="3 1.5" />
+            <line x1={getX(0)} y1={getY(tStart)} x2={getX(endpointVol)} y2={getY(tMax)} stroke="#e11d48" strokeWidth="2" strokeDasharray="3 1.5" />
+            <line x1={getX(endpointVol)} y1={getY(tMax)} x2={getX(50)} y2={getY(tEnd)} stroke="#326fa0" strokeWidth="2" strokeDasharray="3 1.5" />
 
             {/* 2D Crosshair Cursor Tracker with Proximity Fade Curves */}
             <line 
