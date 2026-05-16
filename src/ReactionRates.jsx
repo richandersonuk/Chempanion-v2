@@ -19,7 +19,6 @@ const ReactionRates = () => {
       const concB = (0.20 + Math.random() * 0.20).toFixed(2);
       const kVal = (0.5 + Math.random() * 2.5).toFixed(2);
       
-      // Rate = k * [A] * [B]^2
       const rate = parseFloat(kVal) * parseFloat(concA) * Math.pow(parseFloat(concB), 2);
       
       newProb = {
@@ -40,7 +39,7 @@ const ReactionRates = () => {
         hasUnits: true
       };
     } else if (targetMode === 'determine_order') {
-      const order = Math.floor(Math.random() * 3); // 0, 1, or 2
+      const order = Math.floor(Math.random() * 3);
       const baseRate = 0.0012;
       const rate2 = order === 0 ? baseRate : (order === 1 ? baseRate * 2 : baseRate * 4);
 
@@ -175,31 +174,47 @@ const ReactionRates = () => {
       </div>
 
       {/* INPUT INTERFACE */}
-      <div className="input-group">
-        <span style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>{problem.label}</span>
-        <input 
-          type="number" 
-          className={`chem-input ${feedback.status}`}
-          value={studentAnswer}
-          onChange={(e) => setStudentAnswer(e.target.value)}
-          placeholder="0.00"
-          style={{ maxWidth: '10rem' }}
-        />
-
-        {problem.hasUnits ? (
-          <select 
-            value={studentUnit} 
-            onChange={(e) => setStudentUnit(e.target.value)}
+      <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto mb-6">
+        <div className="flex items-center justify-center w-full">
+          <span style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>{problem.label}</span>
+          <input 
+            type="number" 
             className={`chem-input ${feedback.status}`}
-            style={{ width: 'auto', marginLeft: '0.5rem' }}
-          >
-            <option value="">-- Select Units --</option>
-            <option value="s-1">s⁻¹</option>
-            <option value="mol-1 dm3 s-1">mol⁻¹ dm³ s⁻¹</option>
-            <option value="mol-2 dm6 s-1">mol⁻² dm⁶ s⁻¹</option>
-          </select>
-        ) : (
-          <span style={{ marginLeft: '0.5rem' }}>{problem.unit}</span>
+            value={studentAnswer}
+            onChange={(e) => setStudentAnswer(e.target.value)}
+            placeholder="0.00"
+            style={{ maxWidth: '12rem', textAlign: 'center' }}
+          />
+          {!problem.hasUnits && <span style={{ marginLeft: '0.5rem', fontWeight: 'bold' }}>{problem.unit}</span>}
+        </div>
+
+        {/* HIGH VISIBILITY UNIT TABS (Replaces the broken native dropdown) */}
+        {problem.hasUnits && (
+          <div className="w-full text-center mt-2">
+            <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+              Select Units
+            </span>
+            <div className="flex flex-col gap-2 w-full px-4">
+              {[
+                { id: 's-1', display: <>s<sup>-1</sup></> },
+                { id: 'mol-1 dm3 s-1', display: <>mol<sup>-1</sup> dm<sup>3</sup> s<sup>-1</sup></> },
+                { id: 'mol-2 dm6 s-1', display: <>mol<sup>-2</sup> dm<sup>6</sup> s<sup>-1</sup></> }
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setStudentUnit(opt.id)}
+                  className={`w-full py-2.5 px-4 text-xs font-bold rounded-xl border transition-all duration-150 ${
+                    studentUnit === opt.id
+                      ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm scale-[1.01]'
+                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {opt.display}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
