@@ -11,7 +11,7 @@ const ReactionRates = () => {
     const modes = ['calculate_k', 'determine_order', 'arrhenius'];
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
-
+    setMode(targetMode);
     let newProb = {};
 
     if (targetMode === 'calculate_k') {

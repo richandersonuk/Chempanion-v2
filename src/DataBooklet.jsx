@@ -36,11 +36,11 @@ const ZoomablePeriodicTable = () => {
     { z: 11, s: 'Na', n: 'sodium', m: '23.0', c: 1, r: 3 }, { z: 12, s: 'Mg', n: 'magnesium', m: '24.3', c: 2, r: 3 },
     { z: 13, s: 'Al', n: 'aluminium', m: '27.0', c: 13, r: 3 }, { z: 14, s: 'Si', n: 'silicon', m: '28.1', c: 14, r: 3 }, { z: 15, s: 'P', n: 'phosphorus', m: '31.0', c: 15, r: 3 }, { z: 16, s: 'S', n: 'sulfur', m: '32.1', c: 16, r: 3 }, { z: 17, s: 'Cl', n: 'chlorine', m: '35.5', c: 17, r: 3 }, { z: 18, s: 'Ar', n: 'argon', m: '39.9', c: 18, r: 3 },
     { z: 19, s: 'K', n: 'potassium', m: '39.1', c: 1, r: 4 }, { z: 20, s: 'Ca', n: 'calcium', m: '40.1', c: 2, r: 4 },
-    { z: 21, s: 'Sc', n: 'scandium', m: '45.0', c: 3, r: 4 }, { z: 22, s: 'Ti', n: 'titanium', m: '47.9', c: 4, r: 4 }, { z: 23, s: 'V', n: 'vanadium', m: '50.9', c: 5, r: 4 }, { z: 24, s: 'Cr', n: 'chromium', m: '52.0', c: 6, r: 4 }, { z: 25, s: 'Mn', n: 'manganese', m: '54.9', c: 7, r: 4 }, { z: 26, s: 'Fe', n: 'iron', m: '55.8', c: 8, r: 4 }, { z: 27, s: 'Co', n: 'cobalt', m: '58.9', c: 9, r: 4 }, { z: 28, s: 'Ni', n: 'nickel', m: '58.7', c: 10, r: 4 }, { z: 29, s: 'Cu', n: 'copper', m: '63.5', c: 11, r: 4 }, { z: 30, s: 'Zn', n: 'zinc', m: '65.4', c: 12, r: 4 },
+    { z: 21, s: 'Sc', n: 'scandium', m: '45.0', c: 3, r: 4 }, { z: 22, s: 'Ti', n: 'titanium', m: '47.9', c: 4, r: 4 }, { z: 23, s: 'V', n: 'vanadium', m: '50.9', strokeWidth: '2', c: 5, r: 4 }, { z: 24, s: 'Cr', n: 'chromium', m: '52.0', c: 6, r: 4 }, { z: 25, s: 'Mn', n: 'manganese', m: '54.9', c: 7, r: 4 }, { z: 26, s: 'Fe', n: 'iron', m: '55.8', c: 8, r: 4 }, { z: 27, s: 'Co', n: 'cobalt', m: '58.9', c: 9, r: 4 }, { z: 28, s: 'Ni', n: 'nickel', m: '58.7', c: 10, r: 4 }, { z: 29, s: 'Cu', n: 'copper', m: '63.5', c: 11, r: 4 }, { z: 30, s: 'Zn', n: 'zinc', m: '65.4', c: 12, r: 4 },
     { z: 31, s: 'Ga', n: 'gallium', m: '69.7', c: 13, r: 4 }, { z: 32, s: 'Ge', n: 'germanium', m: '72.6', c: 14, r: 4 }, { z: 33, s: 'As', n: 'arsenic', m: '74.9', c: 15, r: 4 }, { z: 34, s: 'Se', n: 'selenium', m: '79.0', c: 16, r: 4 }, { z: 35, s: 'Br', n: 'bromine', m: '79.9', c: 17, r: 4 }, { z: 36, s: 'Kr', n: 'krypton', m: '83.8', c: 18, r: 4 },
     { z: 37, s: 'Rb', n: 'rubidium', m: '85.5', c: 1, r: 5 }, { z: 38, s: 'Sr', n: 'strontium', m: '87.6', c: 2, r: 5 },
     { z: 39, s: 'Y', n: 'yttrium', m: '88.9', c: 3, r: 5 }, { z: 40, s: 'Zr', n: 'zirconium', m: '91.2', c: 4, r: 5 }, { z: 41, s: 'Nb', n: 'niobium', m: '92.9', c: 5, r: 5 }, { z: 42, s: 'Mo', n: 'molybdenum', m: '95.9', c: 6, r: 5 }, { z: 43, s: 'Tc', n: 'technetium', m: '', c: 7, r: 5 }, { z: 44, s: 'Ru', n: 'ruthenium', m: '101.1', c: 8, r: 5 }, { z: 45, s: 'Rh', n: 'rhodium', m: '102.9', c: 9, r: 5 }, { z: 46, s: 'Pd', n: 'palladium', m: '106.4', c: 10, r: 5 }, { z: 47, s: 'Ag', n: 'silver', m: '107.9', c: 11, r: 5 }, { z: 48, s: 'Cd', n: 'cadmium', m: '112.4', c: 12, r: 5 },
-    { z: 49, s: 'In', n: 'indium', m: '114.8', c: 13, r: 5 }, { z: 50, s: 'Sn', n: 'tin', m: '118.7', c: 14, r: 5 }, { z: 51, s: 'Sb', n: 'antimony', m: '121.8', c: 15, r: 5 }, { z: 52, s: 'Te', n: 'tellurium', m: '127.6', c: 16, r: 5 }, { z: 53, s: 'I', n: 'iodine', m: '126.9', c: 17, r: 5 }, { z: 54, s: 'Xe', n: 'xenon', m: '131.3', c: 18, r: 5 },
+    { z: 49, s: 'In', n: 'indium', m: '114.8', c: 13, r: 5 }, { z: 50, s: 'Sn', n: 'tin', m: '118.7', c: 14, r: 5 }, { z: 51, s: 'Sb', n: 'antimony', m: '121.8', c: 15, r: 5 }, { z: 52, s: 'Te', n: 'tellurium', m: '127.6', c: 16, r: 5 }, { z: 53, s: 'I', n: 'iodine', m: '126.9', c: 17, r: 5 }, { z: 54, s: 'Xe', n: 'xenon', m: '131.3', strokeWidth: '2', c: 18, r: 5 },
     { z: 55, s: 'Cs', n: 'caesium', m: '132.9', c: 1, r: 6 }, { z: 56, s: 'Ba', n: 'barium', m: '137.3', c: 2, r: 6 },
     { z: 72, s: 'Hf', n: 'hafnium', m: '178.5', c: 4, r: 6 }, { z: 73, s: 'Ta', n: 'tantalum', m: '180.9', c: 5, r: 6 }, { z: 74, s: 'W', n: 'tungsten', m: '183.8', c: 6, r: 6 }, { z: 75, s: 'Re', n: 'rhenium', m: '186.2', c: 7, r: 6 }, { z: 76, s: 'Os', n: 'osmium', m: '190.2', c: 8, r: 6 }, { z: 77, s: 'Ir', n: 'iridium', m: '192.2', c: 9, r: 6 }, { z: 78, s: 'Pt', n: 'platinum', m: '195.1', c: 10, r: 6 }, { z: 79, s: 'Au', n: 'gold', m: '197.0', c: 11, r: 6 }, { z: 80, s: 'Hg', n: 'mercury', m: '200.6', c: 12, r: 6 },
     { z: 81, s: 'Tl', n: 'thallium', m: '204.4', c: 13, r: 6 }, { z: 82, s: 'Pb', n: 'lead', m: '207.2', c: 14, r: 6 }, { z: 83, s: 'Bi', n: 'bismuth', m: '209.0', c: 15, r: 6 }, { z: 84, s: 'Po', n: 'polonium', m: '', c: 16, r: 6 }, { z: 85, s: 'At', n: 'astatine', m: '', c: 17, r: 6 }, { z: 86, s: 'Rn', n: 'radon', m: '', c: 18, r: 6 },
@@ -118,7 +118,7 @@ const ZoomablePeriodicTable = () => {
                 <span className="text-[10px] font-bold text-slate-700 leading-none">{el.m}</span>
                 <span className="text-2xl font-black text-slate-900 leading-none">{el.s}</span>
                 <span className={`uppercase text-slate-500 font-bold text-center leading-tight overflow-hidden ${el.n.length > 10 ? 'text-[5.5px]' : 'text-[7px]'}`}>{el.n}</span>
-                <span className="text-[10px] font-bold text-slate-500,- none">{el.z}</span>
+                <span className="text-[10px] font-bold text-slate-500 leading-none">{el.z}</span>
               </div>
             ))}
           </div>
@@ -130,17 +130,18 @@ const ZoomablePeriodicTable = () => {
 
 const DataBooklet = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('constants');
+  // Dynamic custom mobile disclosure toggle switch state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   if (!isOpen) return null;
 
-  // Added flat textLabel keys for flawless mobile select option support
   const tabs = [
-    { id: 'constants', label: 'Constants', textLabel: 'Constants' },
-    { id: 'units', label: 'Units', textLabel: 'Units' },
-    { id: 'periodic', label: 'Periodic Table', textLabel: 'Periodic Table' },
-    { id: 'IR', label: 'IR Absorptions', textLabel: 'IR Absorptions' },
-    { id: '13C', label: <span><sup>13</sup>C NMR</span>, textLabel: '13C NMR Shifts' },
-    { id: '1H', label: <span><sup>1</sup>H NMR</span>, textLabel: '1H NMR Shifts' }
+    { id: 'constants', label: 'Constants' },
+    { id: 'units', label: 'Units' },
+    { id: 'periodic', label: 'Periodic Table' },
+    { id: 'IR', label: 'IR Absorptions' },
+    { id: '13C', label: <span><sup>13</sup>C NMR</span> },
+    { id: '1H', label: <span><sup>1</sup>H NMR</span> }
   ];
 
   const constants = [
@@ -189,6 +190,9 @@ const DataBooklet = ({ isOpen, onClose }) => {
     { t: 'R-COOH', s: '11.0 *' }
   ];
 
+  // Resolve active tab label item configurations cleanly
+  const currentActiveTabObj = tabs.find(t => t.id === activeTab) || tabs[0];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 md:p-6 backdrop-blur-md">
       <div className="bg-white w-full max-w-5xl h-[90vh] md:h-[85vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
@@ -210,7 +214,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
         </div>
 
         {/* --- DUAL INTERACTIVE NAVIGATION SECTOR --- */}
-        <div className="border-b border-slate-200 bg-slate-50 shrink-0 px-2">
+        <div className="border-b border-slate-200 bg-slate-50 shrink-0 px-2 relative">
           
           {/* Desktop Tab Layout Bar */}
           <div className="hidden lg:flex overflow-x-auto scrollbar-hide">
@@ -229,22 +233,48 @@ const DataBooklet = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          {/* --- REVERTED BACK: MOBILE OPTIMIZED STYLED DROPDOWN --- */}
-          <div className="lg:hidden py-3 px-4 bg-white border-b border-slate-100">
+          {/* --- PREMIUM COMPACT CUSTOM HTML DROPDOWN ELEMENT --- */}
+          <div className="lg:hidden py-3 px-4 bg-white border-b border-slate-100 w-full relative">
             <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
               Select Data Section
             </span>
-            <select
-              value={activeTab}
-              onChange={(e) => setActiveTab(e.target.value)}
-              className="w-full max-w-md mx-auto block bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
+            
+            {/* Custom Dropdown Trigger Button (Parses live HTML components flawlessly) */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="w-full max-w-md mx-auto flex items-center justify-between bg-white border border-slate-200 text-slate-700 py-2.5 px-4 rounded-xl text-xs font-bold outline-none shadow-sm transition-colors hover:bg-slate-50 active:bg-slate-100"
             >
-              {tabs.map((tab) => (
-                <option key={tab.id} value={tab.id}>
-                  {tab.textLabel}
-                </option>
-              ))}
-            </select>
+              <span className="flex items-center gap-1 font-extrabold">{currentActiveTabObj.label}</span>
+              <span className="text-slate-400 transition-transform duration-200" style={{ transform: isMobileMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+            </button>
+
+            {/* Floating Live Overlay Menu Drawer Sheet */}
+            {isMobileMenuOpen && (
+              <div className="absolute left-4 right-4 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-1.5 max-w-md mx-auto max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
+                {tabs.map((tab) => {
+                  const isSelected = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-xs font-bold transition-colors flex items-center justify-between ${
+                        isSelected 
+                          ? 'bg-blue-50 text-[#326fa0] font-black' 
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1">{tab.label}</span>
+                      {isSelected && <span className="text-[#326fa0] font-black">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
         </div>

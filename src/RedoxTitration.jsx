@@ -10,7 +10,7 @@ const RedoxTitration = () => {
     const modes = ['purity_iron', 'ethanedioate', 'molar_mass'];
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
-    
+    setMode(targetMode);
     let newProblem = { title: '', text: null, question: '', label: '', correctAnswer: '', unit: '', ratio: 1 };
 
     // Common variables

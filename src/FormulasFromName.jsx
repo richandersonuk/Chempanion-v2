@@ -45,30 +45,34 @@ const FormulasFromName = () => {
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
-  // --- EXPANDED DATABASE ---
+  // --- HIGH FREQUENCY SPECIFICATION NOMENCLATURE POOL ---
   const database = [
-    // Simple Binary
+    // Simple Binary Systems (Core Group 1, 2, and 7 foundational grids)
     { name: 'Sodium chloride', formula: 'NaCl', type: 'simple' },
     { name: 'Magnesium oxide', formula: 'MgO', type: 'simple' },
     { name: 'Calcium chloride', formula: 'CaCl2', type: 'simple' },
     { name: 'Aluminium oxide', formula: 'Al2O3', type: 'simple' },
     { name: 'Lithium nitride', formula: 'Li3N', type: 'simple' },
+    { name: 'Barium chloride', formula: 'BaCl2', type: 'simple' },
 
-    // Roman Numerals
+    // Roman Numerals / Variable Oxidation States (Major Examiner Report Trap)
     { name: 'Iron(III) oxide', formula: 'Fe2O3', type: 'roman' },
-    { name: 'Copper(II) sulfate', formula: 'CuSO4', type: 'roman' },
     { name: 'Iron(II) chloride', formula: 'FeCl2', type: 'roman' },
-    { name: 'Lead(II) nitrate', formula: 'Pb(NO3)2', type: 'roman' },
-    { name: 'Manganese(IV) oxide', formula: 'MnO2', type: 'roman' },
     { name: 'Copper(I) oxide', formula: 'Cu2O', type: 'roman' },
+    { name: 'Copper(II) nitrate', formula: 'Cu(NO3)2', type: 'roman' },
+    { name: 'Manganese(IV) oxide', formula: 'MnO2', type: 'roman' },
+    { name: 'Iron(III) sulfate', formula: 'Fe2(SO4)3', type: 'roman' },
+    { name: 'Lead(II) nitrate', formula: 'Pb(NO3)2', type: 'roman' },
 
-    // Polyatomic / Complex
-    { name: 'Ammonium nitrate', formula: 'NH4NO3', type: 'complex' },
-    { name: 'Calcium hydroxide', formula: 'Ca(OH)2', type: 'complex' },
-    { name: 'Aluminium sulfate', formula: 'Al2(SO4)3', type: 'complex' },
-    { name: 'Sodium carbonate', formula: 'Na2CO3', type: 'complex' },
-    { name: 'Magnesium phosphate', formula: 'Mg3(PO4)2', type: 'complex' },
+    // Advanced Core Polyatomic & Analytical Reagents (Titration Frameworks)
     { name: 'Ammonium sulfate', formula: '(NH4)2SO4', type: 'complex' },
+    { name: 'Potassium dichromate(VI)', formula: 'K2Cr2O7', type: 'complex' },
+    { name: 'Potassium manganate(VII)', formula: 'KMnO4', type: 'complex' },
+    { name: 'Sodium thiosulfate', formula: 'Na2S2O3', type: 'complex' },
+    { name: 'Sodium ethanedioate', formula: 'Na2C2O4', type: 'complex' },
+    { name: 'Calcium phosphate', formula: 'Ca3(PO4)2', type: 'complex' },
+    { name: 'Calcium hydroxide', formula: 'Ca(OH)2', type: 'complex' },
+    { name: 'Ammonium nitrate', formula: 'NH4NO3', type: 'complex' },
   ];
 
   const normalize = (str) => {
@@ -83,6 +87,9 @@ const FormulasFromName = () => {
     const modes = ['simple', 'roman', 'complex'];
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
+
+    // Synchronize dropdown menu selection target index state on random triggers
+    setMode(targetMode);
 
     const filtered = database.filter((item) => item.type === targetMode);
     const picked = filtered[Math.floor(Math.random() * filtered.length)];
@@ -101,12 +108,12 @@ const FormulasFromName = () => {
     if (!cleanInput) return;
 
     if (cleanInput === problem.formula) {
-      setFeedback({ message: 'Correct!', status: 'success' });
+      setFeedback({ message: 'Correct systematic formula configuration!', status: 'success' });
     } else if (cleanInput.toLowerCase() === problem.formula.toLowerCase()) {
-      setFeedback({ message: 'Check your chemical symbol casing (e.g., Na, not na).', status: 'error' });
+      setFeedback({ message: 'Casing mismatch detected. Elements must use standard uppercase starts (e.g. NaCl, not nacl).', status: 'error' });
     } else {
       setFeedback({
-        message: `Incorrect. The formula is ${problem.formula}`,
+        message: `Incorrect. The balanced systematic formula is ${problem.formula}`,
         status: 'error',
       });
     }
@@ -117,40 +124,40 @@ const FormulasFromName = () => {
   return (
     <div className="applet-container">
       
-     {/* --- COMPACT DROPDOWN + RANDOM LAYOUT --- */}
-<div className="w-full max-w-md mx-auto mb-6 px-4">
-  <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-    Choose Practice Mode
-  </span>
-  <div className="flex items-center gap-2">
-    <select
-      value={mode === 'random' ? '' : mode}
-      onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-      className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm"
-    >
-      <option value="simple">Simple Binary System Names</option>
-      <option value="roman">Transition Roman Numerals</option>
-      <option value="complex">Polyatomic Ion Compounds</option>
-    </select>
-    
-    <button
-      type="button"
-      onClick={() => { setMode('random'); generateProblem('random'); }}
-      className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
-        mode === 'random'
-          ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-          : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-      }`}
-    >
-      Random 🎲
-    </button>
-  </div>
-</div>
+      {/* --- STANDARDIZED COMPACT DROPDOWN + RANDOM TOGGLE ROW --- */}
+      <div className="w-full max-w-md mx-auto mb-6 px-4">
+        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+          Choose Practice Mode
+        </span>
+        <div className="flex items-center gap-2">
+          <select
+            value={mode === 'random' ? '' : mode}
+            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
+            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
+          >
+            <option value="simple">Simple Binary Valencies</option>
+            <option value="roman">Transition Metal Oxidation States</option>
+            <option value="complex">Advanced Polyatomic Salts</option>
+          </select>
+          
+          <button
+            type="button"
+            onClick={() => { generateProblem('random'); }}
+            className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
+              mode === 'random'
+                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
+                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            Random 🎲
+          </button>
+        </div>
+      </div>
 
       <div className="applet-header">Formulas from Names</div>
 
       <div className="question-text text-center">
-        Predict the systematic chemical formula for:
+        Deduce the balanced chemical formula for:
         <div
           style={{
             fontSize: '1.6rem',
@@ -172,12 +179,8 @@ const FormulasFromName = () => {
       />
 
       <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>
-          Check Answer
-        </button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>
-          New Problem
-        </button>
+        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+        <button className="btn btn-secondary" onClick={() => generateProblem()}>New Problem</button>
       </div>
 
       {feedback.message && (

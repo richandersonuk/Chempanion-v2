@@ -10,7 +10,7 @@ const BufferSolutions = () => {
     const modes = ['acidic_buffer', 'salt_addition'];
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
-
+    setMode(targetMode);
     let newProb = {};
     const kaVal = 1.74e-5; // Ethanoic acid
 

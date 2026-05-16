@@ -21,7 +21,13 @@ const EnthalpyCombustion = () => {
 
   const generateProblem = () => {
     const fuel = fuels[Math.floor(Math.random() * fuels.length)];
-    const massWater = Math.floor(Math.random() * 100 + 100); // 100-200g
+    
+    // 50g-250g intervals with 100g weighted at 50% probability
+    const randRoll = Math.random();
+    const massWater = randRoll < 0.50 
+      ? 100 
+      : [50, 150, 200, 250][Math.floor(Math.random() * 4)];
+
     const tempRise = (Math.random() * 15 + 10).toFixed(1); // 10-25 C
     const massBurned = (Math.random() * 0.5 + 0.5).toFixed(2); // 0.5-1.0g
     
@@ -47,7 +53,6 @@ const EnthalpyCombustion = () => {
     generateProblem(); 
   }, []);
 
-  // Simulation run handler logic loop step increments
   const handleRunSimulation = () => {
     if (isSimulating || simCompleted) return;
     setIsSimulating(true);
@@ -99,28 +104,62 @@ const EnthalpyCombustion = () => {
 
   if (!problem) return null;
 
-  // Percentage height for dynamic thermometer fluid filling calculation lines
   const thermPercent = Math.min(85, 25 + ((displayTemp - 21.0) / 30) * 60);
 
   return (
     <div className="applet-container">
       <div className="applet-header">Enthalpy of Combustion</div>
 
+      {/* --- REFACTORED LABORATORY QUESTION INTRO --- */}
       <div className="question-text text-center">
-        <p>
-          In a calorimetry experiment, <b>{problem.massBurned} g</b> of <b>{problem.fuel.name}</b> ({problem.fuel.formula}) 
-          was burned in air. The energy released was used to heat <b>{problem.massWater} g</b> of water inside a copper container.
+        <p className="mb-4">
+          A student configures a copper calorimetry system to establish the empirical enthalpy changes of straight-chain alcohols.<br />
+          The apparatus is initialized with a beaker containing <b>{problem.massWater} g</b> of water directly above a spirit burner filled with <b>{problem.fuel.name}</b> ({problem.fuel.formula}).
+        </p>
+        
+        {/* DATA METRIC NOTEBOOK DISPLAY PANEL */}
+        <div className="w-full max-w-md mx-auto grid grid-cols-2 gap-3 bg-slate-100 border border-slate-200 p-3 rounded-2xl mb-2">
+          <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm">
+            <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Mass of Fuel Burned</span>
+            {simCompleted ? (
+              <span className="text-base font-black text-slate-800">{problem.massBurned} g</span>
+            ) : (
+              <span className="text-xs font-bold text-amber-600 animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200/40 inline-block">Awaiting Lab Run</span>
+            )}
+          </div>
+          
+          <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm">
+            <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Temperature Rise (ΔT)</span>
+            {simCompleted ? (
+              <span className="text-base font-black text-slate-800">+{problem.tempRise} °C</span>
+            ) : (
+              <span className="text-xs font-bold text-amber-600 animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200/40 inline-block">Awaiting Lab Run</span>
+            )}
+          </div>
+        </div>
+
+        <p className="text-[11px] italic text-slate-400">
+          (Specific heat capacity of water, c = 4.18 J g⁻¹ °C⁻¹)
         </p>
       </div>
 
-      {/* --- PREMIUM LAB EXPERIMENT SIMULATION VECTOR GRAPHICS BOX --- */}
+      {/* --- SIMULATION CANVAS BOX --- */}
       <div className="w-full max-w-sm mx-auto bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 mb-6 flex flex-col items-center shadow-inner relative overflow-hidden">
-        
         <svg viewBox="0 0 200 180" className="w-48 h-auto select-none">
-          {/* Beaker / Calorimeter Metal Wall Framework */}
+          <style>{`
+            @keyframes chemicalFlameFlicker {
+              0%, 100% { transform: scale(1) skewX(-1deg); fill: #f97316; }
+              50% { transform: scaleY(1.25) scaleX(0.9) skewX(1deg); fill: #ea580c; }
+            }
+            .chem-active-flame {
+              animation: chemicalFlameFlicker 0.15s infinite alternate ease-in-out;
+            }
+          `}</style>
+
+          {/* Beaker / Calorimeter Framework */}
           <rect x="60" y="30" width="80" height="70" rx="4" fill="none" stroke="#94a3b8" strokeWidth="3" />
           
-          {/* Water Area Fluid Base with dynamic wave color changes when heated */}
+          {/* Water Area base fill */}
           <rect 
             x="62" 
             y="45" 
@@ -130,40 +169,37 @@ const EnthalpyCombustion = () => {
             className="transition-colors duration-1000"
           />
           
-          {/* Water Ripples during combustion animation active states */}
+          {/* Active water ripples */}
           {isSimulating && (
             <path d="M62,45 Q70,42 80,45 T100,45 T120,45 T138,45" fill="none" stroke="#bae6fd" strokeWidth="2" className="animate-pulse" />
           )}
 
-          {/* Liquid content labels overlay marker text string */}
           <text x="100" y="75" textAnchor="middle" className="text-[9px] font-mono fill-slate-400 font-bold">
             {problem.massWater}g H₂O
           </text>
 
-          {/* Thermometer Glass Structure Tube */}
+          {/* Thermometer Stem */}
           <rect x="115" y="15" width="8" height="70" rx="4" fill="#ffffff" stroke="#475569" strokeWidth="2" />
           <circle cx="119" cy="85" r="7" fill="#ffffff" stroke="#475569" strokeWidth="2" />
           
-          {/* Dynamic Interactive Thermometer Red Fluid column line elements */}
+          {/* Mercury / Alcohol fluid gauge adjustments */}
           <rect x="117.5" y={85 - thermPercent * 0.7} width="3" height={thermPercent * 0.7} fill="#ef4444" />
           <circle cx="119" cy="85" r="5" fill="#ef4444" />
 
-          {/* Spirit Burner Container Body Panel Shape */}
+          {/* Spirit Burner body structure */}
           <path d="M70,145 L130,145 L120,120 L80,120 Z" fill="#cbd5e1" stroke="#475569" strokeWidth="2" />
-          {/* Burner Wick Center Line */}
           <line x1="100" y1="120" x2="100" y2="112" stroke="#334155" strokeWidth="3" />
 
-          {/* ANIMATED FLAME: Triggers visibility and dancing pulses only during simulator running intervals */}
+          {/* Absolute anchored chemical flame */}
           {isSimulating && (
             <path 
-              d="M92,112 C92,95 100,85 100,85 C100,85 108,95 108,112 C108,118 104,122 100,122 C96,122 92,118 92,112 Z" 
-              fill="#f97316" 
-              className="animate-bounce"
-              style={{ transformOrigin: '100px 120px', animationDuration: '0.6s' }}
+              d="M94,112 C92,102 100,88 100,88 C100,88 108,102 106,112 C106,115 103,117 100,117 C97,117 94,115 94,112 Z" 
+              className="chem-active-flame"
+              style={{ transformOrigin: '100px 112px' }}
             />
           )}
 
-          {/* Temperature Numeric Overlay Display Badge */}
+          {/* Temperature HUD Readout Overlay */}
           <g transform="translate(140, 25)">
             <rect x="0" y="0" width="55" height="20" rx="5" fill="#1e293b" />
             <text x="27.5" y="13" textAnchor="middle" fill="#22c55e" className="text-[10px] font-mono font-black tracking-tight">
@@ -172,7 +208,7 @@ const EnthalpyCombustion = () => {
           </g>
         </svg>
 
-        {/* Trigger Interactive Controller Button */}
+        {/* Lab Execution Controller Switcher */}
         <button
           type="button"
           onClick={handleRunSimulation}
@@ -185,29 +221,45 @@ const EnthalpyCombustion = () => {
               : 'bg-[#326fa0] text-white hover:bg-[#255580]'
           }`}
         >
-          {simCompleted ? 'Experiment Finished ✓' : isSimulating ? 'Heating Solution...' : 'Run Simulation 🧪'}
+          {simCompleted ? 'Data Harvested ✓' : isSimulating ? 'Combusting Alcohol...' : 'Run Simulation 🧪'}
         </button>
       </div>
 
-      {/* --- STANDARDIZED ACTION QUESTION BLOCK --- */}
-      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
-        The temperature of the water rose by <b>{problem.tempRise} °C</b>.<br />
-        Calculate the enthalpy of combustion for {problem.fuel.name} in kJ mol⁻¹.
-      </div>
+      {/* --- CONDITIONALLY RENDERED INTERACTIVE CALCULATION HOOKS --- */}
+      {simCompleted ? (
+        <div className="animate-fade-in w-full flex flex-col items-center">
+          <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
+            Calculate the structural enthalpy of combustion for {problem.fuel.name} in kJ mol⁻¹.
+          </div>
 
-      <ScientificInput 
-        value={coeff} 
-        exponent={exp} 
-        onValueChange={setCoeff} 
-        onExponentChange={setExp}
-        label="ΔH ="
-        status={feedback.type}
-      />
+          <ScientificInput 
+            value={coeff} 
+            exponent={exp} 
+            onValueChange={setCoeff} 
+            onExponentChange={setExp}
+            label="ΔH ="
+            status={feedback.type}
+          />
 
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={generateProblem}>New Problem</button>
-      </div>
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+            <button className="btn btn-secondary" onClick={generateProblem}>New Problem</button>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full flex flex-col items-center">
+          <div className="w-full max-w-sm text-center p-4 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold rounded-xl shadow-sm mb-4">
+            🔒 Laboratory measurements locked. Ignite the burner using the control switch above to acquire the data metrics.
+          </div>
+          <button 
+            type="button"
+            onClick={generateProblem}
+            className="w-full max-w-[12rem] bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold py-2 rounded-xl text-xs transition-colors"
+          >
+            Skip to Next Setup
+          </button>
+        </div>
+      )}
 
       {feedback.message && (
         <div className={`feedback-box ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
