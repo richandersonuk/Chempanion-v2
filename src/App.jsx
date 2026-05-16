@@ -15,6 +15,9 @@ import ReactionRates from './ReactionRates';
 import FormulasFromName from './FormulasFromName'; 
 import KcCalculations from './KcCalculations';
 import KpCalculations from './KpCalculations';
+import EntropyGibbs from './EntropyGibbs';
+import CellPotentials from './CellPotentials';
+import EmpiricalFormula from './EmpiricalFormula';
 
 function App() {
   const [currentApplet, setCurrentApplet] = useState('dashboard');
@@ -24,15 +27,18 @@ function App() {
   const applets = [
     { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.' },
     { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.' },
+    { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.1', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.' },
     { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.1', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.' },
     { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.2', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.' },
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '⚡', desc: 'Analyze ratio pathways for complex transition elements.' },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.' },
+    { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.4', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.' },
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.' },
     { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.' },
     { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.' },
     { id: 'acids', label: 'pH & Weak Acids', short: 'pH Acids', unit: 'Unit 3.9', icon: '🍋', desc: 'Determine Ka, pKa, and hydrogen ion parameters.' },
-    { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' }
+    { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' },
+    { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 4.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.' }
   ];
 
   const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
@@ -47,21 +53,17 @@ function App() {
   React.useEffect(() => {
     if (currentApplet === 'dashboard') return;
 
-    // Watch the DOM for the exact moment a feedback box appears
     const observer = new MutationObserver(() => {
       const feedbackEl = document.querySelector('.feedback-box');
       if (feedbackEl) {
         feedbackEl.scrollIntoView({ 
           behavior: 'smooth', 
-          block: 'nearest' // Keeps it clean without fighting mobile keyboards
+          block: 'nearest'
         });
       }
     });
 
-    // Start listening across the entire active viewport area
     observer.observe(document.body, { childList: true, subtree: true });
-    
-    // Clean up the listener when navigating away
     return () => observer.disconnect();
   }, [currentApplet]);
 
@@ -121,7 +123,7 @@ function App() {
           </div>
         </div>
 
-        {/* --- SCROLLABLE MOBILE DROPDOWN MENU --- */}
+        {/* SCROLLABLE MOBILE DROPDOWN MENU */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-slate-100 max-h-[calc(100vh-4rem)] overflow-y-auto p-4 space-y-2 shadow-inner animate-in slide-in-from-top">
             <button
@@ -159,7 +161,6 @@ function App() {
             
             {/* --- RESPONSIVE HERO CONTAINER --- */}
             <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm">
-              {/* Left Column: Centered Logo Panel */}
               <div className="col-span-1 md:col-span-5 flex flex-col items-center justify-center text-center border-b border-slate-100 pb-4 md:pb-0 md:border-b-0 md:border-r md:border-slate-100 md:pr-4">
                 <div className="w-44 md:w-56 transition-all duration-200">
                   <Logo className="w-full h-auto object-contain" />
@@ -169,7 +170,6 @@ function App() {
                 </p>
               </div>
 
-              {/* Right Column: About & Updates Panel */}
               <div className="hidden md:flex col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -188,8 +188,8 @@ function App() {
                   <div className="flex items-start gap-2.5 text-xs text-slate-500">
                     <span className="mt-0.5 text-sm">🧪</span>
                     <div>
-                      <strong className="text-slate-700 font-bold block">Unit 3.8: Kc & Kp Equilibrium Constants Active</strong>
-                      Practice complete gaseous partial pressures expansions, mole fraction tracking, and ICE table matrix operations.
+                      <strong className="text-slate-700 font-bold block">Advanced A2 Core Calculation Engines Implemented</strong>
+                      Entropy balance, Gibbs Spontaneity feasibility thresholds, and Electrochemical cell potential calculations are now active.
                     </div>
                   </div>
                 </div>
@@ -256,15 +256,18 @@ function App() {
 
           {currentApplet === 'formulas-ions' && <FormulasFromIons />}
           {currentApplet === 'formulas-name' && <FormulasFromName />}
+          {currentApplet === 'empirical-formula' && <EmpiricalFormula />}
           {currentApplet === 'titration' && <AcidBaseTitration />}
           {currentApplet === 'idealgas' && <IdealGas />}
           {currentApplet === 'redox' && <RedoxTitration />}
           {currentApplet === 'enthalpy' && <EnthalpyCombustion />}
-          {currentApplet === 'acids' && <AcidsAndBases />}
-          {currentApplet === 'buffers' && <BufferSolutions />}
+          {currentApplet === 'entropy-gibbs' && <EntropyGibbs />}
           {currentApplet === 'rates' && <ReactionRates />}
           {currentApplet === 'kc-calc' && <KcCalculations />}
           {currentApplet === 'kp-calc' && <KpCalculations />}
+          {currentApplet === 'acids' && <AcidsAndBases />}
+          {currentApplet === 'buffers' && <BufferSolutions />}
+          {currentApplet === 'cell-potentials' && <CellPotentials />}
         </div>
       </main>
 
