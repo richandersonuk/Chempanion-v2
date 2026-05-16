@@ -179,7 +179,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
     { t: 'R-CH₃', s: '0.9' },
     { t: 'R-CH₂-R', s: '1.3' },
     { t: 'CH₃-C=O', s: '2.0 - 2.5' },
-    { t: 'CH₃-Ar', s: '2.2 - 2.3' },
+    { t: <div className="flex items-center gap-2"><span>CH<sub>3</sub>–</span><AromaticRingPlain /></div>, s: '2.2 - 2.3' },
     { t: 'R-O-CH₃', s: '3.3 - 4.3' },
     { t: 'R-OH', s: '4.5 *' },
     { t: 'C=CH', s: '4.5 - 6.3' },
@@ -228,7 +228,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          {/* --- NEW HOUSESTYLE: COMPACT MOBILE MATRIX TOUCH GRID --- */}
+          {/* --- HOUSESTYLE: COMPACT MOBILE MATRIX TOUCH GRID --- */}
           <div className="lg:hidden py-3 px-2 bg-white">
             <span className="chem-choice-label text-center">Select Data Section</span>
             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
