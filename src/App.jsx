@@ -131,28 +131,37 @@ function App() {
         {currentApplet === 'dashboard' && (
           <div className="py-2 animate-fade-in flex flex-col items-center">
             
-            {/* --- RESPONSIVE HERO CONTAINER (SPLIT ON DESKTOP, STACKED/CLEAN ON MOBILE) --- */}
-            <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm text-center md:text-left">
+            {/* --- RESPONSIVE HERO CONTAINER (RE-ALIGNED AND SCALED) --- */}
+            <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm">
               
-              {/* Left Column: Logo & Tagline */}
-              <div className="col-span-1 md:col-span-5 flex flex-col items-center md:items-start">
-                <div className="w-44 md:w-48 mb-3">
+              {/* Left Column: Centered & Enlarged Logo Panel */}
+              <div className="col-span-1 md:col-span-5 flex flex-col items-center justify-center text-center border-b border-slate-100 pb-4 md:pb-0 md:border-b-0 md:border-r md:border-slate-100 md:pr-4">
+                <div className="w-44 md:w-56 transition-all duration-200">
                   <Logo className="w-full h-auto object-contain" />
                 </div>
-                <p className="text-slate-500 text-xs md:text-sm leading-relaxed px-2 md:px-0 font-medium">
+                {/* Mobile Tagline Text Only: Preserves the mobile layout you like */}
+                <p className="text-slate-500 text-xs leading-relaxed px-2 mt-2 font-medium md:hidden">
                   Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
                 </p>
               </div>
 
-              {/* Right Column: About & Updates Panel (Desktop Only) */}
-              <div className="hidden md:block col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm">✨</span>
-                  <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform About & Updates</h3>
+              {/* Right Column: About & Updates Panel (Desktop Tagline Integrated) */}
+              <div className="hidden md:flex col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm">✨</span>
+                    <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform About & Updates</h3>
+                  </div>
+                  
+                  {/* Tagline text shifted directly here for clean desktop hierarchy */}
+                  <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
+                    Interactive calculations and randomized problem engines aligned directly with the WJEC A-Level Chemistry specification.
+                  </p>
+                  
+                  <p className="text-slate-400 font-medium text-xs leading-relaxed mb-4">
+                    CHEMpanion generates unlimited custom calculation problem variants to help students master challenging A-Level numerical chemistry methods.
+                  </p>
                 </div>
-                <p className="text-slate-400 font-medium text-xs leading-relaxed mb-4">
-                  CHEMpanion generates unlimited custom calculation problem variants to help students master challenging A-Level numerical chemistry methods.
-                </p>
                 
                 <div className="border-t border-slate-200/80 pt-3">
                   <span className="text-[9px] font-extrabold bg-blue-50 text-[#326fa0] px-2 py-0.5 rounded uppercase tracking-wider mb-2 inline-block">Newest Addition</span>
