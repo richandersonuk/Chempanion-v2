@@ -11,7 +11,6 @@ const AcidBaseTitration = () => {
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
-    // Force active tracking dropdown synchronization
     setMode(targetMode);
 
     let newProb = {};
@@ -28,21 +27,20 @@ const AcidBaseTitration = () => {
 
         newProb = {
           title: "Standard Titration (1:1 Ratio)",
-          text: <>A <b>25.0 cm³</b> sample of sodium hydroxide solution ($\text{NaOH}$) was titrated against <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid ($\text{HCl}$). The mean titre recorded was <b>{titre} cm³</b>.</>,
+          text: <>A <b>25.0 cm³</b> sample of sodium hydroxide solution (NaOH) was titrated against <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid (HCl). The mean titre recorded was <b>{titre} cm³</b>.</>,
           question: "Calculate the concentration of the sodium hydroxide solution in mol dm⁻³.",
           label: "[NaOH] =",
           unit: "mol dm⁻³",
           correct: concBase.toFixed(3)
         };
       } else {
-        // 2:1 Stoichiometry Trap (H₂SO₄ + 2NaOH)
+        // 2:1 Stoichiometry (H2SO4 + 2NaOH)
         const concAcid = parseFloat((0.025 + Math.random() * 0.05).toFixed(3));
-        // Moles base = 2 * moles acid
         const concBase = (2 * concAcid * titre) / volBase;
 
         newProb = {
           title: "Standard Titration (2:1 Ratio Trap)",
-          text: <>A <b>25.0 cm³</b> sample of sodium hydroxide solution ($\text{NaOH}$) required a mean titre of <b>{titre} cm³</b> of <b>{concAcid.toFixed(3)} mol dm⁻³</b> sulfuric acid ($\text{H₂SO₄}$) for complete neutralisation.</>,
+          text: <>A <b>25.0 cm³</b> sample of sodium hydroxide solution (NaOH) required a mean titre of <b>{titre} cm³</b> of <b>{concAcid.toFixed(3)} mol dm⁻³</b> sulfuric acid (H<sub>2</sub>SO<sub>4</sub>) for complete neutralisation.</>,
           question: "Calculate the concentration of the sodium hydroxide solution in mol dm⁻³. Watch your chemical equation stoichiometry closely!",
           label: "[NaOH] =",
           unit: "mol dm⁻³",
@@ -51,28 +49,25 @@ const AcidBaseTitration = () => {
       }
 
     } else if (targetMode === 'back_titration') {
-      // Rigorous A-Level Back Titration with Volumetric Flask Aliquot scaling steps
-      const massMarble = parseFloat((1.60 + Math.random() * 0.5).toFixed(3)); // 1.60g - 2.10g
+      const massMarble = parseFloat((1.60 + Math.random() * 0.5).toFixed(3));
       const volAcidAdded = 50.0;
       const concAcid = 1.000;
       const concNaOH = 0.100;
-      const titreNaOH = parseFloat((15.00 + Math.random() * 12).toFixed(2)); // 15.00 - 27.00 cm³
+      const titreNaOH = parseFloat((15.00 + Math.random() * 12).toFixed(2));
 
-      const totalMolesAcid = (volAcidAdded * concAcid) / 1000; // 0.050 mol
+      const totalMolesAcid = (volAcidAdded * concAcid) / 1000;
       const molesNaOHUsed = (titreNaOH * concNaOH) / 1000;
       
-      // Aliquot Step: 25.0 cm³ titrated out of 250.0 cm³ volumetric flask (Scale factor x10)
       const excessMolesAcidInFlask = molesNaOHUsed * (250.0 / 25.0);
       const reactedMolesAcid = totalMolesAcid - excessMolesAcidInFlask;
       
-      // CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂ (1:2 ratio)
       const molesCaCO3 = reactedMolesAcid / 2;
       const massPureCaCO3 = molesCaCO3 * 100.1;
       const purity = (massPureCaCO3 / massMarble) * 100;
 
       newProb = {
         title: "Back Titration: % Purity Analysis",
-        text: <>An impure <b>{massMarble.toFixed(3)} g</b> sample of calcium carbonate ($\text{CaCO₃}$) was treated with <b>{volAcidAdded}.0 cm³</b> of <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid (an excess). The mixture was transferred cleanly to a volumetric flask and made up to exactly <b>250.0 cm³</b> with distilled water. A <b>25.0 cm³</b> portion of this solution required <b>{titreNaOH} cm³</b> of <b>{concNaOH.toFixed(3)} mol dm⁻³</b> sodium hydroxide for neutralisation.</>,
+        text: <>An impure <b>{massMarble.toFixed(3)} g</b> sample of calcium carbonate (CaCO<sub>3</sub>) was treated with <b>{volAcidAdded}.0 cm³</b> of <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid (an excess). The mixture was transferred cleanly to a volumetric flask and made up to exactly <b>250.0 cm³</b> with distilled water. A <b>25.0 cm³</b> portion of this solution required <b>{titreNaOH} cm³</b> of <b>{concNaOH.toFixed(3)} mol dm⁻³</b> sodium hydroxide for neutralisation.</>,
         question: "Calculate the percentage purity of calcium carbonate in the original sample.",
         label: "% Purity =",
         unit: "%",
@@ -80,17 +75,14 @@ const AcidBaseTitration = () => {
       };
 
     } else if (targetMode === 'double_titration') {
-      // Double indicator endpoint titration analysis (NaOH + Na₂CO₃ mixtures)
       const volMixture = 25.0;
       const concAcid = 0.100;
-      const phenTitre = parseFloat((20.00 + Math.random() * 5).toFixed(2)); // Total volume to phenolphthalein end
-      const methylTitre = parseFloat((5.00 + Math.random() * 3).toFixed(2)); // Additional volume to methyl orange end
+      const phenTitre = parseFloat((20.00 + Math.random() * 5).toFixed(2));
+      const methylTitre = parseFloat((5.00 + Math.random() * 3).toFixed(2));
 
-      // Step 2 (Methyl Orange): Only NaHCO₃ reacts with HCl (1:1) -> gives moles Na₂CO₃
       const molesNa2CO3 = (methylTitre * concAcid) / 1000;
       const concNa2CO3 = molesNa2CO3 / (volMixture / 1000);
 
-      // Step 1 (Phenolphthalein): All NaOH reacts, and Na₂CO₃ converts to NaHCO₃ (consuming equal volume)
       const volAcidForNaOH = phenTitre - methylTitre;
       const molesNaOH = (volAcidForNaOH * concAcid) / 1000;
       const concNaOH = molesNaOH / (volMixture / 1000);
@@ -99,11 +91,11 @@ const AcidBaseTitration = () => {
 
       newProb = {
         title: "Double Indicator Titration",
-        text: <>A <b>25.0 cm³</b> sample containing a mixture of sodium hydroxide ($\text{NaOH}$) and sodium carbonate ($\text{Na₂CO₃}$) was titrated against <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid. Using phenolphthalein indicator, the solution turned colorless after the addition of <b>{phenTitre} cm³</b> of acid. A further <b>{methylTitre} cm³</b> of acid was then required to turn methyl orange indicator orange at the final endpoint.</>,
+        text: <>A <b>25.0 cm³</b> sample containing a mixture of sodium hydroxide (NaOH) and sodium carbonate (Na<sub>2</sub>CO<sub>3</sub>) was titrated against <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid. Using phenolphthalein indicator, the solution turned colorless after the addition of <b>{phenTitre} cm³</b> of acid. A further <b>{methylTitre} cm³</b> of acid was then required to turn methyl orange indicator orange at the final endpoint.</>,
         question: askForCarbonate 
           ? "Calculate the concentration of sodium carbonate (Na₂CO₃) in the mixture solution." 
           : "Calculate the concentration of sodium hydroxide (NaOH) in the mixture solution.",
-        label: askForCarbonate ? "[Na₂CO₃] =" : "[NaOH] =",
+        label: askForCarbonate ? "[Na2CO3] =" : "[NaOH] =",
         unit: "mol dm⁻³",
         correct: askForCarbonate ? concNa2CO3.toFixed(3) : concNaOH.toFixed(3)
       };
@@ -135,7 +127,7 @@ const AcidBaseTitration = () => {
       } else if (mode === 'double_titration') {
         hint += `The second titration volume only neutralises hydrogen carbonate ions derived from the carbonate. The first volume neutralises all hydroxide ions plus the first stage of carbonate conversion.`;
       } else {
-        hint += `Check if you accounts for structural compound stoichiometric coefficients (like diprotic H₂SO₄ liberating two protons per mole).`;
+        hint += `Check if you accounted for structural compound stoichiometric coefficients (like diprotic H₂SO₄ liberating two protons per mole).`;
       }
       setFeedback({ message: hint, status: 'error' });
     }
