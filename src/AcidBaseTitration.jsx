@@ -25,7 +25,7 @@ const AcidBaseTitration = () => {
 
     let newProb = {};
     
-    // Clear interactive states
+    // Reset interactive states
     setTableTitres({ t1: '', t2: '', t3: '' });
     setConcordantSelections({ rough: false, t1: false, t2: false, t3: false });
     setStudentMean('');
@@ -43,7 +43,7 @@ const AcidBaseTitration = () => {
 
         newProb = {
           title: "Standard Titration (1:1 Ratio)",
-          text: <>A <b>25.0 cm³</b> sample of sodium hydroxide solution (NaOH) was titrated against <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid (HCl). The mean titre recorded was <b>{titre.toFixed(2)} cm³</b>.</>,
+          text: <>A 25.0 cm³ sample of sodium hydroxide solution (NaOH) was titrated against {concAcid.toFixed(3)} mol dm⁻³ hydrochloric acid (HCl). The mean titre recorded was {titre.toFixed(2)} cm³.</>,
           question: "Calculate the concentration of the sodium hydroxide solution in mol dm⁻³.",
           label: "[NaOH] =",
           unit: "mol dm⁻³",
@@ -55,24 +55,24 @@ const AcidBaseTitration = () => {
 
         newProb = {
           title: "Standard Titration (2:1 Ratio Trap)",
-          text: <>A <b>25.0 cm³</b> sample of sodium hydroxide solution (NaOH) required a mean titre of <b>{titre.toFixed(2)} cm³</b> of <b>{concAcid.toFixed(3)} mol dm⁻³</b> sulfuric acid (H<sub>2</sub>SO<sub>4</sub>) for complete neutralisation.</>,
-          question: "Calculate the concentration of the sodium hydroxide solution in mol dm⁻³. Watch your chemical equation stoichiometry closely!",
+          text: <>A 25.0 cm³ sample of sodium hydroxide solution (NaOH) required a mean titre of {titre.toFixed(2)} cm³ of {concAcid.toFixed(3)} mol dm⁻³ sulfuric acid (H₂SO₄) for complete neutralisation.</>,
+          question: "Calculate the concentration of the sodium hydroxide solution in mol dm⁻³.",
           label: "[NaOH] =",
           unit: "mol dm⁻³",
           correct: concBase.toFixed(3)
         };
       } else {
-        const concNaOH = parseFloat((0.04 + Math.random() * 0.04).toFixed(3)); 
-        const molesAscorbic25 = (concNaOH * titre) / 1000;
-        const massAscorbicInTablet = molesAscorbic25 * 176.12; 
+        // Updated to an explicit weak acid providing Ka as it is absent from the booklet
+        const concNaOH = parseFloat((0.05 + Math.random() * 0.05).toFixed(3));
+        const concAcid = (concNaOH * titre) / volBase;
 
         newProb = {
-          title: "Ascorbic Acid (Vitamin C) Assay",
-          text: <>A student dissolved a commercial Vitamin C supplement tablet in distilled water to make exactly <b>25.0 cm³</b> of solution. This entire sample was titrated against <b>{concNaOH.toFixed(3)} mol dm⁻³</b> standard sodium hydroxide solution (NaOH), requiring a titre of <b>{titre.toFixed(2)} cm³</b> for complete neutralisation. Ascorbic acid (C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>) reacts with NaOH in a 1:1 molar ratio.</>,
-          question: "Calculate the mass of ascorbic acid present in the supplement tablet in grams (g). (Mr of Ascorbic Acid = 176.12)",
-          label: "Mass =",
-          unit: "g",
-          correct: massAscorbicInTablet.toFixed(3)
+          title: "Weak Acid Volumetric Assay",
+          text: <>A student titrated a 25.0 cm³ sample of ethanoic acid solution, CH₃COOH (Ka = 1.74 × 10⁻⁵ mol dm⁻³), against a standard solution of sodium hydroxide, NaOH. Complete neutralisation required a mean titre of {titre.toFixed(2)} cm³ of {concNaOH.toFixed(3)} mol dm⁻³ sodium hydroxide.</>,
+          question: "Calculate the molar concentration of the ethanoic acid solution in mol dm⁻³.",
+          label: "[CH₃COOH] =",
+          unit: "mol dm⁻³",
+          correct: concAcid.toFixed(3)
         };
       }
 
@@ -85,17 +85,15 @@ const AcidBaseTitration = () => {
 
       const totalMolesAcid = (volAcidAdded * concAcid) / 1000;
       const molesNaOHUsed = (titreNaOH * concNaOH) / 1000;
-      
       const excessMolesAcidInFlask = molesNaOHUsed * (250.0 / 25.0);
       const reactedMolesAcid = totalMolesAcid - excessMolesAcidInFlask;
-      
       const molesCaCO3 = reactedMolesAcid / 2;
       const massPureCaCO3 = molesCaCO3 * 100.1;
       const purity = (massPureCaCO3 / massMarble) * 100;
 
       newProb = {
         title: "Back Titration: % Purity Analysis",
-        text: <>An impure <b>{massMarble.toFixed(3)} g</b> sample of calcium carbonate (CaCO<sub>3</sub>) was treated with <b>{volAcidAdded}.0 cm³</b> of <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid (an excess). The mixture was transferred cleanly to a volumetric flask and made up to exactly <b>250.0 cm³</b> with distilled water. A <b>25.0 cm³</b> portion of this solution required <b>{titreNaOH.toFixed(2)} cm³</b> of <b>{concNaOH.toFixed(3)} mol dm⁻³</b> sodium hydroxide for neutralisation.</>,
+        text: <>An impure {massMarble.toFixed(3)} g sample of calcium carbonate (CaCO₃) was treated with {volAcidAdded}.0 cm³ of {concAcid.toFixed(3)} mol dm⁻³ hydrochloric acid (an excess). The mixture was transferred cleanly to a volumetric flask and made up to exactly 250.0 cm³ with distilled water. A 25.0 cm³ portion of this solution required {titreNaOH.toFixed(2)} cm³ of {concNaOH.toFixed(3)} mol dm⁻³ sodium hydroxide for neutralisation.</>,
         question: "Calculate the percentage purity of calcium carbonate in the original sample.",
         label: "% Purity =",
         unit: "%",
@@ -105,7 +103,6 @@ const AcidBaseTitration = () => {
     } else if (targetMode === 'double_titration') {
       const volMixture = 25.0;
       const concAcid = 0.100;
-      
       const methylTitre = roundTo05(6.00 + Math.random() * 4); 
       const phenTitre = roundTo05(methylTitre + 8.00 + Math.random() * 6); 
 
@@ -120,7 +117,7 @@ const AcidBaseTitration = () => {
 
       newProb = {
         title: "Double Indicator Titration (Mixture Analysis)",
-        text: <>A <b>25.0 cm³</b> solution containing a mixture of sodium hydroxide (NaOH) and sodium carbonate (Na<sub>2</sub>CO<sub>3</sub>) was titrated against <b>{concAcid.toFixed(3)} mol dm⁻³</b> hydrochloric acid. In the first stage using phenolphthalein indicator, the mixture turned completely colourless after the addition of <b>{phenTitre.toFixed(2)} cm³</b> of acid. Methyl orange indicator was then added to the flask, requiring a <b>further {methylTitre.toFixed(2)} cm³</b> of acid to reach its distinct endpoint.</>,
+        text: <>A 25.0 cm³ solution containing a mixture of sodium hydroxide (NaOH) and sodium carbonate (Na₂CO₃) was titrated against {concAcid.toFixed(3)} mol dm⁻³ hydrochloric acid. In the first stage using phenolphthalein indicator, the mixture turned completely colourless after the addition of {phenTitre.toFixed(2)} cm³ of acid. Methyl orange indicator was then added to the flask, requiring a further {methylTitre.toFixed(2)} cm³ of acid to reach its distinct endpoint.</>,
         question: askForCarbonate 
           ? "Calculate the concentration of sodium carbonate (Na₂CO₃) in the mixture solution in mol dm⁻³." 
           : "Calculate the concentration of sodium hydroxide (NaOH) in the mixture solution in mol dm⁻³.",
@@ -131,7 +128,6 @@ const AcidBaseTitration = () => {
 
     } else if (targetMode === 'table_practice') {
       const baseTarget = roundTo05(21.10 + Math.random() * 3); 
-      
       const r_init = 0.00; 
       const r_final = baseTarget + roundTo05(0.65 + Math.random() * 0.4);
 
@@ -142,7 +138,6 @@ const AcidBaseTitration = () => {
       let t2_init = roundTo05(t1_final + 0.40);
       let t2_net = 0;
       let t2_final = 0;
-      
       let t3_init = 0;
       let t3_net = 0;
       let t3_final = 0;
@@ -151,7 +146,7 @@ const AcidBaseTitration = () => {
       let hasT3 = false;
       let correctConcordant = {};
       let expectedMean = 0;
-      let gaps = []; // Track which columns are empty inputs
+      let gaps = [];
 
       if (achievingConcordanceOnRun2) {
         t2_net = baseTarget + 0.05;
@@ -159,19 +154,17 @@ const AcidBaseTitration = () => {
         hasT3 = false;
         correctConcordant = { rough: false, t1: true, t2: true, t3: false };
         expectedMean = (t1_net + t2_net) / 2;
-        gaps = ['t1', 't2']; // Titre 1 and Titre 2 are empty gaps, rough is pre-filled
+        gaps = ['t1', 't2'];
       } else {
         t2_net = baseTarget + 0.25; 
         t2_final = t2_init + t2_net;
-        
         t3_init = roundTo05(t2_final + 0.50);
         t3_net = baseTarget + 0.05; 
         t3_final = t3_init + t3_net;
-        
         hasT3 = true;
         correctConcordant = { rough: false, t1: true, t2: false, t3: true };
         expectedMean = (t1_net + t3_net) / 2;
-        gaps = ['t1', 't3']; // Titre 1 and Titre 3 are empty gaps, rough and t2 are pre-filled
+        gaps = ['t1', 't3'];
       }
 
       const tableData = {
@@ -190,7 +183,7 @@ const AcidBaseTitration = () => {
 
       newProb = {
         title: "Burette Data Table & Concordance Practice",
-        text: <>A student records the following initial and final burette parameters when titrating <b>25.0 cm³</b> samples of hydrochloric acid (HCl) against a standard solution of <b>0.100 mol dm⁻³</b> sodium hydroxide (NaOH). Complete the <b>missing blanks</b> in the results table below, select which trials are concordant, and establish the mean titre.</>,
+        text: <>A student records the following initial and final burette parameters when titrating 25.0 cm³ samples of hydrochloric acid (HCl) against a standard solution of 0.100 mol dm⁻³ sodium hydroxide (NaOH). Complete the missing blanks in the results table below, select which trials are concordant, and establish the mean titre.</>,
         question: "Once your results table parameters have been verified, calculate the molar concentration of the hydrochloric acid solution in mol dm⁻³.",
         label: "[HCl] =",
         unit: "mol dm⁻³",
@@ -204,10 +197,11 @@ const AcidBaseTitration = () => {
       const targetReading = roundTo05(12.05 + Math.random() * 25); 
       const startInt = Math.floor(targetReading);
       
+      // Removed all hints and descriptions to mirror a genuine exam question layout
       newProb = {
-        title: "Burette Scale Meniscus Interpretation",
-        text: <>Observe the close-up vector diagram of the aqueous liquid level inside an analytical burette column. Remember to look straight at the <b>absolute bottom point of the curved meniscus</b> and count the scale values downwards.</>,
-        question: "Record the volume shown on the burette scale to the nearest 0.05 cm³.",
+        title: "Burette Scale Interpretation",
+        text: <>A student recorded the initial volume of a solution inside an analytical burette prior to commencing a titration. The diagram below shows a close-up view of the liquid column level section.</>,
+        question: "Record the volume shown on the burette scale to the appropriate degree of precision.",
         label: "Volume =",
         unit: "cm³",
         correct: targetReading.toFixed(2),
@@ -227,31 +221,29 @@ const AcidBaseTitration = () => {
 
   const handleVerifyTable = () => {
     const data = problem.tableData;
-    
     if (concordantSelections.rough) {
       setTableFeedback({ 
-        message: "❌ Trap Triggered! You checked the 'Rough' trial as concordant. In WJEC grading matrices, the rough titre is an intentional overshoot and must NEVER be flagged as concordant or included in your mean average calculation.", 
+        message: "❌ Incorrect selection. The rough titre must not be flagged as concordant or included in your mean average calculation.", 
         status: "error" 
       });
       return;
     }
 
-    // Validate only the active gaps the user filled
     const t1_user = parseFloat(tableTitres.t1);
     const t2_user = data.gaps.includes('t2') ? parseFloat(tableTitres.t2) : data.t2.correctNet;
     const t3_user = data.hasT3 && data.gaps.includes('t3') ? parseFloat(tableTitres.t3) : (data.hasT3 ? data.t3.correctNet : 0);
     const mean_user = parseFloat(studentMean);
 
     if (data.gaps.includes('t1') && Math.abs(t1_user - data.t1.correctNet) > 0.01) {
-      setTableFeedback({ message: "Incorrect value in Titre 1 gap. Double check your calculation (Final − Initial).", status: "error" });
+      setTableFeedback({ message: "Incorrect value in Titre 1 gap. Check your calculation (Final − Initial).", status: "error" });
       return;
     }
     if (data.gaps.includes('t2') && Math.abs(t2_user - data.t2.correctNet) > 0.01) {
-      setTableFeedback({ message: "Incorrect value in Titre 2 gap. Double check your calculation (Final − Initial).", status: "error" });
+      setTableFeedback({ message: "Incorrect value in Titre 2 gap. Check your calculation (Final − Initial).", status: "error" });
       return;
     }
     if (data.hasT3 && data.gaps.includes('t3') && Math.abs(t3_user - data.t3.correctNet) > 0.01) {
-      setTableFeedback({ message: "Incorrect value in Titre 3 gap. Double check your calculation (Final − Initial).", status: "error" });
+      setTableFeedback({ message: "Incorrect value in Titre 3 gap. Check your calculation (Final − Initial).", status: "error" });
       return;
     }
 
@@ -267,29 +259,27 @@ const AcidBaseTitration = () => {
       return;
     }
 
-    setTableFeedback({ message: "Results table verified successfully! Final chemical concentration entry field is unlocked.", status: "success" });
+    setTableFeedback({ message: "Results table verified successfully! Final concentration entry field is unlocked.", status: "success" });
     setTableVerified(true);
   };
 
   const checkAnswer = () => {
     const userVal = parseFloat(studentAnswer);
     const correctVal = parseFloat(problem.correct);
-    
     if (isNaN(userVal)) return;
 
     if (mode === 'read_burette') {
       const rawInputString = studentAnswer.trim();
       const decimalPart = rawInputString.split('.')[1];
-      
       if (!decimalPart || decimalPart.length !== 2 || (!decimalPart.endsWith('0') && !decimalPart.endsWith('5'))) {
-        setFeedback({ message: "WJEC Precision Trap! Burette scale readings must ALWAYS be recorded to exactly two decimal places, ending in either .00 or .05 (e.g., 12.30 or 24.85).", status: 'error' });
+        setFeedback({ message: "Precision Error: Burette readings must be recorded to exactly two decimal places, ending in either .00 or .05.", status: 'error' });
         return;
       }
 
       if (Math.abs(userVal - correctVal) < 0.01) {
-        setFeedback({ message: `Correct! Excellent scale interpretation down to the bottom of the meniscus curve.`, status: 'success' });
+        setFeedback({ message: `Correct! Burette reading successfully recorded.`, status: 'success' });
       } else {
-        setFeedback({ message: `Incorrect scale mapping. Remember that burette values increase downwards! Expected reading: ${problem.correct} cm³.`, status: 'error' });
+        setFeedback({ message: `Incorrect reading. Check your scale alignment.`, status: 'error' });
       }
       return;
     }
@@ -300,13 +290,13 @@ const AcidBaseTitration = () => {
     } else {
       let hint = `Incorrect. `;
       if (mode === 'back_titration') {
-        hint += `Remember to scale the moles of excess acid up by a factor of 10 to account for the volumetric flask fraction before subtracting from total added acid!`;
+        hint += `Ensure you scaled the moles of excess acid up to account for the total volume of the volumetric flask before evaluating the reacted difference.`;
       } else if (mode === 'double_titration') {
-        hint += `The further volume (V₂) neutralises NaHCO₃ and is proportional to the carbonate. The first volume (V₁) accounts for all the NaOH plus the first stage of the carbonate transformation.`;
+        hint += `Review your indicator endpoint volumes. V₂ determines the carbonate transformation step, while V₁ accounts for both the total hydroxide and partial carbonate conversion.`;
       } else if (mode === 'table_practice') {
-        hint += `Use your verified mean titre with the NaOH parameters to find moles, then determine [HCl] using the 1:1 reacting ratio across the 25.0 cm³ flask volume.`;
+        hint += `Use your verified mean titre to find reacting chemical amounts across the target volumes.`;
       } else {
-        hint += `Check if you accounted for the compound stoichiometric coefficients or molar masses correctly.`;
+        hint += `Check your reacting stoichiometry ratios and relative mass parameters carefully.`;
       }
       setFeedback({ message: hint, status: 'error' });
     }
@@ -319,7 +309,6 @@ const AcidBaseTitration = () => {
 
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
-      
       {/* --- DROPDOWN NAVIGATION BAR --- */}
       <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
         <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
@@ -332,13 +321,12 @@ const AcidBaseTitration = () => {
             className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
             style={{ textTransform: 'none' }}
           >
-            <option value="standard">Standard Titration (Mixed Valencies & Vitamin C)</option>
+            <option value="standard">Standard Titration (Mixed Valencies & Organic Weak Acids)</option>
             <option value="back_titration">Back Titration (Aliquot Volumetric)</option>
             <option value="double_titration">Double Titration (WJEC Mixture Assay)</option>
             <option value="table_practice">Burette Results Table & Concordance Practice</option>
             <option value="read_burette">Burette Reading Scale Practice</option>
           </select>
-          
           <button
             type="button"
             onClick={() => { generateProblem('random'); }}
@@ -354,22 +342,20 @@ const AcidBaseTitration = () => {
       <div className="applet-header" style={{ textTransform: 'none' }}>{problem.title}</div>
       <div className="question-text text-center px-2 leading-relaxed" style={{ textTransform: 'none' }}>{problem.text}</div>
 
-      {/* --- STANDALONE INTERACTIVE MENISCUS TOOL CANVAS --- */}
+      {/* --- MENISCUS VECTOR INTERACTION CANVAS --- */}
       {mode === 'read_burette' && (
         <div className="w-full flex flex-col items-center my-6 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 max-w-xs mx-auto shadow-inner relative">
           <svg viewBox="0 0 120 200" className="w-28 h-auto select-none overflow-visible">
             <line x1="40" y1="10" x2="40" y2="190" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
             <line x1="80" y1="10" x2="80" y2="190" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
-            
             {Array.from({ length: 11 }).map((_, i) => {
               const yPos = 30 + i * 13;
               const isMajor = i === 0 || i === 10;
               const isMedium = i === 5;
-              
               return (
                 <g key={i}>
                   <line 
-                    x1={40} 
+                    x1="40" 
                     y1={yPos} 
                     x2={isMajor ? 62 : isMedium ? 54 : 47} 
                     y2={yPos} 
@@ -382,7 +368,7 @@ const AcidBaseTitration = () => {
                     </text>
                   )}
                   {!isMajor && !isMedium && (
-                    <line x1="40" y1={yPos} x2="44" y2={yPos} stroke="#475569" strokeWidth="0.7" />
+                    <line x1="40" y1={yPos} x2={44} y2={yPos} stroke="#475569" strokeWidth="0.7" />
                   )}
                 </g>
               );
@@ -397,11 +383,11 @@ const AcidBaseTitration = () => {
               strokeLinecap="round"
             />
           </svg>
-          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Scale reads downwards (cm³)</span>
+          {/* Helper caption string stripped to match authentic exam layouts */}
         </div>
       )}
 
-      {/* --- EXAM-STYLE SCROLLABLE RESULTS MATRIX WITH SELECTIVE GAPS --- */}
+      {/* --- RESULTS MATRIX ACCORDION VIEW --- */}
       {mode === 'table_practice' && (
         <div className="w-full max-w-2xl mx-auto my-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
           <div className="w-full overflow-x-auto pb-1">
@@ -432,15 +418,10 @@ const AcidBaseTitration = () => {
                 </tr>
                 <tr className="bg-blue-50/10">
                   <td className="p-3 text-left font-black text-slate-800 bg-slate-50/50">Net Titre (cm³)</td>
-                  {/* Rough is always pre-filled in this exam style variant layout */}
                   <td className="p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.correctNet.toFixed(2)}</td>
-                  
-                  {/* Titre 1 is always a blank gap input */}
                   <td className="p-2">
                     <input type="number" step="any" value={tableTitres.t1} onChange={(e) => setTableTitres({...tableTitres, t1: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
                   </td>
-
-                  {/* Titre 2 is a gap input only if it's part of the target concordant pair */}
                   <td className="p-2">
                     {problem.tableData.gaps.includes('t2') ? (
                       <input type="number" step="any" value={tableTitres.t2} onChange={(e) => setTableTitres({...tableTitres, t2: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
@@ -448,8 +429,6 @@ const AcidBaseTitration = () => {
                       <span className="font-mono text-slate-500">{problem.tableData.t2.correctNet.toFixed(2)}</span>
                     )}
                   </td>
-
-                  {/* Titre 3 renders as a gap input only if generated as an active column variant */}
                   {problem.tableData.hasT3 && (
                     <td className="p-2 bg-blue-50/20">
                       {problem.tableData.gaps.includes('t3') ? (
@@ -480,7 +459,6 @@ const AcidBaseTitration = () => {
               </tbody>
             </table>
           </div>
-          
           <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2 whitespace-nowrap">
               <span className="text-xs font-black text-slate-700">Calculated Mean Titre (cm³):</span>

@@ -54,7 +54,7 @@ const ThermometricTitration = () => {
 
       newProb = {
         title: "Enthalpy of Neutralisation Calculation",
-        text: <>In a thermometric titration experiment, 25.0 cm³ of 1.00 mol dm⁻³ hydrochloric acid (HCl) was neutralised by an extrapolated endpoint volume of <b>{endpointVol.toFixed(1)} cm³</b> of sodium hydroxide (NaOH). The maximum temperature rise recorded was <b>ΔT = {deltaT.toFixed(1)} °C</b>. (c = 4.18 J g⁻¹ K⁻¹; density = 1.00 g cm⁻³).</>,
+        text: <>In a thermometric titration experiment, 25.0 cm³ of 1.00 mol dm⁻³ hydrochloric acid (HCl) was neutralised by an extrapolated endpoint volume of <b>{endpointVol.toFixed(1)} cm³</b> of sodium hydroxide (NaOH). The maximum temperature rise recorded was <b>ΔT = {deltaT.toFixed(1)} °C</b>.</>,
         question: "Calculate the molar enthalpy of neutralisation (ΔH) in kJ mol⁻¹. State your final answer to 3 significant figures.",
         label: "ΔH =",
         unit: "kJ mol⁻¹",
@@ -235,10 +235,7 @@ const ThermometricTitration = () => {
     const distanceToTarget = Math.abs(userVol - endpointVol);
     const currentZoom = getDynamicZoom(userVol);
     
-    // --- RECALIBRATED SMOOTH OPACITY GRADIENT ENGINE ---
-    // Vertical line drops from 0.8 smoothly down to an ultra-low 0.15 at point zero
     const lineOpacity = distanceToTarget >= 6.0 ? 0.8 : 0.15 + (distanceToTarget / 6.0) * 0.65;
-    // Yellow tracker node circle drops from 1.0 smoothly down to a faint 0.2
     const dotOpacity = distanceToTarget >= 6.0 ? 1.0 : 0.2 + (distanceToTarget / 6.0) * 0.8;
 
     const viewW = baseW / currentZoom;
@@ -331,8 +328,8 @@ const ThermometricTitration = () => {
             ))}
 
             {/* Plotted Trend Lines */}
-            <line x1={getX(0)} y1={getY(tStart)} x2={getX(endpointVol)} y2={getY(tMax)} stroke="#e11d48" strokeWidth="1" strokeDasharray="3 1.5" />
-            <line x1={getX(endpointVol)} y1={getY(tMax)} x2={getX(50)} y2={getY(tEnd)} stroke="#326fa0" strokeWidth="1" strokeDasharray="3 1.5" />
+            <line x1={getX(0)} y1={getY(tStart)} x2={getX(endpointVol)} y2={getY(tMax)} stroke="#326fa0" strokeWidth="2" strokeDasharray="3 1.5" />
+            <line x1={getX(endpointVol)} y1={getY(tMax)} x2={getX(50)} y2={getY(tEnd)} stroke="#e11d48" strokeWidth="2" strokeDasharray="3 1.5" />
 
             {/* 2D Crosshair Cursor Tracker with Proximity Fade Curves */}
             <line 

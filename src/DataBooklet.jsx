@@ -78,7 +78,7 @@ const ZoomablePeriodicTable = () => {
   };
 
   return (
-    <div className="flex flex-col h-full py-2 bg-white">
+    <div className="flex flex-col h-full py-2 bg-white" style={{ textTransform: 'none' }}>
       <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 mb-4 items-center justify-between px-2">
         <div className="flex w-full sm:w-2/3 gap-2">
           <input type="text" placeholder="Search element..." value={search} onChange={(e) => setSearch(e.target.value)}
@@ -130,7 +130,6 @@ const ZoomablePeriodicTable = () => {
 
 const DataBooklet = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('constants');
-  // Dynamic custom mobile disclosure toggle switch state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   if (!isOpen) return null;
@@ -144,12 +143,18 @@ const DataBooklet = ({ isOpen, onClose }) => {
     { id: '1H', label: <span><sup>1</sup>H NMR</span> }
   ];
 
+  // --- COMPREHENSIVELY REBUILT WJEC CORE SPECIFICATION DATA CONSTANTS ARRAY ---
   const constants = [
     { n: 'Avogadro constant', s: <>N<sub>A</sub></>, v: <>6.02 &times; 10<sup>23</sup> mol<sup>&minus;1</sup></> },
     { n: 'molar gas constant', s: 'R', v: <>8.31 J mol<sup>&minus;1</sup> K<sup>&minus;1</sup></> },
-    { n: 'molar gas volume (273 K)', s: <>V<sub>m</sub></>, v: <>22.4 dm³ mol<sup>&minus;1</sup></> },
+    { n: 'molar gas volume (273 K / STP)', s: <>V<sub>m</sub></>, v: <>22.4 dm³ mol<sup>&minus;1</sup></> },
+    { n: 'molar gas volume (298 K / RTP)', s: <>V<sub>m</sub></>, v: <>24.0 dm³ mol<sup>&minus;1</sup></> },
     { n: 'Planck constant', s: 'h', v: <>6.63 &times; 10<sup>&minus;34</sup> J s</> },
-    { n: 'fundamental electronic charge', s: 'e', v: <>1.60 &times; 10<sup>&minus;19</sup> C</> }
+    { n: 'speed of light in a vacuum', s: 'c', v: <>3.00 &times; 10<sup>8</sup> m s<sup>&minus;1</sup></> },
+    { n: 'fundamental electronic charge', s: 'e', v: <>1.60 &times; 10<sup>&minus;19</sup> C</> },
+    { n: 'specific heat capacity of water', s: 'c', v: <>4.18 J g<sup>&minus;1</sup> K<sup>&minus;1</sup></> },
+    { n: 'density of water / solutions', s: 'ρ', v: <>1.00 g cm<sup>&minus;3</sup></> },
+    { n: 'ionic product of water (298 K)', s: <>K<sub>w</sub></>, v: <>1.00 &times; 10<sup>&minus;14</sup> mol² dm<sup>&minus;6</sup></> }
   ];
 
   const irData = [
@@ -190,15 +195,14 @@ const DataBooklet = ({ isOpen, onClose }) => {
     { t: 'R-COOH', s: '11.0 *' }
   ];
 
-  // Resolve active tab label item configurations cleanly
   const currentActiveTabObj = tabs.find(t => t.id === activeTab) || tabs[0];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 md:p-6 backdrop-blur-md">
-      <div className="bg-white w-full max-w-5xl h-[90vh] md:h-[85vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 md:p-6 backdrop-blur-md" style={{ textTransform: 'none' }}>
+      <div className="bg-white w-full max-w-5xl h-[90vh] md:h-[85vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-200" style={{ textTransform: 'none' }}>
         
         {/* --- BRANDED HEADER --- */}
-        <div className="flex justify-between items-center p-4 border-b border-slate-200 bg-slate-50">
+        <div className="flex justify-between items-center p-4 border-b border-slate-200 bg-slate-50" style={{ textTransform: 'none' }}>
           <div className="flex items-center gap-2">
             <Logo className="h-8" />
             <div className="flex items-baseline font-black tracking-tighter text-2xl select-none">
@@ -213,9 +217,8 @@ const DataBooklet = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* --- DUAL INTERACTIVE NAVIGATION SECTOR --- */}
-        <div className="border-b border-slate-200 bg-slate-50 shrink-0 px-2 relative">
-          
+        {/* --- INTERACTIVE NAVIGATION SECTOR --- */}
+        <div className="border-b border-slate-200 bg-slate-50 shrink-0 px-2 relative" style={{ textTransform: 'none' }}>
           {/* Desktop Tab Layout Bar */}
           <div className="hidden lg:flex overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
@@ -233,13 +236,11 @@ const DataBooklet = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          {/* --- PREMIUM COMPACT CUSTOM HTML DROPDOWN ELEMENT --- */}
+          {/* --- MOBILE DROPDOWN SELECTION SECTOR --- */}
           <div className="lg:hidden py-3 px-4 bg-white border-b border-slate-100 w-full relative">
             <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
               Select Data Section
             </span>
-            
-            {/* Custom Dropdown Trigger Button (Parses live HTML components flawlessly) */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -249,7 +250,6 @@ const DataBooklet = ({ isOpen, onClose }) => {
               <span className="text-slate-400 transition-transform duration-200" style={{ transform: isMobileMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
             </button>
 
-            {/* Floating Live Overlay Menu Drawer Sheet */}
             {isMobileMenuOpen && (
               <div className="absolute left-4 right-4 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-1.5 max-w-md mx-auto max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
                 {tabs.map((tab) => {
@@ -276,27 +276,26 @@ const DataBooklet = ({ isOpen, onClose }) => {
               </div>
             )}
           </div>
-
         </div>
 
         {/* --- DATA VIEWPORT SHEET AREA --- */}
-        <div className="flex-1 overflow-y-auto p-3 md:p-6 bg-white">
+        <div className="flex-1 overflow-y-auto p-3 md:p-6 bg-white" style={{ textTransform: 'none' }}>
           {activeTab === 'periodic' && <ZoomablePeriodicTable />}
 
           {activeTab === 'constants' && (
-            <div className="max-w-4xl mx-auto rounded-lg border border-slate-200 overflow-hidden text-slate-900">
+            <div className="max-w-4xl mx-auto rounded-lg border border-slate-200 overflow-hidden text-slate-900" style={{ textTransform: 'none' }}>
               <table className="w-full text-left table-fixed">
                 <thead className="bg-slate-50 border-b">
                   <tr>
                     <th className="py-3 px-4 text-xs font-bold text-slate-700 w-auto">Constant</th>
                     <th className="py-3 px-4 text-xs font-bold text-slate-700 w-16 text-center">Symbol</th>
-                    <th className="py-3 px-4 text-xs font-bold text-slate-700 w-36 md:w-48 text-right">Value</th>
+                    <th className="py-3 px-4 text-xs font-bold text-slate-700 w-36 md:w-56 text-right">Value</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {constants.map((c, i) => (
                     <tr key={i} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4 text-sm text-slate-600 leading-snug">{c.n}</td>
+                      <td className="py-3 px-4 text-sm text-slate-600 leading-snug" style={{ textTransform: 'none' }}>{c.n}</td>
                       <td className="py-3 px-4 text-sm font-mono font-bold text-slate-800 text-center">{c.s}</td>
                       <td className="py-3 px-4 text-sm font-mono text-slate-800 text-right whitespace-nowrap">{c.v}</td>
                     </tr>
@@ -307,7 +306,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
           )}
 
           {activeTab === 'units' && (
-            <div className="max-w-3xl mx-auto space-y-12 animate-fade-in text-slate-900">
+            <div className="max-w-3xl mx-auto space-y-12 animate-fade-in text-slate-900" style={{ textTransform: 'none' }}>
               <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm">
                 <table className="w-full text-center font-mono font-bold text-slate-800 text-sm">
                   <tbody className="divide-y divide-slate-200">
@@ -346,7 +345,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
           )}
 
           {activeTab === 'IR' && (
-            <div className="max-w-3xl mx-auto rounded-lg border border-slate-200 overflow-hidden shadow-sm text-slate-900">
+            <div className="max-w-3xl mx-auto rounded-lg border border-slate-200 overflow-hidden shadow-sm text-slate-900" style={{ textTransform: 'none' }}>
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b">
                   <tr>
@@ -367,7 +366,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
           )}
 
           {activeTab === '13C' && (
-            <div className="max-w-3xl mx-auto space-y-4 text-slate-900">
+            <div className="max-w-3xl mx-auto space-y-4 text-slate-900" style={{ textTransform: 'none' }}>
               <h3 className="font-black text-xl text-slate-800 text-center uppercase tracking-tighter"><sup>13</sup>C NMR Chemical Shifts</h3>
               <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-white">
                 <table className="w-full text-left">
@@ -391,7 +390,7 @@ const DataBooklet = ({ isOpen, onClose }) => {
           )}
 
           {activeTab === '1H' && (
-            <div className="max-w-3xl mx-auto space-y-4 text-slate-900">
+            <div className="max-w-3xl mx-auto space-y-4 text-slate-900" style={{ textTransform: 'none' }}>
               <h3 className="font-black text-xl text-slate-800 text-center uppercase tracking-tighter"><sup>1</sup>H NMR Chemical Shifts</h3>
               <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-white">
                 <table className="w-full text-left">
