@@ -222,7 +222,6 @@ const ThermometricTitration = () => {
       return yBottom - ((temp - minT) / (maxT - minT)) * (yBottom - yTop);
     };
 
-    // Calculate current vertical position on trend lines
     let activeT = tStart;
     if (userVol <= endpointVol) {
       activeT = tStart + (userVol / endpointVol) * (tMax - tStart);
@@ -236,9 +235,11 @@ const ThermometricTitration = () => {
     const distanceToTarget = Math.abs(userVol - endpointVol);
     const currentZoom = getDynamicZoom(userVol);
     
-    // --- OPAQUE SMOOTH GRADIENT MATH MATRIX ---
-    // Scales linearly down from 0.8 to 0.5 within the active 6.0 cm³ zoom threshold zone
-    const lineOpacity = distanceToTarget >= 6.0 ? 0.8 : 0.5 + (distanceToTarget / 6.0) * 0.3;
+    // --- RECALIBRATED SMOOTH OPACITY GRADIENT ENGINE ---
+    // Vertical line drops from 0.8 smoothly down to an ultra-low 0.15 at point zero
+    const lineOpacity = distanceToTarget >= 6.0 ? 0.8 : 0.15 + (distanceToTarget / 6.0) * 0.65;
+    // Yellow tracker node circle drops from 1.0 smoothly down to a faint 0.2
+    const dotOpacity = distanceToTarget >= 6.0 ? 1.0 : 0.2 + (distanceToTarget / 6.0) * 0.8;
 
     const viewW = baseW / currentZoom;
     const viewH = baseH / currentZoom;
@@ -333,18 +334,24 @@ const ThermometricTitration = () => {
             <line x1={getX(0)} y1={getY(tStart)} x2={getX(endpointVol)} y2={getY(tMax)} stroke="#326fa0" strokeWidth="2" strokeDasharray="3 1.5" />
             <line x1={getX(endpointVol)} y1={getY(tMax)} x2={getX(50)} y2={getY(tEnd)} stroke="#e11d48" strokeWidth="2" strokeDasharray="3 1.5" />
 
-            {/* 2D Crosshair Cursor Tracker with Proximity Opacity */}
+            {/* 2D Crosshair Cursor Tracker with Proximity Fade Curves */}
             <line 
               x1={cursorX} y1={yTop} x2={cursorX} y2={yBottom} 
               stroke="#f59e0b" strokeWidth="1.5" 
               opacity={lineOpacity} 
               className="transition-opacity duration-150 ease-out"
             />
-            <circle cx={cursorX} cy={cursorY} r="3" className="fill-amber-500 stroke-white stroke-2 shadow-sm" />
+            <circle 
+              cx={cursorX} 
+              cy={cursorY} 
+              r="3" 
+              opacity={dotOpacity}
+              className="fill-amber-500 stroke-white stroke-2 shadow-sm transition-opacity duration-150 ease-out" 
+            />
           </svg>
         </div>
 
-        {/* --- MAGNIFIED SUBDIVISION TRACKING LENS --- */}
+        {/* --- MAGNIFIED TRACKING LENS --- */}
         <div className="w-full bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-inner flex flex-col items-center select-none">
           <span className="text-[8px] font-black tracking-widest uppercase text-amber-400 mb-2.5">Magnified Tracking Lens (0.1 cm³ subdivisions)</span>
           
