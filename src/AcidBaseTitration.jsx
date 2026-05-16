@@ -62,7 +62,6 @@ const AcidBaseTitration = () => {
           correct: concBase.toFixed(3)
         };
       } else {
-        // Updated to an explicit weak acid providing Ka as it is absent from the booklet
         const concNaOH = parseFloat((0.05 + Math.random() * 0.05).toFixed(3));
         const concAcid = (concNaOH * titre) / volBase;
 
@@ -127,18 +126,22 @@ const AcidBaseTitration = () => {
       };
 
     } else if (targetMode === 'table_practice') {
-      const baseTarget = roundTo05(21.10 + Math.random() * 3); 
-      const r_init = 0.00; 
-      const r_final = baseTarget + roundTo05(0.65 + Math.random() * 0.4);
+      const baseTarget = roundTo05(16.10 + Math.random() * 6); // Core net titre target around 16-22 cm³
+      
+      // --- LABORATORY REALISM REFILL MECHANICS (STRICTLY < 50.00 cm³) ---
+      // Fresh, small starting points selected for each run to emulate refilling the burette tube
+      const r_init = roundTo05(Math.random() * 2); 
+      const r_final = r_init + baseTarget + roundTo05(0.65 + Math.random() * 0.4);
 
-      const t1_init = 0.50;
+      const t1_init = roundTo05(Math.random() * 4);
       const t1_net = baseTarget - 0.05;
       const t1_final = t1_init + t1_net;
 
-      let t2_init = roundTo05(t1_final + 0.40);
+      const t2_init = roundTo05(Math.random() * 4);
       let t2_net = 0;
       let t2_final = 0;
-      let t3_init = 0;
+      
+      const t3_init = roundTo05(Math.random() * 4);
       let t3_net = 0;
       let t3_final = 0;
 
@@ -158,7 +161,6 @@ const AcidBaseTitration = () => {
       } else {
         t2_net = baseTarget + 0.25; 
         t2_final = t2_init + t2_net;
-        t3_init = roundTo05(t2_final + 0.50);
         t3_net = baseTarget + 0.05; 
         t3_final = t3_init + t3_net;
         hasT3 = true;
@@ -197,7 +199,6 @@ const AcidBaseTitration = () => {
       const targetReading = roundTo05(12.05 + Math.random() * 25); 
       const startInt = Math.floor(targetReading);
       
-      // Removed all hints and descriptions to mirror a genuine exam question layout
       newProb = {
         title: "Burette Scale Interpretation",
         text: <>A student recorded the initial volume of a solution inside an analytical burette prior to commencing a titration. The diagram below shows a close-up view of the liquid column level section.</>,
@@ -383,11 +384,10 @@ const AcidBaseTitration = () => {
               strokeLinecap="round"
             />
           </svg>
-          {/* Helper caption string stripped to match authentic exam layouts */}
         </div>
       )}
 
-      {/* --- RESULTS MATRIX ACCORDION VIEW --- */}
+      {/* --- RESULTS MATRIX --- */}
       {mode === 'table_practice' && (
         <div className="w-full max-w-2xl mx-auto my-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
           <div className="w-full overflow-x-auto pb-1">
