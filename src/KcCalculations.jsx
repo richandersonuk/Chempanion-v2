@@ -8,7 +8,7 @@ const KcCalculations = () => {
   const [exp, setExp] = useState('');
   const [feedback, setFeedback] = useState({ type: '', message: '' });
 
-  // Custom Power Index Picker States (For Unit Practice Mode)
+  // Custom Power Index Picker States
   const [molIdx, setMolIdx] = useState(0);
   const [dmIdx, setDmIdx] = useState(0);
   const [sIdx, setSIdx] = useState(0);
@@ -45,7 +45,7 @@ const KcCalculations = () => {
   ];
 
   const generateProblem = (forcedMode = null) => {
-    const modes = ['direct_kc', 'ice_table', 'find_missing', 'predict_units'];
+    const modes = ['ice_table', 'direct_kc', 'find_missing', 'predict_units'];
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
@@ -57,7 +57,6 @@ const KcCalculations = () => {
     let correctAnswer = 0;
     let unitExpectation = '';
 
-    // Reset power indicators 
     setMolIdx(0);
     setDmIdx(0);
     setSIdx(0);
@@ -141,8 +140,7 @@ const KcCalculations = () => {
       }
       unitExpectation = 'mol dm⁻³';
     } else if (targetMode === 'predict_units') {
-      // --- UNIT CALCULATION PRACTICE SCENARIO MODE ---
-      questionText = `Deduce the correct equilibrium constant (Kc) units for the following structural reaction setup profile:\n\n${rxn.eq}`;
+      questionText = `Deduce the correct equilibrium constant (Kc) units for the following reaction:\n\n${rxn.eq}`;
       newProb = { questionText, targetPowers: rxn.targetPowers, targetMode };
       setProblem(newProb);
       setFeedback({ type: '', message: '' });
@@ -159,7 +157,6 @@ const KcCalculations = () => {
     generateProblem('ice_table');
   }, []);
 
-  // Live sorting compiler converter for custom power configurations
   const renderSortedUnitsPreview = () => {
     const map = {
       '0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','-':'⁻'
@@ -172,8 +169,13 @@ const KcCalculations = () => {
       { unit: 's', p: sIdx }
     ];
 
-    // Core sorting constraint logic: Arranges descending by absolute index power weight value
-    pieces.sort((a, b) => b.p - a.p);
+    // Primary sort: Descending by index power value. Secondary sort: Alphabetical a-z tie-breaker if index matches.
+    pieces.sort((a, b) => {
+      if (b.p !== a.p) {
+        return b.p - a.p;
+      }
+      return a.unit.localeCompare(b.unit);
+    });
 
     const activePieces = pieces.filter(item => item.p !== 0);
     if (activePieces.length === 0) return <span className="font-mono text-slate-400 font-bold">no units</span>;
@@ -194,9 +196,9 @@ const KcCalculations = () => {
     if (mode === 'predict_units') {
       const targets = problem.targetPowers;
       if (molIdx === targets.mol && dmIdx === targets.dm && sIdx === targets.s) {
-        setFeedback({ type: 'success', message: 'Correct! Your power index distribution values match the chemical equation profile.' });
+        setFeedback({ type: 'success', message: 'Correct! Your power index configuration matches the expression requirements.' });
       } else {
-        setFeedback({ type: 'error', message: `Incorrect. Write out the concentration expressions [Products] / [Reactants], cancel down common terms, and sort from most positive to most negative power.` });
+        setFeedback({ type: 'error', message: `Incorrect. Set up your equilibrium expression [Products]/[Reactants], cancel down common brackets, and remember dm moves in blocks of 3.` });
       }
       return;
     }
@@ -256,7 +258,7 @@ const KcCalculations = () => {
         {problem.questionText}
       </div>
 
-      {/* --- CONDITIONAL UI CONTROLS FOR THE DYNAMIC UNIT PRACTICE ENGINE --- */}
+      {/* --- RECONSTRUCTED INTERACTIVE UNIT CONTROLS --- */}
       {mode === 'predict_units' ? (
         <div className="w-full max-w-sm mx-auto my-6 bg-slate-50 border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center gap-4" style={{ textTransform: 'none' }}>
           <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Select Power Indexes</span>
@@ -272,13 +274,13 @@ const KcCalculations = () => {
               </div>
             </div>
 
-            {/* Dm Control Cell */}
+            {/* Dm Control Cell: Increments/Decrements by blocks of 3 */}
             <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
               <span className="text-xs font-black font-mono text-slate-500 mb-1">dm</span>
               <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setDmIdx(prev => prev - 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
-                <span className="font-mono font-black text-sm w-4 text-center text-slate-800">{dmIdx}</span>
-                <button type="button" onClick={() => setDmIdx(prev => prev + 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
+                <button type="button" onClick={() => setDmIdx(prev => prev - 3)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
+                <span className="font-mono font-black text-sm w-5 text-center text-slate-800">{dmIdx}</span>
+                <button type="button" onClick={() => setDmIdx(prev => prev + 3)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
               </div>
             </div>
 
@@ -293,16 +295,14 @@ const KcCalculations = () => {
             </div>
           </div>
 
-          {/* Combined sorted display output indicator panel */}
           <div className="w-full bg-white border border-slate-200/60 rounded-xl p-2.5 text-center mt-1 flex flex-col items-center gap-0.5">
             <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Current Sorted Selection</span>
             <div className="h-6 flex items-center justify-center">{renderSortedUnitsPreview()}</div>
           </div>
         </div>
       ) : (
-        /* --- HIGH PERFORMANCE CONCENTRATION CALCULATION ENTRY FRAMEWORK --- */
+        /* --- CONCENTRATION INPUT FIELDS WITH BELOW-ROW UNITS --- */
         <div className="w-full flex flex-col items-center justify-center my-6" style={{ textTransform: 'none' }}>
-          {/* Main input group wrapper */}
           <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
             <ScientificInput 
               value={coeff} 
@@ -314,8 +314,8 @@ const KcCalculations = () => {
             />
           </div>
           
-          {/* MODAL ADJUSTMENT CELL: Forces unit metrics to render completely on their own row below input card */}
-          <div className="mt-2 text-center select-none whitespace-nowrap" style={{ textTransform: 'none' }}>
+          {/* Below-row Unit Placement prevents unnecessary mobile scrolling overflows */}
+          <div className="mt-3 text-center select-none whitespace-nowrap" style={{ textTransform: 'none' }}>
             <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mr-1">Units:</span>
             <span className="text-sm font-black text-slate-500 font-mono inline-block bg-white border border-slate-200/60 px-2.5 py-0.5 rounded-lg shadow-sm">{problem.unitExpectation}</span>
           </div>
