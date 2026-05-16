@@ -19,12 +19,195 @@ import EntropyGibbs from './EntropyGibbs';
 import CellPotentials from './CellPotentials';
 import EmpiricalFormula from './EmpiricalFormula';
 
+// --- WJEC EXAM SPECIFICATION HOW-TO GUIDE COMPONENT ---
+const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
+  if (!isOpen) return null;
+
+  const guides = {
+    'formulas-ions': {
+      title: 'Formulas from Ions (Unit 1.1)',
+      steps: [
+        'Identify the charges of the constituent ions using the Periodic Table groups or memorised polyatomic ions (e.g., SO₄²⁻, NH₄⁺).',
+        'Cross-multiply the numerical value of the charges to find the subscript ratio needed to make the compound electrically neutral.',
+        'Simplify the ratio to its lowest whole number terms if applicable (e.g., Ti²⁺ and O²⁻ becomes TiO, not Ti₂O₂).'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Do NOT leave ionic charges visible in your final completed formula string. Writing Mg²⁺Cl₂⁻ instead of MgCl₂ will score zero marks.'
+    },
+    'formulas-name': {
+      title: 'Formulas from Names (Unit 1.1)',
+      steps: [
+        'Extract the transition metal oxidation state directly from the Roman numeral in brackets (e.g., Iron(III) gives Fe³⁺).',
+        'Examine the suffix: "-ide" indicates a single element monoatomic ion, while "-ate" or "-ite" denotes a polyatomic oxyanion.',
+        'Balance the net charge vector safely to zero using small whole-number multipliers.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Always look out for complex compound groupings. Ensure brackets are wrapped completely around polyatomic ions if more than one is needed (e.g., Cu(NO₃)₂).'
+    },
+    'empirical-formula': {
+      title: 'Empirical & Molecular Formulas (Unit 1.1)',
+      steps: [
+        'Divide each element mass or percentage by its Relative Atomic Mass (Ar) to determine raw molar amounts.',
+        'Divide all calculated mole values by the absolute smallest value in the set to isolate the empirical integer ratio.',
+        'For Molecular Formula: Find the formula mass of your empirical unit. Divide the true given Mr by this unit mass to establish your integer multiplier, then distribute it across the elements.',
+        'For Water of Crystallisation (x): Subtract the remaining anhydrous residue mass from the initial hydrated crystal mass to find the mass of water lost. Find moles of the dry salt and moles of water independently, then calculate: x = Moles of H₂O / Moles of Salt.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Avoid rounding intermediate mole figures too early in your working space. Rounding values like 1.33 to 1.3 instead of recognizing a 4:3 fraction multiplier causes calculation trailing errors.'
+    },
+    'titration': {
+      title: 'Acid-Base Titrations & Burette Practice (Unit 1.1)',
+      steps: [
+        'Standard Titrations: Compute moles using Moles = (Conc × Vol) / 1000. Use a balanced equation to translate moles via the reacting ratio.',
+        'Back Titrations (Volumetric Scaling): Calculate initial total moles of excess reagent. Use titration results to find left-over moles in your small aliquot sample portion. CRUCIAL: Scale those excess moles up by the flask dilution factor (usually ×10 for a 25.0 cm³ portion out of a 250.0 cm³ flask) before subtracting from the initial total moles to find reacted amounts.',
+        'Double Indicator Assays: The second volume (V₂) only neutralises NaHCO₃ and directly determines the carbonate concentration. The first volume (V₁) accounts for all the NaOH plus the initial conversion stage of the carbonate.',
+        'Burette Tables: Identify concordant trials that sit within 0.10 cm³ of each other. Discard any rough outliers or uncoordinated pairs before determining the final mathematical mean.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Watch out for diprotic acid traps! Sulfuric acid (H₂SO₄) delivers two moles of H⁺ ions per mole of acid. Forgetting this 1:2 stoichiometry when reacting with NaOH is one of the most common ways students lose marks.'
+    },
+    'idealgas': {
+      title: 'Ideal Gas Calculations (Unit 1.2)',
+      steps: [
+        'Write out the master equation framework: pV = nRT.',
+        'Convert all data into strict SI base configurations: Pressure (p) must be in Pascals (Pa), Volume (V) must be in cubic metres (m³), and Temperature (T) must be in Kelvin (K).',
+        'Rearrange the equation cleanly to isolate your target unknown parameter variable before processing calculations on your keypad.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Unit conversions trip up thousands of students. Remember: dm³ to m³ requires dividing by 10³ (×10⁻³), cm³ to m³ requires dividing by 10⁶ (×10⁻⁶), and °C to K requires adding 273.15.'
+    },
+    'redox': {
+      title: 'Redox Titration Systems (Unit 3.1)',
+      steps: [
+        'Construct the full chemical process by combining individual reduction and oxidation half-equations.',
+        'Ensure electron balancing is clean by multiplying half-equations so that all transferred electrons cancel out entirely.',
+        'Identify your reacting mole ratio from the balanced full equation (e.g., 1 mole of MnO₄⁻ reacts with 5 moles of Fe²⁺).'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Never assume a standard 1:1 reacting layout context. Transition metal redox systems feature unique fluctuating oxidation state shifts.'
+    },
+    'enthalpy': {
+      title: 'Enthalpy of Combustion (Unit 3.4)',
+      steps: [
+        'Determine heat energy absorbed by the water using Q = mcΔT (where m is the mass of water, NOT the fuel).',
+        'Calculate the moles of fuel chemical burnt (mass / Mr).',
+        'Calculate the molar enthalpy parameter: ΔH = −Q / (moles × 1000) to express the final value in kJ mol⁻¹.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Do not forget the sign convention. Combustion reactions are exothermic, meaning your final recorded ΔH entry MUST display an explicit negative (−) sign.'
+    },
+    'entropy-gibbs': {
+      title: 'Entropy & Gibbs Free Energy (Unit 3.4)',
+      steps: [
+        'Calculate standard changes: ΔS = ΣS°(products) − ΣS°(reactants).',
+        'Use Gibbs equation layout profiles: ΔG = ΔH − TΔS.',
+        'A process becomes thermodynamically feasible at the exact threshold where ΔG ≤ 0.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Unit incompatibility is a persistent issue. Enthalpy (ΔH) is given in kJ mol⁻¹, but Entropy (ΔS) is recorded in J K⁻¹ mol⁻¹. You MUST divide your ΔS value by 1000 before substituting it into the Gibbs formula.'
+    },
+    'rates': {
+      title: 'Reaction Rates & Arrhenius Constraints (Unit 3.5)',
+      steps: [
+        'Deduce reaction orders by comparing concentration changes against initial rate fluctuations across test trials.',
+        'Construct the master expression: Rate = k[A]ˣ[B]ʸ.',
+        'To establish Arrhenius parameters, convert data into logarithmic trends using: ln(k) = −Ea/R(1/T) + ln(A).'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Working out units for the rate constant (k) requires full mathematical algebraic substitution and canceling. Always simplify your powers fully.'
+    },
+    'kc-calc': {
+      title: 'Kc Equilibrium Constants (Unit 3.8)',
+      steps: [
+        'Construct an ICE data matrix: Initial Moles, Change in Moles, Equilibrium Moles.',
+        'Convert equilibrium moles back to concentrations by dividing every component value by the container volume (dm³).',
+        'Assemble the constant fraction: Kc = [Products] / [Reactants], applying stoic coefficients as exponent powers.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Forgetting to divide equilibrium moles by the system volume is a frequent error. This step is only mathematically skippable if there are equal moles of gas on both sides of the equilibrium line.'
+    },
+    'kp-calc': {
+      title: 'Kp Equilibrium Constants (Unit 3.8)',
+      steps: [
+        'Calculate total gas moles present in the system container.',
+        'Find individual mole fractions: x(A) = Moles of A / Total Moles.',
+        'Determine partial pressures: p(A) = x(A) × Total Pressure.',
+        'Substitute values into the Kp expression using rounded parenthetical notation (p(Products)), not square concentration brackets.'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Never use square brackets [] inside a Kp expression. Square brackets explicitly denote concentration in mol dm⁻³. Using them here violates sign notation rules and will result in lost marks.'
+    },
+    'acids': {
+      title: 'pH & Weak Acid Equilibriums (Unit 3.9)',
+      steps: [
+        'Strong Acids: Fully dissociate, meaning [H⁺] = Acid Concentration. Use: pH = −log₁₀[H⁺].',
+        'Weak Acids: Partially dissociate. Use the simplified approximation: [H⁺] = √(Ka × c) before calculating the negative logarithm.',
+        'Conversions: Convert pKa back to Ka using Ka = 10^(−pKa).'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Enforce logarithmic notation formatting conventions. All calculated pH and pKa parameters MUST be written to exactly two decimal places, even if it ends in a trailing zero (e.g., write 4.00, not 4).'
+    },
+    'buffers': {
+      title: 'Buffer Solutions (Unit 3.9)',
+      steps: [
+        'Identify the weak acid molecule component and its conjugate base salt component.',
+        'If a small portion of strong alkali or acid is added, calculate the updated adjusted mole statistics before applying equilibrium checks.',
+        'Substitute values into the rearranged weak acid equilibrium expression: [H⁺] = Ka × ([Acid] / [Base]).'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Always work in absolute chemical amounts (moles) when assessing neutralizing shifts before running final volume concentrations.'
+    },
+    'cell-potentials': {
+      title: 'Standard Cell Potentials (Unit 4.1)',
+      steps: [
+        'Locate both standard electrode potentials (E°) in your data documentation.',
+        'The half-cell with the more positive (less negative) E° value undergoes reduction and acts as the cathode site.',
+        'Apply the EMF formula: E°cell = E°(Reduction Cathode) − E°(Oxidation Anode).'
+      ],
+      pitfalls: 'WJEC Examiner Alert: Standard cell EMF results must be stated to exactly two decimal places and must explicitly include the positive (+) sign to denote a feasible, spontaneous forward reaction (e.g., +1.10 V).'
+    }
+  };
+
+  const currentGuide = guides[appletId];
+  if (!currentGuide) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all animate-fade-in" style={{ textTransform: 'none' }}>
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150">
+        
+        {/* Header Banner */}
+        <div className="bg-amber-500 p-4 flex items-center justify-between text-white">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">💡</span>
+            <div>
+              <h3 className="font-black text-sm uppercase tracking-wider">Exam Method Guide</h3>
+              <span className="text-[10px] opacity-90 block font-bold" style={{ textTransform: 'none' }}>{currentGuide.title}</span>
+            </div>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full font-black text-sm transition-colors">&times;</button>
+        </div>
+
+        {/* Content Scrolling Window */}
+        <div className="p-6 overflow-y-auto space-y-4 text-left text-xs font-bold text-slate-600 leading-relaxed" style={{ textTransform: 'none' }}>
+          <div>
+            <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Step-by-Step Calculation Route:</span>
+            <ol className="list-decimal pl-4 space-y-2 text-slate-700 font-medium">
+              {currentGuide.steps.map((step, index) => (
+                <li key={index} style={{ textTransform: 'none' }}>{step}</li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="bg-rose-50 border border-rose-100 rounded-xl p-3.5 text-rose-800">
+            <span className="block text-[10px] font-black uppercase tracking-widest text-rose-500 mb-1">Top Exam Pitfall:</span>
+            <p className="font-semibold text-xs" style={{ textTransform: 'none' }}>{currentGuide.pitfalls}</p>
+          </div>
+        </div>
+
+        {/* Footer Area */}
+        <div className="bg-slate-50 px-6 py-3.5 border-t border-slate-100 flex justify-end">
+          <button onClick={onClose} className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors">
+            Got It ✓
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [currentApplet, setCurrentApplet] = useState('dashboard');
   const [isDataBookletOpen, setIsDataBookletOpen] = useState(false);
+  const [isHowToGuideOpen, setIsHowToGuideOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // --- PERSISTENT SELECTION HOOK LOGIC ---
   const [categoryStates, setCategoryStates] = useState(() => {
     const saved = localStorage.getItem('wjec_companion_collapsed_units');
     if (saved) {
@@ -34,7 +217,6 @@ function App() {
         console.error("Failed parsing persistent menu metrics", e);
       }
     }
-    // Default Fallback: All modules initialize wide open
     return { 'Unit 1': true, 'Unit 2': true, 'Unit 3': true, 'Unit 4': true };
   });
 
@@ -67,6 +249,13 @@ function App() {
   ];
 
   const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
+
+  const wjecUnitTitles = {
+    'Unit 1': 'Chemical Particles and Quantitative Chemistry',
+    'Unit 2': 'Organic Compounds and Energy',
+    'Unit 3': 'Physical and Inorganic Chemistry',
+    'Unit 4': 'Organic Chemistry and Analysis'
+  };
 
   const handleNav = (id) => {
     setCurrentApplet(id);
@@ -101,7 +290,7 @@ function App() {
             <HeaderBrand />
           </button>
 
-          {/* Desktop Collapsible Navigation Menu */}
+          {/* Desktop Dropdown Menu */}
           <nav className="hidden md:flex items-center gap-2 shrink-0" style={{ textTransform: 'none' }}>
             <button 
               onClick={() => handleNav('dashboard')}
@@ -156,9 +345,20 @@ function App() {
           </nav>
 
           <div className="flex items-center gap-2 shrink-0">
+            {/* --- CONDITIONAL CONTEXT HOW-TO GUIDE TRIGGER BUTTON --- */}
+            {currentApplet !== 'dashboard' && (
+              <button 
+                onClick={() => setIsHowToGuideOpen(true)}
+                className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-3 md:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs"
+              >
+                <span>💡</span>
+                <span className="hidden sm:inline">How-To Guide</span>
+              </button>
+            )}
+
             <button 
               onClick={() => setIsDataBookletOpen(true)}
-              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-2 text-xs md:text-sm"
+              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-2 text-xs"
             >
               <span>📚</span>
               <span className="hidden sm:inline">Data Booklet</span>
@@ -270,7 +470,7 @@ function App() {
               </div>
             </div>
 
-            {/* MAIN CORE PERSISTENT SPEC ACCORDION LIST MATRIX */}
+            {/* MAIN SPEC ACCORDION LIST MATRIX */}
             <div className="w-full max-w-5xl mx-auto text-left space-y-10" style={{ textTransform: 'none' }}>
               {mainUnits.map(unitRow => {
                 const filteredApplets = applets.filter(a => a.unit.startsWith(unitRow));
@@ -282,20 +482,24 @@ function App() {
                     
                     <div className="border-b-2 border-slate-200 pb-2 mb-5 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <span className="bg-slate-800 text-white text-xs font-black px-3 py-1 rounded-md tracking-wider shadow-sm uppercase">{unitRow}</span>
-                        <h2 className="text-sm font-extrabold text-slate-500 tracking-wide uppercase">Core Specification Modules</h2>
+                        <span className="inline-flex items-center justify-center text-center bg-slate-800 text-white text-xs font-black h-7 px-3 rounded-md tracking-wider shadow-sm uppercase shrink-0 min-w-[4.8rem]">
+                          {unitRow}
+                        </span>
+                        <h2 className="text-xs sm:text-sm font-black text-slate-500 tracking-wide uppercase leading-tight" style={{ textTransform: 'none' }}>
+                          {wjecUnitTitles[unitRow] || 'Core Specification Modules'}
+                        </h2>
                       </div>
                       
                       <button
                         type="button"
                         onClick={() => toggleCategory(unitRow)}
-                        className={`text-[10px] font-black px-3 py-1 rounded-xl border transition-all ${
+                        className={`text-[10px] font-black px-3 py-1 rounded-xl border transition-all shrink-0 ${
                           isUnitOpen 
                             ? 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100' 
                             : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-sm'
                         }`}
                       >
-                        {isUnitOpen ? 'Collapse Category' : 'Expand Category'}
+                        {isUnitOpen ? 'Hide Unit' : 'Expand Unit'}
                       </button>
                     </div>
 
@@ -368,7 +572,9 @@ function App() {
         </div>
       </main>
 
+      {/* --- SLIDE-IN MODAL WINDOW LAYOUTS --- */}
       <DataBooklet isOpen={isDataBookletOpen} onClose={() => setIsDataBookletOpen(false)} />
+      <HowToGuideModal isOpen={isHowToGuideOpen} onClose={() => setIsHowToGuideOpen(false)} appletId={currentApplet} />
     </div>
   );
 }
