@@ -154,6 +154,7 @@ function App() {
           {currentApplet === 'enthalpy' && <EnthalpyCombustion />}
           {currentApplet === 'acids' && <AcidsAndBases />}
           {currentApplet === 'buffers' && <BufferSolutions />}
+          {currentApplet === 'rates' && <ReactionRates />}
         </div>
       </main>
 
