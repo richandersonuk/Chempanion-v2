@@ -583,6 +583,8 @@ function App() {
           {currentApplet === 'acids' && <AcidsAndBases />}
           {currentApplet === 'buffers' && <BufferSolutions />}
           {currentApplet === 'cell-potentials' && <CellPotentials />}
+          {currentApplet === 'thermometric' && <ThermometricTitration />}
+
         </div>
       </main>
 
