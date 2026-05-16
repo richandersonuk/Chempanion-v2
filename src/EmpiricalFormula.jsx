@@ -84,7 +84,7 @@ const EmpiricalFormula = () => {
         title: "Empirical Formula via Reacting Masses",
         text: <>During a laboratory investigation, {selected.txt}. Quantities recorded were <b>{mass1} g of {selected.label1}</b> and <b>{mass2} g of {selected.label2}</b>.</>,
         question: "Deduce the empirical formula for the resulting product compound.",
-        placeholder: "P₂O₅",
+        placeholder: "e.g. P₂O₅",
         label: "Empirical Formula =",
         correct: selected.ans,
         isFormula: true
@@ -104,7 +104,7 @@ const EmpiricalFormula = () => {
         title: "Molecular Formula via Relative Molar Mass",
         text: <>An organic compound has an empirical formula of <b>{selected.emp}</b>. Separate mass spectrometry analysis establishes that its overall relative molecular mass (M<sub>r</sub>) is exactly <b>{selected.mr}</b>.</>,
         question: "Deduce the true molecular formula for this organic structure.",
-        placeholder: "C₆H₁₂O₆",
+        placeholder: "e.g. C₆H₁₂O₆",
         label: "Molecular Formula =",
         correct: selected.mol,
         isFormula: true
