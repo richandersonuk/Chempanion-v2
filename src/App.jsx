@@ -1,3 +1,4 @@
+import './App.css';
 import React, { useState } from 'react';
 import { Logo, HeaderBrand } from './Branding';
 import DataBooklet from './DataBooklet';
