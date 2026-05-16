@@ -6,16 +6,14 @@ const ThermometricTitration = () => {
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
   
-  // Interactive Slider Crosshair & Pinch Scale States
-  const [userVol, setUserVol] = useState(20.0);
+  // Interactive Slider Crosshair State
+  const [userVol, setUserVol] = useState(1.0); 
   const [isDragging, setIsDragging] = useState(false);
-  const [mainZoom, setMainZoom] = useState(1.0);
   
   const svgRef = useRef(null);
-  const touchStartDistRef = useRef(0);
-  const baseScaleRef = useRef(1.0);
+  const prevXRef = useRef(0);
 
-  // Set standard graph dimensions
+  // Layout Viewport Metrics Constants
   const xStart = 40; 
   const xEnd = 280;
   const yTop = 20; 
@@ -38,7 +36,7 @@ const ThermometricTitration = () => {
     if (selection === 'read_graph') {
       newProb = {
         title: "Thermometric Titration: Graphical Interpretation",
-        text: <>A student titrated 25.0 cm³ of hydrochloric acid against sodium hydroxide solution. Pinch-zoom the <b>main graph</b> to magnify the plot, and drag the vertical cursor line to locate the intersection vertex.</>,
+        text: <>A student titrated 25.0 cm³ of hydrochloric acid against sodium hydroxide solution. Click or tap near the intersection vertex; the <b>main graph paper grid will scale up</b> automatically to keep the lines centered as you adjust your positioning.</>,
         question: "State the precise volume of sodium hydroxide required to reach the maximum temperature equivalence point to the nearest 0.1 cm³.",
         label: "Endpoint Volume =",
         unit: "cm³",
@@ -67,8 +65,7 @@ const ThermometricTitration = () => {
 
     setProblem(newProb);
     setStudentAnswer('');
-    setUserVol(20.0);
-    setMainZoom(1.0);
+    setUserVol(1.0); 
     setFeedback({ message: '', status: '' });
   };
 
@@ -76,21 +73,25 @@ const ThermometricTitration = () => {
     generateProblem('read_graph');
   }, []);
 
-  const getTouchDistance = (touches) => {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
   const getX = (vol) => xStart + (vol / 50) * (xEnd - xStart);
 
-  const handleMove = (clientX) => {
-    if (!svgRef.current || !problem.isGraph || !problem.graphData) return;
+  const getDynamicZoom = (currentVol) => {
+    if (!problem || !problem.graphData) return 1.0;
+    const distance = Math.abs(currentVol - problem.graphData.endpointVol);
+    if (distance < 6.0) {
+      return 1.0 + (6.0 - distance) * 0.4;
+    }
+    return 1.0;
+  };
+
+  const getAbsoluteVol = (clientX) => {
+    if (!svgRef.current || !problem.isGraph || !problem.graphData) return userVol;
     const rect = svgRef.current.getBoundingClientRect();
     const screenPct = (clientX - rect.left) / rect.width;
 
+    const activeZoom = getDynamicZoom(userVol);
     const currentCursorX = getX(userVol);
-    const viewW = baseW / mainZoom;
+    const viewW = baseW / activeZoom;
     
     let viewBoxX = currentCursorX - viewW / 2;
     if (viewBoxX < 0) viewBoxX = 0;
@@ -102,52 +103,60 @@ const ThermometricTitration = () => {
     if (pctVolume < 0) pctVolume = 0;
     if (pctVolume > 1) pctVolume = 1;
     
-    // Snaps cleanly to 0.1 cm³ increments
     let computedVol = Math.round(pctVolume * 50 * 10) / 10;
-    
-    // Boundary checks to stay away from the exact zero edge
     if (computedVol < 1.0) computedVol = 1.0;
     if (computedVol > 49.0) computedVol = 49.0;
+    return computedVol;
+  };
+
+  const handleRelativeMove = (currentClientX) => {
+    if (!problem.isGraph || !problem.graphData) return;
     
-    setUserVol(computedVol);
+    const deltaPixels = currentClientX - prevXRef.current;
+    prevXRef.current = currentClientX;
+
+    const motionDampener = 0.055; 
+
+    setUserVol((prevVol) => {
+      let nextVol = prevVol + (deltaPixels * motionDampener);
+      nextVol = Math.round(nextVol * 10) / 10;
+      
+      if (nextVol < 1.0) nextVol = 1.0;
+      if (nextVol > 49.0) nextVol = 49.0;
+      return nextVol;
+    });
   };
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    handleMove(e.clientX);
+    setFeedback({ message: '', status: '' });
+    
+    const snappedVol = getAbsoluteVol(e.clientX);
+    setUserVol(snappedVol);
+    prevXRef.current = e.clientX;
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    handleMove(e.clientX);
+    handleRelativeMove(e.clientX);
   };
 
   const handleTouchStart = (e) => {
-    if (e.touches.length === 2) {
-      setIsDragging(false); 
-      touchStartDistRef.current = getTouchDistance(e.touches);
-      baseScaleRef.current = mainZoom;
-      return;
-    }
     setIsDragging(true);
+    setFeedback({ message: '', status: '' });
+    
     if (e.touches && e.touches[0]) {
-      handleMove(e.touches[0].clientX);
+      const touchX = e.touches[0].clientX;
+      const snappedVol = getAbsoluteVol(touchX);
+      setUserVol(snappedVol);
+      prevXRef.current = touchX;
     }
   };
 
   const handleTouchMove = (e) => {
-    if (e.touches.length === 2) {
-      const dist = getTouchDistance(e.touches);
-      const factor = dist / touchStartDistRef.current;
-      let newScale = baseScaleRef.current * factor;
-      if (newScale < 1.0) newScale = 1.0;
-      if (newScale > 3.5) newScale = 3.5; 
-      setMainZoom(newScale);
-      return;
-    }
     if (!isDragging) return;
     if (e.touches && e.touches[0]) {
-      handleMove(e.touches[0].clientX);
+      handleRelativeMove(e.touches[0].clientX);
     }
   };
 
@@ -203,21 +212,39 @@ const ThermometricTitration = () => {
 
   if (!problem) return null;
 
-  // Build out graph components strictly if we are in interpretation mode
   let graphContent = null;
   if (mode === 'read_graph' && problem.graphData) {
+    const { tStart, tMax, tEnd, endpointVol } = problem.graphData;
+    
     const getY = (temp) => {
-      const minT = problem.graphData.tStart - 2;
-      const maxT = problem.graphData.tMax + 2;
+      const minT = tStart - 2;
+      const maxT = tMax + 2;
       return yBottom - ((temp - minT) / (maxT - minT)) * (yBottom - yTop);
     };
 
+    // Calculate current vertical position on trend lines
+    let activeT = tStart;
+    if (userVol <= endpointVol) {
+      activeT = tStart + (userVol / endpointVol) * (tMax - tStart);
+    } else {
+      activeT = tMax - ((userVol - endpointVol) / (50 - endpointVol)) * (tMax - tEnd);
+    }
+
     const cursorX = getX(userVol);
-    const viewW = baseW / mainZoom;
-    const viewH = baseH / mainZoom;
+    const cursorY = getY(activeT);
+    
+    const distanceToTarget = Math.abs(userVol - endpointVol);
+    const currentZoom = getDynamicZoom(userVol);
+    
+    // --- OPAQUE SMOOTH GRADIENT MATH MATRIX ---
+    // Scales linearly down from 0.8 to 0.5 within the active 6.0 cm³ zoom threshold zone
+    const lineOpacity = distanceToTarget >= 6.0 ? 0.8 : 0.5 + (distanceToTarget / 6.0) * 0.3;
+
+    const viewW = baseW / currentZoom;
+    const viewH = baseH / currentZoom;
     
     let viewX = cursorX - viewW / 2;
-    let viewY = 80 - viewH / 2;
+    let viewY = cursorY - viewH / 2;
     
     if (viewX < 0) viewX = 0;
     if (viewX + viewW > baseW) viewX = baseW - viewW;
@@ -226,7 +253,14 @@ const ThermometricTitration = () => {
 
     const mainViewBoxString = `${viewX} ${viewY} ${viewW} ${viewH}`;
 
-    // Generate the sliding ticks for the non-scrolling tracking lens
+    const fineXLines = [];
+    for (let x = 0; x <= 50; x += 1) fineXLines.push(x);
+
+    const minTBound = Math.floor(tStart - 2);
+    const maxTBound = Math.ceil(tMax + 2);
+    const fineYLines = [];
+    for (let y = minTBound; y <= maxTBound; y += 0.5) fineYLines.push(y);
+
     const zoomTicks = [];
     const minTickBound = Math.floor((userVol - 2.0) * 10) / 10;
     const maxTickBound = Math.ceil((userVol + 2.0) * 10) / 10;
@@ -236,9 +270,9 @@ const ThermometricTitration = () => {
 
     graphContent = (
       <div className="w-full max-w-md mx-auto my-4 flex flex-col items-center gap-4">
-        {/* Main Interactive Plot Frame */}
+        {/* Main Plot Framework Canvas */}
         <div 
-          className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm select-none relative cursor-crosshair touch-none overflow-hidden"
+          className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm select-none relative cursor-w-resize touch-none overflow-hidden"
           onMouseMove={handleMouseMove}
           onMouseUp={() => setIsDragging(false)}
           onMouseLeave={() => setIsDragging(false)}
@@ -248,44 +282,69 @@ const ThermometricTitration = () => {
           <svg 
             ref={svgRef}
             viewBox={mainViewBoxString} 
-            className="w-full h-auto overflow-visible transition-all duration-75"
+            className="w-full h-auto overflow-visible transition-all duration-200 ease-out"
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
           >
-            {/* Grid Framework Background */}
-            <line x1={xStart} y1={yTop} x2={xEnd} y2={yTop} stroke="#f1f5f9" />
-            <line x1={xStart} y1={75} x2={xEnd} y2={75} stroke="#f1f5f9" />
-            <line x1={xStart} y1={yBottom} x2={xEnd} y2={yBottom} stroke="#cbd5e1" strokeWidth="1.5" />
-            <line x1={xStart} y1={yTop} x2={xStart} y2={yBottom} stroke="#cbd5e1" strokeWidth="1.5" />
+            {/* Faint Graph Paper Subdivisions */}
+            {fineXLines.map(v => (
+              <line 
+                key={`fx-${v}`}
+                x1={getX(v)} y1={yTop} x2={getX(v)} y2={yBottom} 
+                stroke="#cbd5e1" 
+                strokeWidth={v % 5 === 0 ? "0.6" : "0.3"} 
+                opacity={currentZoom > 1.4 ? "0.5" : "0.15"} 
+              />
+            ))}
+            {fineYLines.map(t => (
+              <line 
+                key={`fy-${t}`}
+                x1={xStart} y1={getY(t)} x2={xEnd} y2={getY(t)} 
+                stroke="#cbd5e1" 
+                strokeWidth={t % 1 === 0 ? "0.6" : "0.3"} 
+                opacity={currentZoom > 1.4 ? "0.5" : "0.15"} 
+              />
+            ))}
 
-            {/* X Axis Coordinates */}
+            {/* Major Outer Border Lines */}
+            <line x1={xStart} y1={yTop} x2={xEnd} y2={yTop} stroke="#cbd5e1" opacity="0.5" />
+            <line x1={xStart} y1={75} x2={xEnd} y2={75} stroke="#cbd5e1" opacity="0.3" />
+            <line x1={xStart} y1={yBottom} x2={xEnd} y2={yBottom} stroke="#94a3b8" strokeWidth="1.2" />
+            <line x1={xStart} y1={yTop} x2={xStart} y2={yBottom} stroke="#94a3b8" strokeWidth="1.2" />
+
+            {/* Major X Axis Labels */}
             {[0, 10, 20, 30, 40, 50].map((v) => (
               <g key={v}>
-                <line x1={getX(v)} y1={yBottom} x2={getX(v)} y2={yBottom + 4} stroke="#94a3b8" />
-                <text x={getX(v)} y={yBottom + 13} textAnchor="middle" className="text-[9px] font-mono font-black fill-slate-400">{v}</text>
+                <line x1={getX(v)} y1={yBottom} x2={getX(v)} y2={yBottom + 3} stroke="#94a3b8" />
+                <text x={getX(v)} y={yBottom + 11} textAnchor="middle" className="text-[8px] font-mono font-black fill-slate-400">{v}</text>
               </g>
             ))}
-            <text x="160" y="157" textAnchor="middle" className="text-[9px] font-black fill-slate-400 uppercase tracking-wider">Volume of NaOH added (cm³)</text>
+            <text x="160" y="154" textAnchor="middle" className="text-[9px] font-black fill-slate-400 uppercase tracking-wider">Volume of NaOH added (cm³)</text>
 
-            {/* Y Axis Temperatures */}
-            {[Math.floor(problem.graphData.tStart), Math.ceil(problem.graphData.tMax)].map((t) => (
+            {/* Major Y Axis Labels */}
+            {[Math.floor(tStart), Math.ceil(tMax)].map((t) => (
               <g key={t}>
-                <line x1={xStart - 4} y1={getY(t)} x2={xStart} y2={getY(t)} stroke="#94a3b8" />
-                <text x={xStart - 7} y={getY(t) + 3} textAnchor="end" className="text-[9px] font-mono font-bold fill-slate-400">{t}°C</text>
+                <line x1={xStart - 3} y1={getY(t)} x2={xStart} y2={getY(t)} stroke="#94a3b8" />
+                <text x={xStart - 6} y={getY(t) + 2.5} textAnchor="end" className="text-[8px] font-mono font-bold fill-slate-400">{t}°C</text>
               </g>
             ))}
 
-            {/* Lines of best fit */}
-            <line x1={getX(0)} y1={getY(problem.graphData.tStart)} x2={getX(problem.graphData.endpointVol)} y2={getY(problem.graphData.tMax)} stroke="#326fa0" strokeWidth="2" strokeDasharray="3 2" />
-            <line x1={getX(problem.graphData.endpointVol)} y1={getY(problem.graphData.tMax)} x2={getX(50)} y2={getY(problem.graphData.tEnd)} stroke="#e11d48" strokeWidth="2" strokeDasharray="3 2" />
+            {/* Plotted Trend Lines */}
+            <line x1={getX(0)} y1={getY(tStart)} x2={getX(endpointVol)} y2={getY(tMax)} stroke="#326fa0" strokeWidth="2" strokeDasharray="3 1.5" />
+            <line x1={getX(endpointVol)} y1={getY(tMax)} x2={getX(50)} y2={getY(tEnd)} stroke="#e11d48" strokeWidth="2" strokeDasharray="3 1.5" />
 
-            {/* Dynamic Cursor Assembly */}
-            <line x1={cursorX} y1={yTop - 5} x2={cursorX} y2={yBottom + 5} stroke="#f59e0b" strokeWidth="2" />
-            <polygon points={`${cursorX},${yTop - 5} ${cursorX - 4},${yTop - 12} ${cursorX + 4},${yTop - 12}`} className="fill-amber-500" />
+            {/* 2D Crosshair Cursor Tracker with Proximity Opacity */}
+            <line 
+              x1={cursorX} y1={yTop} x2={cursorX} y2={yBottom} 
+              stroke="#f59e0b" strokeWidth="1.5" 
+              opacity={lineOpacity} 
+              className="transition-opacity duration-150 ease-out"
+            />
+            <circle cx={cursorX} cy={cursorY} r="3" className="fill-amber-500 stroke-white stroke-2 shadow-sm" />
           </svg>
         </div>
 
-        {/* --- FIXED DEAD-CENTER LOCK LENS --- */}
+        {/* --- MAGNIFIED SUBDIVISION TRACKING LENS --- */}
         <div className="w-full bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-inner flex flex-col items-center select-none">
           <span className="text-[8px] font-black tracking-widest uppercase text-amber-400 mb-2.5">Magnified Tracking Lens (0.1 cm³ subdivisions)</span>
           
@@ -295,7 +354,6 @@ const ThermometricTitration = () => {
             {zoomTicks.map((v) => {
               if (v < 0 || v > 50) return null;
               
-              // Centers the selected tenths coordinate squarely at x = 150px
               const xPos = 150 + (v - userVol) * 80; 
               if (xPos < -10 || xPos > 310) return null;
 
@@ -319,7 +377,6 @@ const ThermometricTitration = () => {
               );
             })}
 
-            {/* Center Anchor Hairline Potentials */}
             <line x1="150" y1="0" x2="150" y2="35" stroke="#f59e0b" strokeWidth="2" />
             <circle cx="150" cy="2" r="3" className="fill-amber-400" />
           </svg>
@@ -331,7 +388,6 @@ const ThermometricTitration = () => {
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       
-      {/* --- REPERTOIRE DASHBOARD SWITCHER --- */}
       <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
         <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
@@ -358,7 +414,6 @@ const ThermometricTitration = () => {
         {problem.question}
       </div>
 
-      {/* --- ENTRY CONTAINER --- */}
       <div className="w-full flex items-center justify-center my-6 overflow-x-auto" style={{ textTransform: 'none' }}>
         <div 
           className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-2 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
@@ -384,7 +439,12 @@ const ThermometricTitration = () => {
       </div>
 
       {feedback.message && (
-        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
+        <div className="feedback-box feedback-error" style={{ textTransform: 'none', display: feedback.status === 'error' ? 'block' : 'none' }}>
+          {feedback.message}
+        </div>
+      )}
+      {feedback.status === 'success' && (
+        <div className="feedback-box feedback-success" style={{ textTransform: 'none' }}>
           {feedback.message}
         </div>
       )}
