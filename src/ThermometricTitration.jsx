@@ -6,10 +6,10 @@ const ThermometricTitration = () => {
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
   
-  // Interactive Slider Crosshair & Pinch States
+  // Interactive Crosshair & Pinch Scale States
   const [userVol, setUserVol] = useState(20.0);
   const [isDragging, setIsDragging] = useState(false);
-  const [pinchScale, setPinchScale] = useState(1.0);
+  const [mainZoom, setMainZoom] = useState(1.0);
   
   const svgRef = useRef(null);
   const touchStartDistRef = useRef(0);
@@ -20,7 +20,6 @@ const ThermometricTitration = () => {
     setMode(selection);
 
     let newProb = {};
-    
     const volAcid = 25.0; 
     const endpointVol = parseFloat((16 + Math.random() * 12).toFixed(1)); 
     const tStart = parseFloat((18.5 + Math.random() * 3).toFixed(1));
@@ -31,7 +30,7 @@ const ThermometricTitration = () => {
     if (selection === 'read_graph') {
       newProb = {
         title: "Thermometric Titration: Graphical Interpretation",
-        text: <>A student titrated 25.0 cm³ of hydrochloric acid against sodium hydroxide. Drag the <b>vertical cursor line</b> to align with the intersection vertex. Use the high-precision tracking zoom window underneath to determine the exact neutralisation endpoint volume.</>,
+        text: <>A student titrated 25.0 cm³ of hydrochloric acid against sodium hydroxide solution. Pinch-zoom the <b>main graph</b> to magnify the plot, and drag the vertical cursor line to locate the intersection vertex.</>,
         question: "State the precise volume of sodium hydroxide required to reach the maximum temperature equivalence point to the nearest 0.1 cm³.",
         label: "Endpoint Volume =",
         unit: "cm³",
@@ -61,7 +60,7 @@ const ThermometricTitration = () => {
     setProblem(newProb);
     setStudentAnswer('');
     setUserVol(20.0);
-    setPinchScale(1.0);
+    setMainZoom(1.0);
     setFeedback({ message: '', status: '' });
   };
 
@@ -69,28 +68,40 @@ const ThermometricTitration = () => {
     generateProblem('read_graph');
   }, []);
 
-  // Multi-touch geometry calculation utility
   const getTouchDistance = (touches) => {
     const dx = touches[0].clientX - touches[1].clientX;
     const dy = touches[0].clientY - touches[1].clientY;
     return Math.sqrt(dx * dx + dy * dy);
   };
 
+  // Maps screen click coordinates accurately when the main graph is zoomed/shifted
   const handleMove = (clientX) => {
-    if (!svgRef.current || !problem.isGraph) return;
+    if (!svgRef.current || !problem.isGraph || !problem.graphData) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const xRelative = clientX - rect.left;
+    const screenPct = (clientX - rect.left) / rect.width;
+
+    const xStartCoord = 40; const xEndCoord = 280;
+    const getX = (vol) => xStartCoord + (vol / 50) * (xEndCoord - xStartCoord);
+    const currentCursorX = getX(userVol);
+
+    const baseW = 310;
+    const w = baseW / mainZoom;
+    let viewBoxX = currentCursorX - w / 2;
+    if (viewBoxX < 0) viewBoxX = 0;
+    if (viewBoxX + w > baseW) viewBoxX = baseW - w;
+
+    const absoluteSvgX = viewBoxX + screenPct * w;
     
-    const xStart = 40;
-    const xEnd = 280;
+    let pctVolume = (absoluteSvgX - xStartCoord) / (xEndCoord - xStartCoord);
+    if (pctVolume < 0) pctVolume = 0;
+    if (pctVolume > 1) pctVolume = 1;
     
-    let pct = (xRelative - xStart) / (xEnd - xStart);
-    if (pct < 0) pct = 0;
-    if (pct > 1) pct = 1;
+    // Strict 0.1 snapping grid calculation profile
+    let computedVol = Math.round(pctVolume * 50 * 10) / 10;
     
-    let computedVol = parseFloat((pct * 50).toFixed(1));
-    // Enforce line boundary protection to start just away from zero
+    // Boundary lock to prevent line jumping onto the y-axis
     if (computedVol < 1.0) computedVol = 1.0;
+    if (computedVol > 49.0) computedVol = 49.0;
     
     setUserVol(computedVol);
   };
@@ -107,9 +118,9 @@ const ThermometricTitration = () => {
 
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
-      setIsDragging(false); // Stop pointer tracking while active pinch gesture rules apply
+      setIsDragging(false); 
       touchStartDistRef.current = getTouchDistance(e.touches);
-      baseScaleRef.current = pinchScale;
+      baseScaleRef.current = mainZoom;
       return;
     }
     setIsDragging(true);
@@ -124,8 +135,8 @@ const ThermometricTitration = () => {
       const factor = dist / touchStartDistRef.current;
       let newScale = baseScaleRef.current * factor;
       if (newScale < 1.0) newScale = 1.0;
-      if (newScale > 3.0) newScale = 3.0; // Restrict scale caps
-      setPinchScale(newScale);
+      if (newScale > 3.5) newScale = 3.5; 
+      setMainZoom(newScale);
       return;
     }
     if (!isDragging) return;
@@ -145,7 +156,7 @@ const ThermometricTitration = () => {
       if (Math.abs(userNum - targetNum) < 0.15) {
         setFeedback({ message: `Correct! The target intersection sits precisely at ${problem.correct} cm³.`, status: 'success' });
       } else {
-        setFeedback({ message: `Incorrect endpoint reading. Locate the alignment vertex inside the graduation axis.`, status: 'error' });
+        setFeedback({ message: `Incorrect endpoint reading. Look closely at the graduation marks inside the zoom lens.`, status: 'error' });
       }
       return;
     }
@@ -186,41 +197,49 @@ const ThermometricTitration = () => {
 
   if (!problem) return null;
 
-  // Render Coordinate Geometry Map Blocks protected inside dynamic environment blocks
+  // Fully isolated layout wrapper context to completely eliminate calculation screen crashes
   let graphContent = null;
   if (mode === 'read_graph' && problem.graphData) {
-    const xStartCoord = 40; const xEndCoord = 280;
-    const yTopCoord = 20; const yBottomCoord = 130;
+    const xStartC = 40; const xEndC = 280;
+    const yTopC = 20; const yBottomC = 130;
 
-    const getX = (vol) => xStartCoord + (vol / 50) * (xEndCoord - xStartCoord);
+    const getX = (vol) => xStartC + (vol / 50) * (xEndC - xStartC);
     const getY = (temp) => {
       const minT = problem.graphData.tStart - 2;
       const maxT = problem.graphData.tMax + 2;
-      return yBottomCoord - ((temp - minT) / (maxT - minT)) * (yBottomCoord - yTopCoord);
+      return yBottomC - ((temp - minT) / (maxT - minT)) * (yBottomC - yTopC);
     };
 
     const cursorX = getX(userVol);
 
-    // Dynamic focal tracking calculations centered around the sliding user variable
-    const dynamicHalfRange = 3.5 / pinchScale;
-    const zoomMinVol = Math.max(0, userVol - dynamicHalfRange);
-    const zoomMaxVol = Math.min(50, userVol + dynamicHalfRange);
+    // Dynamic dynamic viewBox dimensions configuration
+    const baseW = 310; const baseH = 160;
+    const viewW = baseW / mainZoom;
+    const viewH = baseH / mainZoom;
+    
+    let viewX = cursorX - viewW / 2;
+    let viewY = 80 - viewH / 2;
+    
+    if (viewX < 0) viewX = 0;
+    if (viewX + viewW > baseW) viewX = baseW - viewW;
+    if (viewY < 0) viewY = 0;
+    if (viewY + viewH > baseH) viewY = baseH - viewH;
 
-    const getZoomTicks = () => {
-      let ticks = [];
-      let start = Math.floor(zoomMinVol * 10) / 10;
-      let end = Math.ceil(zoomMaxVol * 10) / 10;
-      for (let v = start; v <= end; v += 0.1) {
-        ticks.push(parseFloat(v.toFixed(1)));
-      }
-      return ticks;
-    };
+    const mainViewBoxString = `${viewX} ${viewY} ${viewW} ${viewH}`;
+
+    // Generator logic for the non-scrolling tracking zoom indicator lens panel
+    const zoomTicks = [];
+    const minTickBound = Math.floor((userVol - 2.0) * 10) / 10;
+    const maxTickBound = Math.ceil((userVol + 2.0) * 10) / 10;
+    for (let t = minTickBound; t <= maxTickBound; t += 0.1) {
+      zoomTicks.push(parseFloat(t.toFixed(1)));
+    }
 
     graphContent = (
       <div className="w-full max-w-md mx-auto my-4 flex flex-col items-center gap-4">
-        {/* Main Base Plot Frame */}
+        {/* Main interactive canvas plot */}
         <div 
-          className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm select-none relative cursor-crosshair touch-none"
+          className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm select-none relative cursor-crosshair touch-none overflow-hidden"
           onMouseMove={handleMouseMove}
           onMouseUp={() => setIsDragging(false)}
           onMouseLeave={() => setIsDragging(false)}
@@ -229,69 +248,79 @@ const ThermometricTitration = () => {
         >
           <svg 
             ref={svgRef}
-            viewBox="0 0 310 160" 
-            className="w-full h-auto overflow-visible"
+            viewBox={mainViewBoxString} 
+            className="w-full h-auto overflow-visible transition-all duration-75"
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
           >
-            <line x1={xStartCoord} y1={yTopCoord} x2={xEndCoord} y2={yTopCoord} stroke="#f1f5f9" />
-            <line x1={xStartCoord} y1={75} x2={xEndCoord} y2={75} stroke="#f1f5f9" />
-            <line x1={xStartCoord} y1={yBottomCoord} x2={xEndCoord} y2={yBottomCoord} stroke="#cbd5e1" strokeWidth="1.5" />
-            <line x1={xStartCoord} y1={yTopCoord} x2={xStartCoord} y2={yBottomCoord} stroke="#cbd5e1" strokeWidth="1.5" />
+            <line x1={xStartC} y1={yTopC} x2={xEndC} y2={yTopC} stroke="#f1f5f9" />
+            <line x1={xStartC} y1={75} x2={xEndC} y2={75} stroke="#f1f5f9" />
+            <line x1={xStartC} y1={yBottomC} x2={xEndC} y2={yBottomC} stroke="#cbd5e1" strokeWidth="1.5" />
+            <line x1={xStartC} y1={yTopC} x2={xStartC} y2={yBottomC} stroke="#cbd5e1" strokeWidth="1.5" />
 
             {[0, 10, 20, 30, 40, 50].map((v) => (
               <g key={v}>
-                <line x1={getX(v)} y1={yBottomCoord} x2={getX(v)} y2={yBottomCoord + 4} stroke="#94a3b8" />
-                <text x={getX(v)} y={yBottomCoord + 13} textAnchor="middle" className="text-[9px] font-mono font-bold fill-slate-400">{v}</text>
+                <line x1={getX(v)} y1={yBottomC} x2={getX(v)} y2={yBottomC + 4} stroke="#94a3b8" />
+                <text x={getX(v)} y={yBottomC + 13} textAnchor="middle" className="text-[9px] font-mono font-black fill-slate-400">{v}</text>
               </g>
             ))}
             <text x="160" y="157" textAnchor="middle" className="text-[9px] font-black fill-slate-400 uppercase tracking-wider">Volume of NaOH added (cm³)</text>
 
             {[Math.floor(problem.graphData.tStart), Math.ceil(problem.graphData.tMax)].map((t) => (
               <g key={t}>
-                <line x1={xStartCoord - 4} y1={getY(t)} x2={xStartCoord} y2={getY(t)} stroke="#94a3b8" />
-                <text x={xStartCoord - 7} y={getY(t) + 3} textAnchor="end" className="text-[9px] font-mono font-bold fill-slate-400">{t}°C</text>
+                <line x1={xStartC - 4} y1={getY(t)} x2={xStartC} y2={getY(t)} stroke="#94a3b8" />
+                <text x={xStartC - 7} y={getY(t) + 3} textAnchor="end" className="text-[9px] font-mono font-bold fill-slate-400">{t}°C</text>
               </g>
             ))}
 
             <line x1={getX(0)} y1={getY(problem.graphData.tStart)} x2={getX(problem.graphData.endpointVol)} y2={getY(problem.graphData.tMax)} stroke="#326fa0" strokeWidth="2" strokeDasharray="3 2" />
             <line x1={getX(problem.graphData.endpointVol)} y1={getY(problem.graphData.tMax)} x2={getX(50)} y2={getY(problem.graphData.tEnd)} stroke="#e11d48" strokeWidth="2" strokeDasharray="3 2" />
 
-            {/* User Draggable Marker Indicator */}
-            <line x1={cursorX} y1={yTopCoord - 5} x2={cursorX} y2={yBottomCoord + 5} stroke="#f59e0b" strokeWidth="2" />
-            <polygon points={`${cursorX},${yTopCoord - 5} ${cursorX - 4},${yTopCoord - 12} ${cursorX + 4},${yTopCoord - 12}`} className="fill-amber-500" />
+            <line x1={cursorX} y1={yTopC - 5} x2={cursorX} y2={yBottomC + 5} stroke="#f59e0b" strokeWidth="2" />
+            <polygon points={`${cursorX},${yTopC - 5} ${cursorX - 4},${yTopCoord - 12} ${cursorX + 4},${yTopCoord - 12}`} className="fill-amber-500" />
           </svg>
         </div>
 
-        {/* Real-time Tracking Close-up Axis Strip */}
-        <div className="w-full bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-inner flex flex-col items-center">
-          <span className="text-[8px] font-black tracking-widest uppercase text-amber-400 mb-2.5">Live Tracking Zoom Grid (Pinch map to magnify)</span>
+        {/* --- DYNAMIC TRACKING LENS: NO SCROLL, PERMANENT VERTICAL ALIGNMENT --- */}
+        <div className="w-full bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-inner flex flex-col items-center select-none">
+          <span className="text-[8px] font-black tracking-widest uppercase text-amber-400 mb-3">Magnified Tracking Lens (0.1 cm³ subdivisions)</span>
           
-          <div className="w-full overflow-x-auto py-1 select-none">
-            <div className="min-w-[480px] h-12 relative border-b border-slate-700">
-              {getZoomTicks().map((v) => {
-                const pct = (v - zoomMinVol) / (zoomMaxVol - zoomMinVol);
-                if (pct < 0 || pct > 1) return null;
-                const leftPos = `${pct * 100}%`;
-                const isInt = v % 1 === 0;
+          <svg viewBox="0 0 300 45" className="w-full h-auto overflow-hidden">
+            {/* Ambient background hash guide overlay */}
+            <rect x="0" y="0" width="300" height="35" fill="#1e293b" opacity="0.4" />
+            
+            {/* Dynamically shifts the tick grid layout under the fixed cursor anchor */}
+            {zoomTicks.map((v) => {
+              if (v < 0 || v > 50) return null;
+              
+              // Centers alignment calculation directly at x=150 baseline
+              const xPos = 150 + (v - userVol) * 80; 
+              if (xPos < -10 || xPos > 310) return null;
 
-                return (
-                  <div key={v} className="absolute top-0 transform -translate-x-1/2 flex flex-col items-center" style={{ left: leftPos }}>
-                    <div className={`w-[1px] bg-slate-700 ${isInt ? 'h-4 bg-slate-400' : 'h-2'}`} />
-                    {isInt && <span className="text-[9px] font-mono font-bold text-slate-500 mt-1">{v}.0</span>}
-                  </div>
-                );
-              })}
+              const isInteger = v % 1 === 0;
+              const isHalf = v % 0.5 === 0;
 
-              {/* Real user tracking pointer alignment dot */}
-              <div 
-                className="absolute top-0 w-0.5 h-6 bg-amber-500 z-20 shadow-glow"
-                style={{ left: `${((userVol - zoomMinVol) / (zoomMaxVol - zoomMinVol)) * 100}%` }}
-              >
-                <div className="w-1.5 h-1.5 bg-amber-500 rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2" />
-              </div>
-            </div>
-          </div>
+              return (
+                <g key={v} transform={`translate(${xPos}, 0)`}>
+                  <line 
+                    x1="0" y1="0" x2="0" 
+                    y2={isInteger ? "18" : isHalf ? "12" : "7"} 
+                    stroke={isInteger ? "#94a3b8" : isHalf ? "#64748b" : "#475569"} 
+                    strokeWidth={isInteger ? "1.5" : "1"} 
+                  />
+                  {isInteger && (
+                    <text x="0" y="29" textAnchor="middle" className="text-[9px] font-mono font-black fill-slate-400">
+                      {v.toFixed(0)}.0
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+
+            {/* Permanent Dead-Center Tracking Pointer Anchor Line */}
+            <line x1="150" y1="0" x2="150" y2="35" stroke="#f59e0b" strokeWidth="2" strokeDasharray="none" />
+            <circle cx="150" cy="2" r="3" className="fill-amber-400" />
+          </svg>
         </div>
       </div>
     );
@@ -300,7 +329,7 @@ const ThermometricTitration = () => {
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       
-      {/* --- DASHBOARD MODE SELECT --- */}
+      {/* --- DASHBOARD CONTROL TOGGLE --- */}
       <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
         <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
@@ -327,7 +356,7 @@ const ThermometricTitration = () => {
         {problem.question}
       </div>
 
-      {/* --- ENTRY CONTAINER --- */}
+      {/* --- VALUE ENTRY SLIP CONTAINER --- */}
       <div className="w-full flex items-center justify-center my-6 overflow-x-auto" style={{ textTransform: 'none' }}>
         <div 
           className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-2 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
