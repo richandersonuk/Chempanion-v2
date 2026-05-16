@@ -52,7 +52,7 @@ const KcCalculations = () => {
     setMode(targetMode);
 
     const rxn = reactions[Math.floor(Math.random() * reactions.length)];
-    let questionText = '';
+    let text = '';
     let targetLabel = '';
     let correctAnswer = 0;
     let unitExpectation = '';
@@ -68,25 +68,25 @@ const KcCalculations = () => {
         const pcl5 = parseFloat((Math.random() * 0.2 + 0.1).toFixed(3));
         const pcl3 = parseFloat((Math.random() * 0.4 + 0.3).toFixed(3));
         const cl2 = parseFloat((Math.random() * 0.4 + 0.3).toFixed(3));
-        questionText = `At a given temperature, an equilibrium mixture for the dissociation of PCl₅ contains [PCl₅] = ${pcl5} mol dm⁻³, [PCl₃] = ${pcl3} mol dm⁻³, and [Cl₂] = ${cl2} mol dm⁻³. Calculate the value of Kc for the reaction: ${rxn.eq}.`;
+        text = `At a given temperature, an equilibrium mixture for the dissociation of PCl₅ contains [PCl₅] = ${pcl5} mol dm⁻³, [PCl₃] = ${pcl3} mol dm⁻³, and [Cl₂] = ${cl2} mol dm⁻³. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ pcl5, pcl3, cl2 });
       } else if (rxn.id === 'h2_i2') {
         const h2 = parseFloat((Math.random() * 0.15 + 0.05).toFixed(3));
         const i2 = parseFloat((Math.random() * 0.15 + 0.05).toFixed(3));
         const hi = parseFloat((Math.random() * 0.8 + 0.4).toFixed(3));
-        questionText = `Analysis of an equilibrium system held at 400 °C shows the concentrations are [H₂] = ${h2} mol dm⁻³, [I₂] = ${i2} mol dm⁻³, and [HI] = ${hi} mol dm⁻³. Calculate the value of Kc for the reaction: ${rxn.eq}.`;
+        text = `Analysis of an equilibrium system held at 400 °C shows the concentrations are [H₂] = ${h2} mol dm⁻³, [I₂] = ${i2} mol dm⁻³, and [HI] = ${hi} mol dm⁻³. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ h2, i2, hi });
       } else if (rxn.id === 'so3_sys') {
         const so2 = parseFloat((Math.random() * 0.25 + 0.1).toFixed(3));
         const o2 = parseFloat((Math.random() * 0.15 + 0.05).toFixed(3));
         const so3 = parseFloat((Math.random() * 0.5 + 0.3).toFixed(3));
-        questionText = `At a fixed temperature, the components of the contact process match the following parameter values: [SO₂] = ${so2} mol dm⁻³, [O₂] = ${o2} mol dm⁻³, and [SO₃] = ${so3} mol dm⁻³. Calculate the value of Kc for the reaction: ${rxn.eq}.`;
+        text = `At a fixed temperature, the components of the contact process match the following parameter values: [SO₂] = ${so2} mol dm⁻³, [O₂] = ${o2} mol dm⁻³, and [SO₃] = ${so3} mol dm⁻³. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ so2, o2, so3 });
       } else {
         const n2 = parseFloat((Math.random() * 0.3 + 0.1).toFixed(3));
         const h2 = parseFloat((Math.random() * 0.4 + 0.2).toFixed(3));
         const nh3 = parseFloat((Math.random() * 0.15 + 0.05).toFixed(3));
-        questionText = `The Haber synthesis equilibrium produces the following data parameters: [N₂] = ${n2} mol dm⁻³, [H₂] = ${h2} mol dm⁻³, and [NH₃] = ${nh3} mol dm⁻³. Calculate the value of Kc for the reaction: ${rxn.eq}.`;
+        text = `The Haber synthesis equilibrium produces the following data parameters: [N₂] = ${n2} mol dm⁻³, [H₂] = ${h2} mol dm⁻³, and [NH₃] = ${nh3} mol dm⁻³. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ n2, h2, nh3 });
       }
       targetLabel = 'Kc =';
@@ -98,7 +98,7 @@ const KcCalculations = () => {
         const eqPcl3 = parseFloat((Math.random() * 0.5 + 0.3).toFixed(2)); 
         const eqPcl5Moles = initPcl5 - eqPcl3;
         
-        questionText = `A closed vessel of volume ${volume} dm³ is initially filled with ${initPcl5} mol of PCl₅ gas. At equilibrium, analysis shows that ${eqPcl3} mol of PCl₃ has formed. Calculate the value of Kc. Reaction: ${rxn.eq}.`;
+        text = `A closed vessel of volume ${volume} dm³ is initially filled with ${initPcl5} mol of PCl₅ gas. At equilibrium, analysis shows that ${eqPcl3} mol of PCl₃ has formed. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ pcl5: eqPcl5Moles / volume, pcl3: eqPcl3 / volume, cl2: eqPcl3 / volume });
       } else if (rxn.id === 'h2_i2') {
         const initH2 = parseFloat((Math.random() * 1.0 + 0.5).toFixed(2));
@@ -108,18 +108,18 @@ const KcCalculations = () => {
         const eqI2Moles = initI2 - changeX;
         const eqHiMoles = changeX * 2;
 
-        questionText = `A chemistry student injects ${initH2} mol of H₂ and ${initI2} mol of I₂ into a container with a volume of ${volume} dm³. At equilibrium, ${eqH2Moles} mol of H₂ remains. Calculate the value of Kc. Reaction: ${rxn.eq}.`;
+        text = `A chemistry student injects ${initH2} mol of H₂ and ${initI2} mol of I₂ into a container with a volume of ${volume} dm³. At equilibrium, ${eqH2Moles} mol of H₂ remains. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ h2: eqH2Moles / volume, i2: eqI2Moles / volume, hi: eqHiMoles / volume });
       } else if (rxn.id === 'so3_sys') {
         const initSo2 = 2.0; const initO2 = 1.0; const changeX = 0.3;
         const eqSo2 = initSo2 - (2 * changeX); const eqO2 = initO2 - changeX; const eqSo3 = 2 * changeX;
-        questionText = `A mixture of 2.00 mol of SO₂ and 1.00 mol of O₂ is sealed in a ${volume} dm³ container. At equilibrium, ${(eqO2).toFixed(2)} mol of O₂ remains unreacted. Calculate Kc for the process: ${rxn.eq}.`;
+        text = `A mixture of 2.00 mol of SO₂ and 1.00 mol of O₂ is sealed in a ${volume} dm³ container. At equilibrium, ${(eqO2).toFixed(2)} mol of O₂ remains unreacted. Calculate Kc for the process:`;
         correctAnswer = rxn.calcKc({ so2: eqSo2 / volume, o2: eqO2 / volume, so3: eqSo3 / volume });
       } else {
         const initN2 = 1.0; const initH2 = 3.0; const changeX = 0.2; 
         const eqN2 = initN2 - changeX; const eqH2 = initH2 - (3 * changeX); const eqNh3 = 2 * changeX;
 
-        questionText = `An initial mixture containing 1.00 mol of N₂ and 3.00 mol of H₂ is locked inside a ${volume} dm³ reactor. At equilibrium, the system is found to contain ${(eqN2).toFixed(2)} mol of N₂. Calculate the value of Kc. Reaction: ${rxn.eq}.`;
+        text = `An initial mixture containing 1.00 mol of N₂ and 3.00 mol of H₂ is locked inside a ${volume} dm³ reactor. At equilibrium, the system is found to contain ${(eqN2).toFixed(2)} mol of N₂. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ n2: eqN2 / volume, h2: eqH2 / volume, nh3: eqNh3 / volume });
       }
       targetLabel = 'Kc =';
@@ -129,25 +129,25 @@ const KcCalculations = () => {
       const assignedKc = parseFloat((Math.random() * 40 + 5).toFixed(1));
       if (rxn.id === 'pcl5') {
         const pcl3 = 0.25; const cl2 = 0.20;
-        questionText = `The equilibrium constant Kc for the dissociation of PCl₅ is ${assignedKc} ${rxn.units} at a specified temperature. If [PCl₃] = ${pcl3} mol dm⁻³ and [Cl₂] = ${cl2} mol dm⁻³ at equilibrium, calculate the equilibrium concentration of PCl₅. Reaction: ${rxn.eq}.`;
+        text = `The equilibrium constant Kc for the dissociation of PCl₅ is ${assignedKc} ${rxn.units} at a specified temperature. If [PCl₃] = ${pcl3} mol dm⁻³ and [Cl₂] = ${cl2} mol dm⁻³ at equilibrium, calculate the equilibrium concentration of PCl₅ for the reaction:`;
         correctAnswer = (pcl3 * cl2) / assignedKc;
         targetLabel = '[PCl₅] =';
       } else {
         const h2 = 0.15; const i2 = 0.12;
-        questionText = `The equilibrium constant Kc for the reaction H₂(g) + I₂(g) ⇌ 2HI(g) is ${assignedKc}. If the equilibrium concentrations of the reactants are [H₂] = ${h2} mol dm⁻³ and [I₂] = ${i2} mol dm⁻³, determine the equilibrium concentration of HI.`;
+        text = `The equilibrium constant Kc for the reaction is ${assignedKc}. If the equilibrium concentrations of the reactants are [H₂] = ${h2} mol dm⁻³ and [I₂] = ${i2} mol dm⁻³, determine the equilibrium concentration of HI for the reaction:`;
         correctAnswer = Math.sqrt(assignedKc * h2 * i2);
         targetLabel = '[HI] =';
       }
       unitExpectation = 'mol dm⁻³';
     } else if (targetMode === 'predict_units') {
-      questionText = `Deduce the correct equilibrium constant (Kc) units for the following reaction:\n\n${rxn.eq}`;
-      newProb = { questionText, targetPowers: rxn.targetPowers, targetMode };
+      text = `Deduce the correct equilibrium constant (Kc) units for the following reaction:`;
+      newProb = { text, eq: rxn.eq, targetPowers: rxn.targetPowers, targetMode };
       setProblem(newProb);
       setFeedback({ type: '', message: '' });
       return;
     }
 
-    setProblem({ questionText, targetLabel, correctAnswer, targetMode, unitExpectation });
+    setProblem({ text, eq: rxn.eq, targetLabel, correctAnswer, targetMode, unitExpectation });
     setCoeff('');
     setExp('');
     setFeedback({ type: '', message: '' });
@@ -169,7 +169,6 @@ const KcCalculations = () => {
       { unit: 's', p: sIdx }
     ];
 
-    // Primary sort: Descending by index power value. Secondary sort: Alphabetical a-z tie-breaker if index matches.
     pieces.sort((a, b) => {
       if (b.p !== a.p) {
         return b.p - a.p;
@@ -237,7 +236,7 @@ const KcCalculations = () => {
             className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
             style={{ textTransform: 'none' }}
           >
-            <option value="ice_table">Initial Moles + Volume → Kc (ICE Table)</option>
+            <option value="ice_table">Initial Moles + Volume → Kc</option>
             <option value="direct_kc">Equilibrium Concentrations → Kc</option>
             <option value="find_missing">Kc + Rearrangement → Concentration</option>
             <option value="predict_units">Deduce Equilibrium Units Practice</option>
@@ -254,17 +253,30 @@ const KcCalculations = () => {
       </div>
 
       <div className="applet-header" style={{ textTransform: 'none' }}>Kc Equilibrium Constants</div>
+      
+      {/* --- RECONSTRUCTED ANTI-FRAGMENTATION CONTAINER FOR EQUATIONS --- */}
       <div className="question-text text-center px-4 leading-relaxed whitespace-pre-line" style={{ textTransform: 'none' }}>
-        {problem.questionText}
+        {problem.text}
+        {mode === 'predict_units' ? (
+          <div className="my-3 font-mono font-black text-sm bg-slate-100 border border-slate-200 px-4 py-2 rounded-xl inline-block whitespace-nowrap">
+            {problem.eq}
+          </div>
+        ) : (
+          <>
+            {' '}
+            <span className="inline-block whitespace-nowrap font-mono font-black text-slate-800 bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/50">
+              {problem.eq}
+            </span>
+          </>
+        )}
       </div>
 
-      {/* --- RECONSTRUCTED INTERACTIVE UNIT CONTROLS --- */}
+      {/* --- PREDICT UNITS WORKSPACE INTERFACE --- */}
       {mode === 'predict_units' ? (
         <div className="w-full max-w-sm mx-auto my-6 bg-slate-50 border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center gap-4" style={{ textTransform: 'none' }}>
           <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Select Power Indexes</span>
           
           <div className="grid grid-cols-3 gap-4 w-full">
-            {/* Mol Control Cell */}
             <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
               <span className="text-xs font-black font-mono text-slate-500 mb-1">mol</span>
               <div className="flex items-center gap-1.5">
@@ -274,7 +286,6 @@ const KcCalculations = () => {
               </div>
             </div>
 
-            {/* Dm Control Cell: Increments/Decrements by blocks of 3 */}
             <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
               <span className="text-xs font-black font-mono text-slate-500 mb-1">dm</span>
               <div className="flex items-center gap-1.5">
@@ -284,7 +295,6 @@ const KcCalculations = () => {
               </div>
             </div>
 
-            {/* S Control Cell */}
             <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
               <span className="text-xs font-black font-mono text-slate-500 mb-1">s</span>
               <div className="flex items-center gap-1.5">
@@ -301,7 +311,7 @@ const KcCalculations = () => {
           </div>
         </div>
       ) : (
-        /* --- CONCENTRATION INPUT FIELDS WITH BELOW-ROW UNITS --- */
+        /* --- CALCULATION INPUT CONTAINER --- */
         <div className="w-full flex flex-col items-center justify-center my-6" style={{ textTransform: 'none' }}>
           <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
             <ScientificInput 
@@ -314,7 +324,6 @@ const KcCalculations = () => {
             />
           </div>
           
-          {/* Below-row Unit Placement prevents unnecessary mobile scrolling overflows */}
           <div className="mt-3 text-center select-none whitespace-nowrap" style={{ textTransform: 'none' }}>
             <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mr-1">Units:</span>
             <span className="text-sm font-black text-slate-500 font-mono inline-block bg-white border border-slate-200/60 px-2.5 py-0.5 rounded-lg shadow-sm">{problem.unitExpectation}</span>
