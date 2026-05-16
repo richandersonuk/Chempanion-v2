@@ -83,7 +83,7 @@
   justify-content: center;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
-  flex-wrap: wrap; /* Allows stacking on mobile */
+  flex-wrap: wrap;
 }
 
 .chem-input {
@@ -108,6 +108,7 @@
 .chem-input.error {
   border-color: var(--chem-error-text);
 }
+
 .chem-input.success {
   border-color: var(--chem-success-text);
 }
@@ -139,14 +140,17 @@
   background-color: var(--chem-primary);
   color: white;
 }
+
 .btn-primary:hover {
   background-color: var(--chem-primary-hover);
 }
+
 .btn-secondary {
   background-color: var(--chem-secondary);
   color: var(--chem-text-main);
   border: 1px solid var(--chem-border);
 }
+
 .btn-secondary:hover {
   background-color: var(--chem-secondary-hover);
 }
@@ -185,7 +189,7 @@
   align-items: center;
   z-index: 50;
   padding: 1rem;
-  backdrop-blur: 4px;
+  backdrop-filter: blur(4px); /* FIXED: Changed backdrop-blur to standard CSS format */
 }
 
 .modal-content {
@@ -221,28 +225,25 @@
     max-width: 100%;
   }
 }
-/* --- HOUSESTYLE: EXPLICIT INTERACTIVE CHOICE SECTORS --- */
 
-/* The outer container wrapper tracking labeling headers */
+/* --- HOUSESTYLE: EXPLICIT INTERACTIVE CHOICE SECTORS --- */
 .chem-choice-section {
   width: 100%;
-  max-w: 24rem;
+  max-width: 24rem; /* FIXED: Changed max-w to standard CSS max-width */
   margin: 0.75rem auto;
   text-align: center;
 }
 
-/* Label descriptors hovering over options grids */
 .chem-choice-label {
   display: block;
   font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #94a3b8; /* Slate-400 structural gray */
+  color: #94a3b8;
   margin-bottom: 0.5rem;
 }
 
-/* The structural stack managing option alignments */
 .chem-choice-group {
   display: flex;
   flex-direction: column;
@@ -251,30 +252,27 @@
   padding: 0 1rem;
 }
 
-/* Baseline button styling rule overrides */
 .chem-choice-btn {
   width: 100%;
   padding: 0.65rem 1rem;
   font-size: 0.85rem;
   font-weight: 700;
-  border-radius: 0.75rem; /* 12px layout radius curve */
-  border: 1px solid #e2e8f0; /* slate-200 border line */
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
   background-color: #ffffff;
-  color: #475569; /* Slate-600 baseline text font */
+  color: #475569;
   transition: all 150ms ease-in-out;
   cursor: pointer;
 }
 
-/* Hover feedback mechanics on neutral tabs */
 .chem-choice-btn:hover {
   background-color: #f8fafc;
   color: #1e293b;
 }
 
-/* Boss Level Modifier: The Active/Selected Target State */
 .chem-choice-btn.active {
-  background-color: #f0f7ff; /* Blue-50 signature tint overlay */
-  border-color: #326fa0;     /* Primary brand blue accent color */
+  background-color: #f0f7ff;
+  border-color: #326fa0;
   color: #326fa0;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   transform: scale(1.01);
