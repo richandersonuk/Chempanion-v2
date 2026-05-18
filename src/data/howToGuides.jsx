@@ -138,5 +138,15 @@ export const howToGuides = {
       'Inert Electrodes & Shifts: If a half-cell consists entirely of aqueous ions or gases, you must include an inert Pt(s) electrode on that boundary outer edge. Use Le Chatelier principles to predict non-standard potential shifts.'
     ],
     pitfalls: 'WJEC Examiner Pitfalls: 1) The Multiplier Trap: Never multiply a half-cell E° value by stoichiometric coefficients when balancing electron transfers—E° is an intensive property. 2) Formatting: All cell potentials must explicitly state their sign (+ or −) and be formatted to exactly 2 decimal places (e.g., +1.10 V).'
+  },
+  'chiral-centers': {
+    title: 'Chiral Center Identification (Unit 4.1)',
+    steps: [
+      'Four Single Bonds Rule: Focus only on tetrahedral carbon atoms that possess four single covalent bonds. Instantly disregard any planar sp² hybridised carbons, such as carbonyl groups (C=O), alkenes (C=C), or delocalised aromatic benzene ring structures.',
+      'Account for Implicit Hydrogens: In skeletal structural layouts, remember that unwritten valencies on carbon nodes represent hidden hydrogen atoms (-H). If a junction node displays three visible structural bonds, it holds exactly one implicit hydrogen.',
+      'Audit Branches Sequentially: Trace outwards along every attached group atom-by-atom. If any two pathways match identically all the way to the absolute end of their respective chains (such as two identical ethyl groups), the carbon is symmetrical and achiral.'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: 1) The Hydrocarbon Blindspot: Candidates frequently miss chirality in purely hydrocarbon molecules (like 3-methylhexane) because they look for heteroatoms (like O, N, or Cl) instead of auditing differing branch lengths. 2) The Symmetry Trap: Central nodes (like pentan-3-ol) are commonly guessed incorrectly because students assume any branch hub is asymmetric without realizing that identical flanking chains disqualify the spot.'
   }
+
 };

@@ -5,14 +5,14 @@ const ChiralCenters = () => {
   const [selectedCarbons, setSelectedCarbons] = useState([]);
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
-  // COMREHENSIVE 21 WJEC REALISTIC SPECIFICATION MOLECULAR POOL
+  // CLEAN IUPAC MOLECULAR GRAPH POOL (TRAP LABELS REMOVED / ASYMMETRIC AROMATIC ADDED)
   const moleculesPool = [
     {
       name: "Butan-2-ol",
       id: "butan2ol",
       svgWidth: 240,
       svgHeight: 140,
-      explanation: "Carbon 2 is the sole asymmetric chiral center. It is bonded to four unique environments: -H, -OH, a methyl group (-CH₃), and an ethyl group (-CH₂CH₃). All other aliphatic carbons are bonded to multiple identical hydrogen atoms.",
+      explanation: "Carbon 2 is the sole asymmetric chiral center. It is bonded to four completely unique environments: -H, -OH, a methyl group (-CH₃), and an ethyl group (-CH₂CH₃). All other aliphatic carbons are bonded to multiple identical hydrogen atoms.",
       correct: [2],
       lines: [
         { x1: 40, y1: 100, x2: 90, y2: 60 },
@@ -85,11 +85,12 @@ const ChiralCenters = () => {
       ]
     },
     {
-      name: "2-Phenylhydroxyethanoic acid (Mandelic Acid)",
-      id: "mandelic",
+      // --- UPGRADED ASYMMETRIC AROMATIC RING SCENARIO ---
+      name: "2-(3-Chlorophenyl)-2-hydroxyethanoic acid",
+      id: "mandelic_asymmetric",
       svgWidth: 320,
       svgHeight: 180,
-      explanation: "Carbon 2 is the single chiral center on the side chain, bonded to -H, -OH, -COOH, and the aromatic ring. The six benzene ring carbons (C4 through C9) are entirely sp² hybridised and planar, meaning they cannot host asymmetric centers.",
+      explanation: "Carbon 2 is a benzylic chiral center bonded to -H, -OH, -COOH, and the aromatic ring. Note that the benzene ring itself is asymmetric due to the chlorine atom attached at C5, meaning the pathways tracing clockwise or counter-clockwise around the ring from C3 are completely different. All ring carbons (C3-C8) remain flat, sp² hybridised nodes and cannot be chiral.",
       correct: [2],
       lines: [
         { x1: 252.5, y1: 57.5, x2: 227.5, y2: 32.5 },
@@ -98,8 +99,10 @@ const ChiralCenters = () => {
         { x1: 250, y1: 60, x2: 200, y2: 100 },
         { x1: 200, y1: 100, x2: 200, y2: 131 },
         { x1: 200, y1: 100, x2: 150, y2: 100 },
+        // Aromatic Ring Connections
         { x1: 150, y1: 100, x2: 125, y2: 57 },
         { x1: 125, y1: 57,  x2: 75,  y2: 57 },
+        { x1: 75,  y1: 57,  x2: 58,  y2: 28 },  // C5 to Ring Cl bond
         { x1: 75,  y1: 57,  x2: 50,  y2: 100 },
         { x1: 50,  y1: 100, x2: 75,  y2: 143 },
         { x1: 75,  y1: 143, x2: 125, y2: 143 },
@@ -108,7 +111,8 @@ const ChiralCenters = () => {
       labels: [
         { x: 216, y: 24, text: "O", className: "fill-rose-600 font-black text-xs" },
         { x: 294, y: 60, text: "OH", className: "fill-rose-600 font-black text-xs" },
-        { x: 200, y: 142, text: "OH", className: "fill-rose-600 font-black text-xs" }
+        { x: 200, y: 142, text: "OH", className: "fill-rose-600 font-black text-xs" },
+        { x: 50, y: 16, text: "Cl", className: "fill-emerald-600 font-black text-xs" } // Ring Asymmetry Group
       ],
       atoms: [
         { id: 1, cx: 250, cy: 60, label: "C1" },
@@ -173,7 +177,7 @@ const ChiralCenters = () => {
       ]
     },
     {
-      name: "3-Methylhexane (Hydrocarbon Trap)",
+      name: "3-Methylhexane",
       id: "methylhexane",
       svgWidth: 280,
       svgHeight: 160,
@@ -199,11 +203,11 @@ const ChiralCenters = () => {
       ]
     },
     {
-      name: "Pentan-3-ol (Symmetry Trap)",
+      name: "Pentan-3-ol",
       id: "pentan3ol",
       svgWidth: 260,
       svgHeight: 150,
-      explanation: "This molecule has NO chiral centers. Students often guess Carbon 3, but auditing its positions reveals it is attached to two identical ethyl chains (-CH₂CH₃). Lacking four distinct groups, it remains fully symmetric.",
+      explanation: "This molecule has NO chiral centers. Carbon 3 is attached to two identical, symmetrical ethyl chains (-CH₂CH₃), breaking the requirement for four unique substituent sets.",
       correct: [],
       lines: [
         { x1: 30, y1: 90,  x2: 80, y2: 50 },
@@ -224,11 +228,11 @@ const ChiralCenters = () => {
       ]
     },
     {
-      name: "Propan-2-ol (Symmetry Trap)",
+      name: "Propan-2-ol",
       id: "propan2ol",
       svgWidth: 200,
       svgHeight: 140,
-      explanation: "Propan-2-ol has no chiral center because Carbon 2 is attached to two identical methyl groups (-CH₃).",
+      explanation: "Propan-2-ol has no chiral center because Carbon 2 is attached to two completely identical methyl groups (-CH₃).",
       correct: [],
       lines: [
         { x1: 40, y1: 90, x2: 90, y2: 50 },
@@ -320,11 +324,11 @@ const ChiralCenters = () => {
       ]
     },
     {
-      name: "3-Chloropentane (Symmetry Trap)",
+      name: "3-Chloropentane",
       id: "chloropentane",
       svgWidth: 260,
       svgHeight: 150,
-      explanation: "Carbon 3 is symmetric because it is attached to two identical ethyl chains (-CH₂CH₃).",
+      explanation: "Carbon 3 is fully symmetric because it is attached to two identical flanking ethyl chains (-CH₂CH₃).",
       correct: [],
       lines: [
         { x1: 30, y1: 90,  x2: 80, y2: 50 },
@@ -376,7 +380,7 @@ const ChiralCenters = () => {
       id: "malic",
       svgWidth: 280,
       svgHeight: 160,
-      explanation: "Carbon 2 is chiral. Carbon 3 is symmetric because it holds two hydrogen atoms.",
+      explanation: "Carbon 2 is chiral. Carbon 3 is symmetric because it holds two identical hydrogen atoms.",
       correct: [2],
       lines: [
         { x1: 42.5, y1: 57.5, x2: 17.5, y2: 32.5 },
@@ -438,11 +442,11 @@ const ChiralCenters = () => {
       ]
     },
     {
-      name: "Phenylalanine (Amino Acid Profile)",
+      name: "Phenylalanine",
       id: "phenylalanine",
       svgWidth: 320,
       svgHeight: 180,
-      explanation: "Carbon 2 is asymmetric, binding to -H, -NH₂, -COOH, and the benzyl side chain. Ring carbons are entirely planar.",
+      explanation: "Carbon 2 is asymmetric, binding to -H, -NH₂, -COOH, and the benzyl side chain. Ring carbons are entirely planar and flat, meaning they break the criteria for chiral centers.",
       correct: [2],
       lines: [
         { x1: 252.5, y1: 57.5, x2: 227.5, y2: 32.5 },
@@ -481,7 +485,7 @@ const ChiralCenters = () => {
       id: "methylpentene",
       svgWidth: 260,
       svgHeight: 140,
-      explanation: "Carbon 3 is chiral, bonded to -H, -CH₃, -CH₂CH₃, and the vinyl group (-CH=CH₂). Carbons 1 and 2 are sp² double bonds.",
+      explanation: "Carbon 3 is chiral, bonded to -H, -CH₃, -CH₂CH₃, and the unsaturated vinyl group (-CH=CH₂). Carbons 1 and 2 participate in double bonding and are flat.",
       correct: [3],
       lines: [
         { x1: 30, y1: 97.5, x2: 80, y2: 57.5 },
@@ -504,7 +508,7 @@ const ChiralCenters = () => {
       id: "pentanediol",
       svgWidth: 260,
       svgHeight: 150,
-      explanation: "Contains multiple chiral centers (C2 and C3), each hosting four unique substituent domains.",
+      explanation: "Contains multiple independent chiral centers (C2 and C3), each hosting four unique substituent domains.",
       correct: [2, 3],
       lines: [
         { x1: 30, y1: 90,  x2: 80, y2: 50 },
@@ -575,7 +579,7 @@ const ChiralCenters = () => {
         { id: 1, cx: 40, cy: 100, label: "C1" },
         { id: 2, cx: 90, cy: 60, label: "C2" },
         { id: 3, cx: 140, cy: 100, label: "C3" },
-        { id: 4, cx: 190, cy: 60, label: "C4" }
+        { id: 4, cx: 190, cy: 100, label: "C4" }
       ]
     }
   ];
