@@ -22,6 +22,7 @@ import EntropyGibbs from './EntropyGibbs';
 import CellPotentials from './CellPotentials';
 import EmpiricalFormula from './EmpiricalFormula';
 import ThermometricTitration from './ThermometricTitration';
+import ChiralCenters from './ChiralCenters';
 
 // --- WJEC EXAM SPECIFICATION HOW-TO GUIDE COMPONENT ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
@@ -110,6 +111,7 @@ function App() {
     { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.2', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.' },
     { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.' },
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '⚡', desc: 'Analyze ratio pathways for complex transition elements.' },
+    { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 3.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.' },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.' },
     { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.4', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.' },
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.' },
@@ -117,7 +119,8 @@ function App() {
     { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.' },
     { id: 'acids', label: 'pH & Weak Acids', short: 'pH Acids', unit: 'Unit 3.9', icon: '🍋', desc: 'Determine Ka, pKa, and hydrogen ion parameters.' },
     { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' },
-    { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 4.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.' }
+    { id: 'chiral-centers', label: 'Chiral Center Identification', short: 'Chiral Carbons', unit: 'Unit 4.1', icon: '🧬', desc: 'Audit asymmetric carbon nodes and identify stereoisomers in skeletal structures.' } 
+
   ];
 
   const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
@@ -432,6 +435,7 @@ function App() {
           {currentApplet === 'buffers' && <BufferSolutions />}
           {currentApplet === 'cell-potentials' && <CellPotentials />}
           {currentApplet === 'thermometric' && <ThermometricTitration />}
+          {currentApplet === 'chiral-centers' && <ChiralCenters />}
         </div>
       </main>
 
