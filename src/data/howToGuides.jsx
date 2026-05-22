@@ -1,4 +1,3 @@
-// src/data/howToGuides.jsx
 import React from 'react';
 
 export const howToGuides = {
@@ -19,6 +18,15 @@ export const howToGuides = {
       'Balance the net charge vector safely to zero using small whole-number multipliers.'
     ],
     pitfalls: 'WJEC Examiner Alert: Always look out for complex compound groupings. Ensure brackets are wrapped completely around polyatomic ions if more than one is needed (e.g., Cu(NO₃)₂).'
+  },
+  'formula-master': {
+    title: 'Formula & Nomenclature Deconstruction (Unit 1.1)',
+    steps: [
+      'Interactive Composer Strategy: Identify the individual charges of the active metallic cation and polyatomic anion groups first. Adjust the subscript inputs to settle the net charge vector to zero.',
+      'Reverse Nomenclature (Formula to Name): Look for polyatomic units. If an unbracketed transition metal is present, extrapolate its oxidation state by multiplying the constant charge of the counter-anion (e.g., in CuSO₄, SO₄²⁻ dictates a Copper(II) assignment).',
+      'Dissociation Mode (Formula to Ions): Break down subscripts completely into coefficients. For polyatomic formulas, ensure multipliers become separate integer labels positioned before the ion entity (e.g., Al₂(SO₄)₃ yields 2Al³⁺ and 3SO₄²⁻).'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: 1) Forgetting Roman numerals on transition metals when writing systematic names will wipe out full marks. 2) Formatting multipliers inside dissociation states as trailing subscripts instead of balancing coefficients (e.g., writing (SO₄)₃²⁻ instead of 3SO₄²⁻) is a fatal structural syntax error.'
   },
   'empirical-formula': {
     title: 'Empirical & Molecular Formulas (Unit 1.1)',
@@ -56,6 +64,15 @@ export const howToGuides = {
       'Molar Enthalpy Scale: Source standard specific heat capacity (4.18 J g⁻¹ K⁻¹) and density constants directly from your Data Booklet. Evaluate Q in Joules, convert to kJ, and divide by the reacting moles of water to establish ΔH.'
     ],
     pitfalls: 'WJEC Examiner Pitfalls: This is a double-trap module! First, candidates routinely fail to combine the solution volumes for the mass parameter. Second, because the reaction causes a temperature rise, the process is exothermic—your final computed ΔH value must contain an explicit negative (−) sign and be rounded to exactly 3 significant figures.'
+  },
+  'mechanisms-unit2': {
+    title: 'AS Organic Mechanisms (Unit 2.5)',
+    steps: [
+      'Halide Polarization: In electrophilic additions (Alkenes + HX), identify the permanent dipole due to halogen electronegativity. Mark hydrogen as δ⁺ and the halogen as δ⁻.',
+      'π-Cloud Attack Origin: The mechanism arrow denotes electron pair routing. In electrophilic addition, your first arrow MUST start directly from the double bond line (the electron-rich π-bond cloud) and target the electrophilic δ⁺ hydrogen atom.',
+      'Leaving Group Fission: Simultaneously, draw a second arrow from the center of the matching H-X single covalent bond right onto the halogen atom to model heterolytic cleavage and the departure of the halide anion.'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Never draw the arrow originating from individual carbon atoms during the alkene step—the electrons reside inside the shared π-cloud. For asymmetric structures (Propene), remember the Markovnikov rule: the electrophile always appends to form the more stable carbocation intermediate.'
   },
   'redox': {
     title: 'Redox Titration Systems (Unit 3.1)',
@@ -139,6 +156,15 @@ export const howToGuides = {
     ],
     pitfalls: 'WJEC Examiner Pitfalls: 1) The Multiplier Trap: Never multiply a half-cell E° value by stoichiometric coefficients when balancing electron transfers—E° is an intensive property. 2) Formatting: All cell potentials must explicitly state their sign (+ or −) and be formatted to exactly 2 decimal places (e.g., +1.10 V).'
   },
+  'mechanisms-masterclass': {
+    title: 'Nucleophilic Addition Mechanisms (Unit 4.4)',
+    steps: [
+      'Induced Polarization: Start by mapping partial charges. Oxygen is highly electronegative, creating a polar carbonyl carbon node that carries a partial positive charge (δ⁺), while the oxygen carries a partial negative charge (δ⁻).',
+      'The Arrow Origin Rule: In nucleophilic addition, curly arrows represent the movement of electron pairs. The arrow MUST originate exactly from a reactive lone pair (••) or a localized negative charge on the attacking nucleophile.',
+      'Target Destination (Sink): Direct the arrowhead straight to the electrophilic carbonyl carbon node (δ⁺). Simultaneously, the carbon-oxygen double bond breaks, shifting an electron pair directly onto the oxygen atom to form an intermediate.'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: 1) Candidates routinely draw curly arrows coming from abstract empty space or a bare positive charge symbol—this results in an immediate loss of markings. 2) Never label the entire starting molecule as planar; remember that only the carbonyl functional environment is trigonal planar.'
+  },
   'chiral-centers': {
     title: 'Chiral Center Identification (Unit 4.1)',
     steps: [
@@ -148,5 +174,4 @@ export const howToGuides = {
     ],
     pitfalls: 'WJEC Examiner Pitfalls: 1) The Hydrocarbon Blindspot: Candidates frequently miss chirality in purely hydrocarbon molecules (like 3-methylhexane) because they look for heteroatoms (like O, N, or Cl) instead of auditing differing branch lengths. 2) The Symmetry Trap: Central nodes (like pentan-3-ol) are commonly guessed incorrectly because students assume any branch hub is asymmetric without realizing that identical flanking chains disqualify the spot.'
   }
-
 };

@@ -23,6 +23,9 @@ import CellPotentials from './CellPotentials';
 import EmpiricalFormula from './EmpiricalFormula';
 import ThermometricTitration from './ThermometricTitration';
 import ChiralCenters from './ChiralCenters';
+import MechanismUnit2 from './MechanismUnit2';
+import MechanismMasterclass from './MechanismMasterclass';
+import FormulaMaster from './FormulaMaster';
 
 // --- WJEC EXAM SPECIFICATION HOW-TO GUIDE COMPONENT ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
@@ -106,9 +109,11 @@ function App() {
   const applets = [
     { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.' },
     { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.' },
+    { id: 'formula-master', label: 'Formula & Nomenclature Master', short: 'Nomenclature Master', unit: 'Unit 1.1', icon: '🧩', desc: 'Master advanced reverse operations: deduce names and split free ionic structures.' },
     { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.1', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.' },
     { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.1', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.' },
     { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.2', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.' },
+    { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.' },
     { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.' },
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '⚡', desc: 'Analyze ratio pathways for complex transition elements.' },
     { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 3.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.' },
@@ -116,11 +121,11 @@ function App() {
     { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.4', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.' },
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.' },
     { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.' },
-    { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.' },
+    { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', text: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.' },
     { id: 'acids', label: 'pH & Weak Acids', short: 'pH Acids', unit: 'Unit 3.9', icon: '🍋', desc: 'Determine Ka, pKa, and hydrogen ion parameters.' },
     { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.' },
-    { id: 'chiral-centers', label: 'Chiral Center Identification', short: 'Chiral Carbons', unit: 'Unit 4.1', icon: '🧬', desc: 'Audit asymmetric carbon nodes and identify stereoisomers in skeletal structures.' } 
-
+    { id: 'chiral-centers', label: 'Chiral Center Identification', short: 'Chiral Carbons', unit: 'Unit 4.1', icon: '🧬', desc: 'Audit asymmetric carbon nodes and identify stereoisomers in skeletal structures.' },
+    { id: 'mechanisms-masterclass', label: 'Organic Mechanisms', short: 'Mechanisms', unit: 'Unit 4.4', icon: '🏹', desc: 'Master carbonyl reactions by tracking induced dipoles and curly arrows step-by-step.' }
   ];
 
   const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
@@ -176,7 +181,8 @@ function App() {
               <button className="px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100 flex items-center gap-1">
                 Quick Jump Menu ▾
               </button>
-              <div className="absolute right-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-xl shadow-xl hidden group-hover:block max-h-96 overflow-y-auto p-2 z-50 space-y-1">
+              {/* --- STICKY FIX: INVISIBLE PADDING BRIDGE ADDED TO PREVENT HOVER FLICKER --- */}
+              <div className="absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 opacity-0 pointer-events-none scale-95 origin-top-right group-hover:opacity-100 group-hover:scale-100 group-hover:!pointer-events-auto transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block">
                 {mainUnits.map(unitRow => {
                   const unitApplets = applets.filter(a => a.unit.startsWith(unitRow));
                   if (unitApplets.length === 0) return null;
@@ -422,6 +428,7 @@ function App() {
 
           {currentApplet === 'formulas-ions' && <FormulasFromIons />}
           {currentApplet === 'formulas-name' && <FormulasFromName />}
+          {currentApplet === 'formula-master' && <FormulaMaster />}
           {currentApplet === 'empirical-formula' && <EmpiricalFormula />}
           {currentApplet === 'titration' && <AcidBaseTitration />}
           {currentApplet === 'idealgas' && <IdealGas />}
@@ -436,6 +443,8 @@ function App() {
           {currentApplet === 'cell-potentials' && <CellPotentials />}
           {currentApplet === 'thermometric' && <ThermometricTitration />}
           {currentApplet === 'chiral-centers' && <ChiralCenters />}
+          {currentApplet === 'mechanisms-unit2' && <MechanismUnit2 />}
+          {currentApplet === 'mechanisms-masterclass' && <MechanismMasterclass />}
         </div>
       </main>
 
