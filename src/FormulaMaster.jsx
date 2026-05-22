@@ -185,7 +185,7 @@ const FormulaMaster = () => {
 
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="applet-header">Formula Master</div>
+      <div className="applet-header">Ion formulas from compounds</div>
 
       <div className="question-text text-center px-4 leading-relaxed">
         Give the formulas of the ions making up the following compound.

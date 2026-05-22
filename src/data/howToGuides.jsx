@@ -44,7 +44,7 @@ export const howToGuides = {
   },
 
   'formula-master': {
-    title: 'Formula Master: Ion Deconstruction (Unit 1.1)',
+    title: 'Ions from compounds (Unit 1.1)',
     generalSteps: [
       'Analyze the given prompt target to split it cleanly into its positive Cation and negative Anion components.',
       'Remember that charges must reflect actual chemical species, not arbitrary mathematical states.'
