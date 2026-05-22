@@ -27,18 +27,24 @@ import MechanismUnit2 from './MechanismUnit2';
 import MechanismMasterclass from './MechanismMasterclass';
 import FormulaMaster from './FormulaMaster';
 
-// --- WJEC EXAM SPECIFICATION HOW-TO GUIDE COMPONENT ---
+// --- WJEC EXAM SPECIFICATION HOW-TO GUIDE COMPONENT (ROBUST DYNAMIC REFACTOR) ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
   if (!isOpen) return null;
 
   const currentGuide = howToGuides[appletId];
   if (!currentGuide) return null;
 
+  // Safeguard step diagnostics to handle both legacy flat arrays and new advanced objects seamlessly
+  const operationalSteps = currentGuide.subModes && currentGuide.subModes[appletId]
+    ? currentGuide.subModes[appletId]
+    : currentGuide.generalSteps || currentGuide.steps || [];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all animate-fade-in" style={{ textTransform: 'none' }}>
       <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150">
+        
         {/* Header Banner */}
-        <div className="bg-amber-500 p-4 flex items-center justify-between text-white">
+        <div className="bg-amber-500 p-4 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xl">💡</span>
             <div>
@@ -46,36 +52,60 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
               <span className="text-[10px] opacity-90 block font-bold" style={{ textTransform: 'none' }}>{currentGuide.title}</span>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full font-black text-sm transition-colors">&times;</button>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full font-black text-sm transition-colors cursor-pointer">&times;</button>
         </div>
 
         {/* Content Scrolling Window */}
-        <div className="p-6 overflow-y-auto space-y-4 text-left text-xs font-bold text-slate-600 leading-relaxed" style={{ textTransform: 'none' }}>
+        <div className="p-6 overflow-y-auto space-y-5 text-left text-xs font-bold text-slate-600 leading-relaxed" style={{ textTransform: 'none' }}>
+          
+          {/* Method Steps Segment */}
           <div>
             <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Step-by-Step Calculation Route:</span>
-            <ol className="list-decimal pl-4 space-y-2 text-slate-700 font-medium">
-              {currentGuide.steps.map((step, index) => (
-                <li key={index} style={{ textTransform: 'none' }}>{step}</li>
-              ))}
-            </ol>
+            {operationalSteps.length > 0 ? (
+              <ol className="list-decimal pl-4 space-y-2 text-slate-700 font-medium">
+                {operationalSteps.map((step, index) => (
+                  <li key={index} style={{ textTransform: 'none' }}>{step}</li>
+                ))}
+              </ol>
+            ) : (
+              <p className="text-slate-400 italic font-medium">Select a practice mode inside the applet to reveal highly specific step actions.</p>
+            )}
           </div>
 
-          <div className="bg-rose-50 border border-rose-100 rounded-xl p-3.5 text-rose-800">
-            <span className="block text-[10px] font-black uppercase tracking-widest text-rose-500 mb-1">Top Exam Pitfall:</span>
-            <p className="font-semibold text-xs" style={{ textTransform: 'none' }}>{currentGuide.pitfalls}</p>
-          </div>
+          {/* New Dynamic Exam Tips Segment */}
+          {currentGuide.examTips && currentGuide.examTips.length > 0 && (
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-3.5 text-blue-900">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1.5">WJEC Essential Exam Tips:</span>
+              <ul className="list-disc pl-4 space-y-1 text-slate-700 font-medium">
+                {currentGuide.examTips.map((tip, idx) => (
+                  <li key={idx} style={{ textTransform: 'none' }}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Pitfalls Segment */}
+          {currentGuide.pitfalls && (
+            <div className="bg-rose-50 border border-rose-100 rounded-xl p-3.5 text-rose-800 shrink-0">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-rose-500 mb-1">Top Exam Pitfall:</span>
+              <p className="font-semibold text-xs" style={{ textTransform: 'none' }}>{currentGuide.pitfalls}</p>
+            </div>
+          )}
+
         </div>
 
         {/* Footer Area */}
-        <div className="bg-slate-50 px-6 py-3.5 border-t border-slate-100 flex justify-end">
-          <button onClick={onClose} className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors">
+        <div className="bg-slate-50 px-6 py-3.5 border-t border-slate-100 flex justify-end shrink-0">
+          <button onClick={onClose} className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer">
             Got It ✓
           </button>
         </div>
+        
       </div>
     </div>
   );
 };
+
 
 function App() {
   const [currentApplet, setCurrentApplet] = useState('dashboard');
