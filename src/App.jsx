@@ -34,7 +34,44 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
   const currentGuide = howToGuides[appletId];
   if (!currentGuide) return null;
 
-  // Safeguard step diagnostics to handle both legacy flat arrays and new advanced objects seamlessly
+  // --- DYNAMIC CHEMICAL SUB/SUPERSCRIPT TEXT FORMATTER ---
+  const parseGuideChemicalText = (textString) => {
+    if (!textString) return '';
+
+    // Split out parenthetical structural charge clusters such as (2-), (3+), (+), (-)
+    const chargeTokenRegex = /(\((?:[0-9]?[\+\-]|[\+\-][0-9]?)\))/g;
+    const segments = textString.split(chargeTokenRegex);
+
+    return segments.map((segment, index) => {
+      if (chargeTokenRegex.test(segment)) {
+        const cleanCharge = segment.replace(/[\(\)]/g, '');
+        const isPositive = cleanCharge.includes('+');
+        return (
+          <sup 
+            key={`sup-${index}`} 
+            className={`text-[0.75em] font-black relative top-[-0.5em] mx-[0.05em] ${isPositive ? 'text-blue-600' : 'text-rose-600'}`}
+          >
+            {cleanCharge}
+          </sup>
+        );
+      }
+
+      // Isolate physical chemical subscripts (trailing integers inside atomic clusters)
+      const numericSubscriptRegex = /([0-9]+)/g;
+      const subSegments = segment.split(numericSubscriptRegex);
+
+      return subSegments.map((subPart, subIdx) => {
+        const isNumeric = /^[0-9]+$/.test(subPart);
+        return isNumeric ? (
+          <sub key={`sub-${index}-${subIdx}`} className="bottom-[-0.2em] text-[0.75em] leading-none font-black text-slate-800">
+            {subPart}
+          </sub>
+        ) : subPart;
+      });
+    });
+  };
+
+  // Determine dynamic structural sub-mode pathways or global guide backups safely
   const operationalSteps = currentGuide.subModes && currentGuide.subModes[appletId]
     ? currentGuide.subModes[appletId]
     : currentGuide.generalSteps || currentGuide.steps || [];
@@ -64,7 +101,9 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
             {operationalSteps.length > 0 ? (
               <ol className="list-decimal pl-4 space-y-2 text-slate-700 font-medium">
                 {operationalSteps.map((step, index) => (
-                  <li key={index} style={{ textTransform: 'none' }}>{step}</li>
+                  <li key={index} style={{ textTransform: 'none' }}>
+                    {parseGuideChemicalText(step)}
+                  </li>
                 ))}
               </ol>
             ) : (
@@ -78,7 +117,9 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
               <span className="block text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1.5">WJEC Essential Exam Tips:</span>
               <ul className="list-disc pl-4 space-y-1 text-slate-700 font-medium">
                 {currentGuide.examTips.map((tip, idx) => (
-                  <li key={idx} style={{ textTransform: 'none' }}>{tip}</li>
+                  <li key={idx} style={{ textTransform: 'none' }}>
+                    {parseGuideChemicalText(tip)}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -88,7 +129,9 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
           {currentGuide.pitfalls && (
             <div className="bg-rose-50 border border-rose-100 rounded-xl p-3.5 text-rose-800 shrink-0">
               <span className="block text-[10px] font-black uppercase tracking-widest text-rose-500 mb-1">Top Exam Pitfall:</span>
-              <p className="font-semibold text-xs" style={{ textTransform: 'none' }}>{currentGuide.pitfalls}</p>
+              <p className="font-semibold text-xs" style={{ textTransform: 'none' }}>
+                {parseGuideChemicalText(currentGuide.pitfalls)}
+              </p>
             </div>
           )}
 
@@ -105,7 +148,6 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
     </div>
   );
 };
-
 
 function App() {
   const [currentApplet, setCurrentApplet] = useState('dashboard');
@@ -211,7 +253,6 @@ function App() {
               <button className="px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100 flex items-center gap-1">
                 Quick Jump Menu ▾
               </button>
-              {/* --- STICKY FIX: INVISIBLE PADDING BRIDGE ADDED TO PREVENT HOVER FLICKER --- */}
               <div className="absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 opacity-0 pointer-events-none scale-95 origin-top-right group-hover:opacity-100 group-hover:scale-100 group-hover:!pointer-events-auto transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block">
                 {mainUnits.map(unitRow => {
                   const unitApplets = applets.filter(a => a.unit.startsWith(unitRow));
@@ -336,7 +377,7 @@ function App() {
         {/* --- SYLLABUS-GROUPED DASHBOARD VIEW --- */}
         {currentApplet === 'dashboard' && (
           <div className="py-2 animate-fade-in flex flex-col items-center" style={{ textTransform: 'none' }}>
-            {/* HERO HERO BRAND PANEL CARD */}
+            {/* HERO BRAND PANEL CARD */}
             <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm" style={{ textTransform: 'none' }}>
               <div className="col-span-1 md:col-span-5 flex flex-col items-center justify-center text-center border-b border-slate-100 pb-4 md:pb-0 md:border-b-0 md:border-r md:border-slate-100 md:pr-4">
                 <div className="w-44 md:w-56 transition-all duration-200">
