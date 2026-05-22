@@ -52,11 +52,11 @@ export const howToGuides = {
     subModes: {
       'ions-from-formula-gcse': [
         'Identify the metal symbol on the left and the non-metal on the right.',
-        'Reverse-map charges based on periodic table group locations (e.g., NaCl splits into Na+ and Cl-).'
+        'Reverse-map charges based on periodic table group locations (e.g., NaCl splits into Na(+) and Cl(-)).'
       ],
       'ions-from-formula-advanced': [
         'Look out for complex polyatomic blocks encapsulated in brackets or combined as oxyanions.',
-        'Use the subscripts outside brackets to deduce transition metal charges (e.g., Fe2(SO4)3 implies Fe3+ and SO42-).'
+        'Use the subscripts outside brackets to deduce transition metal charges (e.g., Fe2(SO4)3 implies Fe(3+) and SO4(2-)).'
       ],
       'ions-from-name-gcse': [
         'Convert the systematic names straight into their corresponding chemical element representations.',
@@ -64,12 +64,12 @@ export const howToGuides = {
       ],
       'ions-from-name-advanced': [
         'Extract variable oxidation numbers directly from the listed Roman numerals to find transition charges.',
-        'Recall memorised polyatomic identities (Ammonium = NH4+, Sulfate = SO42-, Nitrate = NO3-, Carbonate = CO32-, Hydroxide = OH-, Phosphate = PO43-).'
+        'Recall memorised polyatomic identities (Ammonium = NH4(+), Sulfate = SO4(2-), Nitrate = NO3(-), Carbonate = CO3(2-), Hydroxide = OH(-), Phosphate = PO4(3-)).'
       ]
     },
     examTips: [
       'WJEC Case Penalty: Element symbols must be formatted with strict capitalization patterns. Writing "na" instead of "Na" or "so4" instead of "SO4" will cause answers to be rejected instantly.',
-      'When deconstructing formulas into individual free ions, the subscripts transform completely into large balancing stoichiometric coefficients positioned before the ion symbol (e.g., Cl2 becomes 2Cl-).'
+      'When deconstructing formulas into individual free ions, the subscripts transform completely into large balancing stoichiometric coefficients positioned before the ion symbol (e.g., Cl2 becomes 2Cl(-)).'
     ],
     pitfalls: 'WJEC Examiner Alert: This module enforces strict structural symbol validation rules. You must apply precise chemical element case capitalization.'
   },
@@ -108,7 +108,7 @@ export const howToGuides = {
       ]
     },
     examTips: [
-      'Burette measurements must always be recorded to exactly two decimal places, with the terminal digit ending strictly on a 0 or a 5 (e.g., 24.35 cm3). Single decimal place listings trigger immediate precision point deductions.',
+      'Burette measurements must always be recorded to exactly two decimal places, with the terminal digit ending strictly on a 0 or a 5 (e.g., 24.30 cm3). Single decimal place listings trigger immediate precision point deductions.',
       'Never include the rough pilot trial inside your active mean calculations. It serves strictly as an operational baseline.'
     ],
     pitfalls: 'WJEC Examiner Pitfalls: 1) Inclusion of the Rough Titre in the mean calculation is an automatic zero. 2) Writing a burette reading as a single decimal place instantly triggers a precision penalty.'
@@ -164,16 +164,16 @@ export const howToGuides = {
       'Map structural electron pairs from high-density sources straight to electrophilic centers.'
     ],
     subModes: {
-      'ions-from-formula-gcse': [
+      'simple': [
         'Identify dipole boundaries across simple linear haloalkane structures.',
         'Model generic nucleophilic substitutions by launching arrows from basic nucleophiles directly onto polar carbon nodes.'
       ]
     },
     examTips: [
-      'In electrophilic additions involving alkenes, the initial arrow must start directly from the high electron density region of the C=C double bond (the π-cloud) and point straight to the electrophilic H(δ+) center.',
+      'In electrophilic additions involving alkenes, the initial arrow must start directly from the high electron density region of the C=C double bond (the pi-cloud) and point straight to the electrophilic H atom carrying the partial positive charge.',
       'When an asymmetric alkene (e.g., Propene) undergoes addition, map your route to generate the more stable secondary or tertiary carbocation intermediate over the primary alternative (Markovnikov Rule).'
     ],
-    pitfalls: 'WJEC Examiner Alert: Never draw the arrow originating from individual carbon atoms during the alkene step—the electrons reside inside the shared π-cloud.'
+    pitfalls: 'WJEC Examiner Alert: Never draw the arrow originating from individual carbon atoms during the alkene step—the electrons reside inside the shared pi-cloud.'
   },
 
   // =========================================================================
@@ -227,7 +227,7 @@ export const howToGuides = {
     ],
     subModes: {
       'simple': [
-        'Compute systemic changes via ΔS = ΣS°(products) - ΣS°(reactants).',
+        'Compute systemic changes via ΔS = S°(products) - S°(reactants).',
         'Substitute values into the Gibbs free energy expression: ΔG = ΔH - TΔS.',
         'Identify transition thresholds where reactions become spontaneous (ΔG <= 0).'
       ]
@@ -236,7 +236,7 @@ export const howToGuides = {
       'Unit mismatch is a common pitfall: Enthalpy (ΔH) is given in kJ mol-1, but Entropy (ΔS) is reported in J K-1 mol-1. You must divide your ΔS value by 1000 before substituting it into the Gibbs equation.',
       'To calculate the minimum temperature threshold for feasibility, set ΔG = 0 and rearrange to solve for temperature: T = ΔH / ΔS.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Unit incompatibility is a persistent issue. Enthalpy is given in kJ mol⁻¹, but Entropy is recorded in J K⁻¹ mol⁻¹. You MUST divide your ΔS value by 1000 before substituting it into the Gibbs formula.'
+    pitfalls: 'WJEC Examiner Alert: Unit incompatibility is a persistent issue. Enthalpy is given in kJ mol-1, but Entropy is recorded in J K-1 mol-1. You MUST divide your ΔS value by 1000 before substituting it into the Gibbs formula.'
   },
 
   'rates': {
@@ -297,7 +297,7 @@ export const howToGuides = {
       'Never use square brackets [ ] when writing a Kp expression. Square brackets represent concentration (mol dm-3). Instead, use standard curved parentheses enclosing the lower-case partial pressure symbol p (e.g., (pNH3)^2).',
       'Total pressure parameters must use matching units (kPa, Pa, or atm) throughout the entire fraction layout.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Never use square brackets inside a Kp expression. Square brackets explicitly denote concentration in mol dm⁻³. Using them here violates sign notation rules.'
+    pitfalls: 'WJEC Examiner Alert: Never use square brackets inside a Kp expression. Square brackets explicitly denote concentration in mol dm-3.'
   },
 
   'acids': {
@@ -309,8 +309,7 @@ export const howToGuides = {
     subModes: {
       'simple': [
         'For Strong Acids: Set [H+] = Acid Concentration, then calculate pH = -log10[H+].',
-        'For Weak Acids: Apply approximations to solve via [H+] = √(Ka * c).',
-        'Convert values cleanly between logarithmic pKa and standard Ka values.'
+        'For Weak Acids: Apply approximations to solve via [H+] = √(Ka * c).'
       ]
     },
     examTips: [
@@ -371,7 +370,7 @@ export const howToGuides = {
       'Model nucleophilic pathways by tracing matching pairs of electrons.'
     ],
     subModes: {
-      'ions-from-formula-gcse': [
+      'simple': [
         'Identify the induced dipole across the central carbonyl double bond.',
         'Trace the initial nucleophilic attack path from the lone pair straight onto the partially positive carbon node.'
       ]
