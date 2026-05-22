@@ -7,11 +7,11 @@ const FormulaMaster = () => {
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
   // --- COMPOSER INDEX INPUT STATES ---
-  const [userTextAnswer, setUserTextAnswer] = useState(''); // Used for 'formula-to-name' and 'formula-to-ions' text submissions
-  const [cationIndex, setCationIndex] = useState('1'); // Multiplier subscript for metal / group 1
-  const [anionIndex, setAnionIndex] = useState('1');  // Multiplier subscript for non-metal / polyatomic
+  const [userTextAnswer, setUserTextAnswer] = useState(''); 
+  const [cationIndex, setCationIndex] = useState('1'); 
+  const [anionIndex, setAnionIndex] = useState('1');  
 
-  // --- CORE ASSIGNMENT DATABASE MATRIX ---
+  // --- CORE ASSIGNMENT DATABASE MATRIX (FULLY NORMALIZED) ---
   const problemBank = {
     'name-to-formula': {
       simple: [
@@ -29,12 +29,12 @@ const FormulaMaster = () => {
     },
     'formula-to-name': {
       simple: [
-        { q: "HCl", a: "Hydrogen chloride", exp: "Binary acid compound formed between hydrogen and a group 7 halogen atom." },
-        { q: "Na2CO3", a: "Sodium carbonate", exp: "Classic group 1 metallic salt containing the polyatomic carbonate counter-ion." }
+        { q: "HCl", cat: "H", ani: "Cl", catSub: 1, aniSub: 1, a: "Hydrogen chloride", exp: "Binary acid compound formed between hydrogen and a group 7 halogen atom." },
+        { q: "Na2CO3", cat: "Na", ani: "(CO3)", catSub: 2, aniSub: 1, a: "Sodium carbonate", exp: "Classic group 1 metallic salt containing the polyatomic carbonate counter-ion." }
       ],
       advanced: [
-        { q: "CuSO4", a: "Copper(II) sulfate", exp: "WJEC Precision Alert: You must explicitly provide the Roman numeral oxidation state (II) for variable transition structures." },
-        { q: "Fe(NO3)2", a: "Iron(II) nitrate", exp: "The multiplier subscript on the nitrate cluster identifies the central metallic atom oxidation index as Iron(II), Fe²⁺." }
+        { q: "CuSO4", cat: "Cu", ani: "(SO4)", catSub: 1, aniSub: 1, a: "Copper(II) sulfate", exp: "WJEC Precision Alert: You must explicitly provide the Roman numeral oxidation state (II) for variable transition structures." },
+        { q: "Fe(NO3)2", cat: "Fe", ani: "(NO3)", catSub: 1, aniSub: 2, a: "Iron(II) nitrate", exp: "The multiplier subscript on the nitrate cluster identifies the central metallic atom oxidation index as Iron(II), Fe²⁺." }
       ]
     },
     'ions-to-formula': {
@@ -47,11 +47,11 @@ const FormulaMaster = () => {
     },
     'formula-to-ions': {
       simple: [
-        { q: "NaCl", a: "Na+ + Cl-", exp: "Dissociates symmetrically into its core constituent monoatomic ion matrices." },
-        { q: "CaCl2", a: "Ca2+ + 2Cl-", exp: "Balancing Note: Remember to format multipliers as coefficients before the ion expression (2Cl⁻), not inside subscripts!" }
+        { q: "NaCl", cat: "Na", ani: "Cl", catSub: 1, aniSub: 1, a: "Na+ + Cl-", exp: "Dissociates symmetrically into its core constituent monoatomic ion matrices." },
+        { q: "CaCl2", cat: "Ca", ani: "Cl", catSub: 1, aniSub: 2, a: "Ca2+ + 2Cl-", exp: "Balancing Note: Remember to format multipliers as coefficients before the ion expression (2Cl⁻), not inside subscripts!" }
       ],
       advanced: [
-        { q: "Al2(SO4)3", a: "2Al3+ + 3SO42-", exp: "Polyatomic links open completely, yielding two isolated aluminium species and three fully free sulfate environments." }
+        { q: "Al2(SO4)3", cat: "Al", ani: "(SO4)", catSub: 2, aniSub: 3, a: "2Al3+ + 3SO42-", exp: "Polyatomic links open completely, yielding two isolated aluminium species and three fully free sulfate environments." }
       ]
     }
   };
@@ -86,14 +86,10 @@ const FormulaMaster = () => {
     generateProblem(mode, newDiff);
   };
 
-  // --- AUTOMATIC FORMATTING RENDER PREVIEW HACK ---
   const renderFormulaPreview = () => {
     if (!currentProblem || !currentProblem.cat) return '';
-    
-    // Omit subscript entirely if value equals 1 to ensure standard chemical formula typesetting formatting rules
     const catSubDisplay = cationIndex === '1' ? '' : cationIndex;
     const aniSubDisplay = anionIndex === '1' ? '' : anionIndex;
-
     return `${currentProblem.cat}${catSubDisplay}${currentProblem.ani}${aniSubDisplay}`;
   };
 
@@ -137,6 +133,8 @@ const FormulaMaster = () => {
 
   const hasIndexInterface = mode === 'name-to-formula' || mode === 'ions-to-formula';
 
+  if (!currentProblem) return null;
+
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="applet-header">Formula Master Studio</div>
@@ -145,7 +143,7 @@ const FormulaMaster = () => {
         Master chemical nomenclature and balancing laws across simple GCSE and advanced synoptic A-Level tiers.
       </div>
 
-      {/* --- RE-STABILIZED CONTROL MATRIX TRAY --- */}
+      {/* --- CONTROL MATRIX TRAY --- */}
       <div className="w-full max-w-md mx-auto my-4 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex flex-col gap-3">
         <div>
           <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">Select Practice Mode Option</label>
@@ -193,7 +191,6 @@ const FormulaMaster = () => {
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-3 text-center">Interactive Ratio Index Subscript Matrix</label>
             
             <div className="flex justify-center items-end gap-3 font-mono text-2xl font-black text-slate-700 bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-inner max-w-xs mx-auto">
-              {/* Cation Component Segment */}
               <div className="flex flex-col items-center">
                 <span className="text-sm font-semibold tracking-tight font-sans text-slate-400 mb-1">Cation</span>
                 <div className="flex items-baseline gap-1 bg-white px-2 py-1 rounded-xl border border-slate-200">
@@ -209,7 +206,6 @@ const FormulaMaster = () => {
 
               <span className="pb-1 text-slate-300">|</span>
 
-              {/* Anion Component Segment */}
               <div className="flex flex-col items-center">
                 <span className="text-sm font-semibold tracking-tight font-sans text-slate-400 mb-1">Anion</span>
                 <div className="flex items-baseline gap-1 bg-white px-2 py-1 rounded-xl border border-slate-200">
@@ -224,7 +220,6 @@ const FormulaMaster = () => {
               </div>
             </div>
 
-            {/* LIVE AUTOMATIC FORMULA TYPESETTING BOX */}
             <div className="mt-4 text-center">
               <span className="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Live Subscript Processing Preview</span>
               <div className="text-base font-black text-slate-700 tracking-wide bg-slate-100/50 px-4 py-2 rounded-xl inline-block font-mono border border-slate-200/40">
@@ -233,14 +228,14 @@ const FormulaMaster = () => {
             </div>
           </div>
         ) : (
-          /* STANDARD ALIGNMENT STRING TEXT INPUT (For naming tasks) */
+          /* STANDARD ALIGNMENT STRING TEXT INPUT */
           <div className="mt-6 text-left border-t border-slate-100 pt-5">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Provide Nomenclature Entry Answer String</label>
             <input
               type="text"
               value={userTextAnswer}
               onChange={(e) => setUserTextAnswer(e.target.value)}
-              placeholder={mode === 'formula-to-name' ? "e.g., Iron(III) sulfate" : "e.g., 2Al3+ + 3SO42-"}
+              placeholder={mode === 'formula-to-name' ? "e.g., Copper(II) sulfate" : "e.g., 2Al3+ + 3SO42-"}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-semibold text-sm transition-all focus:bg-white focus:border-slate-400 font-sans shadow-inner"
             />
             <span className="block text-[9px] font-medium text-slate-400 mt-2 leading-normal">
