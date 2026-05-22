@@ -1,177 +1,405 @@
 import React from 'react';
 
 export const howToGuides = {
+  // =========================================================================
+  // UNIT 1: QUANTITATIVE REAGENT BASICS
+  // =========================================================================
   'formulas-ions': {
     title: 'Formulas from Ions (Unit 1.1)',
-    steps: [
-      'Identify the charges of the constituent ions using the Periodic Table groups or memorised polyatomic ions (e.g., SO₄²⁻, NH₄⁺).',
-      'Cross-multiply the numerical value of the charges to find the subscript ratio needed to make the compound electrically neutral.',
-      'Simplify the ratio to its lowest whole number terms if applicable (e.g., Ti²⁺ and O²⁻ becomes TiO, not Ti₂O₂).'
+    generalSteps: [
+      'Locate element groups on your WJEC Periodic Table to predict standard valency boundaries.',
+      'Construct a balance sheet equating total positive charges to total negative charges.'
+    ],
+    subModes: {
+      'simple': [
+        'Identify Group numbers: Group 1 forms 1+ ions, Group 2 forms 2+ ions, Group 6 forms 2- ions, and Group 7 forms 1- ions.',
+        'Cross-multiply the charges to determine the relative subscripts required for electrical neutrality.',
+        'Simplify the integer subscripts to their lowest empirical empirical terms (e.g., Ti²⁺ and O²⁻ simplify to TiO).'
+      ]
+    },
+    examTips: [
+      'Marks are strictly withheld if ionic symbols remain visible in the finished formula string (e.g., writing Na⁺Cl⁻ instead of NaCl will score 0 marks).',
+      'The suffixes are absolute indicators: "-ide" means a monoatomic element anion, while "-ate" or "-ite" signals an oxygen-rich polyatomic group.'
     ],
     pitfalls: 'WJEC Examiner Alert: Do NOT leave ionic charges visible in your final completed formula string. Writing Mg²⁺Cl₂⁻ instead of MgCl₂ will score zero marks.'
   },
+
   'formulas-name': {
     title: 'Formulas from Names (Unit 1.1)',
-    steps: [
-      'Extract the transition metal oxidation state directly from the Roman numeral in brackets (e.g., Iron(III) gives Fe³⁺).',
-      'Examine the suffix: "-ide" indicates a single element monoatomic ion, while "-ate" or "-ite" denotes a polyatomic oxyanion.',
-      'Balance the net charge vector safely to zero using small whole-number multipliers.'
+    generalSteps: [
+      'Isolate the full systemic name parts into distinct metric ion groupings.',
+      'Check if transition oxidation barriers apply via embedded parenthetical labels.'
+    ],
+    subModes: {
+      'simple': [
+        'Extract the core metal atom symbol from the first word and determine its charge via its periodic group entry.',
+        'Evaluate the matching terminal non-metal suffix string to deduce monoatomic vs polyatomic behavior.'
+      ]
+    },
+    examTips: [
+      'Roman numerals in parentheses *always* dictate the positive oxidation charge state of variable transition metals, never the subscript count.',
+      'Parentheses are mandatory when a polyatomic oxyanion multiplier exceeds 1 (e.g., Cu(NO₃)₂).'
     ],
     pitfalls: 'WJEC Examiner Alert: Always look out for complex compound groupings. Ensure brackets are wrapped completely around polyatomic ions if more than one is needed (e.g., Cu(NO₃)₂).'
   },
+
   'formula-master': {
-    title: 'Formula & Nomenclature Deconstruction (Unit 1.1)',
-    steps: [
-      'Interactive Composer Strategy: Identify the individual charges of the active metallic cation and polyatomic anion groups first. Adjust the subscript inputs to settle the net charge vector to zero.',
-      'Reverse Nomenclature (Formula to Name): Look for polyatomic units. If an unbracketed transition metal is present, extrapolate its oxidation state by multiplying the constant charge of the counter-anion (e.g., in CuSO₄, SO₄²⁻ dictates a Copper(II) assignment).',
-      'Dissociation Mode (Formula to Ions): Break down subscripts completely into coefficients. For polyatomic formulas, ensure multipliers become separate integer labels positioned before the ion entity (e.g., Al₂(SO₄)₃ yields 2Al³⁺ and 3SO₄²⁻).'
+    title: 'Formula Master: Ion Deconstruction (Unit 1.1)',
+    generalSteps: [
+      'Analyze the given prompt target to split it cleanly into its positive Cation and negative Anion components.',
+      'Remember that charges must reflect actual chemical species, not arbitrary mathematical states.'
     ],
-    pitfalls: 'WJEC Examiner Pitfalls: 1) Forgetting Roman numerals on transition metals when writing systematic names will wipe out full marks. 2) Formatting multipliers inside dissociation states as trailing subscripts instead of balancing coefficients (e.g., writing (SO₄)₃²⁻ instead of 3SO₄²⁻) is a fatal structural syntax error.'
+    subModes: {
+      'ions-from-formula-gcse': [
+        'Identify the metal symbol on the left and the non-metal on the right.',
+        'Reverse-map charges based on periodic table group locations (e.g., NaCl splits into Na⁺ and Cl⁻).'
+      ],
+      'ions-from-formula-advanced': [
+        'Look out for complex polyatomic blocks encapsulated in brackets or combined as oxyanions.',
+        'Use the subscripts outside brackets to deduce transition metal charges (e.g., Fe₂(SO₄)₃ implies Fe³⁺ and SO₄²⁻).'
+      ],
+      'ions-from-name-gcse': [
+        'Convert the systematic names straight into their corresponding chemical element representations.',
+        'Assign standard fixed valence charges (+1 for Group 1, +2 for Group 2, -2 for Group 6, -1 for Group 7).'
+      ],
+      'ions-from-name-advanced': [
+        'Extract variable oxidation numbers directly from the listed Roman numerals to find transition charges.',
+        'Recall memorized polyatomic identities (Ammonium = NH₄⁺, Sulfate = SO₄²⁻, Nitrate = NO₃⁻, Carbonate = CO₃²⁻, Hydroxide = OH⁻, Phosphate = PO₄³⁻).'
+      ]
+    },
+    examTips: [
+      'WJEC Case Penalty: Element symbols must be formatted with strict capitalization patterns. Writing "na" instead of "Na" or "so4" instead of "SO4" will cause answers to be rejected instantly.',
+      'When deconstructing formulas into individual free ions, the subscripts transform completely into large balancing stoichiometric coefficients positioned *before* the ion symbol (e.g., Cl₂ becomes 2Cl⁻).'
+    ],
+    pitfalls: 'WJEC Examiner Alert: This module enforces strict structural symbol validation rules. You must apply precise chemical element case capitalization.'
   },
+
   'empirical-formula': {
     title: 'Empirical & Molecular Formulas (Unit 1.1)',
-    steps: [
-      'Divide each element mass or percentage by its Relative Atomic Mass (Ar) to determine raw molar amounts.',
-      'Divide all calculated mole values by the absolute smallest value in the set to isolate the empirical integer ratio.',
-      'For Molecular Formula: Find the formula mass of your empirical unit. Divide the true given Mr by this unit mass to establish your integer multiplier, then distribute it across the elements.',
-      'For Water of Crystallisation (x): Subtract the remaining anhydrous residue mass from the initial hydrated crystal mass to find the mass of water lost. Find moles of the dry salt and moles of water independently, then calculate: x = Moles of H₂O / Moles of Salt.'
+    generalSteps: [
+      'Tabulate every active component element mass or composition percentage value.',
+      'Establish raw operational chemical amounts via relative atomic mass metrics.'
+    ],
+    subModes: {
+      'simple': [
+        'Divide each given percentage or mass value by its relative atomic mass ($A_r$) to find the raw moles.',
+        'Divide all resulting values by the smallest molar figure calculated to yield the empirical whole-number ratio.',
+        'Isolate Molecular Formulas: Divide the actual given total relative molecular mass ($M_r$) by your empirical unit mass to determine your scaling integer scalar multiplier.'
+      ]
+    },
+    examTips: [
+      'Intermediate decimal fractions around 0.33, 0.50, or 0.66 signal the presence of strict fraction multipliers. Multiply the entire row by 3 or 2 to scale them cleanly into whole numbers rather than rounding prematurely.',
+      'For Water of Crystallization problems, always track the dry anhydrous salt residue moles independently from the mass difference of the water vaporized.'
     ],
     pitfalls: 'WJEC Examiner Alert: Avoid rounding intermediate mole figures too early in your working space. Rounding values like 1.33 to 1.3 instead of recognizing a 4:3 fraction multiplier causes calculation trailing errors.'
   },
+
   'titration': {
     title: 'Acid-Base Titrations & Burette Practice (Unit 1.1)',
-    steps: [
-      'Burette Precision: When reading a meniscus vector diagram, evaluate the absolute lowest point of the curve. Record the value to exactly two decimal places, with the final digit always ending on a 0 or a 5.',
-      'Data Table Concordance: Complete net titre gaps via (Final Volume − Initial Volume). Identify concordant trials that fall within a strict 0.10 cm³ boundary of each other. Calculate your mean titre using ONLY these concordant runs.',
-      'Stoichiometric Processing: Use your verified mean titre with standard concentration formulas to find reacting moles. Note: If evaluating organic weak acids, use the question-provided Ka values; standard values like Kw must be sourced directly from your Data Booklet.'
+    generalSteps: [
+      'Audit volume parameters using strict glassware verification rules.',
+      'Link reacting concentrations securely via balanced multi-step stoichiometric calculations.'
     ],
-    pitfalls: 'WJEC Examiner Pitfalls: 1) Inclusion of the Rough Titre in the mean calculation is an automatic zero. 2) Writing a burette reading as a single decimal place (e.g., 21.3 cm³ instead of 21.30 cm³) instantly triggers a precision penalty. 3) All volumetric glassware runs under a strict 50.00 cm³ physical capacity limit.'
+    subModes: {
+      'simple': [
+        'Burette Readings: Read the liquid curve from the absolute bottom of the meniscus at eye level.',
+        'Identify and select concordant trials that fall within a tight 0.10 cm³ window of each other.',
+        'Calculate your definitive mean titre using exclusively those concordant runs.'
+      ]
+    },
+    examTips: [
+      'Burette measurements must *always* be recorded to exactly two decimal places, with the terminal digit ending strictly on a 0 or a 5 (e.g., 24.35 cm³). Single decimal place listings trigger immediate precision point deductions.',
+      'Never include the rough pilot trial inside your active mean calculations. It serves strictly as an operational baseline.'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: 1) Inclusion of the Rough Titre in the mean calculation is an automatic zero. 2) Writing a burette reading as a single decimal place instantly triggers a precision penalty.'
   },
+
   'idealgas': {
     title: 'Ideal Gas Calculations (Unit 1.2)',
-    steps: [
-      'Write out the master equation framework: pV = nRT.',
-      'Convert all data into strict SI base configurations: Pressure (p) must be in Pascals (Pa), Volume (V) must be in cubic metres (m³), and Temperature (T) must be in Kelvin (K).',
-      'Rearrange the equation cleanly to isolate your target unknown parameter variable before processing calculations on your keypad.'
+    generalSteps: [
+      'State the universal equation layout: $pV = nRT$.',
+      'Isolate your target unknown variable parameter cleanly before evaluating values.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Unit conversions trip up thousands of students. Remember: dm³ to m³ requires dividing by 10³ (×10⁻³), cm³ to m³ requires dividing by 10⁶ (×10⁻⁶), and °C to K requires adding 273.15.'
+    subModes: {
+      'simple': [
+        'Convert pressure variables into strict Pascals ($\text{Pa}$).',
+        'Convert volume dimensions directly into cubic meters ($\text{m}^3$).',
+        'Convert temperatures into absolute Kelvin ($\text{K}$) scaling matrices.'
+      ]
+    },
+    examTips: [
+      'Volume conversions are major tracking tripwires: to map $\text{dm}^3$ to $\text{m}^3$, multiply by $10^{-3}$; to map $\text{cm}^3$ to $\text{m}^3$, multiply by $10^{-6}$.',
+      'The gas constant $R$ ($8.314\text{ J K}^{-1}\text{ mol}^{-1}$) requires temperature values to be shifted using $+273.15$ from standard Celsius scales.'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Unit conversions trip up thousands of students. Remember: dm³ to m³ requires dividing by 10³, cm³ to m³ requires dividing by 10⁶, and °C to K requires adding 273.15.'
   },
+
+  // =========================================================================
+  // UNIT 2: PHYSICAL CORE & ORGANIC PATHWAYS
+  // =========================================================================
   'thermometric': {
     title: 'Thermometric Titrations (Unit 2.1)',
-    steps: [
-      'Endpoint Extrapolation: Slide the main crosshair along the plot lines. As you approach the vertex, the graph paper grid automatically scales up to reveal 0.1 cm³ subdivisions. Identify the exact intersection where heating meets cooling.',
-      'The Combined Mass Rule: To find heat energy via Q = mcΔT, your mass parameter (m) MUST represent the total combined volume of the mixture at the endpoint (Volume of Acid + Extrapolated Endpoint Volume of Alkali).',
-      'Molar Enthalpy Scale: Source standard specific heat capacity (4.18 J g⁻¹ K⁻¹) and density constants directly from your Data Booklet. Evaluate Q in Joules, convert to kJ, and divide by the reacting moles of water to establish ΔH.'
+    generalSteps: [
+      'Locate vertex boundaries using graphical crosshair extrapolations.',
+      'Calculate thermodynamic energy parameters using accurate specific heat parameters.'
     ],
-    pitfalls: 'WJEC Examiner Pitfalls: This is a double-trap module! First, candidates routinely fail to combine the solution volumes for the mass parameter. Second, because the reaction causes a temperature rise, the process is exothermic—your final computed ΔH value must contain an explicit negative (−) sign and be rounded to exactly 3 significant figures.'
+    subModes: {
+      'simple': [
+        'Slide coordinates along cooling and heating curves to establish their exact point of intersection.',
+        'Compute overall heat generation via $Q = mc\Delta T$, where mass ($m$) is the combined fluid volume.',
+        'Divide total energy ($kJ$) by the limiting factor moles to yield definitive $\Delta H$ parameters.'
+      ]
+    },
+    examTips: [
+      'The mass variable ($m$) in $Q = mc\Delta T$ must represent the *total combined volume* of both reactants inside the calorimeter cup at the true neutralized endpoint.',
+      'Because a physical temperature rise indicates an exothermic pathway, your calculated structural $\Delta H$ value *must* display an explicit negative ($-$) sign to score full marks.'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: This is a double-trap module! First, candidates routinely fail to combine the solution volumes for the mass parameter. Second, because the reaction causes a temperature rise, the process is exothermic—your final computed ΔH value must contain an explicit negative (−) sign.'
   },
+
   'mechanisms-unit2': {
     title: 'AS Organic Mechanisms (Unit 2.5)',
-    steps: [
-      'Halide Polarization: In electrophilic additions (Alkenes + HX), identify the permanent dipole due to halogen electronegativity. Mark hydrogen as δ⁺ and the halogen as δ⁻.',
-      'π-Cloud Attack Origin: The mechanism arrow denotes electron pair routing. In electrophilic addition, your first arrow MUST start directly from the double bond line (the electron-rich π-bond cloud) and target the electrophilic δ⁺ hydrogen atom.',
-      'Leaving Group Fission: Simultaneously, draw a second arrow from the center of the matching H-X single covalent bond right onto the halogen atom to model heterolytic cleavage and the departure of the halide anion.'
+    generalSteps: [
+      'Assign permanent reagent dipoles based on local atomic electronegativity parameters.',
+      'Map structural electron pairs from high-density sources straight to electrophilic centers.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Never draw the arrow originating from individual carbon atoms during the alkene step—the electrons reside inside the shared π-cloud. For asymmetric structures (Propene), remember the Markovnikov rule: the electrophile always appends to form the more stable carbocation intermediate.'
+    subModes: {
+      'ions-from-formula-gcse': [
+        'Identify dipole boundaries across simple linear haloalkane structures.',
+        'Model generic nucleophilic substitutions by launching arrows from basic nucleophiles directly onto polar carbon nodes.'
+      ]
+    },
+    examTips: [
+      'In electrophilic additions involving alkenes, the initial arrow *must* start directly from the high electron density region of the $\text{C}=\text{C}$ double bond (the $\pi$-cloud) and point straight to the electrophilic $\text{H}^{\delta+}$ center.',
+      'When an asymmetric alkene (e.g., Propene) undergoes addition, map your route to generate the more stable secondary or tertiary carbocation intermediate over the primary alternative (Markovnikov Rule).'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Never draw the arrow originating from individual carbon atoms during the alkene step—the electrons reside inside the shared π-cloud.'
   },
+
+  // =========================================================================
+  // UNIT 3: INORGANIC SYSTEMS & KINETICS
+  // =========================================================================
   'redox': {
     title: 'Redox Titration Systems (Unit 3.1)',
-    steps: [
-      'Construct the full chemical process by combining individual reduction and oxidation half-equations.',
-      'Ensure electron balancing is clean by multiplying half-equations so that all transferred electrons cancel out entirely.',
-      'Identify your reacting mole ratio from the balanced full equation (e.g., 1 mole of MnO₄⁻ reacts with 5 moles of Fe²⁺).'
+    generalSteps: [
+      'Analyze half-cell parameters to build comprehensive balanced chemical summaries.',
+      'Track stoichiometric changes using oxidation state shifts.'
+    ],
+    subModes: {
+      'simple': [
+        'Multiply individual half-equations until overall electron counts match identically.',
+        'Combine equations together, canceling out all active electron instances completely.',
+        'Deduce the clear structural reacting molar ratio tracking parameters from the resulting stoichiometry.'
+      ]
+    },
+    examTips: [
+      'Never assume a standard 1:1 reacting ratio for redox systems. Manganate($\text{VII}$) and dichromate($\text{VI}$) titrations consistently exhibit unique non-unity stoichiometric profiles.',
+      'Ensure acid conditions ($\text{H}^+$ species and corresponding water molecules) are properly balanced across both sides of your final net equation.'
     ],
     pitfalls: 'WJEC Examiner Alert: Never assume a standard 1:1 reacting layout context. Transition metal redox systems feature unique fluctuating oxidation state shifts.'
   },
+
   'enthalpy': {
     title: 'Enthalpy of Combustion (Unit 3.4)',
-    steps: [
-      'Determine heat energy absorbed by the water using Q = mcΔT (where m is the mass of water, NOT the fuel).',
-      'Calculate the moles of fuel chemical burnt (mass / Mr).',
-      'Calculate the molar enthalpy parameter: ΔH = −Q / (moles × 1000) to express the final value in kJ mol⁻¹.'
+    generalSteps: [
+      'Evaluate energy shifts within the calorimeter shell via standard boundary equations.',
+      'Normalize energy metrics against absolute consumed fuel values.'
+    ],
+    subModes: {
+      'simple': [
+        'Calculate overall heat changes via $Q = mc\Delta T$, using the mass parameters of the water container.',
+        'Deduce absolute consumed fuel moles via $\text{mass} / M_r$.',
+        'Convert raw heat metrics to $kJ$ and divide by the fuel moles to capture molar parameters.'
+      ]
+    },
+    examTips: [
+      'When calculating $Q = mc\Delta T$, the mass parameter ($m$) refers strictly to the mass of the liquid water being heated in the copper can, *never* the mass of the burner or the fuel consumed.',
+      'Combustion reactions are fundamentally exothermic—always confirm your final numerical $\Delta H$ metric features an explicit negative ($-$) sign.'
     ],
     pitfalls: 'WJEC Examiner Alert: Do not forget the sign convention. Combustion reactions are exothermic, meaning your final recorded ΔH entry MUST display an explicit negative (−) sign.'
   },
+
   'entropy-gibbs': {
     title: 'Entropy & Gibbs Free Energy (Unit 3.4)',
-    steps: [
-      'Calculate standard changes: ΔS = ΣS°(products) − ΣS°(reactants).',
-      'Use Gibbs equation layout profiles: ΔG = ΔH − TΔS.',
-      'A process becomes thermodynamically feasible at the exact threshold where ΔG ≤ 0.'
+    generalSteps: [
+      'Deduce systemic disorder limits across comprehensive chemical equations.',
+      'Check structural feasibility values across variable thermal conditions.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Unit incompatibility is a persistent issue. Enthalpy (ΔH) is given in kJ mol⁻¹, but Entropy (ΔS) is recorded in J K⁻¹ mol⁻¹. You MUST divide your ΔS value by 1000 before substituting it into the Gibbs formula.'
+    subModes: {
+      'simple': [
+        'Compute systemic changes via $\Delta S = \Sigma S^\circ(\text{products}) - \Sigma S^\circ(\text{reactants})$.',
+        'Substitute values into the Gibbs free energy expression: $\Delta G = \Delta H - T\Delta S$.',
+        'Identify transition thresholds where reactions become spontaneous ($\Delta G \le 0$).'
+      ]
+    },
+    examTips: [
+      'Unit mismatch is a common pitfall: Enthalpy ($\Delta H$) is given in $\text{kJ mol}^{-1}$, but Entropy ($\Delta S$) is reported in $\text{J K}^{-1}\text{ mol}^{-1}$. You *must* divide your $\Delta S$ value by 1000 before substituting it into the Gibbs equation.',
+      'To calculate the minimum temperature threshold for feasibility, set $\Delta G = 0$ and rearrange to solve for temperature: $T = \Delta H / \Delta S$.'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Unit incompatibility is a persistent issue. Enthalpy is given in kJ mol⁻¹, but Entropy is recorded in J K⁻¹ mol⁻¹. You MUST divide your ΔS value by 1000 before substituting it into the Gibbs formula.'
   },
+
   'rates': {
     title: 'Reaction Rates & Arrhenius Constraints (Unit 3.5)',
-    steps: [
-      'Deduce reaction orders by comparing concentration changes against initial rate fluctuations across test trials.',
-      'Construct the master expression: Rate = k[A]ˣ[B]ʸ.',
-      'To establish Arrhenius parameters, convert data into logarithmic trends using: ln(k) = −Ea/R(1/T) + ln(A).'
+    generalSteps: [
+      'Analyze experimental data metrics to build accurate operational rate equations.',
+      'Track rate constant dependency shifts relative to absolute thermal values.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Working out units for the rate constant (k) requires full mathematical algebraic substitution and canceling. Always simplify your powers fully.'
+    subModes: {
+      'simple': [
+        'Deduce component reaction orders by tracking initial rate velocity changes across distinct trials.',
+        'Isolate individual rate constant variables ($k$) by substituting concentration data.',
+        'Map logarithmic Arrhenius systems via: $\ln(k) = -\frac{E_a}{R}\left(\frac{1}{T}\right) + \ln(A)$ equations.'
+      ]
+    },
+    examTips: [
+      'When deducing the overall units for a rate constant $k$, substitute concentration units ($\text{mol dm}^{-3}$) directly into your rearranged rate equation and systematically cancel them out.',
+      'The gradient of an Arrhenius graph ($\ln(k)$ vs $1/T$) equals $-\frac{E_a}{R}$. Multiply your calculated gradient by $-R$ ($-8.314$) to isolate $E_a$ directly in $\text{J mol}^{-1}$, then divide by 1000 to express it in the standard unit of $\text{kJ mol}^{-1}$.'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Working out units for the rate constant requires full mathematical algebraic substitution and canceling.'
   },
+
   'kc-calc': {
     title: 'Kc Equilibrium Constants (Unit 3.8)',
-    steps: [
-      'Construct an ICE data matrix: Initial Moles, Change in Moles, Equilibrium Moles.',
-      'Convert equilibrium moles back to concentrations by dividing every component value by the container volume (dm³).',
-      'Assemble the constant fraction: Kc = [Products] / [Reactants], applying stoic coefficients as exponent powers.'
+    generalSteps: [
+      'Track multi-component dynamic concentration states inside equilibrium mixtures.',
+      'Build comprehensive molar concentration fractions from balanced stoichiometry.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Forgetting to divide equilibrium moles by the system volume is a frequent error. This step is only mathematically skippable if there are equal moles of gas on both sides of the equilibrium line.'
+    subModes: {
+      'simple': [
+        'Map concentration profiles using structured Initial, Change, Equilibrium (ICE) tables.',
+        'Convert equilibrium mole quantities into true concentration values by dividing by the absolute system volume ($\text{dm}^3$).',
+        'Calculate the final constant using: $K_c = \frac{[\text{Products}]^x}{[\text{Reactants}]^y}$.'
+      ]
+    },
+    examTips: [
+      'Always remember to divide your equilibrium moles by the total container volume ($\text{dm}^3$) to convert them into concentration values before plugging them into the $K_c$ expression. Skipping this step is only valid if the total number of gas moles is identical on both sides of the balanced equation.',
+      'Square brackets $[\ ]$ must be used in your written $K_c$ expressions; they explicitly denote concentration in $\text{mol dm}^{-3}$.'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Forgetting to divide equilibrium moles by the system volume is a frequent error.'
   },
+
   'kp-calc': {
     title: 'Kp Equilibrium Constants (Unit 3.8)',
-    steps: [
-      'Calculate total gas moles present in the system container.',
-      'Find individual mole fractions: x(A) = Moles of A / Total Moles.',
-      'Determine partial pressures: p(A) = x(A) × Total Pressure.',
-      'Substitute values into the Kp expression using rounded parenthetical notation (p(Products)), not square concentration brackets.'
+    generalSteps: [
+      'Track individual gas partial pressures in closed system setups.',
+      'Relate component mole metrics directly to overall pressure properties.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Never use square brackets [] inside a Kp expression. Square brackets explicitly denote concentration in mol dm⁻³. Using them here violates sign notation rules and will result in lost marks.'
+    subModes: {
+      'simple': [
+        'Calculate the total gas moles present at equilibrium across all active species.',
+        'Determine individual component mole fractions: $x(A) = \frac{\text{moles of } A}{\text{total gas moles}}$.',
+        'Compute partial pressures using: $p(A) = x(A) \times P_{\text{total}}$.',
+        'Substitute these values into your $K_p$ expression using standard parenthetical notation.'
+      ]
+    },
+    examTips: [
+      'Never use square brackets $[\ ]$ when writing a $K_p$ expression. Square brackets represent concentration ($\text{mol dm}^{-3}$). Instead, use standard curved parentheses enclosing the lower-case partial pressure symbol $p$ (e.g., $(p\text{NH}_3)^2$).',
+      'Total pressure parameters must use matching units ($\text{kPa}$, $\text{Pa}$, or $\text{atm}$) throughout the entire fraction layout.'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Never use square brackets inside a Kp expression. Square brackets explicitly denote concentration in mol dm⁻³. Using them here violates sign notation rules.'
   },
+
   'acids': {
     title: 'pH & Weak Acid Equilibriums (Unit 3.9)',
-    steps: [
-      'Strong Acids: Fully dissociate, meaning [H⁺] = Acid Concentration. Use: pH = −log₁₀[H⁺].',
-      'Weak Acids: Partially dissociate. Use the simplified approximation: [H⁺] = √(Ka × c) before calculating the negative logarithm.',
-      'Conversions: Convert pKa back to Ka using Ka = 10^(−pKa).'
+    generalSteps: [
+      'Analyze hydrogen ion concentrations across variable dissociation networks.',
+      'Process logarithmic structural parameters onto uniform linear scales.'
     ],
-    pitfalls: 'WJEC Examiner Alert: Enforce logarithmic notation formatting conventions. All calculated pH and pKa parameters MUST be written to exactly two decimal places, even if it ends in a trailing zero (e.g., write 4.00, not 4).'
+    subModes: {
+      'simple': [
+        'For Strong Acids: Set $[\text{H}^+] = \text{Acid Concentration}$, then calculate $\text{pH} = -\log_{10}[\text{H}^+]$.',
+        'For Weak Acids: Apply approximations to solve via $[\text{H}^+] = \sqrt{K_a \times c}$.',
+        'Convert values cleanly between logarithmic $pK_a$ and standard $K_a$ values.'
+      ]
+    },
+    examTips: [
+      'WJEC Precision Mandate: All calculated $\text{pH}$ and $pK_a$ values *must* be reported to exactly two decimal places in your final answers, even if it results in trailing zeros (e.g., write $4.00$, never just $4$).',
+      'When working backward from a given $\text{pH}$ to find the hydrogen ion concentration, use the inverse log relationship: $[\text{H}^+] = 10^{-\text{pH}}$.'
+    ],
+    pitfalls: 'WJEC Examiner Alert: Enforce logarithmic notation formatting conventions. All calculated pH and pKa parameters MUST be written to exactly two decimal places.'
   },
+
   'buffers': {
     title: 'Buffer Solutions (Unit 3.9)',
-    steps: [
-      'Identify the weak acid molecule component and its conjugate base salt component.',
-      'If a small portion of strong alkali or acid is added, calculate the updated adjusted mole statistics before applying equilibrium checks.',
-      'Substitute values into the rearranged weak acid equilibrium expression: [H⁺] = Ka × ([Acid] / [Base]).'
+    generalSteps: [
+      'Identify paired weak conjugate species inside resilient chemical matrices.',
+      'Track composition adjustments when stress factors challenge the equilibrium.'
+    ],
+    subModes: {
+      'simple': [
+        'Identify the exact mole reservoirs for both the weak acid component and its conjugate salt base.',
+        'Calculate stoichiometric updates if a portion of strong acid ($\text{H}^+$) or base ($\text{OH}^-$) is introduced.',
+        'Substitute the updated values into the weak acid expression: $[\text{H}^+] = K_a \times \frac{[\text{Acid}]}{[\text{Base}]}$.'
+      ]
+    },
+    examTips: [
+      'When strong acid or alkali is added to a buffer system, perform all neutralisation calculations in *moles* first. Update your acid and salt moles before calculating final concentrations or volume ratios.',
+      'Adding small amounts of acid increases the component $[\text{Acid}]$ concentration and decreases the conjugate $[\text{Base}]$ salt concentration by that exact molar increment.'
     ],
     pitfalls: 'WJEC Examiner Alert: Always work in absolute chemical amounts (moles) when assessing neutralizing shifts before running final volume concentrations.'
   },
+
+  // =========================================================================
+  // UNIT 4: ORGANIC SYNTHESIS & ANALYSIS
+  // =========================================================================
   'cell-potentials': {
     title: 'Cell Potentials & Diagrams (Unit 4.1)',
-    steps: [
-      'Standard EMF Calculation: Identify the cathode (the more positive reduction potential) and anode (the more negative reduction potential). Evaluate overall cell voltage via: E°cell = E°(cathode) − E°(anode).',
-      'Conventional Cell Notation: Map the anode/oxidation transition on the extreme left and the cathode/reduction transition on the extreme right, separated by a double vertical line (||) representing the salt bridge. Use phase boundary bars (|) between different states.',
-      'Inert Electrodes & Shifts: If a half-cell consists entirely of aqueous ions or gases, you must include an inert Pt(s) electrode on that boundary outer edge. Use Le Chatelier principles to predict non-standard potential shifts.'
+    generalSteps: [
+      'Determine boundary voltage variances across paired half-cell networks.',
+      'Map structural layout designs according to standard international IUPAC rules.'
     ],
-    pitfalls: 'WJEC Examiner Pitfalls: 1) The Multiplier Trap: Never multiply a half-cell E° value by stoichiometric coefficients when balancing electron transfers—E° is an intensive property. 2) Formatting: All cell potentials must explicitly state their sign (+ or −) and be formatted to exactly 2 decimal places (e.g., +1.10 V).'
+    subModes: {
+      'simple': [
+        'Identify the cathode (more positive reduction value) and anode (more negative reduction value).',
+        'Compute standard voltages via: $E^\circ_{\text{cell}} = E^\circ_{\text{cathode}} - E^\circ_{\text{anode}}$.',
+        'Map phase structures from left-to-right following standard chemical notation layout rules.'
+      ]
+    },
+    examTips: [
+      'Never multiply an individual half-cell electrode potential value ($E^\circ$) by stoichiometric coefficients when balancing electrons—$E^\circ$ is an intensive property and remains constant.',
+      'A double vertical line ($\Vert$) represents the salt bridge. The oxidized species must always be written on the inner side of this bridge line for both half-cells.',
+      'Always include the physical sign ($+$ or $-$) along with the unit symbol ($\text{V}$) in your final recorded cell potential answers.'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: 1) The Multiplier Trap: Never multiply a half-cell E° value by stoichiometric coefficients. 2) Formatting: All cell potentials must explicitly state their sign.'
   },
+
   'mechanisms-masterclass': {
     title: 'Nucleophilic Addition Mechanisms (Unit 4.4)',
-    steps: [
-      'Induced Polarization: Start by mapping partial charges. Oxygen is highly electronegative, creating a polar carbonyl carbon node that carries a partial positive charge (δ⁺), while the oxygen carries a partial negative charge (δ⁻).',
-      'The Arrow Origin Rule: In nucleophilic addition, curly arrows represent the movement of electron pairs. The arrow MUST originate exactly from a reactive lone pair (••) or a localized negative charge on the attacking nucleophile.',
-      'Target Destination (Sink): Direct the arrowhead straight to the electrophilic carbonyl carbon node (δ⁺). Simultaneously, the carbon-oxygen double bond breaks, shifting an electron pair directly onto the oxygen atom to form an intermediate.'
+    generalSteps: [
+      'Map structural dipoles over planar unsaturated groups.',
+      'Model nucleophilic pathways by tracing matching pairs of electrons.'
     ],
-    pitfalls: 'WJEC Examiner Pitfalls: 1) Candidates routinely draw curly arrows coming from abstract empty space or a bare positive charge symbol—this results in an immediate loss of markings. 2) Never label the entire starting molecule as planar; remember that only the carbonyl functional environment is trigonal planar.'
+    subModes: {
+      'ions-from-formula-gcse': [
+        'Identify the induced dipole across the central carbonyl double bond.',
+        'Trace the initial nucleophilic attack path from the lone pair straight onto the partially positive carbon node.'
+      ]
+    },
+    examTips: [
+      'The curly arrow *must* originate directly from an explicit electron pair (either a visible lone pair $\bullet\bullet$ or a negative charge bond line) on the nucleophile. Arrows starting from empty space or element symbols score zero.',
+      'Ensure the arrowhead points directly onto the target atom center. For the second step of the mechanism, show the arrow originating from the intermediate oxygen lone pair and targeting the incoming electrophilic proton ($\text{H}^+$).'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: 1) Drawing curly arrows coming from abstract empty space results in an immediate loss of markings. 2) Never label the entire starting molecule as planar.'
   },
+
   'chiral-centers': {
     title: 'Chiral Center Identification (Unit 4.1)',
-    steps: [
-      'Four Single Bonds Rule: Focus only on tetrahedral carbon atoms that possess four single covalent bonds. Instantly disregard any planar sp² hybridised carbons, such as carbonyl groups (C=O), alkenes (C=C), or delocalised aromatic benzene ring structures.',
-      'Account for Implicit Hydrogens: In skeletal structural layouts, remember that unwritten valencies on carbon nodes represent hidden hydrogen atoms (-H). If a junction node displays three visible structural bonds, it holds exactly one implicit hydrogen.',
-      'Audit Branches Sequentially: Trace outwards along every attached group atom-by-atom. If any two pathways match identically all the way to the absolute end of their respective chains (such as two identical ethyl groups), the carbon is symmetrical and achiral.'
+    generalSteps: [
+      'Audit structural branching vectors inside carbon skeletons.',
+      'Locate points of total asymmetric layout configuration.'
     ],
-    pitfalls: 'WJEC Examiner Pitfalls: 1) The Hydrocarbon Blindspot: Candidates frequently miss chirality in purely hydrocarbon molecules (like 3-methylhexane) because they look for heteroatoms (like O, N, or Cl) instead of auditing differing branch lengths. 2) The Symmetry Trap: Central nodes (like pentan-3-ol) are commonly guessed incorrectly because students assume any branch hub is asymmetric without realizing that identical flanking chains disqualify the spot.'
+    subModes: {
+      'simple': [
+        'Scan for carbon nodes containing exactly four single covalent bonds.',
+        'Disregard any planar $\text{sp}^2$ centers (like alkenes or carbonyls) immediately.',
+        'Trace outwards along every attached branch to confirm path asymmetry.'
+      ]
+    },
+    examTips: [
+      'Always account for implicit hydrogen atoms in skeletal structural drawings. If an internal node has three visible bonds, it holds exactly one implicit hydrogen atom.',
+      'Trace outward along every attached group atom-by-atom. If any two pathways match identically all the way to the end of the chain, the center is symmetrical and achiral.'
+    ],
+    pitfalls: 'WJEC Examiner Pitfalls: 1) The Hydrocarbon Blindspot: Candidates frequently miss chirality in purely hydrocarbon molecules. 2) The Symmetry Trap: Central nodes are commonly guessed incorrectly.'
   }
 };
