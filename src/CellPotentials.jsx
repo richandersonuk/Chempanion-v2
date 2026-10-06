@@ -1,39 +1,36 @@
 import React, { useState, useEffect } from 'react';
 
-// WJEC-style line-art SVG cell diagram
 const CellDiagram = ({ anode, cathode }) => (
-  <svg 
-    viewBox="0 0 400 220" 
-    className="w-full max-w-lg mx-auto my-6 stroke-[var(--chem-text-main)] fill-none" 
-    style={{ strokeWidth: 1.5 }}
-  >
-    {/* Left Half-Cell (Anode) */}
-    <path d="M 50 100 L 50 200 Q 50 210 60 210 L 140 210 Q 150 210 150 200 L 150 100" />
-    <path d="M 50 130 L 150 130" className="stroke-[var(--chem-border)]" strokeDasharray="4 4" />
+  <svg viewBox="0 0 400 220" className="w-full h-auto max-w-md mx-auto my-6 stroke-[var(--chem-text-main)] fill-none stroke-2">
+    {/* Beakers */}
+    <path d="M 60 100 L 60 200 L 160 200 L 160 100" />
+    <path d="M 240 100 L 240 200 L 340 200 L 340 100" />
     
-    {/* Right Half-Cell (Cathode) */}
-    <path d="M 250 100 L 250 200 Q 250 210 260 210 L 340 210 Q 350 210 350 200 L 350 100" />
-    <path d="M 250 130 L 350 130" className="stroke-[var(--chem-border)]" strokeDasharray="4 4" />
+    {/* Solution Levels */}
+    <line x1="60" y1="120" x2="160" y2="120" className="stroke-[var(--chem-slate-300)] stroke-1 stroke-dasharray-4" />
+    <line x1="240" y1="120" x2="340" y2="120" className="stroke-[var(--chem-slate-300)] stroke-1 stroke-dasharray-4" />
 
     {/* Salt Bridge */}
-    <path d="M 130 160 L 130 60 Q 130 40 150 40 L 250 40 Q 270 40 270 60 L 270 160" />
-    <path d="M 110 160 L 110 50 Q 110 20 150 20 L 250 20 Q 290 20 290 50 L 290 160" />
-
-    {/* Electrodes */}
-    <rect x="75" y="70" width="20" height="110" className="fill-[var(--chem-bg-alt)] stroke-[var(--chem-text-main)]" />
-    <rect x="305" y="70" width="20" height="110" className="fill-[var(--chem-bg-alt)] stroke-[var(--chem-text-main)]" />
-
-    {/* Wiring & Circuit */}
-    <path d="M 85 70 L 85 30 L 180 30" />
-    <path d="M 315 70 L 315 30 L 220 30" />
-
+    <path d="M 130 140 L 130 60 L 270 60 L 270 140" className="stroke-[var(--chem-primary)] stroke-[12px] opacity-20" />
+    <path d="M 130 140 L 130 60 L 270 60 L 270 140" className="stroke-[var(--chem-primary)] stroke-[2px]" />
+    
     {/* Voltmeter */}
-    <circle cx="200" cy="30" r="20" className="fill-[var(--chem-bg-main)] stroke-[var(--chem-text-main)]" />
-    <text x="200" y="35" textAnchor="middle" className="fill-[var(--chem-text-main)] stroke-none text-sm font-bold font-sans">V</text>
+    <circle cx="200" cy="40" r="22" className="fill-[var(--chem-bg-main)] stroke-[var(--chem-border)]" />
+    <text x="200" y="46" textAnchor="middle" className="fill-[var(--chem-text-main)] stroke-none font-bold text-sm">V</text>
+    
+    {/* Wires */}
+    <path d="M 110 40 L 178 40" />
+    <path d="M 222 40 L 290 40" />
+    <path d="M 110 40 L 110 100" />
+    <path d="M 290 40 L 290 100" />
+    
+    {/* Electrodes (Pt or solid metal) */}
+    <rect x="100" y="100" width="20" height="80" className="fill-[var(--chem-slate-200)] stroke-[var(--chem-text-main)]" />
+    <rect x="280" y="100" width="20" height="80" className="fill-[var(--chem-slate-200)] stroke-[var(--chem-text-main)]" />
 
     {/* Dynamic Labels */}
-    <text x="100" y="190" textAnchor="middle" className="fill-[var(--chem-text-main)] stroke-none text-xs font-sans font-bold">{anode.name} half-cell</text>
-    <text x="300" y="190" textAnchor="middle" className="fill-[var(--chem-text-main)] stroke-none text-xs font-sans font-bold">{cathode.name} half-cell</text>
+    <text x="110" y="215" textAnchor="middle" className="fill-[var(--chem-text-muted)] stroke-none font-mono text-[10px]">Anode</text>
+    <text x="290" y="215" textAnchor="middle" className="fill-[var(--chem-text-muted)] stroke-none font-mono text-[10px]">Cathode</text>
   </svg>
 );
 
@@ -44,15 +41,14 @@ const CellPotentials = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
-  // Strictly HTML formatted chemical species to prevent Unicode kerning issues
   const halfCells = [
-    { id: 'zn', sys: <>Zn<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#rightleftharpoons; Zn(s)</>, e0: -0.76, solid: true, electrons: 2, name: 'Zinc' },
-    { id: 'cu', sys: <>Cu<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#rightleftharpoons; Cu(s)</>, e0: 0.34, solid: true, electrons: 2, name: 'Copper' },
-    { id: 'al', sys: <>Al<sup>3+</sup>(aq) + 3e<sup>&minus;</sup> &#rightleftharpoons; Al(s)</>, e0: -1.66, solid: true, electrons: 3, name: 'Aluminium' },
-    { id: 'ag', sys: <>Ag<sup>+</sup>(aq) + e<sup>&minus;</sup> &#rightleftharpoons; Ag(s)</>, e0: 0.80, solid: true, electrons: 1, name: 'Silver' },
-    { id: 'fe', sys: <>Fe<sup>3+</sup>(aq) + e<sup>&minus;</sup> &#rightleftharpoons; Fe<sup>2+</sup>(aq)</>, e0: 0.77, solid: false, electrons: 1, name: 'Iron(III)' },
-    { id: 'cl', sys: <>Cl<sub>2</sub>(g) + 2e<sup>&minus;</sup> &#rightleftharpoons; 2Cl<sup>&minus;</sup>(aq)</>, e0: 1.36, solid: false, electrons: 2, name: 'Chlorine' },
-    { id: 'mn', sys: <>MnO<sub>4</sub><sup>&minus;</sup>(aq) + 8H<sup>+</sup>(aq) + 5e<sup>&minus;</sup> &#rightleftharpoons; Mn<sup>2+</sup>(aq) + 4H<sub>2</sub>O(l)</>, e0: 1.51, solid: false, electrons: 5, name: 'Manganate(VII)' }
+    { id: 'zn', sys: <>Zn<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Zn(s)</>, e0: -0.76, solid: true, electrons: 2, name: 'zinc' },
+    { id: 'cu', sys: <>Cu<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Cu(s)</>, e0: 0.34, solid: true, electrons: 2, name: 'copper' },
+    { id: 'al', sys: <>Al<sup>3+</sup>(aq) + 3e<sup>&minus;</sup> &#x21CC; Al(s)</>, e0: -1.66, solid: true, electrons: 3, name: 'aluminium' },
+    { id: 'ag', sys: <>Ag<sup>+</sup>(aq) + e<sup>&minus;</sup> &#x21CC; Ag(s)</>, e0: 0.80, solid: true, electrons: 1, name: 'silver' },
+    { id: 'fe', sys: <>Fe<sup>3+</sup>(aq) + e<sup>&minus;</sup> &#x21CC; Fe<sup>2+</sup>(aq)</>, e0: 0.77, solid: false, electrons: 1, name: 'iron(II)/iron(III)' },
+    { id: 'cl', sys: <>Cl<sub>2</sub>(g) + 2e<sup>&minus;</sup> &#x21CC; 2Cl<sup>&minus;</sup>(aq)</>, e0: 1.36, solid: false, electrons: 2, name: 'chlorine/chloride' },
+    { id: 'mn', sys: <>MnO<sub>4</sub><sup>&minus;</sup>(aq) + 8H<sup>+</sup>(aq) + 5e<sup>&minus;</sup> &#x21CC; Mn<sup>2+</sup>(aq) + 4H<sub>2</sub>O(l)</>, e0: 1.51, solid: false, electrons: 5, name: 'manganate(VII)' }
   ];
 
   const generateProblem = (forcedMode = null) => {
@@ -76,41 +72,55 @@ const CellPotentials = () => {
 
     if (selection === 'calc_emf') {
       newProb = {
-        title: "Standard Cell Potential (E°cell)",
-        text: <>An electrochemical cell is constructed under standard laboratory conditions using the half-cells below. (Refer to the Data Booklet for any standard constants required).</>,
+        title: "Standard Cell Potential Calculation (E°cell)",
+        text: <>An electrochemical cell is constructed under standard laboratory conditions using the following two half-cells:</>,
         halfCellData: [anode, cathode],
-        question: "Calculate the standard cell potential (E°cell) for this operational cell.",
+        question: "Calculate the overall standard cell potential (E°cell) in volts.",
         label: "E°cell =",
         unit: "V",
         correct: (trueEMF >= 0 ? "+" : "") + trueEMF.toFixed(2),
         meta: { anode, cathode, trueEMF },
-        hasDiagram: true
+        requiresDiagram: true
       };
     } else if (selection === 'cell_notation') {
-      const formatComponent = (cell, isAnode, omitPt = false) => {
-        const ptLeft = (omitPt || cell.solid) ? <></> : <>Pt(s) | </>;
-        const ptRight = (omitPt || cell.solid) ? <></> : <> | Pt(s)</>;
-        
+      const formatComponent = (cell, isAnode) => {
         if (cell.id === 'zn') return isAnode ? <>Zn(s) | Zn<sup>2+</sup>(aq)</> : <>Zn<sup>2+</sup>(aq) | Zn(s)</>;
         if (cell.id === 'cu') return isAnode ? <>Cu(s) | Cu<sup>2+</sup>(aq)</> : <>Cu<sup>2+</sup>(aq) | Cu(s)</>;
         if (cell.id === 'al') return isAnode ? <>Al(s) | Al<sup>3+</sup>(aq)</> : <>Al<sup>3+</sup>(aq) | Al(s)</>;
         if (cell.id === 'ag') return isAnode ? <>Ag(s) | Ag<sup>+</sup>(aq)</> : <>Ag<sup>+</sup>(aq) | Ag(s)</>;
-        if (cell.id === 'fe') return isAnode ? <>{ptLeft}Fe<sup>2+</sup>(aq), Fe<sup>3+</sup>(aq)</> : <>Fe<sup>3+</sup>(aq), Fe<sup>2+</sup>(aq){ptRight}</>;
-        if (cell.id === 'cl') return isAnode ? <>{ptLeft}2Cl<sup>&minus;</sup>(aq) | Cl<sub>2</sub>(g)</> : <>Cl<sub>2</sub>(g) | 2Cl<sup>&minus;</sup>(aq){ptRight}</>;
-        return isAnode ? <>{ptLeft}Mn<sup>2+</sup>(aq), MnO<sub>4</sub><sup>&minus;</sup>(aq)</> : <>MnO<sub>4</sub><sup>&minus;</sup>(aq), Mn<sup>2+</sup>(aq){ptRight}</>;
+        if (cell.id === 'fe') return isAnode ? <>Pt(s) | Fe<sup>2+</sup>(aq), Fe<sup>3+</sup>(aq)</> : <>Fe<sup>3+</sup>(aq), Fe<sup>2+</sup>(aq) | Pt(s)</>;
+        if (cell.id === 'cl') return isAnode ? <>Pt(s) | 2Cl<sup>&minus;</sup>(aq) | Cl<sub>2</sub>(g)</> : <>Cl<sub>2</sub>(g) | 2Cl<sup>&minus;</sup>(aq) | Pt(s)</>;
+        return isAnode ? <>Pt(s) | Mn<sup>2+</sup>(aq), MnO<sub>4</sub><sup>&minus;</sup>(aq)</> : <>MnO<sub>4</sub><sup>&minus;</sup>(aq), Mn<sup>2+</sup>(aq) | Pt(s)</>;
       };
 
+      const correctComponent = <>{formatComponent(anode, true)} || {formatComponent(cathode, false)}</>;
+      const flippedComponent = <>{formatComponent(cathode, true)} || {formatComponent(anode, false)}</>;
+      
       const choices = [
-        { text: <>{formatComponent(anode, true)} || {formatComponent(cathode, false)}</>, isCorrect: true },
-        { text: <>{formatComponent(cathode, true)} || {formatComponent(anode, false)}</>, isCorrect: false, trap: "flipped" },
-        { text: <>{formatComponent(anode, true, true)} || {formatComponent(cathode, false, true)}</>, isCorrect: false, trap: "missing_pt" }
-      ].sort(() => Math.random() - 0.5);
+        { text: correctComponent, isCorrect: true },
+        { text: flippedComponent, isCorrect: false, trap: "flipped" },
+      ];
+
+      // Missing Pt trap generation (conditional check to ensure we only render it if a Pt phase actually exists)
+      if (!anode.solid || !cathode.solid) {
+        choices.push({
+            text: <>{formatComponent(anode, true)} || {formatComponent(cathode, false)} <sub>(Missing Inert Electrode)</sub></>,
+            isCorrect: false,
+            trap: "missing_pt"
+        });
+      } else {
+        choices.push({
+            text: <>{formatComponent(anode, false)} || {formatComponent(cathode, true)}</>,
+            isCorrect: false,
+            trap: "flipped"
+        });
+      }
 
       newProb = {
         title: "Conventional Cell Diagrams",
         text: <>Consider a standard cell comprising a <b>{anode.name}</b> half-cell joined across a salt bridge to a standard <b>{cathode.name}</b> half-cell.</>,
-        question: "Select the correct conventional representation for this cell.",
-        choices,
+        question: "Select the correct, standard conventional representation notation layout string for this operational cell matrix.",
+        choices: choices.sort(() => Math.random() - 0.5),
         isCards: true
       };
     } else if (selection === 'feasibility_shifts') {
@@ -135,10 +145,13 @@ const CellPotentials = () => {
         isCards: true
       };
     }
+
     setProblem(newProb);
   };
 
-  useEffect(() => { generateProblem('calc_emf'); }, []);
+  useEffect(() => {
+    generateProblem('calc_emf');
+  }, []);
 
   const checkAnswer = () => {
     if (mode === 'calc_emf') {
@@ -147,7 +160,7 @@ const CellPotentials = () => {
 
       if (!raw.startsWith('+') && !raw.startsWith('-')) {
         setFeedback({ 
-          message: "WJEC Sign Penalty: Standard cell EMF representations must explicitly state the sign (+ or −).", 
+          message: "WJEC Sign Penalty! Cell EMF representations must explicitly state the sign context (+ or \u2212) to state thermodynamic direction. Leaving it blank scores zero.", 
           status: 'error' 
         });
         return;
@@ -164,39 +177,40 @@ const CellPotentials = () => {
 
       const userVal = parseFloat(raw);
       const targetVal = parseFloat(problem.correct);
+      const isCorrect = Math.abs(userVal - targetVal) < 0.01;
       const { anode, cathode } = problem.meta;
 
-      // Ensure traps only fire if electrons were legitimately mismatched and trap values deviate from the true EMF
-      if (anode.electrons !== cathode.electrons) {
+      // Only check traps if the answer is explicitly incorrect
+      if (!isCorrect) {
         const wrongValAnodeMult = cathode.e0 - (anode.e0 * cathode.electrons);
         const wrongValCathodeMult = (cathode.e0 * anode.electrons) - anode.e0;
         const wrongValBothMult = (cathode.e0 * anode.electrons) - (anode.e0 * cathode.electrons);
 
-        const checkTrap = (trapVal) => Math.abs(trapVal - targetVal) > 0.01 && Math.abs(userVal - trapVal) < 0.02;
-
-        if (checkTrap(wrongValAnodeMult) || checkTrap(wrongValCathodeMult) || checkTrap(wrongValBothMult)) {
+        if (Math.abs(userVal - wrongValAnodeMult) < 0.02 || Math.abs(userVal - wrongValCathodeMult) < 0.02 || Math.abs(userVal - wrongValBothMult) < 0.02) {
           setFeedback({
-            message: "WJEC Trap Triggered: Standard electrode potentials (E°) are intensive properties. Never multiply the half-cell voltages when balancing electron stoichiometry!",
+            message: "WJEC Multiplier Trap Triggered! Standard electrode potentials (E°) are intensive properties. They depend entirely on concentration and temperature, NOT the reaction stoichiometry. Never multiply the half-cell voltages when balancing electron counts!",
             status: 'error'
           });
           return;
         }
+
+        setFeedback({ message: "Incorrect. The formula is E°cell = E°(cathode) \u2212 E°(anode). Identify the most positive value as the cathode.", status: 'error' });
+      } else {
+        setFeedback({ message: `Correct! E°cell = ${problem.correct} V. Complete electrochemical feasibility verified.`, status: 'success' });
       }
 
-      if (Math.abs(userVal - targetVal) < 0.01) {
-        setFeedback({ message: `Correct! E°cell = ${problem.correct} V.`, status: 'success' });
-      } else {
-        setFeedback({ message: "Incorrect. Identify the most positive standard potential as the cathode: E°cell = E°(cathode) − E°(anode).", status: 'error' });
-      }
     } else if (mode === 'cell_notation') {
       if (selectedCard === null) return;
       const selected = problem.choices[selectedCard];
       if (selected.isCorrect) {
-        setFeedback({ message: "Correct. Anode oxidation is on the left, cathode reduction on the right, with phase rules maintained.", status: 'success' });
+        setFeedback({ message: "Flawless! Anode oxidation transitions are mapped on the left, cathode reduction stages on the right, with salt bridge and phase rules correctly maintained.", status: 'success' });
       } else {
-        let helpText = "Incorrect notation. ";
-        if (selected.trap === 'flipped') helpText += "The oxidation half-cell (more negative E°) must be drawn on the left.";
-        if (selected.trap === 'missing_pt') helpText += "Gaseous or aqueous ionic species without a solid metal phase mandate an inert Pt(s) connection.";
+        let helpText = "Incorrect notation alignment. ";
+        if (selected.trap === 'flipped') {
+          helpText += "Remember, the oxidation half-cell (the more negative anode system) must be drawn on the left, with the reduction cathode on the right.";
+        } else if (selected.trap === 'missing_pt') {
+          helpText += "Look out for gaseous or aqueous ionic species without a solid conductive metal. These chemical systems mandate the inclusion of an inert Pt(s) phase boundary connection link.";
+        }
         setFeedback({ message: helpText, status: 'error' });
       }
     } else if (mode === 'feasibility_shifts') {
@@ -205,7 +219,7 @@ const CellPotentials = () => {
       if (selected.id === problem.correctId) {
         setFeedback({ message: `Correct! ${problem.hint}`, status: 'success' });
       } else {
-        setFeedback({ message: `Incorrect. Consider Le Chatelier's principle: ${problem.hint}`, status: 'error' });
+        setFeedback({ message: `Incorrect. Consider Le Chatelier's equilibrium effects: ${problem.hint}`, status: 'error' });
       }
     }
   };
@@ -213,42 +227,45 @@ const CellPotentials = () => {
   if (!problem) return null;
 
   return (
-    <div className="bg-[var(--chem-bg-main)] p-4 sm:p-6 rounded-2xl max-w-3xl mx-auto font-sans text-[var(--chem-text-main)] border border-[var(--chem-border)] shadow-sm">
-      
+    <div className="bg-[var(--chem-bg-main)] p-4 md:p-8 rounded-2xl shadow-sm border border-[var(--chem-border)] max-w-2xl mx-auto">
       <div className="w-full max-w-md mx-auto mb-6 px-4">
         <span className="block text-[10px] font-black uppercase tracking-widest text-[var(--chem-text-muted)] mb-1.5 text-center">
-          Practice Mode
+          Choose Practice Mode
         </span>
-        <select
-          value={mode}
-          onChange={(e) => generateProblem(e.target.value)}
-          className="w-full bg-[var(--chem-bg-main)] border border-[var(--chem-border)] text-[var(--chem-text-main)] py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)] transition-all cursor-pointer shadow-sm text-center"
-        >
-          <option value="calc_emf">Calculate Standard Cell EMF</option>
-          <option value="cell_notation">Conventional Cell Notation</option>
-          <option value="feasibility_shifts">Non-Standard Conditions</option>
-        </select>
+        <div className="flex items-center justify-center">
+          <select
+            value={mode}
+            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
+            className="w-full max-w-xs bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] text-[var(--chem-text-main)] py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)] transition-all cursor-pointer shadow-sm text-center"
+          >
+            <option value="calc_emf">Calculate Standard Cell EMF (E°cell)</option>
+            <option value="cell_notation">Build Conventional Cell Notation</option>
+            <option value="feasibility_shifts">Predict Non-Standard Condition Shifts</option>
+          </select>
+        </div>
       </div>
 
-      <h2 className="text-xl font-bold text-center mb-2 text-[var(--chem-primary)]">{problem.title}</h2>
-      <p className="text-center px-4 leading-relaxed text-sm mb-6">{problem.text}</p>
+      <div className="text-xl font-bold text-center text-[var(--chem-text-main)] mb-3">{problem.title}</div>
+      <div className="text-center px-4 text-[var(--chem-text-muted)] leading-relaxed">{problem.text}</div>
 
-      {problem.hasDiagram && <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />}
+      {mode === 'calc_emf' && problem.requiresDiagram && (
+        <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />
+      )}
 
       {mode === 'calc_emf' && problem.halfCellData && (
-        <div className="w-full max-w-md mx-auto my-6 space-y-2 select-none">
+        <div className="w-full max-w-md mx-auto my-4 space-y-2 select-none">
           {problem.halfCellData.map((cell, idx) => (
-            <div key={idx} className="bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-xl px-4 py-3 flex items-center justify-between text-xs font-mono text-[var(--chem-text-main)]">
+            <div key={idx} className="bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-xl px-4 py-3 flex items-center justify-between text-xs font-mono font-bold text-[var(--chem-text-main)]">
               <span>{cell.sys}</span>
-              <span className="text-[var(--chem-primary)] font-black bg-[var(--chem-bg-main)] px-2 py-0.5 border border-[var(--chem-border)] rounded-md">
-                E&deg; = {cell.e0 >= 0 ? '+' : ''}{cell.e0.toFixed(2)} V
+              <span className="text-[var(--chem-primary)] font-black bg-[var(--chem-bg-main)] px-2 py-1 border border-[var(--chem-border)] rounded-md">
+                E° = {cell.e0 >= 0 ? '+' : ''}{cell.e0.toFixed(2)} V
               </span>
             </div>
           ))}
         </div>
       )}
 
-      <div className="font-bold mb-4 text-center text-[0.95rem] px-3">
+      <div className="font-bold my-6 text-center text-[0.95rem] px-3 text-[var(--chem-text-main)]">
         {problem.question}
       </div>
 
@@ -261,12 +278,12 @@ const CellPotentials = () => {
               onClick={() => { setSelectedCard(i); setFeedback({ message: '', status: '' }); }}
               className={`w-full p-4 text-left text-sm font-bold border rounded-xl transition-all ${
                 selectedCard === i 
-                  ? 'bg-[var(--chem-bg-alt)] border-[var(--chem-primary)] text-[var(--chem-primary)] ring-1 ring-[var(--chem-primary)]' 
+                  ? 'bg-[var(--chem-bg-highlight)] border-[var(--chem-primary)] text-[var(--chem-primary)] ring-1 ring-[var(--chem-primary)]' 
                   : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-main)] hover:bg-[var(--chem-bg-alt)]'
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selectedCard === i ? 'border-[var(--chem-primary)] bg-[var(--chem-primary)] text-[var(--chem-bg-main)] text-[10px]' : 'border-[var(--chem-border)]'}`}>
+                <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selectedCard === i ? 'border-[var(--chem-primary)] bg-[var(--chem-primary)] text-white text-[10px]' : 'border-[var(--chem-slate-300)]'}`}>
                   {selectedCard === i && "✓"}
                 </span>
                 <span className="font-mono tracking-wide">{choice.text}</span>
@@ -277,12 +294,12 @@ const CellPotentials = () => {
       )}
 
       {!problem.isCards && (
-        <div className="w-full flex items-center justify-center my-6">
-          <div className="flex flex-row items-center justify-center gap-3 px-5 py-3 bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-2xl shadow-sm">
-            <label className="text-sm font-black text-[var(--chem-text-muted)] select-none">{problem.label}</label>
+        <div className="w-full flex items-center justify-center my-6 overflow-x-auto">
+          <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-3 px-6 py-4 bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-2xl shadow-sm">
+            <label className="text-sm font-black text-[var(--chem-text-main)] select-none">{problem.label}</label>
             <input 
               type="text" 
-              className="bg-[var(--chem-bg-main)] border border-[var(--chem-border)] rounded-lg outline-none focus:border-[var(--chem-primary)] transition-all w-28 text-center text-lg font-black text-[var(--chem-text-main)] py-1"
+              className={`w-32 bg-white text-center text-lg font-extrabold py-2 px-3 rounded-lg border focus:outline-none transition-colors ${feedback.status === 'error' ? 'border-red-400 text-red-600 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-[var(--chem-border)] text-[var(--chem-text-main)] focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)]'}`}
               value={studentAnswer}
               onChange={(e) => setStudentAnswer(e.target.value)}
               placeholder="+1.10"
@@ -293,24 +310,24 @@ const CellPotentials = () => {
         </div>
       )}
 
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
         <button 
-          className="bg-[var(--chem-primary)] hover:opacity-90 text-[var(--chem-bg-main)] font-bold py-2.5 px-6 rounded-xl transition-all disabled:opacity-50"
+          className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-[var(--chem-primary)] text-white hover:opacity-90 transition-opacity disabled:opacity-50" 
           onClick={checkAnswer} 
           disabled={problem.isCards && selectedCard === null}
         >
           Check Answer
         </button>
         <button 
-          className="bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] text-[var(--chem-text-main)] hover:bg-[var(--chem-border)] font-bold py-2.5 px-6 rounded-xl transition-all"
-          onClick={() => generateProblem()}
+          className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-[var(--chem-bg-alt)] text-[var(--chem-text-main)] border border-[var(--chem-border)] hover:bg-[var(--chem-slate-200)] transition-colors" 
+          onClick={() => generateProblem(mode)}
         >
           New Problem
         </button>
       </div>
 
       {feedback.message && (
-        <div className={`mt-6 p-4 rounded-xl text-sm font-bold border ${feedback.status === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+        <div className={`mt-6 p-4 rounded-xl text-sm font-semibold border ${feedback.status === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
           {feedback.message}
         </div>
       )}
