@@ -1,203 +1,256 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const AcidsAndBases = () => {
-  const [mode, setMode] = useState('strong_acid');
-  const [problem, setProblem] = useState(null);
-  const [studentAnswer, setStudentAnswer] = useState('');
-  const [feedback, setFeedback] = useState({ message: '', status: '' });
+export function AcidsAndBases() {
+  const [prob, setProb] = useState(null);
+  const [userAns, setUserAns] = useState('');
+  const [feedback, setFeedback] = useState(null);
+  const feedbackRef = useRef(null);
 
-  const generateProblem = (forcedMode = null) => {
-    const modes = ['strong_acid', 'weak_acid', 'pka_ka'];
-    const selection = forcedMode || mode;
-    const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
+  const generateProblem = () => {
+    setUserAns('');
+    setFeedback(null);
 
-    setMode(targetMode);
+    const modes = ['pH_strong_acid', 'pH_weak_acid', 'pH_buffer', 'kw_temp', 'ka_pka_conv'];
+    const mode = modes[Math.floor(Math.random() * modes.length)];
 
     let newProb = {};
-    const strongAcids = ['HCl', 'HNO₃'];
-    const weakAcids = [
-      { name: 'ethanoic acid', formula: 'CH₃COOH', ka: 1.74e-5 },
-      { name: 'methanoic acid', formula: 'HCOOH', ka: 1.78e-4 },
-      { name: 'propanoic acid', formula: 'C₂H₅COOH', ka: 1.35e-5 }
-    ];
 
-    if (targetMode === 'strong_acid') {
-      const acid = strongAcids[Math.floor(Math.random() * strongAcids.length)];
-      const conc = parseFloat((0.01 + Math.random() * 0.15).toFixed(3));
-      // pH = -log10[H+]
-      const pH = -Math.log10(conc);
+    if (mode === 'pH_strong_acid') {
+      const isDibasic = Math.random() > 0.6;
+      const acidFormula = isDibasic ? <>H<sub>2</sub>SO<sub>4</sub></> : <>HCl</>;
+      const acidName = isDibasic ? "sulfuric acid" : "hydrochloric acid";
+      const conc = parseFloat((0.005 + Math.random() * 0.195).toFixed(3));
+      
+      const H_conc = isDibasic ? conc * 2 : conc;
+      const exactpH = -Math.log10(H_conc);
 
       newProb = {
-        title: "pH of a Strong Monoprotic Acid",
-        text: <>Calculate the pH of a <b>{conc.toFixed(3)} mol dm⁻³</b> sample of {acid}.</>,
-        question: "State your answer to the standard required decimal precision.",
+        title: "pH of a Strong Acid",
+        text: <>A student prepares an aqueous solution of {acidName}, {acidFormula}, with a concentration of {conc} mol dm<sup>-3</sup>.</>,
+        question: "Calculate the pH of this solution at 298 K.",
         label: "pH =",
-        unit: "",
-        correct: pH.toFixed(2) // Hard-coded target string to 2 dp
+        correct: exactpH,
+        validate: (val) => {
+          const num = parseFloat(val);
+          if (isNaN(num)) return { isCorrect: false, msg: "Please enter a valid numeric value." };
+          const diff = Math.abs(num - exactpH);
+          if (diff <= 0.02) return { isCorrect: true, msg: `Correct. pH calculated accurately using standard strong acid dissociation rules (${num.toFixed(2)}).` };
+          if (Math.abs(num - (-Math.log10(conc))) <= 0.02 && isDibasic) {
+            return { isCorrect: false, msg: `Incorrect. Remember that {acidFormula} is a dibasic acid and releases two moles of H⁺ ions per mole of acid.` };
+          }
+          return { isCorrect: false, msg: "Incorrect. For strong mono/dibasic acids, assume full dissociation to calculate the molar concentration of H⁺ directly." };
+        }
       };
-
-    } else if (targetMode === 'weak_acid') {
-      const acid = weakAcids[Math.floor(Math.random() * weakAcids.length)];
-      const conc = parseFloat((0.05 + Math.random() * 0.20).toFixed(2));
-      // [H+] = sqrt(Ka * c)
-      const hPlus = Math.sqrt(acid.ka * conc);
-      const pH = -Math.log10(hPlus);
+    } 
+    else if (mode === 'pH_weak_acid') {
+      const acids = [
+        { name: "ethanoic acid", formula: <>CH<sub>3</sub>COOH</>, ka: 1.74e-5, pka: 4.76 },
+        { name: "methanoic acid", formula: <>HCOOH</>, ka: 1.78e-4, pka: 3.75 },
+        { name: "propanoic acid", formula: <>C<sub>2</sub>H<sub>5</sub>COOH</>, ka: 1.35e-5, pka: 4.87 }
+      ];
+      const selected = acids[Math.floor(Math.random() * acids.length)];
+      const conc = parseFloat((0.02 + Math.random() * 0.18).toFixed(3));
+      
+      const exactH = Math.sqrt(selected.ka * conc);
+      const exactpH = -Math.log10(exactH);
 
       newProb = {
         title: "pH of a Weak Acid",
-        text: <>A solution of {acid.name} ({acid.formula}) has a concentration of <b>{conc.toFixed(2)} mol dm⁻³</b>.</>,
-        question: "Utilise your Data Booklet to retrieve the appropriate Ka value, then calculate the pH of the solution.",
+        text: <>An aqueous solution of {selected.name}, {selected.formula}, has a concentration of {conc} mol dm<sup>-3</sup>. (Refer to the Data Booklet for any standard constants required.)</>,
+        question: `Calculate the pH of this weak acid solution at 298 K.`,
         label: "pH =",
-        unit: "",
-        correct: pH.toFixed(2)
+        correct: exactpH,
+        validate: (val) => {
+          const num = parseFloat(val);
+          if (isNaN(num)) return { isCorrect: false, msg: "Please enter a valid numeric value." };
+          if (Math.abs(num - exactpH) <= 0.02) return { isCorrect: true, msg: "Correct. Evaluated appropriately via the standard weak acid approximation [H⁺] = √(Ka × [HA])." };
+          if (Math.abs(num - (-Math.log10(conc))) <= 0.1) return { isCorrect: false, msg: "Incorrect. You treated this compound as a fully dissociated strong acid instead of a weak acid." };
+          return { isCorrect: false, msg: "Incorrect. State the expression for Ka, apply the standard approximations for weak acids, solve for [H⁺], and then compute the pH." };
+        }
       };
+    }
+    else if (mode === 'pH_buffer') {
+      const concAcid = parseFloat((0.05 + Math.random() * 0.15).toFixed(2));
+      const concSalt = parseFloat((0.05 + Math.random() * 0.15).toFixed(2));
+      const ka = 1.74e-5;
+      
+      const exactH = ka * (concAcid / concSalt);
+      const exactpH = -Math.log10(exactH);
 
-    } else if (targetMode === 'pka_ka') {
-      const acid = weakAcids[Math.floor(Math.random() * weakAcids.length)];
-      const pKa = -Math.log10(acid.ka);
+      newProb = {
+        title: "Acidic Buffer Solutions",
+        text: <>An acidic buffer solution contains ethanoic acid at a concentration of {concAcid} mol dm<sup>-3</sup> and sodium ethanoate at a concentration of {concSalt} mol dm<sup>-3</sup>. (Refer to the Data Booklet for any standard constants required.)</>,
+        question: "Calculate the exact pH of this buffer mixture at 298 K.",
+        label: "pH =",
+        correct: exactpH,
+        validate: (val) => {
+          const num = parseFloat(val);
+          if (isNaN(num)) return { isCorrect: false, msg: "Please enter a valid numeric value." };
+          if (Math.abs(num - exactpH) <= 0.02) return { isCorrect: true, msg: "Correct. Buffer pH calculated successfully using Henderson-Hasselbalch principles or equilibrium ratios." };
+          return { isCorrect: false, msg: "Incorrect. For an acidic buffer, rearrange the Ka expression to make [H⁺] the subject: [H⁺] = Ka × ([acid]/[salt])." };
+        }
+      };
+    }
+    else if (mode === 'kw_temp') {
+      const systemData = [
+        { temp: "310 K (Body Temperature)", kw: 2.4e-14, pH: 6.81 },
+        { temp: "323 K", kw: 5.48e-14, pH: 6.63 },
+        { temp: "273 K", kw: 1.14e-15, pH: 7.47 }
+      ];
+      const selected = systemData[Math.floor(Math.random() * systemData.length)];
+      const askForMutedNeutral = Math.random() > 0.5;
 
-      const askForKa = Math.random() > 0.5;
+      const base = (selected.kw * 10**15).toFixed(2);
+      const exp = -15;
+
+      if (askForMutedNeutral) {
+        newProb = {
+          title: "Ionic Product of Water (Kw)",
+          text: <>At a different temperature, the ionic product of water, K<sub>w</sub>, has a value of <>{base} &times; 10<sup>{exp}</sup></> mol<sup>2</sup> dm<sup>-6</sup>.</>,
+          question: `Calculate the pH of pure water at this temperature, and state whether it remains neutral.`,
+          label: "pH =",
+          correct: selected.pH,
+          validate: (val) => {
+            const num = parseFloat(val);
+            if (isNaN(num)) return { isCorrect: false, msg: "Please provide a valid numeric value." };
+            if (Math.abs(num - selected.pH) <= 0.03) {
+              return { isCorrect: true, msg: `Correct! The pH is ${num.toFixed(2)}. Remember that water is still neutral because [H⁺] = [OH⁻] at all temperatures, even though the pH is not 7.00.` };
+            }
+            return { isCorrect: false, msg: "Incorrect. In pure water, [H⁺] = √Kw. Use this concentration value to determine the corresponding neutral pH line." };
+          }
+        };
+      } else {
+        const concNaOH = parseFloat((0.01 + Math.random() * 0.09).toFixed(3));
+        const exactH = selected.kw / concNaOH;
+        const exactpH = -Math.log10(exactH);
+
+        newProb = {
+          title: "pH of a Strong Base at Non-Standard Temp",
+          text: <>A solution of sodium hydroxide, NaOH, has a concentration of {concNaOH} mol dm<sup>-3</sup>. At this specific elevated temperature, K<sub>w</sub> = <>{base} &times; 10<sup>{exp}</sup></> mol<sup>2</sup> dm<sup>-6</sup>.</>,
+          question: "Calculate the precise pH of this strong alkaline solution at this altered thermal limit.",
+          label: "pH =",
+          correct: exactpH,
+          validate: (val) => {
+            const num = parseFloat(val);
+            if (isNaN(num)) return { isCorrect: false, msg: "Enter a numerical result." };
+            if (Math.abs(num - exactpH) <= 0.03) return { isCorrect: true, msg: "Correct. Successfully evaluated using non-standard Kw data boundaries." };
+            return { isCorrect: false, msg: "Incorrect. Calculate [OH⁻] from the strong base, then use the provided temperature-specific Kw value to find [H⁺], and convert to pH." };
+          }
+        };
+      }
+    }
+    else {
+      // mode === 'ka_pka_conv'
+      const askForKa = Math.random() > 0.5; // Fixed compilation scope mapping mismatch leak
+      const valKa = parseFloat((1.0 + Math.random() * 8.9).toFixed(2)) * 10**-5;
+      const valPka = -Math.log10(valKa);
+
+      const baseKa = (valKa * 10**5).toFixed(2);
 
       newProb = {
         title: "Equilibrium Constant Conversions",
-        text: askForCarbonate 
-          ? <>An organic weak acid has a recorded pKₐ value of <b>{pKa.toFixed(2)}</b>.</>
-          : <>The dissociation constant (Kₐ) for {acid.name} is <b>{acid.ka.toExponential(2)} mol dm⁻³</b>.</>,
-        question: askForCarbonate 
-          ? "Calculate the value of Ka for this acid." 
-          : "Calculate the value of pKa for this acid.",
-        label: askForCarbonate ? "Kₐ =" : "pKₐ =",
-        unit: askForCarbonate ? "mol dm⁻³" : "",
-        correct: askForCarbonate ? acid.ka.toExponential(2) : pKa.toFixed(2)
+        text: askForKa 
+          ? <>An organic weak chemical species possesses a pK<sub>a</sub> constant index profile of {valPka.toFixed(2)} at standard equilibrium conditions.</>
+          : <>A particular weak carboxylic diagnostic substrate has a K<sub>a</sub> value of <>{baseKa} &times; 10<sup>-5</sup></> mol dm<sup>-3</sup>.</>,
+        question: askForKa ? "Calculate the value of Ka for this acid." : "Calculate the precise pKa value for this acid.",
+        label: askForKa ? "Kₐ =" : "pKₐ =",
+        correct: askForKa ? valKa : valPka,
+        validate: (val) => {
+          const num = parseFloat(val);
+          if (isNaN(num)) return { isCorrect: false, msg: "Provide a valid analytical number." };
+          if (askForKa) {
+            const ratio = num / valKa;
+            if (ratio >= 0.95 && ratio <= 1.05) return { isCorrect: true, msg: "Correct. Ka calculated successfully from pKa." };
+            return { isCorrect: false, msg: "Incorrect. To convert pKa back to Ka, evaluate the inverse log base operation: Ka = 10^(-pKa)." };
+          } else {
+            if (Math.abs(num - valPka) <= 0.02) return { isCorrect: true, msg: "Correct. pKa calculated successfully via -log₁₀(Ka)." };
+            return { isCorrect: false, msg: "Incorrect. The conversion relationship follows standard logarithmic rules: pKa = -log₁₀(Ka)." };
+          }
+        }
       };
     }
 
-    setProblem(newProb);
-    setStudentAnswer('');
-    setFeedback({ message: '', status: '' });
+    setProb(newProb);
   };
 
-  useEffect(() => { 
-    generateProblem('strong_acid'); 
+  useEffect(() => {
+    generateProblem();
   }, []);
 
-  const checkAnswer = () => {
-    const rawInput = studentAnswer.trim();
-    if (!rawInput) return;
+  const handleCheck = (e) => {
+    e.preventDefault();
+    if (!prob || !userAns.trim()) return;
+    const res = prob.validate(userAns);
+    setFeedback(res);
 
-    const userVal = parseFloat(rawInput);
-    const correctVal = parseFloat(problem.correct);
-
-    // --- WJEC STRINGS LEVEL PRECISION ENFORCEMENT ---
-    if (problem.label.includes('pH') || problem.label.includes('pKₐ')) {
-      const decimalPart = rawInput.split('.')[1];
-      if (!decimalPart || decimalPart.length !== 2) {
-        setFeedback({ 
-          message: "WJEC Accuracy Trap! Calculated pH and pKa values must ALWAYS be stated to exactly two decimal places (e.g. 2.40 or 3.65), even if it ends in a trailing zero.", 
-          status: 'error' 
-        });
-        return;
-      }
-    }
-
-    // Standard scientific matching for Ka scientific formats
-    if (problem.label.includes('Kₐ')) {
-      const error = Math.abs((userVal - correctVal) / correctVal);
-      if (error < 0.03) {
-        setFeedback({ message: `Correct! Ka = ${problem.correct} mol dm⁻³.`, status: 'success' });
-      } else {
-        setFeedback({ message: `Incorrect. To convert pKa back to Ka, use the inverse function: Ka = 10^(-pKa).`, status: 'error' });
-      }
-      return;
-    }
-
-    // Checking pH precision answers
-    if (Math.abs(userVal - correctVal) < 0.015) {
-      setFeedback({ message: `Correct! Value matches specification baseline requirements.`, status: 'success' });
-    } else {
-      let hint = "Incorrect. ";
-      if (mode === 'strong_acid') {
-        hint += "Strong acids fully dissociate. Use pH = -log10[H+], where [H+] is equal to the concentration of the acid.";
-      } else {
-        hint += "For a weak acid, use the simplified equilibrium expression [H+] = √(Ka × c) before taking the negative logarithm.";
-      }
-      setFeedback({ message: hint, status: 'error' });
-    }
+    setTimeout(() => {
+      feedbackRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
   };
 
-  if (!problem) return null;
+  if (!prob) return <div className="text-center p-8 text-[var(--chem-text-muted)]">Loading parameters...</div>;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      
-      {/* --- PRACTICE MODE DROPDOWN --- */}
-      <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2" style={{ textTransform: 'none' }}>
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-            style={{ textTransform: 'none' }}
-          >
-            <option value="strong_acid">Calculate pH: Strong Acids</option>
-            <option value="weak_acid">Calculate pH: Weak Acids</option>
-            <option value="pka_ka">Convert between Ka and pKa</option>
-          </select>
-          
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="border-b border-[var(--chem-border-subtle)] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-[var(--chem-text-main)]">{prob.title}</h2>
+          <p className="text-xs text-[var(--chem-text-muted)] font-medium mt-0.5">WJEC Unit 3: Acids, Bases and Buffer Equilibria</p>
+        </div>
+        <button
+          onClick={generateProblem}
+          className="px-3 py-1.5 text-xs font-bold bg-[var(--chem-bg-muted)] hover:bg-[var(--chem-border-subtle)] border border-[var(--chem-border-subtle)] rounded-lg transition-colors text-[var(--chem-text-main)] shrink-0 self-start sm:self-center"
+        >
+          🎲 New Variant
+        </button>
+      </div>
+
+      <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-5 shadow-inner">
+        <p className="text-sm text-[var(--chem-text-main)] leading-relaxed font-medium">
+          {prob.text}
+        </p>
+        <p className="text-sm font-bold text-[var(--chem-primary)] mt-3">
+          {prob.question}
+        </p>
+      </div>
+
+      <form onSubmit={handleCheck} className="bg-[var(--chem-bg-card)] border border-[var(--chem-border-subtle)] rounded-xl p-5 space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="text-sm font-bold text-[var(--chem-text-main)] min-w-[50px]">
+            {prob.label}
+          </label>
+          <input
+            type="text"
+            value={userAns}
+            onChange={(e) => setUserAns(e.target.value)}
+            placeholder="e.g. 4.76 or 1.8e-5"
+            className="flex-1 min-w-[160px] max-w-xs px-3.5 py-2 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-[var(--chem-text-main)] font-medium"
+          />
           <button
-            type="button"
-            onClick={() => { generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
-              mode === 'random' ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
+            type="submit"
+            className="px-5 py-2 text-sm font-bold bg-[var(--chem-primary)] text-white hover:bg-[var(--chem-primary-hover)] rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)]"
           >
-            Random 🎲
+            Submit Answer
           </button>
         </div>
-      </div>
+      </form>
 
-      <div className="applet-header" style={{ textTransform: 'none' }}>{problem.title}</div>
-      <div className="question-text text-center px-2 leading-relaxed" style={{ textTransform: 'none' }}>{problem.text}</div>
-
-      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center', fontSize: '0.95rem', textTransform: 'none' }} className="px-2 text-slate-700">
-        {problem.question}
-      </div>
-
-      {/* --- CASE PROTECTED INTERACTIVE LAYOUT INPUT CELL --- */}
-      <div className="w-full flex items-center justify-center my-6 overflow-x-auto" style={{ textTransform: 'none' }}>
-        <div 
-          className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-2 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
-          style={{ textTransform: 'none' }}
+      {feedback && (
+        <div
+          ref={feedbackRef}
+          className={`p-4 rounded-xl border flex items-start gap-3 transition-all animate-[fadeIn_0.2s_ease-out] ${
+            feedback.isCorrect
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800'
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-800'
+          }`}
         >
-          <label className="text-sm font-black text-slate-600 select-none" style={{ textTransform: 'none' }}>{problem.label}</label>
-          <input 
-            type="text" 
-            className={`chem-input ${feedback.status}`}
-            value={studentAnswer}
-            onChange={(e) => setStudentAnswer(e.target.value)}
-            placeholder={problem.label.includes('Kₐ') ? "1.23e-5" : "0.00"}
-            onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
-            style={{ maxWidth: '10rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: '800', textTransform: 'none' }}
-          />
-          {problem.unit && <span className="text-sm font-black text-slate-500 select-none" style={{ textTransform: 'none' }}>{problem.unit}</span>}
-        </div>
-      </div>
-
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>New Problem</button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          {feedback.message}
+          <span className="text-lg mt-0.5">{feedback.isCorrect ? '✅' : '❌'}</span>
+          <div>
+            <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Mark Awarded' : 'Check Working'}</h4>
+            <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+          </div>
         </div>
       )}
     </div>
   );
-};
-
-export default AcidsAndBases;
+}
