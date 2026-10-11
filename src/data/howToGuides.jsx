@@ -133,11 +133,22 @@ export const howToGuides = {
   examApplication: <>Prepares you for organic synthesis and mechanism questions in WJEC Unit 4.4, focusing on reactions such as the nucleophilic addition of HCN to aldehydes or ketones.</>,
   pitfalls: <>Always draw the partial charges (δ+ and δ-) on the polar carbonyl bond to show the electrophilic center clearly. Additionally, remember to include the negative charge and lone pair on intermediate ion structures to secure full mechanism marks.</>
 },
-
 'nuclear-decay': {
   title: "Nuclear Decay Equations",
-  appletUsage: <>Identify the decay mode selected in the problem text. Calculate the resulting changes to the mass number (A) and atomic number (Z), and input the correct stoichiometric values alongside the target elemental symbol. Use the Data Booklet if you need to look up a symbol by its atomic number.</>,
-  examApplication: <>This mirrors WJEC Unit 1.5 questions where you must accurately balance radioactive decay equations, predict daughter isotopes, and demonstrate the conservation of mass and proton numbers across nuclear transformations.</>,
-  pitfalls: <>A high-frequency error is mishandling beta-minus (β⁻) and electron capture equations. Remember that in β⁻ decay, a neutron turns into a proton, so the atomic number (Z) <i>increases</i> by 1. In electron capture, a proton absorbs an electron to become a neutron, so the atomic number (Z) <i>decreases</i> by 1.</>
+  appletUsage: (
+    <>
+      Identify the decay mode selected in the problem text. Calculate the resulting changes to the mass number (A) and atomic number (Z), and input the correct values alongside the target elemental or particle symbol. Use the Data Booklet if you need to look up an element symbol by its atomic number.
+    </>
+  ),
+  examApplication: (
+    <>
+      This mirrors WJEC Unit 1.2 questions where you must accurately balance radioactive decay equations (α, β⁻, β⁺, and electron capture), predict daughter isotopes or emitted particles, and demonstrate the conservation of mass number and proton charge across nuclear transformations.
+    </>
+  ),
+  pitfalls: (
+    <>
+      A high-frequency error on WJEC mark schemes is mishandling beta-minus (β⁻) and electron capture equations. Remember that in β⁻ decay, a neutron decays into a proton, so the atomic number (Z) <em>increases</em> by 1. In electron capture, an inner-shell electron is captured by a proton to form a neutron, so the atomic number (Z) <em>decreases</em> by 1.
+    </>
+  )
 }
-};
+}
