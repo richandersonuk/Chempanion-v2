@@ -3,152 +3,141 @@ import React from 'react';
 export const howToGuides = {
   'formulas-ions': {
     title: "Formulas from Ions",
-    appletUsage: <>Review the target cation and anion displayed in the workspace cards. Deduce the lowest common multiple of their charges, calculate the matching stoichiometric coefficients needed to achieve a net-neutral compound, type the resulting formula inside the input field, and click 'Check Balance'.</>,
-    examApplication: <>In WJEC Unit 1.1 questions, you are frequently required to construct balanced ionic equations for precipitation or neutralisation reactions. This applet trains you to write the correct empirical formula for compounds without given formulas, ensuring that your subsequent state symbols and stoichiometry balancing steps remain valid.</>,
-    pitfalls: <>Never include the ion charges in your final compound formula (e.g., writing Na<sup>+</sup>Cl<sup>-</sup> instead of NaCl is a severe notation error). Always ensure polyatomic units are enclosed in brackets if their stoichiometric multiplier is greater than 1, such as Mg(NO<sub>3</sub>)<sub>2</sub>.</>
+    appletUsage: <>Review the target cation and anion displayed in the workspace cards. Deduce the lowest common multiple of their charges, calculate the stoichiometric coefficients needed for a net-neutral compound, type the resulting formula, and click 'Check Balance'.</>,
+    examApplication: <>Essential for WJEC Unit 1.1 questions requiring balanced ionic equations for precipitation or neutralisation. Mastering empirical formulas guarantees that your subsequent stoichiometry and mandatory state symbols remain valid for full marks.</>,
+    pitfalls: <>Never leave ion charges in your final compound formula (e.g., writing Na<sup>+</sup>Cl<sup>-</sup> instead of NaCl is a severe notation error). Always enclose polyatomic units in brackets if their multiplier is greater than 1, such as Mg(NO<sub>3</sub>)<sub>2</sub>. When writing full equations, missing state symbols (s, l, g, aq) will immediately cost you the final mark.</>
   },
 
   'formulas-name': {
     title: "Formulas from Names",
-    appletUsage: <>Read the randomized IUPAC systematic chemical name presented in the problem field. Identify the oxidation states denoted by the Roman numerals, establish the charge profiles of the constituent elements or polyatomic groups, determine the neutral empirical ratio, and type the chemical formula to submit.</>,
-    examApplication: <>WJEC past papers frequently use systematic naming conventions like iron(III) sulfate or manganate(VII). You are expected to instantly translate these naming conventions into correct formula units to calculate relative formula masses (M<sub>r</sub>) or balance comprehensive redox cycles.</>,
-    pitfalls: <>A common error is confusing the Roman numeral oxidation state of a transition element with its absolute subscript ratio in the compound. For example, iron(III) oxide means Fe<sup>3+</sup> ions combining with O<sup>2-</sup> ions to form Fe<sub>2</sub>O<sub>3</sub>, not Fe<sub>3</sub>O<sub>2</sub>.</>
+    appletUsage: <>Read the randomized IUPAC systematic chemical name. Identify the exact oxidation states denoted by the Roman numerals, establish the charge profiles of the constituent elements or polyatomic groups, and type the neutral empirical formula.</>,
+    examApplication: <>WJEC past papers frequently use systematic nomenclature like iron(III) sulfate or potassium manganate(VII). You must instantly translate these into correct formulas to calculate accurate relative formula masses (M<sub>r</sub>) or set up structured reacting mass calculations.</>,
+    pitfalls: <>A high-frequency error is confusing the Roman numeral oxidation state with an absolute subscript ratio. For example, iron(III) oxide means Fe<sup>3+</sup> ions combining with O<sup>2-</sup> ions to form Fe<sub>2</sub>O<sub>3</sub>, not Fe<sub>3</sub>O<sub>2</sub>.</>
   },
 
   'formula-master': {
     title: "Ion Formulas from Compounds",
-    appletUsage: <>Examine the generated compound formula. Perform the reverse structural operation by splitting the compound back into its free, constituent cations and anions. Input the exact numbers and charges of the individual isolated ion units to verify your dissociation analysis.</>,
-    examApplication: <>This skill maps directly onto writing ionic half-equations for Unit 3.1 electrochemistry and constructing precise ionic equations for Unit 3.9 buffer systems, where you must isolate spectator ions from the primary reacting species.</>,
-    pitfalls: <>When a subscript belongs to a polyatomic framework, do not break it apart into atomic components. For instance, dissolving a sulfate entity releases complete SO<sub>4</sub><sup>2-</sup> polyatomic units, never isolated sulfur or oxide species.</>
+    appletUsage: <>Examine the generated compound formula. Perform a reverse structural operation by splitting the compound back into its free, constituent cations and anions. Input the exact numbers and charges of the isolated ions.</>,
+    examApplication: <>This muscle memory directly maps to writing ionic half-equations for Unit 3.1 electrochemistry and constructing precise ionic equations for Unit 3.9 buffer systems, where you must successfully eliminate spectator ions to reveal the core reacting species.</>,
+    pitfalls: <>When a subscript belongs to a polyatomic framework, never break it apart into atomic components. Dissolving a sulfate releases intact SO<sub>4</sub><sup>2-</sup> polyatomic units, never isolated sulfur or oxide ions.</>
   },
 
   'empirical-formula': {
     title: "Empirical & Molecular Formulas",
-    appletUsage: <>Read the randomized mass or percentage composition dataset. Use the calculation workspace to convert the raw values into relative molar ratios by dividing by atomic mass, determine the simplest whole-number empirical matrix, and scale it up against the given molar mass if required.</>,
-    examApplication: <>This directly mimics the multi-mark structured calculation questions found in WJEC Unit 1.1. Marks are strictly awarded chronologically for calculating moles, finding the empirical ratio, and stating the final molecular formula.</>,
-    pitfalls: <>Rounding intermediate decimal values too early in your calculation will cause rounding errors, resulting in incorrect integer ratios. Keep all values in your calculator memory until you reach the absolute final ratio step.</>
+    appletUsage: <>Read the randomized percentage composition or mass dataset. Use the calculation workspace to convert raw values into relative molar ratios (dividing by A<sub>r</sub>), determine the simplest whole-number empirical matrix, and scale up using the molar mass.</>,
+    examApplication: <>Mimics multi-mark structured calculations in WJEC Unit 1.1. Examiners explicitly look for a clear mathematical layout (Mass &rarr; Moles &rarr; Ratio). Setting out intermediate steps clearly secures "error carried forward" (ECF) marks even if your final ratio is slightly off.</>,
+    pitfalls: <>Premature rounding of intermediate decimal values will warp your final integer ratio. Keep all raw values stored in your calculator memory until the final step. Always explicitly state the final formula at the end of your working.</>
   },
 
   'titration': {
     title: "Acid-Base Titrations",
-    appletUsage: <>Examine the randomized volumetric titration parameters (e.g., mean concordant titre and concentration fields). Calculate the moles of your standard solution, look up the stoichiometric balancing ratio of the neutralization equation, and evaluate the concentration of the unknown sample.</>,
-    examApplication: <>This simulates standard WJEC structured titration problems. You must determine reacting chemical quantities and scale your intermediate volumetric values between 25.0 cm<sup>3</sup> aliquots and complete 250 cm<sup>3</sup> volumetric flasks.</>,
-    pitfalls: <>Failing to convert titration volumes from cm<sup>3</sup> to dm<sup>3</sup> (by dividing by 1000) when calculating molarity will completely skew your numerical scale and lose accuracy marks.</>
+    appletUsage: <>Examine the volumetric titration parameters. Calculate the moles of the standard solution, apply the stoichiometric ratio from the balanced neutralization equation, and evaluate the concentration of the unknown sample.</>,
+    examApplication: <>Simulates standard WJEC structured titration calculations. You must determine reacting chemical quantities and frequently scale volumetric values between 25.0 cm<sup>3</sup> pipetted aliquots and 250 cm<sup>3</sup> volumetric flasks.</>,
+    pitfalls: <>Failing to convert titration volumes from cm<sup>3</sup> to dm<sup>3</sup> (by dividing by 1000) when calculating concentration is a guaranteed dropped mark. Always double-check that your titre values are concordant (within 0.10 cm<sup>3</sup>) if selecting raw data from a table.</>
   },
 
   'idealgas': {
     title: "Ideal Gas Calculations",
-    appletUsage: <>Identify which variable in the ideal gas equation (pV = nRT) is marked as unknown. Perform unit conversions for the randomized temperature, pressure, or volume metrics provided, rearrange the expression, and calculate the final target value.</>,
-    examApplication: <>WJEC past papers thoroughly test your ability to convert non-SI units before evaluating gas volumes or calculating the relative molecular mass (M<sub>r</sub>) of volatile liquids.</>,
-    pitfalls: <>Unit mismatches are the most frequent pitfall. You must convert pressure from kPa to Pa (&times; 10<sup>3</sup>), volume from cm<sup>3</sup> or dm<sup>3</sup> to m<sup>3</sup> (&times; 10<sup>-6</sup> or &times; 10<sup>-3</sup> respectively), and temperature to Kelvin (+273.15).</>
+    appletUsage: <>Identify the unknown variable in the ideal gas equation (pV = nRT). Perform strict unit conversions for the randomized temperature, pressure, and volume metrics, rearrange the algebraic expression, and solve.</>,
+    examApplication: <>WJEC thoroughly tests your ability to process non-SI units before evaluating gas volumes or calculating the relative molecular mass (M<sub>r</sub>) of volatile liquids in Unit 1.</>,
+    pitfalls: <>Unit mismatches are the primary reason for dropped grades here. You must systematically convert pressure from kPa to Pa (&times; 10<sup>3</sup>), volume from cm<sup>3</sup> or dm<sup>3</sup> to m<sup>3</sup> (&times; 10<sup>-6</sup> or &times; 10<sup>-3</sup>), and temperature from &deg;C to Kelvin (+273).</>
   },
 
   'mechanisms-unit2': {
     title: "AS Organic Mechanisms",
-    appletUsage: <>Observe the interactive organic structure, identifying specific electron-dense double bonds or partial dipoles (δ+ / δ-). Map out the direction of electron pair movement by setting up functional curly arrows from electron donors to acceptors.</>,
-    examApplication: <>Tests your precision when drawing mechanics for electrophilic additions to alkenes or nucleophilic substitutions on halogenoalkanes, which are staple multi-mark question types in WJEC Unit 2.5.</>,
-    pitfalls: <>WJEC examiners frequently penalize arrows that originate or terminate in ambiguous spatial positions. Your curly arrow must start precisely from an explicit lone pair or a covalent bond line, and point directly to the specific atom forming the new bond.</>
+    appletUsage: <>Observe the interactive organic structure, identifying specific electron-dense regions (like C=C bonds) or partial dipoles (δ+ / δ-). Map the electron pair movement by drawing curly arrows from electron donors to exact electrophilic acceptors.</>,
+    examApplication: <>Tests the precise structural drawing required for electrophilic additions to alkenes or nucleophilic substitutions on halogenoalkanes—staple multi-mark questions in WJEC Unit 2.5.</>,
+    pitfalls: <>WJEC examiners heavily penalize "floating" or ambiguous arrows. Your curly arrow must start precisely from an explicit lone pair or the center of a covalent bond, and point directly to the exact atom forming the new bond. Missing dipoles (δ+ / δ-) will also cost marks.</>
   },
 
   'thermometric': {
     title: "Thermometric Titrations",
-    appletUsage: <>Interact with the temperature vs. acid volume data plot. Adjust the linear extrapolation lines to pinpoint the exact intersection corresponding to the equivalence point, extract the maximum neutralisation volume, and calculate the resulting enthalpy change (ΔH).</>,
-    examApplication: <>This matches practical exam styles seen in Unit 2.1 and Unit 5 papers. You must interpret raw empirical thermal points, identify neutralization volumes, and calculate specific heat absorption using Q = mcΔT.</>,
-    pitfalls: <>When calculating the reacting mass (m) for Q = mcΔT, you must combine the volumes of both the acid and the base solutions together, rather than using only the volume of the single limiting reactant added.</>
+    appletUsage: <>Interact with the temperature vs. volume plot. Extrapolate the lines of best fit to pinpoint the equivalence point intersection, extract the maximum neutralisation volume and ΔT, and calculate the enthalpy change using Q = mcΔT.</>,
+    examApplication: <>Matches practical exam styles in Unit 2.1 and Unit 5. You must process raw thermal data and present a structured mathematical layout to deduce specific heat absorption and molar enthalpy changes.</>,
+    pitfalls: <>When calculating reacting mass (m) for Q = mcΔT, you must use the <em>total combined volume</em> of both the acid and the base solutions mixed together. Never use just the volume of the limiting reactant. Ensure the final enthalpy change (ΔH) includes a negative sign for exothermic neutralisations.</>
   },
 
   'redox': {
     title: "Redox Titrations",
-    appletUsage: <>Read the randomized concentration data for standard oxidising agents, such as potassium manganate(VII), KMnO<sub>4</sub>. Apply the half-equation stoichiometry ratios to determine the mass or concentration of transition metal elements like iron(II) in a sample.</>,
-    examApplication: <>This skill addresses advanced multi-step calculation pathways in Unit 3.1. It tests your ability to links mole values across oxidation states, often using back-titration data or scaling factors.</>,
-    pitfalls: <>Always check the full balanced redox equation for stoichiometry scaling factors. For example, the reacting ratio of MnO<sub>4</sub><sup>-</sup> to Fe<sup>2+</sup> is 1:5, which must be explicitly applied when calculating total mole values.</>
+    appletUsage: <>Read the concentration data for standard oxidising agents like potassium manganate(VII). Apply the half-equation stoichiometry ratios to determine the mass or concentration of transition metal elements like iron(II).</>,
+    examApplication: <>Addresses advanced multi-step calculation pathways in Unit 3.1. It tests your ability to link mole values across varying oxidation states, utilizing back-titration data and strict structured steps to secure ECF marks.</>,
+    pitfalls: <>Always extract the exact stoichiometry from the combined redox equation. The reacting ratio of MnO<sub>4</sub><sup>-</sup> to Fe<sup>2+</sup> is 1:5; failing to multiply your standard moles by 5 is the most common error cited in examiner reports.</>
   },
 
   'cell-potentials': {
     title: "Standard Cell Potentials",
-    appletUsage: <>Review the standard reduction potentials (E<sup>θ</sup>) assigned to the randomized half-cells. Identify the strongest oxidising agent to determine the cathode, change the sign of the oxidation half-cell, and sum them to find the overall cell EMF.</>,
-    examApplication: <>Directly prepares you for WJEC Unit 3.1 electrochemical calculations. You will be asked to determine cell voltages, write overall conventional cell diagrams, and predict reaction feasibility.</>,
-    pitfalls: <>Never multiply the E<sup>θ</sup> value of a half-cell when balancing the electron stoichiometry of an equation. The standard cell potential is an intensive property and remains constant regardless of the reacting mole ratios.</>
+    appletUsage: <>Review the standard reduction potentials (E<sup>θ</sup>) assigned to randomized half-cells. Identify the most positive E<sup>θ</sup> as the strongest oxidising agent (cathode), reverse the sign of the other half-cell (anode), and calculate the standard cell EMF.</>,
+    examApplication: <>Directly prepares you for WJEC Unit 3.1 electrochemical calculations. You will need to determine cell voltages, predict the thermodynamic feasibility of reactions, and construct conventional cell diagrams.</>,
+    pitfalls: <>Never multiply the E<sup>θ</sup> value of a half-cell when balancing the electron stoichiometry of an overall redox equation. E<sup>θ</sup> is an intensive property and remains completely constant regardless of the reacting mole ratios.</>
   },
 
   'enthalpy': {
     title: "Enthalpy of Combustion",
-    appletUsage: <>Utilize the experimental calorimetry database variables. Calculate the heat transferred to the water using Q = mcΔT, determine the number of moles of fuel combusted from mass changes, and divide Q by moles to find ΔH<sub>c</sub>.</>,
-    examApplication: <>Applies to Unit 2.1 and Unit 3.4 energetic questions. You are expected to process raw laboratory data to deduce standard combustion enthalpies and construct Hess's Law cycles.</>,
-    pitfalls: <>WJEC examiners strictly require the correct sign convention for thermodynamics questions. Exothermic combustion reactions must always be explicitly written with a negative sign (-) in your final answer.</>
+    appletUsage: <>Process experimental calorimetry variables. Calculate the heat transferred using Q = mcΔT, determine the moles of fuel combusted from mass changes, and divide Q by moles to find the standard enthalpy change of combustion (ΔH<sub>c</sub>).</>,
+    examApplication: <>Applies directly to Unit 2.1 energetics. You must demonstrate clear mathematical steps processing raw laboratory data to construct Hess's Law cycles and deduce standard enthalpy changes.</>,
+    pitfalls: <>Examiners strictly require precise terminology: use "enthalpy change", never "heat energy". Furthermore, exothermic combustion reactions must explicitly display a negative sign (-) in the final answer, and standard state symbols must be present in any requested Hess cycle equations.</>
   },
 
   'entropy-gibbs': {
     title: "Entropy & Gibbs Free Energy",
-    appletUsage: <>Input the standard enthalpy change (ΔH) and absolute entropy change (ΔS) values. Apply the free energy equation (ΔG = ΔH - TΔS) to evaluate system feasibility and calculate the minimum threshold temperature required for spontaneous reactions.</>,
-    examApplication: <>A core multi-mark calculation component in WJEC Unit 3.4. It tests your ability to link enthalpy and entropy variables to predict the chemical feasibility of industrial processes at specific temperatures.</>,
-    pitfalls: <>The most common pitfall is a unit mismatch between enthalpy and entropy terms. Enthalpy (ΔH) is typically given in kJ mol<sup>-1</sup>, whereas entropy (ΔS) is given in J K<sup>-1</sup> mol<sup>-1</sup>. You must divide your ΔS value by 1000 before substituting it into the Gibbs equation.</>
+    appletUsage: <>Input the standard enthalpy change (ΔH) and entropy change (ΔS) values. Apply the free energy equation (ΔG = ΔH - TΔS) to evaluate reaction feasibility and calculate the minimum threshold temperature (T = ΔH / ΔS) for spontaneity.</>,
+    examApplication: <>A core structured calculation in WJEC Unit 3.4. It tests your ability to track thermodynamic variables to predict the feasibility of industrial processes at specific temperatures.</>,
+    pitfalls: <>The absolute most common pitfall is a unit mismatch. Enthalpy (ΔH) is given in kJ mol<sup>-1</sup>, while entropy (ΔS) is in J K<sup>-1</sup> mol<sup>-1</sup>. You must divide your ΔS value by 1000 before substituting it into the Gibbs equation.</>
   },
 
   'rates': {
     title: "Reaction Rates",
-    appletUsage: <>Analyze initial rates data from a series of randomized chemical trials. Compare concentration changes across experiments to deduce individual reaction orders, construct the overall rate equation, and calculate the rate constant (k) with its units.</>,
-    examApplication: <>Directly emulates data analysis questions in WJEC Unit 3.5. You are expected to logically explain your deduction of reaction orders and calculate the units for the rate constant based on the overall order.</>,
-    pitfalls: <>Deducing k units requires care. Cancel out concentration terms thoroughly. For example, a second-order reaction has k units of dm<sup>3</sup> mol<sup>-1</sup> s<sup>-1</sup>, which is frequently miswritten by candidates as mol dm<sup>-3</sup> s<sup>-1</sup>.</>
+    appletUsage: <>Analyze initial rates data from randomized chemical trials. Compare concentration changes across experiments to deduce individual reaction orders, construct the overall rate equation, and evaluate the rate constant (k) alongside its units.</>,
+    examApplication: <>Emulates data analysis questions in WJEC Unit 3.5. You are expected to state clear logical deductions for reaction orders and demonstrate the algebraic cancellation required to find k units.</>,
+    pitfalls: <>Deducing the units of k requires rigorous algebraic cancellation. For example, a second-order overall reaction has k units of dm<sup>3</sup> mol<sup>-1</sup> s<sup>-1</sup>. Candidates frequently write this backwards as mol dm<sup>-3</sup> s<sup>-1</sup> and lose the final mark.</>
   },
 
   'kc-calc': {
     title: "Kc Equilibrium Constants",
-    appletUsage: <>Read the initial concentration quantities of reactants. Set up an algebraic ICE (Initial, Change, Equilibrium) table based on the reaction's stoichiometry, solve for the equilibrium concentrations, and evaluate the equilibrium constant (K<sub>c</sub>).</>,
-    examApplication: <>Matches the structured equilibrium calculation workflows required in WJEC Unit 3.8. It tests your ability to track partial dissociation and use equilibrium mixtures to compute K<sub>c</sub> values.</>,
-    pitfalls: <>K<sub>c</sub> expressions use equilibrium concentrations, not initial quantities or raw mole numbers. Always divide your equilibrium mole values by the total volume of the container (V) to convert them to concentrations before evaluating K<sub>c</sub>.</>
+    appletUsage: <>Read the initial reactant moles. Set up an algebraic ICE (Initial, Change, Equilibrium) table using stoichiometric ratios, solve for equilibrium moles, divide by total volume to find concentrations, and evaluate K<sub>c</sub>.</>,
+    examApplication: <>Matches structured equilibrium calculations in WJEC Unit 3.8. Demonstrating a clear ICE table layout allows examiners to award ECF marks if an algebraic error occurs mid-calculation.</>,
+    pitfalls: <>K<sub>c</sub> expressions require equilibrium concentrations, not raw mole numbers. Forgetting to divide your final equilibrium moles by the total container volume (V) before substituting into the K<sub>c</sub> expression is a classic unforced error.</>
   },
 
   'kp-calc': {
     title: "Kp Equilibrium Constants",
-    appletUsage: <>Input the initial mole quantities of gaseous reactants along with the total system pressure. Calculate total moles at equilibrium, determine individual gas mole fractions, multiply by total pressure to find partial pressures, and evaluate K<sub>p</sub>.</>,
-    examApplication: <>Applies to gas-phase equilibrium systems in WJEC Unit 3.8. You must systematically demonstrate each calculation stage: calculating mole fractions, determining partial pressures, and writing the final K<sub>p</sub> expression with its units.</>,
-    pitfalls: <>Do not use square brackets [ ] when writing a K<sub>p</sub> expression; square brackets denote concentration terms (K<sub>c</sub>). You must use partial pressure notation, such as p(CO<sub>2</sub>) or pCO<sub>2</sub>, to avoid losing notation marks.</>
+    appletUsage: <>Input initial gaseous reactant quantities and total system pressure. Calculate total equilibrium moles, determine individual gas mole fractions, multiply by total pressure to find partial pressures, and evaluate K<sub>p</sub>.</>,
+    examApplication: <>Applies to gas-phase equilibrium systems in WJEC Unit 3.8. You must systematically model each stage (mole fractions &rarr; partial pressures &rarr; K<sub>p</sub> value) and deduce the final units.</>,
+    pitfalls: <>Never use square brackets [ ] when writing a K<sub>p</sub> expression; square brackets denote aqueous concentrations. You must use strict partial pressure notation, such as p(CO<sub>2</sub>) or pCO<sub>2</sub>, to secure the notation mark.</>
   },
 
   'acids': {
     title: "pH & Weak Acids",
-    appletUsage: <>Review the weak acid concentration and K<sub>a</sub> or pK<sub>a</sub> values. Apply the weak acid approximation [H<sup>+</sup>] = √(K<sub>a</sub> &times; [HA]) to calculate the hydrogen ion concentration, and then convert this value into a pH reading.</>,
-    examApplication: <>A core component of WJEC Unit 3.9 acid-base chemistry. You are expected to calculate the pH of strong acids, weak acids, and strong bases, as well as handle inverse logarithmic conversions.</>,
-    pitfalls: <>When calculating the pH of a strong base, remember that your initial calculation yields [OH<sup>-</sup>]. You must use K<sub>w</sub> ([H<sup>+</sup>] = K<sub>w</sub> / [OH<sup>-</sup>]) to find the hydrogen ion concentration before calculating pH, rather than taking the negative log of the hydroxide concentration directly.</>
+    appletUsage: <>Review the weak acid concentration and K<sub>a</sub> values. Apply the weak acid approximation [H<sup>+</sup>] = √(K<sub>a</sub> &times; [HA]) to calculate the hydrogen ion concentration, then take the negative logarithm to find the pH.</>,
+    examApplication: <>Core to WJEC Unit 3.9 acid-base chemistry. You must efficiently switch between calculating pH for strong acids (full dissociation) and weak acids (partial dissociation).</>,
+    pitfalls: <>When finding the pH of a strong base, your initial calculation yields [OH<sup>-</sup>]. You must use the ionic product of water, K<sub>w</sub>, to calculate [H<sup>+</sup>] first. Taking the negative log of the hydroxide concentration directly gives pOH, not pH.</>
   },
 
   'buffers': {
     title: "Buffer Solutions",
-    appletUsage: <>Examine the composition profile of an acidic buffer mixture consisting of a weak acid and its conjugate salt. Calculate the adjusted molar concentrations following the addition of small amounts of H<sup>+</sup> or OH<sup>-</sup> ions, and compute the final stabilized pH.</>,
-    examApplication: <>Prepares you for multi-step buffer calculations in WJEC Unit 3.9. These questions evaluate your understanding of how buffer solutions resist changes in pH when small quantities of acid or alkali are added.</>,
-    pitfalls: <>When an acid or alkali is added to a buffer, remember that one component of the buffer increases in moles while the other decreases by that same amount. Ensure you correctly apply this change to both the acid and salt mole values before re-calculating the pH.</>
+    appletUsage: <>Examine the initial mixture of a weak acid and its conjugate base. Calculate the adjusted moles following the addition of small amounts of H<sup>+</sup> or OH<sup>-</sup>, and compute the newly stabilized pH.</>,
+    examApplication: <>Prepares you for the most complex calculation in WJEC Unit 3.9. Demonstrating your structured working for the adjusted mole values before recalculating the [H<sup>+</sup>] ensures maximum ECF marks.</>,
+    pitfalls: <>When alkali (OH<sup>-</sup>) is added to a buffer, the moles of weak acid decrease, and the moles of the conjugate base increase by that exact same stoichiometric amount. You must apply this inverse adjustment to both components before using the K<sub>a</sub> expression.</>
   },
 
   'chiral-centers': {
     title: "Chiral Center Identification",
-    appletUsage: <>Analyze the randomized organic skeletal structure displayed in the workspace canvas. Inspect each carbon node to identify asymmetric carbons bonded to four structurally unique atom groups, and label these chiral centers with an asterisk (*).</>,
-    examApplication: <>Directly addresses optical isomerism and stereochemistry principles in WJEC Unit 4.1 organic chemistry. You are required to locate chiral centers in complex molecules and draw the non-superimposable mirror images of optical isomers.</>,
-    pitfalls: <>Never label CH<sub>2</sub> or CH<sub>3</sub> carbon nodes, or any double-bonded carbon atoms (C=O, C=C), as chiral centers. A chiral carbon must be sp<sup>3</sup> hybridised and bonded to four entirely distinct functional groups or carbon chains.</>
+    appletUsage: <>Analyze the organic skeletal structure. Inspect each carbon node to identify asymmetric carbons bonded to four structurally unique groups, and precisely label these chiral centers with an asterisk (*).</>,
+    examApplication: <>Addresses stereochemistry in WJEC Unit 4.1. You must rapidly locate chiral centers in large biochemical molecules and properly illustrate non-superimposable mirror images using 3D wedge/dash bonds.</>,
+    pitfalls: <>Never label CH<sub>2</sub> or CH<sub>3</sub> nodes, or any carbon involved in a double bond (C=O, C=C). A true chiral center must be sp<sup>3</sup> hybridised and attached to four definitively distinct functional pathways.</>
   },
 
-'mechanisms-masterclass': {
-  title: "Organic Mechanisms Masterclass",
-  appletUsage: <>Examine advanced functional groups like carbonyls (C=O). Track the steps of nucleophilic addition or elimination mechanisms by drawing precise curly arrows that represent the movement of electron pairs from attacking nucleophiles to electrophilic centers.</>,
-  examApplication: <>Prepares you for organic synthesis and mechanism questions in WJEC Unit 4.4, focusing on reactions such as the nucleophilic addition of HCN to aldehydes or ketones.</>,
-  pitfalls: <>Always draw the partial charges (δ+ and δ-) on the polar carbonyl bond to show the electrophilic center clearly. Additionally, remember to include the negative charge and lone pair on intermediate ion structures to secure full mechanism marks.</>
-},
-'nuclear-decay': {
-  title: "Nuclear Decay Equations",
-  appletUsage: (
-    <>
-      Identify the decay mode selected in the problem text. Calculate the resulting changes to the mass number (A) and atomic number (Z), and input the correct values alongside the target elemental or particle symbol. Use the Data Booklet if you need to look up an element symbol by its atomic number.
-    </>
-  ),
-  examApplication: (
-    <>
-      This mirrors WJEC Unit 1.2 questions where you must accurately balance radioactive decay equations (α, β⁻, β⁺, and electron capture), predict daughter isotopes or emitted particles, and demonstrate the conservation of mass number and proton charge across nuclear transformations.
-    </>
-  ),
-  pitfalls: (
-    <>
-      A high-frequency error on WJEC mark schemes is mishandling beta-minus (β⁻) and electron capture equations. Remember that in β⁻ decay, a neutron decays into a proton, so the atomic number (Z) <em>increases</em> by 1. In electron capture, an inner-shell electron is captured by a proton to form a neutron, so the atomic number (Z) <em>decreases</em> by 1.
-    </>
-  )
-}
-}
+  'mechanisms-masterclass': {
+    title: "Organic Mechanisms Masterclass",
+    appletUsage: <>Examine advanced functional groups like carbonyls (C=O). Track nucleophilic addition or elimination mechanisms by drawing precise curly arrows representing the flow of electron pairs from attacking nucleophiles to electrophilic carbons.</>,
+    examApplication: <>Essential for mastering organic synthesis pathways in WJEC Unit 4.4, particularly the multi-mark mechanism for the nucleophilic addition of cyanide (CN<sup>-</sup>) to aldehydes or ketones.</>,
+    pitfalls: <>Always draw the partial charges (δ+ and δ-) on the polar carbonyl bond. Your curly arrow must originate exactly from the nucleophile's lone pair. For the intermediate ion, failing to explicitly draw the negative charge and lone pair on the oxygen atom will cost the structure mark.</>
+  },
+
+  'nuclear-decay': {
+    title: "Nuclear Decay Equations",
+    appletUsage: <>Identify the specific decay mode. Calculate the resulting transformations to the mass number (A) and atomic number (Z), and input the correct balanced notation for the daughter isotope and emitted particle.</>,
+    examApplication: <>Mirrors WJEC Unit 1.2 questions requiring balanced radioactive decay equations (α, β⁻, β⁺, and electron capture) to prove the conservation of nucleons and proton charge.</>,
+    pitfalls: <>Beta-minus (β⁻) and electron capture are the most frequently mishandled. In β⁻ decay, a neutron decays into a proton, so the atomic number (Z) <em>increases</em> by 1. In electron capture, a proton captures an electron to become a neutron, so Z <em>decreases</em> by 1.</>
+  }
+};

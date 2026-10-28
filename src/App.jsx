@@ -2,7 +2,7 @@ import './App.css';
 import React, { useState, useEffect, useTransition, Suspense } from 'react';
 import { Logo, HeaderBrand } from './Branding';
 import DataBooklet from './DataBooklet';
-import { howToGuides } from './data/howToGuides'; // Clean layout mapping
+import { howToGuides } from './data/howToGuides';
 
 // Dynamic lazy imports
 const FormulasFromIons = React.lazy(() => import('./FormulasFromIons').then(m => m.FormulasFromIons ? { default: m.FormulasFromIons } : m));
@@ -25,6 +25,7 @@ const BufferSolutions = React.lazy(() => import('./BufferSolutions').then(m => m
 const ChiralCenters = React.lazy(() => import('./ChiralCenters').then(m => m.ChiralCenters ? { default: m.ChiralCenters } : m));
 const MechanismMasterclass = React.lazy(() => import('./MechanismMasterclass').then(m => m.MechanismMasterclass ? { default: m.MechanismMasterclass } : m));
 const NuclearChemistry = React.lazy(() => import('./NuclearChemistry').then(m => m.default ? { default: m.default } : m));
+const HalfEquationBalancing = React.lazy(() => import('./HalfEquationBalancing').then(m => m.default ? { default: m.default } : m));
 
 // --- WJEC EXAM METHOD REWRITE MODAL ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
@@ -117,12 +118,21 @@ export default function App() {
     { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.1', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.', component: AcidBaseTitration },
     { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.2', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.', component: IdealGas },
     { id: 'nuclear-decay', label: 'Nuclear Decay Equations', short: 'Nuclear Decay', unit: 'Unit 1.2', icon: '☢️', desc: 'Balance alpha, beta, gamma, and electron capture equations.', component: NuclearChemistry },
+    
+    // External Subdomain Link for 1.2
+    { id: 'spectralab', label: 'Spectra Lab', short: 'Spectra Lab', unit: 'Unit 1.2', icon: '🌈', desc: 'Standalone interactive spectroscopy web application.', isExternal: true, url: 'https://spectralab.chempanion.uk' },
+    
     { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.', component: MechanismUnit2 },
     { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.', component: ThermometricTitration },
-    { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '⚡', desc: 'Analyze ratio pathways for complex transition elements.', component: RedoxTitration },
+    { id: 'half-equations', label: 'Redox Half-Equations', short: 'Half-Equations', unit: 'Unit 3.1', icon: '⚡', desc: 'Construct and balance redox half-equations in acidic media step-by-step.', component: HalfEquationBalancing },
+    { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '🧪', desc: 'Analyze ratio pathways for complex transition elements.', component: RedoxTitration },
     { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 3.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.', component: CellPotentials },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.', component: EnthalpyCombustion },
     { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.4', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.', component: EntropyGibbs },
+    
+    // External Subdomain Link for 3.4
+    { id: 'transition-metals', label: 'Transition Metals', short: 'Transition Metals', unit: 'Unit 3.4', icon: '💎', desc: 'Standalone interactive transition metals laboratory.', isExternal: true, url: 'https://transitionmetals.chempanion.uk' },
+    
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.', component: ReactionRates },
     { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.', component: KcCalculations },
     { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.', component: KpCalculations },
@@ -189,14 +199,30 @@ export default function App() {
                       {isCatOpen && (
                         <div className="p-0.5 bg-white space-y-0.5">
                           {unitApplets.map(app => (
-                            <button
-                              key={app.id}
-                              onClick={() => handleNav(app.id)}
-                              className="w-full text-left px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 rounded-md"
-                            >
-                              <span>{app.icon}</span>
-                              <span>{app.short}</span>
-                            </button>
+                            app.isExternal ? (
+                              <a
+                                key={app.id}
+                                href={app.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full text-left px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-between rounded-md"
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <span>{app.icon}</span>
+                                  <span>{app.short}</span>
+                                </div>
+                                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                              </a>
+                            ) : (
+                              <button
+                                key={app.id}
+                                onClick={() => handleNav(app.id)}
+                                className="w-full text-left px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 rounded-md"
+                              >
+                                <span>{app.icon}</span>
+                                <span>{app.short}</span>
+                              </button>
+                            )
                           ))}
                         </div>
                       )}
@@ -259,19 +285,40 @@ export default function App() {
                   {isCatOpen && (
                     <div className="p-1 bg-white divide-y divide-slate-50">
                       {unitApplets.map(app => (
-                        <button
-                          key={app.id}
-                          onClick={() => handleNav(app.id)}
-                          className={`block w-full text-left px-4 py-3 rounded-lg font-bold transition-colors ${currentApplet === app.id ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-700 hover:bg-slate-50'}`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                              <span className="mr-3 text-lg">{app.icon}</span>
-                              <span className="text-xs">{app.label}</span>
+                        app.isExternal ? (
+                          <a
+                            key={app.id}
+                            href={app.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full text-left px-4 py-3 rounded-lg font-bold transition-colors text-slate-700 hover:bg-slate-100"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <span className="mr-3 text-lg">{app.icon}</span>
+                                <span className="text-xs">{app.label}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] bg-slate-200 text-slate-500 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
+                                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                              </div>
                             </div>
-                            <span className="text-[9px] bg-slate-100 text-slate-400 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
-                          </div>
-                        </button>
+                          </a>
+                        ) : (
+                          <button
+                            key={app.id}
+                            onClick={() => handleNav(app.id)}
+                            className={`block w-full text-left px-4 py-3 rounded-lg font-bold transition-colors ${currentApplet === app.id ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-700 hover:bg-slate-50'}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <span className="mr-3 text-lg">{app.icon}</span>
+                                <span className="text-xs">{app.label}</span>
+                              </div>
+                              <span className="text-[9px] bg-slate-100 text-slate-400 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
+                            </div>
+                          </button>
+                        )
                       ))}
                     </div>
                   )}
@@ -304,7 +351,7 @@ export default function App() {
                     <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform Updates & Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    New Update: Unit 1.2 Nuclear Decay Equations engine is now live! Master alpha, beta, gamma, and electron capture pathways with our rigorous new balancing module.
+                    New Update: Unit 3.1 Redox Half-Equations module is now live! Practice balancing complex transition metal oxoanion reactions step-by-step or in full exam practice mode.
                   </p>
                 </div>
               </div>
@@ -341,28 +388,62 @@ export default function App() {
 
                     {isUnitOpen ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredApplets.map(app => (
-                          <button 
-                            key={app.id}
-                            onClick={() => handleNav(app.id)}
-                            className="p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between h-40 w-full"
-                          >
-                            <div className="w-full">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="w-10 h-10 bg-slate-50 text-[#326fa0] rounded-xl flex items-center justify-center text-2xl group-hover:bg-[#326fa0] group-hover:text-white transition-colors">
-                                  {app.icon}
+                        {filteredApplets.map(app => {
+                          if (app.isExternal) {
+                            return (
+                              <a 
+                                key={app.id}
+                                href={app.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-5 bg-slate-700 border border-slate-600 rounded-2xl text-left hover:bg-slate-800 hover:border-slate-500 hover:shadow-lg transition-all group flex flex-col justify-between h-40 w-full"
+                              >
+                                <div className="w-full">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="w-10 h-10 bg-slate-600 text-white rounded-xl flex items-center justify-center text-2xl group-hover:bg-slate-500 transition-colors">
+                                      {app.icon}
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-[10px] bg-slate-600 text-slate-300 font-bold px-2 py-0.5 rounded uppercase tracking-wider">{app.unit}</span>
+                                      <svg className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                      </svg>
+                                    </div>
+                                  </div>
+                                  <div className="font-black text-base text-white leading-snug mb-1 transition-colors line-clamp-1">
+                                    {app.label}
+                                  </div>
+                                  <p className="text-slate-300 font-medium text-xs line-clamp-2 leading-normal">
+                                    {app.desc}
+                                  </p>
                                 </div>
-                                <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all uppercase tracking-wider">{app.unit}</span>
+                              </a>
+                            );
+                          }
+                          
+                          return (
+                            <button 
+                              key={app.id}
+                              onClick={() => handleNav(app.id)}
+                              className="p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between h-40 w-full"
+                            >
+                              <div className="w-full">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="w-10 h-10 bg-slate-50 text-[#326fa0] rounded-xl flex items-center justify-center text-2xl group-hover:bg-[#326fa0] group-hover:text-white transition-colors">
+                                    {app.icon}
+                                  </div>
+                                  <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all uppercase tracking-wider">{app.unit}</span>
+                                </div>
+                                <div className="font-black text-base text-slate-800 leading-snug mb-1 group-hover:text-[#326fa0] transition-colors line-clamp-1">
+                                  {app.label}
+                                </div>
+                                <p className="text-slate-400 font-medium text-xs line-clamp-2 leading-normal">
+                                  {app.desc}
+                                </p>
                               </div>
-                              <div className="font-black text-base text-slate-800 leading-snug mb-1 group-hover:text-[#326fa0] transition-colors line-clamp-1">
-                                {app.label}
-                              </div>
-                              <p className="text-slate-400 font-medium text-xs line-clamp-2 leading-normal">
-                                {app.desc}
-                              </p>
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="w-full text-center py-4 bg-slate-100/50 border border-slate-200 rounded-2xl text-slate-400 font-bold text-xs italic shadow-inner select-none">
