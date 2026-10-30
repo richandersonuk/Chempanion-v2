@@ -114,25 +114,19 @@ export default function App() {
     { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.', component: FormulasFromIons },
     { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.', component: FormulasFromName },
     { id: 'formula-master', label: 'Ion formulas from compounds', short: 'Ions from compounds', unit: 'Unit 1.1', icon: '🧩', desc: 'Master advanced reverse operations: deduce names and split free ionic structures.', component: FormulaMaster },
-    { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.1', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.', component: EmpiricalFormula },
-    { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.1', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.', component: AcidBaseTitration },
-    { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.2', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.', component: IdealGas },
     { id: 'nuclear-decay', label: 'Nuclear Decay Equations', short: 'Nuclear Decay', unit: 'Unit 1.2', icon: '☢️', desc: 'Balance alpha, beta, gamma, and electron capture equations.', component: NuclearChemistry },
-    
-    // External Subdomain Link for 1.2
     { id: 'spectralab', label: 'Spectra Lab', short: 'Spectra Lab', unit: 'Unit 1.2', icon: '🌈', desc: 'Standalone interactive spectroscopy web application.', isExternal: true, url: 'https://spectralab.chempanion.uk' },
-    
-    { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.', component: MechanismUnit2 },
+    { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.3', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.', component: EmpiricalFormula },
+    { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.3', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.', component: IdealGas },
+    { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.7', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.', component: AcidBaseTitration },
     { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.', component: ThermometricTitration },
+    { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.', component: MechanismUnit2 },
     { id: 'half-equations', label: 'Redox Half-Equations', short: 'Half-Equations', unit: 'Unit 3.1', icon: '⚡', desc: 'Construct and balance redox half-equations in acidic media step-by-step.', component: HalfEquationBalancing },
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '🧪', desc: 'Analyze ratio pathways for complex transition elements.', component: RedoxTitration },
     { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 3.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.', component: CellPotentials },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.', component: EnthalpyCombustion },
-    { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.4', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.', component: EntropyGibbs },
-    
-    // External Subdomain Link for 3.4
+    { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.7', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.', component: EntropyGibbs },
     { id: 'transition-metals', label: 'Transition Metals', short: 'Transition Metals', unit: 'Unit 3.4', icon: '💎', desc: 'Standalone interactive transition metals laboratory.', isExternal: true, url: 'https://transitionmetals.chempanion.uk' },
-    
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.', component: ReactionRates },
     { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.', component: KcCalculations },
     { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.', component: KpCalculations },
@@ -141,6 +135,11 @@ export default function App() {
     { id: 'chiral-centers', label: 'Chiral Center Identification', short: 'Chiral Carbons', unit: 'Unit 4.1', icon: '🧬', desc: 'Audit asymmetric carbon nodes and identify stereoisomers in skeletal structures.', component: ChiralCenters },
     { id: 'mechanisms-masterclass', label: 'Organic Mechanisms', short: 'Mechanisms', unit: 'Unit 4.4', icon: '🏹', desc: 'Master carbonyl reactions by tracking induced dipoles and curly arrows step-by-step.', component: MechanismMasterclass }
   ];
+
+  // Automatically sort applets numerically by unit (e.g. Unit 1.1 before Unit 1.2, etc.)
+  const sortedApplets = [...applets].sort((a, b) => 
+    a.unit.localeCompare(b.unit, undefined, { numeric: true })
+  );
 
   const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
   const wjecUnitTitles = {
@@ -158,7 +157,7 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  const activeAppletObj = applets.find(a => a.id === currentApplet);
+  const activeAppletObj = sortedApplets.find(a => a.id === currentApplet);
   const ActiveComponent = activeAppletObj ? activeAppletObj.component : null;
 
   return (
@@ -183,7 +182,7 @@ export default function App() {
               </button>
               <div className="absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 opacity-0 pointer-events-none scale-95 origin-top-right group-hover:opacity-100 group-hover:scale-100 group-hover:!pointer-events-auto transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block">
                 {mainUnits.map(unitRow => {
-                  const unitApplets = applets.filter(a => a.unit.startsWith(unitRow));
+                  const unitApplets = sortedApplets.filter(a => a.unit.startsWith(unitRow));
                   if (unitApplets.length === 0) return null;
                   const isCatOpen = categoryStates[unitRow];
                   return (
@@ -205,13 +204,13 @@ export default function App() {
                                 href={app.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full text-left px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-between rounded-md"
+                                className="w-full text-left px-2.5 py-1.5 text-xs font-bold bg-slate-700 border border-slate-600 text-white hover:bg-slate-800 flex items-center justify-between rounded-md transition-colors"
                               >
                                 <div className="flex items-center gap-2.5">
                                   <span>{app.icon}</span>
                                   <span>{app.short}</span>
                                 </div>
-                                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                <svg className="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                               </a>
                             ) : (
                               <button
@@ -269,7 +268,7 @@ export default function App() {
               🏠 Go to Home Dashboard
             </button>
             {mainUnits.map(unitRow => {
-              const unitApplets = applets.filter(a => a.unit.startsWith(unitRow));
+              const unitApplets = sortedApplets.filter(a => a.unit.startsWith(unitRow));
               if (unitApplets.length === 0) return null;
               const isCatOpen = categoryStates[unitRow];
               return (
@@ -291,16 +290,16 @@ export default function App() {
                             href={app.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block w-full text-left px-4 py-3 rounded-lg font-bold transition-colors text-slate-700 hover:bg-slate-100"
+                            className="block w-full text-left px-4 py-3 rounded-xl font-bold transition-colors bg-slate-700 border border-slate-600 text-white hover:bg-slate-800 my-1"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
                                 <span className="mr-3 text-lg">{app.icon}</span>
-                                <span className="text-xs">{app.label}</span>
+                                <span className="text-xs text-white">{app.label}</span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] bg-slate-200 text-slate-500 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
-                                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                <span className="text-[9px] bg-slate-600 text-slate-300 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
+                                <svg className="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                               </div>
                             </div>
                           </a>
@@ -360,8 +359,8 @@ export default function App() {
             {/* Matrix layout */}
             <div className="w-full max-w-5xl mx-auto text-left space-y-10">
               {mainUnits.map(unitRow => {
-                const filteredApplets = applets.filter(a => a.unit.startsWith(unitRow));
-                if (filteredApplets.length === 0) return null;
+                const unitApplets = sortedApplets.filter(a => a.unit.startsWith(unitRow));
+                if (unitApplets.length === 0) return null;
                 const isUnitOpen = categoryStates[unitRow];
 
                 return (
@@ -388,7 +387,7 @@ export default function App() {
 
                     {isUnitOpen ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredApplets.map(app => {
+                        {unitApplets.map(app => {
                           if (app.isExternal) {
                             return (
                               <a 
@@ -420,7 +419,6 @@ export default function App() {
                               </a>
                             );
                           }
-                          
                           return (
                             <button 
                               key={app.id}
@@ -466,7 +464,7 @@ export default function App() {
               </button>
               <span className="text-slate-300">/</span>
               <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">
-                {applets.find(a => a.id === currentApplet)?.label || currentApplet}
+                {sortedApplets.find(a => a.id === currentApplet)?.label || currentApplet}
               </span>
             </div>
           )}
