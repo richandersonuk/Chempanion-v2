@@ -121,13 +121,13 @@ export default function App() {
     { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.7', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.', component: AcidBaseTitration },
     { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.', component: ThermometricTitration },
     { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.', component: MechanismUnit2 },
-  //  { id: 'half-equations', label: 'Redox Half-Equations', short: 'Half-Equations', unit: 'Unit 3.1', icon: '⚡', desc: 'Construct and balance redox half-equations in acidic media step-by-step.', component: HalfEquationBalancing },
-  { id: 'transition-metals', label: 'Electrode Potentials', short: 'Electrochem', unit: 'Unit 3.1', icon: '⚡', desc: 'Standalone interactive electrochemistry laboratory.', isExternal: true, url: 'https://electrodepotentials.chempanion.uk' },
-  { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '🧪', desc: 'Analyze ratio pathways for complex transition elements.', component: RedoxTitration },
+    { id: 'pblock', label: 'P-Block Chemistry Lab', short: 'P-Block Lab', unit: 'Unit 3.3', icon: '🧪', desc: 'Standalone interactive p-block chemistry laboratory.', isExternal: true, url: 'https://pblock.chempanion.uk' },
+    { id: 'transition-metals-lab', label: 'Transition Metals', short: 'Transition Metals', unit: 'Unit 3.4', icon: '💎', desc: 'Standalone interactive transition metals laboratory.', isExternal: true, url: 'https://transitionmetals.chempanion.uk' },
+    { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '🧪', desc: 'Analyze ratio pathways for complex transition elements.', component: RedoxTitration },
     { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 3.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.', component: CellPotentials },
+    { id: 'cell-potentials-lab', label: 'Electrode Potentials', short: 'Electrochem', unit: 'Unit 3.1', icon: '⚡', desc: 'Standalone interactive electrochemistry laboratory.', isExternal: true, url: 'https://electrodepotentials.chempanion.uk' },
     { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.', component: EnthalpyCombustion },
     { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.7', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.', component: EntropyGibbs },
-    { id: 'transition-metals', label: 'Transition Metals', short: 'Transition Metals', unit: 'Unit 3.4', icon: '💎', desc: 'Standalone interactive transition metals laboratory.', isExternal: true, url: 'https://transitionmetals.chempanion.uk' },
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.', component: ReactionRates },
     { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.', component: KcCalculations },
     { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.', component: KpCalculations },
@@ -351,7 +351,10 @@ export default function App() {
                     <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform Updates & Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    New Update: Unit 3.1 Redox Half-Equations module is now live! Practice balancing complex transition metal oxoanion reactions step-by-step or in full exam practice mode.
+                    New Update: Unit 3.3 P-Block Chemistry Lab is now live! Explore Group 4, 5, and 7 chemistry trends, reactions, and properties interactively at{' '}
+                    <a href="https://pblock.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
+                      pblock.chempanion.uk
+                    </a>.
                   </p>
                 </div>
               </div>
