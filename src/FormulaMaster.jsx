@@ -13,7 +13,7 @@ const FormulaMaster = () => {
   const [aniText, setAniText] = useState(''); 
   const [aniChargeVal, setAniChargeVal] = useState(1); 
 
-  // --- ION BANK CONFIGURATIONS ---
+  // --- COMPREHENSIVE TIERED COMPOUND & MOLECULE BANK ---
   const ionicUniverse = {
     gcse: {
       cations: [
@@ -22,38 +22,78 @@ const FormulaMaster = () => {
         { formula: "Li", charge: 1, name: "Lithium" },
         { formula: "Mg", charge: 2, name: "Magnesium" },
         { formula: "Ca", charge: 2, name: "Calcium" },
-        { formula: "Al", charge: 3, name: "Aluminium" }
+        { formula: "Al", charge: 3, name: "Aluminium" },
+        { formula: "Cu", charge: 2, name: "Copper(II)" },
+        { formula: "Fe", charge: 2, name: "Iron(II)" },
+        { formula: "Fe", charge: 3, name: "Iron(III)" },
+        { formula: "Zn", charge: 2, name: "Zinc" },
+        { formula: "H", charge: 1, name: "Hydrogen" }
       ],
       anions: [
         { formula: "Cl", charge: 1, name: "chloride" },
         { formula: "Br", charge: 1, name: "bromide" },
+        { formula: "I", charge: 1, name: "iodide" },
         { formula: "O", charge: 2, name: "oxide" },
-        { formula: "S", charge: 2, name: "sulfide" }
+        { formula: "S", charge: 2, name: "sulfide" },
+        { formula: "OH", charge: 1, name: "hydroxide", isPoly: true },
+        { formula: "NO3", charge: 1, name: "nitrate", isPoly: true },
+        { formula: "SO4", charge: 2, name: "sulfate", isPoly: true },
+        { formula: "CO3", charge: 2, name: "carbonate", isPoly: true }
       ]
     },
     advanced: {
       cations: [
-        { formula: "Fe", charge: 3, name: "Iron(III)" },
-        { formula: "Fe", charge: 2, name: "Iron(II)" },
-        { formula: "Cu", charge: 2, name: "Copper(II)" },
-        { formula: "Ag", charge: 1, name: "Silver" },
-        { formula: "Zn", charge: 2, name: "Zinc" },
         { formula: "NH4", charge: 1, name: "Ammonium", isPoly: true },
-        { formula: "Cr", charge: 3, name: "Chromium(III)" }
+        { formula: "Ag", charge: 1, name: "Silver" },
+        { formula: "Pb", charge: 2, name: "Lead(II)" },
+        { formula: "Cr", charge: 3, name: "Chromium(III)" },
+        { formula: "Mn", charge: 2, name: "Manganese(II)" },
+        { formula: "Ba", charge: 2, name: "Barium" },
+        { formula: "Sr", charge: 2, name: "Strontium" }
       ],
       anions: [
-        { formula: "SO4", charge: 2, name: "sulfate", isPoly: true },
-        { formula: "NO3", charge: 1, name: "nitrate", isPoly: true },
-        { formula: "CO3", charge: 2, name: "carbonate", isPoly: true },
-        { formula: "OH", charge: 1, name: "hydroxide", isPoly: true },
-        { formula: "PO4", charge: 3, name: "phosphate", isPoly: true }
+        { formula: "PO4", charge: 3, name: "phosphate", isPoly: true },
+        { formula: "HCO3", charge: 1, name: "hydrogencarbonate", isPoly: true },
+        { formula: "HSO4", charge: 1, name: "hydrogensulfate", isPoly: true },
+        { formula: "CrO4", charge: 2, name: "chromate", isPoly: true },
+        { formula: "Cr2O7", charge: 2, name: "dichromate", isPoly: true },
+        { formula: "MnO4", charge: 1, name: "manganate(VII)", isPoly: true },
+        { formula: "CH3COO", charge: 1, name: "ethanoate", isPoly: true }
       ]
-    }
+    },
+    // Special Covalent & Neutral Molecules (e.g. Water, Ammonia)
+    specialMolecules: [
+      { formula: "H2O", name: "Water", catFormula: "H", catCharge: 1, aniFormula: "OH", aniCharge: 1, altCatFormula: "H", altCatCharge: 1, isCovalent: true },
+      { formula: "NH3", name: "Ammonia", catFormula: "NH4", catCharge: 1, aniFormula: "OH", aniCharge: 1, isCovalent: true },
+      { formula: "CH4", name: "Methane", isCovalent: true, neutralOnly: true },
+      { formula: "CO2", name: "Carbon dioxide", isCovalent: true, neutralOnly: true }
+    ]
   };
 
   const getGreatestCommonDivisor = (a, b) => (!b ? a : getGreatestCommonDivisor(b, a % b));
 
   const buildBalancedFormula = (cat, ani) => {
+    // Handling specific hydration / water special assembly
+    if (cat.formula === 'H' && ani.formula === 'OH') {
+      return 'H2O';
+    }
+
+    // Standard organic ethanoate convention (Anion before Cation)
+    if (ani.formula === 'CH3COO') {
+      const cChg = cat.charge;
+      const aChg = ani.charge;
+      const scale = getGreatestCommonDivisor(cChg, aChg);
+      const aniSubscript = cChg / scale;
+      const catSubscript = aChg / scale;
+
+      const aniPart = aniSubscript > 1 ? `(${ani.formula})` : ani.formula;
+      const aniSub = aniSubscript === 1 ? '' : aniSubscript;
+      const catPart = (cat.isPoly && catSubscript > 1) ? `(${cat.formula})` : cat.formula;
+      const catSub = catSubscript === 1 ? '' : catSubscript;
+
+      return `${aniPart}${aniSub}${catPart}${catSub}`;
+    }
+
     const cChg = cat.charge;
     const aChg = ani.charge;
     
@@ -74,29 +114,49 @@ const FormulaMaster = () => {
     const isAdvanced = modeKey.includes('advanced');
     const isFromFormula = modeKey.includes('formula');
 
-    const catPool = isAdvanced 
-      ? [...ionicUniverse.gcse.cations, ...ionicUniverse.advanced.cations]
-      : ionicUniverse.gcse.cations;
+    // Random chance to present a special covalent/neutral molecule like Water
+    const includeSpecial = Math.random() < 0.15;
 
-    const aniPool = isAdvanced 
-      ? [...ionicUniverse.gcse.anions, ...ionicUniverse.advanced.anions]
-      : ionicUniverse.gcse.anions;
+    if (includeSpecial) {
+      const mol = ionicUniverse.specialMolecules[Math.floor(Math.random() * ionicUniverse.specialMolecules.length)];
+      
+      setCurrentProblem({
+        qDisplay: isFromFormula ? mol.formula : mol.name,
+        targetCat: mol.catFormula || 'None',
+        targetCatVal: mol.catCharge || 0,
+        targetAni: mol.aniFormula || 'None',
+        targetAniVal: mol.aniCharge || 0,
+        rawFormula: mol.formula,
+        rawName: mol.name,
+        isCovalent: true,
+        neutralOnly: mol.neutralOnly || false
+      });
+    } else {
+      const catPool = isAdvanced 
+        ? [...ionicUniverse.gcse.cations, ...ionicUniverse.advanced.cations]
+        : ionicUniverse.gcse.cations;
 
-    const selectedCation = catPool[Math.floor(Math.random() * catPool.length)];
-    const selectedAnion = aniPool[Math.floor(Math.random() * aniPool.length)];
+      const aniPool = isAdvanced 
+        ? [...ionicUniverse.gcse.anions, ...ionicUniverse.advanced.anions]
+        : ionicUniverse.gcse.anions;
 
-    const calculatedFormula = buildBalancedFormula(selectedCation, selectedAnion);
-    const calculatedName = `${selectedCation.name} ${selectedAnion.name}`;
+      const selectedCation = catPool[Math.floor(Math.random() * catPool.length)];
+      const selectedAnion = aniPool[Math.floor(Math.random() * aniPool.length)];
 
-    setCurrentProblem({
-      qDisplay: isFromFormula ? calculatedFormula : calculatedName,
-      targetCat: selectedCation.formula,
-      targetCatVal: selectedCation.charge,
-      targetAni: selectedAnion.formula,
-      targetAniVal: selectedAnion.charge,
-      rawFormula: calculatedFormula,
-      rawName: calculatedName
-    });
+      const calculatedFormula = buildBalancedFormula(selectedCation, selectedAnion);
+      const calculatedName = `${selectedCation.name} ${selectedAnion.name}`;
+
+      setCurrentProblem({
+        qDisplay: isFromFormula ? calculatedFormula : calculatedName,
+        targetCat: selectedCation.formula,
+        targetCatVal: selectedCation.charge,
+        targetAni: selectedAnion.formula,
+        targetAniVal: selectedAnion.charge,
+        rawFormula: calculatedFormula,
+        rawName: calculatedName,
+        isCovalent: false
+      });
+    }
 
     setCatText('');
     setCatChargeVal(1);
@@ -140,6 +200,22 @@ const FormulaMaster = () => {
     if (!currentProblem) return;
     setFeedback({ message: null, status: '' });
 
+    // Covalent / neutral special cases handling
+    if (currentProblem.isCovalent && currentProblem.neutralOnly) {
+      setFeedback({
+        status: 'success',
+        message: (
+          <div className="space-y-1">
+            <span className="block font-black text-xs text-[#326fa0]">ℹ️ Simple Covalent Molecule</span>
+            <p className="text-slate-600 font-medium text-[11px]">
+              <strong>{currentProblem.rawName} ({currentProblem.rawFormula})</strong> is a simple covalent molecule composed of neutral atoms sharing electrons, not discrete ions.
+            </p>
+          </div>
+        )
+      });
+      return;
+    }
+
     const cleanCatUser = catText.replace(/[\s\(\)]+/g, '');
     const cleanAniUser = aniText.replace(/[\s\(\)]+/g, '');
 
@@ -156,7 +232,7 @@ const FormulaMaster = () => {
           <div className="space-y-1">
             <span className="block font-black text-xs text-emerald-800">✓ Correct</span>
             <p className="text-slate-600 font-medium text-[11px]">
-              This compound contains <strong className="font-mono">{currentProblem.targetCat}<sup>{getChargeString(currentProblem.targetCatVal, '+')}</sup></strong> and <strong className="font-mono">{currentProblem.targetAni}<sup>{getChargeString(currentProblem.targetAniVal, '-')}</sup></strong> ions.
+              {currentProblem.rawName} contains <strong className="font-mono">{currentProblem.targetCat}<sup>{getChargeString(currentProblem.targetCatVal, '+')}</sup></strong> and <strong className="font-mono">{currentProblem.targetAni}<sup>{getChargeString(currentProblem.targetAniVal, '-')}</sup></strong> ions.
             </p>
           </div>
         )
@@ -169,7 +245,7 @@ const FormulaMaster = () => {
             <span className="block font-black text-xs text-rose-800">✕ Incorrect</span>
             {!catFormulaPassed || !aniFormulaPassed ? (
               <p className="text-rose-700 font-bold text-[10px] bg-rose-100/50 p-1.5 rounded-lg border border-rose-200/40">
-                Ensure correct chemical capitalisation (e.g. Na, Cl, SO4).
+                Ensure correct chemical capitalisation (e.g. Na, Cl, SO4, OH).
               </p>
             ) : null}
             <p className="text-slate-500 font-medium text-[11px]">
@@ -191,7 +267,7 @@ const FormulaMaster = () => {
         Give the formulas of the ions making up the following compound.
       </div>
 
-      {/* --- RE-SIMPLIFIED DROP SELECTOR WITH RANDOM MODE ACTION --- */}
+      {/* --- DROP SELECTOR WITH RANDOM MODE ACTION --- */}
       <div className="w-full max-w-md mx-auto my-4 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex gap-2 items-end">
         <div className="flex-1">
           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Practice Mode</label>

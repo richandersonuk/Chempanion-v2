@@ -131,6 +131,43 @@ const ZoomablePeriodicTable = () => {
 const DataBooklet = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('constants');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e) => {
+    // Prevent drag if interacting with buttons or form inputs in header
+    if (e.target.closest('button, input, select')) return;
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      setPosition({
+        x: Math.max(0, Math.min(window.innerWidth - 300, e.clientX - dragOffset.x)),
+        y: Math.max(0, Math.min(window.innerHeight - 150, e.clientY - dragOffset.y))
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
 
   if (!isOpen) return null;
 
@@ -198,20 +235,34 @@ const DataBooklet = ({ isOpen, onClose }) => {
   const currentActiveTabObj = tabs.find(t => t.id === activeTab) || tabs[0];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 md:p-6 backdrop-blur-md" style={{ textTransform: 'none' }}>
-      <div className="bg-white w-full max-w-5xl h-[90vh] md:h-[85vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-200" style={{ textTransform: 'none' }}>
+    <div 
+      className="fixed z-50 pointer-events-none" 
+      style={{ 
+        left: `${position.x}px`, 
+        top: `${position.y}px`,
+        textTransform: 'none'
+      }}
+    >
+      <div 
+        className="pointer-events-auto bg-white w-[92vw] max-w-4xl h-[75vh] max-h-[750px] min-w-[320px] min-h-[350px] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-300 resize" 
+        style={{ textTransform: 'none' }}
+      >
         
-        {/* --- BRANDED HEADER --- */}
-        <div className="flex justify-between items-center p-4 border-b border-slate-200 bg-slate-50" style={{ textTransform: 'none' }}>
+        {/* --- BRANDED DRAGGABLE HEADER --- */}
+        <div 
+          onMouseDown={handleMouseDown}
+          className="flex justify-between items-center p-3 sm:p-4 border-b border-slate-200 bg-slate-50 cursor-move select-none shrink-0" 
+          style={{ textTransform: 'none' }}
+        >
           <div className="flex items-center gap-2">
-            <Logo className="h-8" />
-            <div className="flex items-baseline font-black tracking-tighter text-2xl select-none">
+            <Logo className="h-7 sm:h-8" />
+            <div className="flex items-baseline font-black tracking-tighter text-xl sm:text-2xl select-none">
               <span className="text-[var(--chem-logo-darkblue)]">Data</span>
               <span className="text-[var(--chem-logo-lightblue)]">Book</span>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-800 p-2 rounded-md hover:bg-white transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-800 p-1.5 sm:p-2 rounded-md hover:bg-white transition-colors">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
