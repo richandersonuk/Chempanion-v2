@@ -35,12 +35,6 @@ export const howToGuides = {
     examApplication: <>Simulates standard WJEC structured titration calculations. You must determine reacting chemical quantities and frequently scale volumetric values between 25.0 cm<sup>3</sup> pipetted aliquots and 250 cm<sup>3</sup> volumetric flasks.</>,
     pitfalls: <>Failing to convert titration volumes from cm<sup>3</sup> to dm<sup>3</sup> (by dividing by 1000) when calculating concentration is a guaranteed dropped mark. Always double-check that your titre values are concordant (within 0.10 cm<sup>3</sup>) if selecting raw data from a table.</>
   },
-  'feasibility-trainer': {
-    title: "Entropy & Reaction Feasibility Calculations",
-    appletUsage: <>Practice calculating absolute temperature in Kelvin (T = θ + 273), interconverting entropy units from J K⁻¹ mol⁻¹ to kJ K⁻¹ mol⁻¹, and solving ΔG = ΔH − TΔS step-by-step.</>,
-    examApplication: <>Directly targets Unit 3.7 exam questions where candidates must determine whether a reaction is spontaneous, calculate minimum transition temperatures by setting ΔG = 0, and avoid common unit mismatch penalties.</>,
-    pitfalls: <>Never combine ΔH in kJ mol⁻¹ with raw ΔS in J K⁻¹ mol⁻¹ without dividing ΔS by 1000 first, and always convert Celsius to Kelvin.</>
-  },
   'idealgas': {
     title: "Ideal Gas Calculations",
     appletUsage: <>Identify the unknown variable in the ideal gas equation (pV = nRT). Perform strict unit conversions for the randomized temperature, pressure, and volume metrics, rearrange the algebraic expression, and solve.</>,
@@ -84,12 +78,11 @@ export const howToGuides = {
   },
 
   'entropy-gibbs': {
-    title: "Entropy & Gibbs Free Energy",
-    appletUsage: <>Input the standard enthalpy change (ΔH) and entropy change (ΔS) values. Apply the free energy equation (ΔG = ΔH - TΔS) to evaluate reaction feasibility and calculate the minimum threshold temperature (T = ΔH / ΔS) for spontaneity.</>,
-    examApplication: <>A core structured calculation in WJEC Unit 3. It tests your ability to track thermodynamic variables to predict the feasibility of industrial processes at specific temperatures.</>,
-    pitfalls: <>The absolute most common pitfall is a unit mismatch. Enthalpy (ΔH) is given in kJ mol<sup>-1</sup>, while entropy (ΔS) is in J K<sup>-1</sup> mol<sup>-1</sup>. You must divide your ΔS value by 1000 before substituting it into the Gibbs equation.</>
+    title: "Entropy, Gibbs Free Energy & Feasibility",
+    appletUsage: <>Switch between the Quadrant Explorer to observe how signs of ΔH and ΔS govern feasibility across temperature ranges, and the Exam Question Trainer to practice unit interconversions (J to kJ, °C to K) and solve ΔG = ΔH − TΔS step-by-step across 20 real reaction scenarios.</>,
+    examApplication: <>A core calculation in WJEC Unit 3.7. It evaluates your ability to determine feasibility (ΔG &lt; 0), compute transition threshold temperatures where ΔG = 0 (T = ΔH / ΔS), and distinguish between thermodynamic spontaneity and kinetic stability.</>,
+    pitfalls: <>The most penalized trap is a unit mismatch: enthalpy (ΔH) is in kJ mol<sup>-1</sup> while entropy (ΔS) is in J K<sup>-1</sup> mol<sup>-1</sup>—divide ΔS by 1000 before substituting. Always convert temperature to Kelvin (T = °C + 273), and remember a negative ΔG does not guarantee a reaction will occur at room temperature if activation energy is prohibitively high.</>
   },
-
   'rates': {
     title: "Reaction Rates",
     appletUsage: <>Analyze initial rates data from randomized chemical trials. Compare concentration changes across experiments to deduce individual reaction orders, construct the overall rate equation, and evaluate the rate constant (k) alongside its units.</>,

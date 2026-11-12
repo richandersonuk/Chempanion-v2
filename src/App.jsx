@@ -26,7 +26,6 @@ const ChiralCenters = React.lazy(() => import('./ChiralCenters').then(m => m.Chi
 const MechanismMasterclass = React.lazy(() => import('./MechanismMasterclass').then(m => m.MechanismMasterclass ? { default: m.MechanismMasterclass } : m));
 const NuclearChemistry = React.lazy(() => import('./NuclearChemistry').then(m => m.default ? { default: m.default } : m));
 const HalfEquationBalancing = React.lazy(() => import('./HalfEquationBalancing').then(m => m.default ? { default: m.default } : m));
-const FeasibilityTrainer = React.lazy(() => import('./FeasibilityTrainer').then(m => m.default ? { default: m.default } : m));
 
 // --- WJEC EXAM METHOD REWRITE MODAL ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
@@ -112,7 +111,6 @@ export default function App() {
   };
 
   const applets = [
-    { id: 'feasibility-trainer', label: 'Feasibility & Unit Master', short: 'Feasibility', unit: 'Unit 3.7', icon:'❓', desc: 'Master ΔG = ΔH - TΔS calculations, temperature conversions, and unit traps.', component: FeasibilityTrainer },
     { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.', component: FormulasFromIons },
     { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.', component: FormulasFromName },
     { id: 'formula-master', label: 'Ion formulas from compounds', short: 'Ions from compounds', unit: 'Unit 1.1', icon: '🧩', desc: 'Master advanced reverse operations: deduce names and split free ionic structures.', component: FormulaMaster },
