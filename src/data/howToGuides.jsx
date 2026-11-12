@@ -28,14 +28,19 @@ export const howToGuides = {
     examApplication: <>Mimics multi-mark structured calculations in WJEC Unit 1. Examiners explicitly look for a clear mathematical layout (Mass &rarr; Moles &rarr; Ratio). Setting out intermediate steps clearly secures "error carried forward" (ECF) marks even if your final ratio is slightly off.</>,
     pitfalls: <>Premature rounding of intermediate decimal values will warp your final integer ratio. Keep all raw values stored in your calculator memory until the final step. Always explicitly state the final formula at the end of your working.</>
   },
-
+ 
   'titration': {
     title: "Acid-Base Titrations",
     appletUsage: <>Examine the volumetric titration parameters. Calculate the moles of the standard solution, apply the stoichiometric ratio from the balanced neutralization equation, and evaluate the concentration of the unknown sample.</>,
     examApplication: <>Simulates standard WJEC structured titration calculations. You must determine reacting chemical quantities and frequently scale volumetric values between 25.0 cm<sup>3</sup> pipetted aliquots and 250 cm<sup>3</sup> volumetric flasks.</>,
     pitfalls: <>Failing to convert titration volumes from cm<sup>3</sup> to dm<sup>3</sup> (by dividing by 1000) when calculating concentration is a guaranteed dropped mark. Always double-check that your titre values are concordant (within 0.10 cm<sup>3</sup>) if selecting raw data from a table.</>
   },
-
+  'feasibility-trainer': {
+    title: "Entropy & Reaction Feasibility Calculations",
+    appletUsage: <>Practice calculating absolute temperature in Kelvin (T = θ + 273), interconverting entropy units from J K⁻¹ mol⁻¹ to kJ K⁻¹ mol⁻¹, and solving ΔG = ΔH − TΔS step-by-step.</>,
+    examApplication: <>Directly targets Unit 3.7 exam questions where candidates must determine whether a reaction is spontaneous, calculate minimum transition temperatures by setting ΔG = 0, and avoid common unit mismatch penalties.</>,
+    pitfalls: <>Never combine ΔH in kJ mol⁻¹ with raw ΔS in J K⁻¹ mol⁻¹ without dividing ΔS by 1000 first, and always convert Celsius to Kelvin.</>
+  },
   'idealgas': {
     title: "Ideal Gas Calculations",
     appletUsage: <>Identify the unknown variable in the ideal gas equation (pV = nRT). Perform strict unit conversions for the randomized temperature, pressure, and volume metrics, rearrange the algebraic expression, and solve.</>,

@@ -26,6 +26,7 @@ const ChiralCenters = React.lazy(() => import('./ChiralCenters').then(m => m.Chi
 const MechanismMasterclass = React.lazy(() => import('./MechanismMasterclass').then(m => m.MechanismMasterclass ? { default: m.MechanismMasterclass } : m));
 const NuclearChemistry = React.lazy(() => import('./NuclearChemistry').then(m => m.default ? { default: m.default } : m));
 const HalfEquationBalancing = React.lazy(() => import('./HalfEquationBalancing').then(m => m.default ? { default: m.default } : m));
+const FeasibilityTrainer = React.lazy(() => import('./FeasibilityTrainer').then(m => m.default ? { default: m.default } : m));
 
 // --- WJEC EXAM METHOD REWRITE MODAL ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
@@ -111,6 +112,7 @@ export default function App() {
   };
 
   const applets = [
+    { id: 'feasibility-trainer', label: 'Feasibility & Unit Master', short: 'Feasibility', unit: 'Unit 3.7', icon:'❓', desc: 'Master ΔG = ΔH - TΔS calculations, temperature conversions, and unit traps.', component: FeasibilityTrainer },
     { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.', component: FormulasFromIons },
     { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.', component: FormulasFromName },
     { id: 'formula-master', label: 'Ion formulas from compounds', short: 'Ions from compounds', unit: 'Unit 1.1', icon: '🧩', desc: 'Master advanced reverse operations: deduce names and split free ionic structures.', component: FormulaMaster },
@@ -126,7 +128,7 @@ export default function App() {
     { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '🧪', desc: 'Analyze ratio pathways for complex transition elements.', component: RedoxTitration },
     { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 3.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.', component: CellPotentials },
     { id: 'cell-potentials-lab', label: 'Electrode Potentials', short: 'Electrochem', unit: 'Unit 3.1', icon: '⚡', desc: 'Standalone interactive electrochemistry laboratory.', isExternal: true, url: 'https://electrodepotentials.chempanion.uk' },
-    { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 3.4', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.', component: EnthalpyCombustion },
+    { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 2.1', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.', component: EnthalpyCombustion },
     { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.7', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.', component: EntropyGibbs },
     { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.', component: ReactionRates },
     { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.', component: KcCalculations },
