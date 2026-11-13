@@ -15,10 +15,18 @@ const IdealGas = ({ onComplete }) => {
   const [gateFeedback, setGateFeedback] = useState({ type: '', message: '' });
 
   const targetGases = [
-    { name: 'carbon dioxide', formula: 'CO₂', mr: 44.01 },
-    { name: 'oxygen', formula: 'O₂', mr: 32.00 },
-    { name: 'nitrogen', formula: 'N₂', mr: 28.01 },
-    { name: 'argon', formula: 'Ar', mr: 39.95 }
+    { name: 'carbon dioxide', formula: 'CO₂', mr: 44.0 },
+    { name: 'oxygen', formula: 'O₂', mr: 32.0 },
+    { name: 'nitrogen', formula: 'N₂', mr: 28.0 },
+    { name: 'argon', formula: 'Ar', mr: 39.9 },
+    { name: 'helium', formula: 'He', mr: 4.0 },
+    { name: 'neon', formula: 'Ne', mr: 20.2 },
+    { name: 'methane', formula: 'CH₄', mr: 16.0 },
+    { name: 'ethane', formula: 'C₂H₆', mr: 30.0 },
+    { name: 'ammonia', formula: 'NH₃', mr: 17.0 },
+    { name: 'sulfur dioxide', formula: 'SO₂', mr: 64.1 },
+    { name: 'chlorine', formula: 'Cl₂', mr: 71.0 },
+    { name: 'nitrogen dioxide', formula: 'NO₂', mr: 46.0 }
   ];
 
   const generateProblem = (forcedMode = null) => {
@@ -99,6 +107,7 @@ const IdealGas = ({ onComplete }) => {
       correctAnswer,
       targetMode,
       unitExpectation,
+      instanceId: `${targetMode}_${gas.formula}_${mass}_${tempCelsius}_${pressPa}`,
       siTargets: {
         pPa: expectedP_Pa,
         vM3: expectedV_M3,
@@ -177,7 +186,7 @@ const IdealGas = ({ onComplete }) => {
         type: 'success',
         message: `Correct! Your calculated value matches the baseline specification standard.`
       });
-      onComplete?.(`${problem.targetMode}_${problem.unitExpectation}`);
+      onComplete?.(problem.instanceId || `${problem.targetMode}_${problem.correctAnswer.toPrecision(3)}`);
     } else {
       let recoveryHint = 'Incorrect. Check your dimensional conversions: ';
       if (problem.targetMode === 'calculate_P') {
@@ -233,7 +242,7 @@ const IdealGas = ({ onComplete }) => {
       </div>
 
       {/* WJEC Step 1 SI Unit-Conversion Gate */}
-      <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs" style={{ textTransform: 'none' }}>
+      <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
         <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
           <div>
             <span className="text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">

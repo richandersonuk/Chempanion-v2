@@ -59,7 +59,7 @@ const ScientificInput = ({
             step="any"
             inputMode="decimal"
             onWheel={(e) => e.currentTarget.blur()}
-            className={`w-20 text-lg font-mono outline-none bg-transparent m-0 p-0 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${status}`}
+            className={`scientific-inner-input w-20 text-lg font-mono outline-none bg-transparent border-none m-0 p-0 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${status}`}
             value={value}
             onChange={(e) => onValueChange(e.target.value)}
             placeholder={placeholder}
@@ -124,7 +124,7 @@ const ScientificInput = ({
                   type="number"
                   inputMode="numeric"
                   onWheel={(e) => e.currentTarget.blur()}
-                  className="w-16 text-4xl font-mono outline-none bg-transparent text-center border-none p-0 m-0 font-black [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="scientific-inner-input w-16 text-4xl font-mono outline-none bg-transparent text-center border-none p-0 m-0 font-black [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   value={exponent}
                   onChange={(e) => onExponentChange(e.target.value)}
                 />

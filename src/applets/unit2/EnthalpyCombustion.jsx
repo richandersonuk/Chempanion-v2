@@ -18,10 +18,16 @@ const EnthalpyCombustion = ({ onComplete }) => {
   const [gateFeedback, setGateFeedback] = useState({ type: '', message: '' });
 
   const fuels = [
-    { name: 'methanol', formula: 'CH₃OH', mr: 32.04 },
-    { name: 'ethanol', formula: 'C₂H₅OH', mr: 46.07 },
-    { name: 'propan-1-ol', formula: 'C₃H₇OH', mr: 60.10 },
-    { name: 'butan-1-ol', formula: 'C₄H₉OH', mr: 74.12 }
+    { name: 'methanol', formula: 'CH₃OH', mr: 32.0 },
+    { name: 'ethanol', formula: 'C₂H₅OH', mr: 46.0 },
+    { name: 'propan-1-ol', formula: 'C₃H₇OH', mr: 60.0 },
+    { name: 'propan-2-ol', formula: 'CH₃CH(OH)CH₃', mr: 60.0 },
+    { name: 'butan-1-ol', formula: 'C₄H₉OH', mr: 74.0 },
+    { name: 'butan-2-ol', formula: 'CH₃CH(OH)C₂H₅', mr: 74.0 },
+    { name: 'pentan-1-ol', formula: 'C₅H₁₁OH', mr: 88.0 },
+    { name: 'hexan-1-ol', formula: 'C₆H₁₃OH', mr: 102.0 },
+    { name: 'cyclohexane', formula: 'C₆H₁₂', mr: 84.0 },
+    { name: 'hexane', formula: 'C₆H₁₄', mr: 86.0 }
   ];
 
   const generateProblem = () => {
@@ -125,7 +131,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
         type: 'success',
         message: `Correct! ΔH = ${problem.correctH.toFixed(1)} kJ mol⁻¹. Great job managing the negative sign conventions for exothermic combustion pathways!`
       });
-      onComplete?.(problem.fuel.name);
+      onComplete?.(`${problem.fuel.name}_${problem.massWater}_${problem.tempRise}`);
     } else if (Math.abs(userVal + problem.correctH) < Math.abs(problem.correctH * 0.02)) {
       setFeedback({
         type: 'error',
@@ -150,7 +156,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
 
       <div className="question-text text-center mb-4">
         <p>
-          A student configures a copper calorimetry system to establish the empirical enthalpy changes of straight-chain alcohols.<br />
+          A student configures a copper calorimetry system to establish the empirical enthalpy changes of liquid organic fuels.<br />
           The apparatus is initialized with a beaker containing <b>{problem.massWater} g</b> of water directly above a spirit burner filled with <b>{problem.fuel.name}</b> ({problem.fuel.formula}, M<sub>r</sub> = {problem.fuel.mr}).
         </p>
       </div>
@@ -223,7 +229,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
               : 'bg-[#326fa0] text-white hover:bg-[#255580]'
           }`}
         >
-          {simCompleted ? 'Data Harvested ✓' : isSimulating ? 'Combusting Alcohol...' : 'Run Simulation 🧪'}
+          {simCompleted ? 'Data Harvested ✓' : isSimulating ? 'Combusting Fuel...' : 'Run Simulation 🧪'}
         </button>
       </div>
 
@@ -250,7 +256,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
       {simCompleted ? (
         <div className="animate-fade-in w-full flex flex-col items-center">
           {/* WJEC Step 1 Unit & Stoichiometry Gate */}
-          <div className="w-full max-w-lg mx-auto mb-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs" style={{ textTransform: 'none' }}>
+          <div className="w-full max-w-lg mx-auto mb-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
             <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">

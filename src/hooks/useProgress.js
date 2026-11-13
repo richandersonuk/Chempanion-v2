@@ -32,9 +32,16 @@ export function useProgress() {
     const current = loadProgress();
     const prev = current[appletId] || { count: 0, solvedIds: [] };
     const solvedIds = Array.isArray(prev.solvedIds) ? [...prev.solvedIds] : [];
-    if (scenarioId !== null && !solvedIds.includes(scenarioId)) {
-      solvedIds.push(scenarioId);
+    const idStr = scenarioId !== null && scenarioId !== undefined ? String(scenarioId) : null;
+
+    // Prevent double-counting repeated clicks on the exact same problem signature
+    if (idStr !== null && solvedIds.includes(idStr)) {
+      return;
     }
+    if (idStr !== null) {
+      solvedIds.push(idStr);
+    }
+
     const updated = {
       ...current,
       [appletId]: {

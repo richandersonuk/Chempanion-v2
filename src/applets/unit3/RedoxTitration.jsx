@@ -196,7 +196,7 @@ const RedoxTitration = ({ onComplete }) => {
             onClick={() => { setMode('random'); generateProblem('random'); }}
             className={`w-full sm:w-auto px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
               mode === 'random'
-                ? 'bg-[var(--chem-primary)] bg-opacity-10 border-[var(--chem-primary)] text-[var(--chem-primary)] shadow-sm'
+                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
                 : 'bg-white border-[var(--chem-border)] text-[var(--chem-text-muted)] hover:bg-gray-50'
             }`}
           >

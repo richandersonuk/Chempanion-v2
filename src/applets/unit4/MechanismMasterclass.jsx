@@ -82,6 +82,56 @@ const MechanismMasterclass = ({ onComplete }) => {
       ],
       extraDecorators: () => null,
       explanation: "Perfect! Tertiary systems utilize a multi-step SN1 mechanism. The slow, rate-determining step involves simple heterolytic fission of the carbon-halogen bond to produce a highly stable tertiary carbocation intermediate."
+    },
+    {
+      title: "4. Nucleophilic Addition: HCN and Propanone (Unit 4.4)",
+      taskText: "Assign the C=O carbonyl bond dipoles on propanone, then draw a curly arrow from the cyanide lone pair to the electrophilic carbonyl carbon.",
+      correctStates: { 'node_C1': 'plus', 'node_O': 'minus' },
+      startId: 'nuc_lone_pair',
+      endId: 'node_C1',
+      clickableElements: [
+        { id: 'node_O', type: 'atom', cx: 185, cy: 30, r: 22, display: 'O', style: 'fill-rose-600 font-sans text-base font-black' },
+        { id: 'node_C1', type: 'atom', cx: 185, cy: 85, r: 24, display: '' },
+        { id: 'node_Nuc_C', type: 'atom', cx: 80, cy: 135, r: 22, display: 'C', style: 'fill-slate-800 font-mono text-sm font-black' },
+        { id: 'node_Nuc_N', type: 'atom', cx: 25, cy: 135, r: 22, display: 'N', style: 'fill-slate-800 font-mono text-sm font-black' },
+        { id: 'nuc_lone_pair', type: 'lone_pair', cx: 80, cy: 152, r: 24, display: '••', style: 'fill-amber-500 font-mono text-base font-black' }
+      ],
+      staticBonds: [
+        { x1: 181.5, y1: 85, x2: 181.5, y2: 44 }, { x1: 188.5, y1: 85, x2: 188.5, y2: 44 },
+        { x1: 185, y1: 85, x2: 140, y2: 112 },
+        { x1: 185, y1: 85, x2: 230, y2: 112 },
+        { x1: 67, y1: 135, x2: 38, y2: 135 }, { x1: 67, y1: 131, x2: 38, y2: 131 }, { x1: 67, y1: 139, x2: 38, y2: 139 }
+      ],
+      extraDecorators: () => (
+        <g>
+          <text x="91" y="122" textAnchor="middle" dominantBaseline="central" className="text-[10px] font-sans font-black fill-slate-800 select-none">⁻</text>
+          <text x="128" y="120" textAnchor="middle" dominantBaseline="central" className="text-[11px] font-sans font-bold fill-slate-600 select-none">CH₃</text>
+          <text x="242" y="120" textAnchor="middle" dominantBaseline="central" className="text-[11px] font-sans font-bold fill-slate-600 select-none">CH₃</text>
+        </g>
+      ),
+      explanation: "Correct! Unlike unsymmetrical aldehydes or ketones, propanone is symmetrical so attack at the planar carbonyl carbon produces an achiral hydroxynitrile product (no racemic mixture)."
+    },
+    {
+      title: "5. Electrophilic Substitution: Bromination of Benzene (Unit 4.3)",
+      taskText: "Mark the positive charge on the bromonium electrophile (Br⁺, generated via FeBr₃ halogen carrier), then draw an arrow from benzene's delocalised ring to Br⁺.",
+      correctStates: { 'node_Br_elec': 'plus' },
+      startId: 'bond_ring_cloud',
+      endId: 'node_Br_elec',
+      clickableElements: [
+        { id: 'bond_ring_cloud', type: 'bond', midX: 110, midY: 85, r: 26 },
+        { id: 'node_Br_elec', type: 'atom', cx: 195, cy: 85, r: 24, display: 'Br', style: 'fill-amber-700 font-sans text-base font-black' }
+      ],
+      staticBonds: [
+        { x1: 110, y1: 45, x2: 145, y2: 65 }, { x1: 145, y1: 65, x2: 145, y2: 105 }, { x1: 145, y1: 105, x2: 110, y2: 125 },
+        { x1: 110, y1: 125, x2: 75, y2: 105 }, { x1: 75, y1: 105, x2: 75, y2: 65 }, { x1: 75, y1: 65, x2: 110, y2: 45 }
+      ],
+      extraDecorators: () => (
+        <g>
+          <circle cx="110" cy="85" r="20" fill="none" stroke="#475569" strokeWidth="2" strokeDasharray="4 3" />
+          <text x="207" y="73" textAnchor="middle" dominantBaseline="central" className="text-[10px] font-sans font-black fill-blue-600 select-none">⁺</text>
+        </g>
+      ),
+      explanation: "Spot on! FeBr₃ polarises Br₂ to generate the powerful electrophile Br⁺. Benzene's π-electron cloud attacks Br⁺, forming a resonance-stabilised Wheland/arenium intermediate before losing H⁺ to restore aromaticity."
     }
   ];
 
@@ -251,11 +301,11 @@ const MechanismMasterclass = ({ onComplete }) => {
         ))}
       </div>
 
-      <div className="w-full max-w-md mx-auto my-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center text-xs font-bold text-slate-600">
+      <div className="w-full max-w-xl mx-auto my-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center text-xs font-bold text-slate-600">
         {current.title}
       </div>
 
-      <div className="w-full max-w-md mx-auto my-4 bg-white border border-slate-200 rounded-3xl p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden h-[260px] touch-none">
+      <div className="w-full max-w-xl mx-auto my-4 bg-white border border-slate-200 rounded-3xl p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden h-[260px] sm:h-[300px] touch-none">
         <div onPointerDown={handleCanvasPointerDown} onPointerMove={handleCanvasPointerMove} onPointerUp={handleCanvasPointerUp} className="w-full h-full relative overflow-visible touch-none">
           <svg ref={svgRef} width="100%" height="100%" viewBox="0 0 280 180" className="overflow-visible select-none pointer-events-auto">
             {current.staticBonds.map((bond, idx) => (

@@ -6,57 +6,93 @@ const BufferSolutions = ({ onComplete }) => {
   const [coeff, setCoeff] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
+  const bufferSystems = [
+    { acid: 'ethanoic acid', salt: 'sodium ethanoate', ka: 1.74e-5, kaMantissa: '1.74', kaExp: -5, saltMr: 82.0 },
+    { acid: 'methanoic acid', salt: 'sodium methanoate', ka: 1.78e-4, kaMantissa: '1.78', kaExp: -4, saltMr: 68.0 },
+    { acid: 'propanoic acid', salt: 'sodium propanoate', ka: 1.35e-5, kaMantissa: '1.35', kaExp: -5, saltMr: 96.0 },
+    { acid: 'benzoic acid', salt: 'sodium benzoate', ka: 6.30e-5, kaMantissa: '6.30', kaExp: -5, saltMr: 144.0 },
+    { acid: 'nitrous acid', salt: 'sodium nitrite', ka: 4.50e-4, kaMantissa: '4.50', kaExp: -4, saltMr: 69.0 }
+  ];
+
   const generateProblem = (forcedMode = null) => {
-    const modes = ['acidic_buffer', 'salt_addition'];
+    const modes = ['acidic_buffer', 'salt_addition', 'buffer_addition'];
     const selection = forcedMode || mode;
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
     setMode(targetMode);
     let newProb = {};
-    const kaVal = 1.74e-5;
+    const sys = bufferSystems[Math.floor(Math.random() * bufferSystems.length)];
+    const pKa = -Math.log10(sys.ka);
 
     if (targetMode === 'acidic_buffer') {
-      const concAcid = (0.1 + Math.random() * 0.2).toFixed(2);
-      const concSalt = (0.05 + Math.random() * 0.1).toFixed(2);
-
-      const pKa = -Math.log10(kaVal);
+      const concAcid = (0.08 + Math.random() * 0.25).toFixed(2);
+      const concSalt = (0.05 + Math.random() * 0.20).toFixed(2);
       const ph = pKa + Math.log10(parseFloat(concSalt) / parseFloat(concAcid));
 
       newProb = {
         title: 'Acidic Buffer pH',
         text: (
           <>
-            A buffer solution contains ethanoic acid at a concentration of{' '}
+            A buffer solution contains {sys.acid} (K<sub>a</sub> = {sys.kaMantissa} &times; 10<sup>{sys.kaExp}</sup> mol dm<sup>-3</sup>) at{' '}
             <b>{concAcid} mol dm<sup>-3</sup></b>{' '}
-            and sodium ethanoate at{' '}
+            and {sys.salt} at{' '}
             <b>{concSalt} mol dm<sup>-3</sup></b>.
           </>
         ),
         question: 'Calculate the pH of this buffer solution.',
         correct: ph.toFixed(2),
+        hint: 'Use [H⁺] = Ka × ([Acid] / [Salt]) or pH = pKa + log₁₀([Salt] / [Acid]).',
+        instanceId: `buf_${sys.acid}_${concAcid}_${concSalt}`,
         isScientific: false,
       };
-    } else {
-      const massSalt = (1.5 + Math.random() * 1.0).toFixed(2);
-      const vol = 500;
-      const concAcid = 0.2;
-      const molesSalt = parseFloat(massSalt) / 82.03;
+    } else if (targetMode === 'salt_addition') {
+      const volOptions = [100, 200, 250, 500, 1000];
+      const vol = volOptions[Math.floor(Math.random() * volOptions.length)];
+      const concAcid = parseFloat((0.10 + Math.random() * 0.30).toFixed(2));
+      const massSalt = parseFloat(((vol / 500) * (1.2 + Math.random() * 2.2) * (sys.saltMr / 82.0)).toFixed(2));
+      const molesSalt = massSalt / sys.saltMr;
       const concSalt = (molesSalt * 1000) / vol;
-      const pKa = -Math.log10(kaVal);
       const ph = pKa + Math.log10(concSalt / concAcid);
 
       newProb = {
         title: 'Buffer Preparation',
         text: (
           <>
-            A student adds <b>{massSalt} g</b> of sodium ethanoate (M<sub>r</sub> = 82.0) to{' '}
-            <b>500 cm<sup>3</sup></b>{' '}
+            A student dissolves <b>{massSalt.toFixed(2)} g</b> of solid {sys.salt} (M<sub>r</sub> = {sys.saltMr.toFixed(1)}) in{' '}
+            <b>{vol} cm<sup>3</sup></b>{' '}
             of{' '}
-            <b>0.20 mol dm<sup>-3</sup></b>{' '}
-            ethanoic acid.
+            <b>{concAcid.toFixed(2)} mol dm<sup>-3</sup></b>{' '}
+            {sys.acid} (K<sub>a</sub> = {sys.kaMantissa} &times; 10<sup>{sys.kaExp}</sup> mol dm<sup>-3</sup>). Assume negligible volume change.
           </>
         ),
-        question: 'Calculate the pH of the resulting solution.',
+        question: 'Calculate the pH of the resulting buffer solution.',
         correct: ph.toFixed(2),
+        hint: 'Find moles of salt added (mass / Mr), divide by volume in dm³ to get [Salt], then compute pH.',
+        instanceId: `salt_${sys.acid}_${vol}_${massSalt}`,
+        isScientific: false,
+      };
+    } else {
+      const molAcid = parseFloat((0.15 + Math.random() * 0.20).toFixed(2));
+      const molSalt = parseFloat((0.15 + Math.random() * 0.20).toFixed(2));
+      const addAlkali = Math.random() > 0.5;
+      const molAdded = parseFloat((0.005 + Math.random() * 0.015).toFixed(3));
+      const newAcid = addAlkali ? molAcid - molAdded : molAcid + molAdded;
+      const newSalt = addAlkali ? molSalt + molAdded : molSalt - molAdded;
+      const ph = pKa + Math.log10(newSalt / newAcid);
+
+      newProb = {
+        title: `Buffer Action (+${addAlkali ? 'NaOH' : 'HCl'})`,
+        text: (
+          <>
+            A 1.00 dm<sup>3</sup> buffer solution contains <b>{molAcid.toFixed(2)} mol</b> of {sys.acid} (K<sub>a</sub> = {sys.kaMantissa} &times; 10<sup>{sys.kaExp}</sup> mol dm<sup>-3</sup>) and <b>{molSalt.toFixed(2)} mol</b> of {sys.salt}.{' '}
+            A student adds <b>{molAdded.toFixed(3)} mol</b> of {addAlkali ? 'solid NaOH' : 'gaseous HCl'} with no change in total volume.
+          </>
+        ),
+        question: 'Calculate the new pH after addition.',
+        correct: ph.toFixed(2),
+        hint: addAlkali
+          ? 'Added OH⁻ reacts with the weak acid: moles of acid decrease by n(OH⁻) while moles of salt increase by n(OH⁻).'
+          : 'Added H⁺ reacts with the conjugate base (salt): moles of salt decrease by n(H⁺) while moles of acid increase by n(H⁺).',
+        instanceId: `act_${addAlkali ? 'oh' : 'h'}_${sys.acid}_${molAcid}_${molAdded}`,
         isScientific: false,
       };
     }
@@ -74,15 +110,15 @@ const BufferSolutions = ({ onComplete }) => {
     const userVal = parseFloat(coeff);
     if (!coeff || isNaN(userVal)) return;
 
-    if (userVal.toFixed(2) === parseFloat(problem.correct).toFixed(2)) {
+    if (Math.abs(userVal - parseFloat(problem.correct)) <= 0.02) {
       setFeedback({
         message: 'Correct! pH = ' + problem.correct,
         status: 'success',
       });
-      onComplete?.(`${mode}_${problem.correct}`);
+      onComplete?.(problem.instanceId || `${mode}_${problem.correct}`);
     } else {
       setFeedback({
-        message: 'Incorrect. Check your pKa calculation and [Salt]/[Acid] ratio.',
+        message: `Incorrect. ${problem.hint || 'Check your pKa calculation and [Salt]/[Acid] ratio.'}`,
         status: 'error',
       });
     }
@@ -104,6 +140,7 @@ const BufferSolutions = ({ onComplete }) => {
           >
             <option value="acidic_buffer">Standard Acidic Buffer pH</option>
             <option value="salt_addition">Buffer Salt Mass Additions</option>
+            <option value="buffer_addition">Buffer Action (+NaOH / +HCl)</option>
           </select>
 
           <button

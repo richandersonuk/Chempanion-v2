@@ -156,19 +156,47 @@ const APPLET_TAB_MAP = {
   'mechanisms-masterclass': 'IR'
 };
 
+const getCenteredModalPosition = () => {
+  if (typeof window === 'undefined') return { x: 20, y: 20 };
+  const modalWidth = Math.min(window.innerWidth * 0.94, 896);
+  const modalHeight = Math.min(window.innerHeight * 0.82, 750);
+  return {
+    x: Math.max(10, Math.round((window.innerWidth - modalWidth) / 2)),
+    y: Math.max(12, Math.round((window.innerHeight - modalHeight) / 2))
+  };
+};
+
 const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
   const [activeTab, setActiveTab] = useState('constants');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [position, setPosition] = useState(getCenteredModalPosition);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
-  // Contextual Auto-Tabbing when opened from an active applet
+  // Contextual Auto-Tabbing & viewport centering when opened
   useEffect(() => {
-    if (isOpen && activeAppletId && APPLET_TAB_MAP[activeAppletId]) {
-      setActiveTab(APPLET_TAB_MAP[activeAppletId]);
+    if (isOpen) {
+      setPosition(getCenteredModalPosition());
+      if (activeAppletId && APPLET_TAB_MAP[activeAppletId]) {
+        setActiveTab(APPLET_TAB_MAP[activeAppletId]);
+      }
     }
   }, [isOpen, activeAppletId]);
+
+  // Keep modal clamped inside viewport on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setPosition(prev => {
+        const modalWidth = Math.min(window.innerWidth * 0.94, 896);
+        return {
+          x: Math.max(8, Math.min(window.innerWidth - modalWidth - 8, prev.x)),
+          y: Math.max(8, Math.min(window.innerHeight - 150, prev.y))
+        };
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleMouseDown = (e) => {
     if (e.target.closest('button, input, select')) return;
@@ -308,7 +336,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
       }}
     >
       <div 
-        className="pointer-events-auto bg-white w-[92vw] max-w-4xl h-[75vh] max-h-[750px] min-w-[320px] min-h-[350px] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-300 resize" 
+        className="pointer-events-auto bg-white w-[94vw] max-w-4xl h-[82vh] sm:h-[75vh] max-h-[750px] min-w-[300px] min-h-[340px] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-300 resize" 
         style={{ textTransform: 'none' }}
       >
         

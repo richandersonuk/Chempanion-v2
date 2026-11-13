@@ -77,6 +77,53 @@ const MechanismUnit2 = ({ onComplete }) => {
       ],
       extraDecorators: () => <text x="168" y="146" textAnchor="middle" dominantBaseline="central" className="text-[10px] font-sans font-black fill-slate-800 select-none">⁻</text>,
       explanation: "Perfect! Primary haloalkanes favor this concerted single-step substitution pathway because there is minimal steric hindrance blocking the nucleophile's approach."
+    },
+    {
+      title: "4. Electrophilic Addition: Ethene + Br₂ (Induced Dipole, Unit 2.5)",
+      taskText: "Tap the induced dipole formed as Br₂ approaches the electron-dense C=C bond, then draw a curly arrow from the π-bond to the electrophilic bromine atom.",
+      correctStates: { 'node_Br1': 'plus', 'node_Br2': 'minus' },
+      startId: 'bond_alkene_center',
+      endId: 'node_Br1',
+      clickableElements: [
+        { id: 'node_C1', type: 'atom', cx: 80, cy: 95, r: 22, display: '' },
+        { id: 'node_C2', type: 'atom', cx: 140, cy: 55, r: 22, display: '' },
+        { id: 'bond_alkene_center', type: 'bond', midX: 110, midY: 75, r: 24 },
+        { id: 'node_Br1', type: 'atom', cx: 160, cy: 125, r: 22, display: 'Br', style: 'fill-amber-700 font-sans text-sm font-black' },
+        { id: 'node_Br2', type: 'atom', cx: 220, cy: 145, r: 22, display: 'Br', style: 'fill-amber-700 font-sans text-sm font-black' }
+      ],
+      staticBonds: [
+        { x1: 78, y1: 92, x2: 138, y2: 52 }, { x1: 82, y1: 98, x2: 142, y2: 58 },
+        { x1: 50, y1: 115, x2: 80, y2: 95 }, { x1: 80, y1: 95, x2: 60, y2: 65 },
+        { x1: 140, y1: 55, x2: 170, y2: 35 }, { x1: 140, y1: 55, x2: 160, y2: 85 },
+        { x1: 174, y1: 130, x2: 206, y2: 140 }
+      ],
+      extraDecorators: () => null,
+      explanation: "Correct! The high electron density of the ethene π-bond repels electrons in the Br–Br bond, inducing a temporary dipole (δ⁺–δ⁻) so the closer Br acts as an electrophile."
+    },
+    {
+      title: "5. Nucleophilic Substitution: Bromoethane + NH₃ (Unit 2.6)",
+      taskText: "Assign the permanent dipoles across the polar C–Br bond, then draw the curly arrow from the ammonia lone pair to the δ⁺ carbon.",
+      correctStates: { 'node_C_alpha': 'plus', 'node_Br': 'minus' },
+      startId: 'node_NH3_lone',
+      endId: 'node_C_alpha',
+      clickableElements: [
+        { id: 'node_C_beta', type: 'atom', cx: 100, cy: 95, r: 20, display: '' },
+        { id: 'node_C_alpha', type: 'atom', cx: 155, cy: 55, r: 24, display: '' },
+        { id: 'node_Br', type: 'atom', cx: 215, cy: 55, r: 22, display: 'Br', style: 'fill-amber-700 font-sans text-sm font-black' },
+        { id: 'node_NH3_N', type: 'atom', cx: 155, cy: 135, r: 20, display: 'N', style: 'fill-blue-600 font-sans text-sm font-black' },
+        { id: 'node_NH3_H1', type: 'atom', cx: 118, cy: 135, r: 15, display: 'H', style: 'fill-slate-600 font-sans text-xs font-semibold' },
+        { id: 'node_NH3_H2', type: 'atom', cx: 192, cy: 135, r: 15, display: 'H', style: 'fill-slate-600 font-sans text-xs font-semibold' },
+        { id: 'node_NH3_H3', type: 'atom', cx: 155, cy: 165, r: 15, display: 'H', style: 'fill-slate-600 font-sans text-xs font-semibold' },
+        { id: 'node_NH3_lone', type: 'lone_pair', cx: 155, cy: 116, r: 22, display: '••', style: 'fill-amber-500 font-mono text-sm font-black' }
+      ],
+      staticBonds: [
+        { x1: 100, y1: 95, x2: 155, y2: 55 }, { x1: 155, y1: 55, x2: 201, y2: 55 },
+        { x1: 141, y1: 135, x2: 126, y2: 135 },
+        { x1: 169, y1: 135, x2: 184, y2: 135 },
+        { x1: 155, y1: 147, x2: 155, y2: 157 }
+      ],
+      extraDecorators: () => null,
+      explanation: "Spot on! Ammonia uses its nitrogen lone pair to nucleophilically attack the δ⁺ α-carbon, displacing Br⁻ before a second NH₃ deprotonates the intermediate alkylammonium ion to yield ethylamine."
     }
   ];
 
@@ -246,11 +293,11 @@ const MechanismUnit2 = ({ onComplete }) => {
         ))}
       </div>
 
-      <div className="w-full max-w-md mx-auto my-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center text-xs font-bold text-slate-600">
+      <div className="w-full max-w-xl mx-auto my-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center text-xs font-bold text-slate-600">
         {current.title}
       </div>
 
-      <div className="w-full max-w-md mx-auto my-4 bg-white border border-slate-200 rounded-3xl p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden h-[260px] touch-none">
+      <div className="w-full max-w-xl mx-auto my-4 bg-white border border-slate-200 rounded-3xl p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden h-[260px] sm:h-[300px] touch-none">
         <div onPointerDown={handleCanvasPointerDown} onPointerMove={handleCanvasPointerMove} onPointerUp={handleCanvasPointerUp} className="w-full h-full relative overflow-visible touch-none">
           <svg ref={svgRef} width="100%" height="100%" viewBox="0 0 280 180" className="overflow-visible select-none pointer-events-auto">
             {current.staticBonds.map((bond, idx) => (

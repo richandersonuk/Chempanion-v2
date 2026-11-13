@@ -22,7 +22,7 @@ const renderStandardForm = (num, sigFigs = 3) => {
 };
 
 const Nuclide = ({ mass, atomic, symbol }) => (
-  <span className="inline-flex items-center gap-1 font-mono whitespace-nowrap bg-[var(--chem-bg-main)] px-2 py-1 rounded border border-[var(--chem-border)] shadow-xs">
+  <span className="inline-flex items-center gap-1 font-mono whitespace-nowrap bg-[var(--chem-bg-main)] px-2 py-1 rounded border border-[var(--chem-border)] shadow-sm">
     <span className="inline-flex flex-col text-right text-[0.65rem] sm:text-xs font-semibold leading-none select-none tracking-tighter">
       <span>{mass !== undefined ? mass : '?'}</span>
       <span>{atomic !== undefined ? atomic : '?'}</span>
@@ -226,7 +226,7 @@ export default function NuclearChemistry({ onComplete }) {
             onClick={() => setQuestionType(tab.id)}
             className={`px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg border transition-all ${
               questionType === tab.id
-                ? 'bg-[var(--chem-card-bg)] border-[var(--chem-primary)] text-[var(--chem-primary)] shadow-xs'
+                ? 'bg-[var(--chem-card-bg)] border-[var(--chem-primary)] text-[var(--chem-primary)] shadow-sm'
                 : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-muted)] hover:border-[var(--chem-primary)]'
             }`}
           >
@@ -271,7 +271,7 @@ export default function NuclearChemistry({ onComplete }) {
                       <>
                         <span className="font-bold text-[var(--chem-primary)]">+</span>
                         {currentProblem.missingType === 'particle' ? (
-                          <span className="inline-flex items-center gap-1 bg-[var(--chem-card-bg)] p-1 rounded border border-[var(--chem-primary)] shadow-xs">
+                          <span className="inline-flex items-center gap-1 bg-[var(--chem-card-bg)] p-1 rounded border border-[var(--chem-primary)] shadow-sm">
                             <span className="inline-flex flex-col text-right gap-0.5">
                               <input
                                 type="number"
@@ -318,7 +318,7 @@ export default function NuclearChemistry({ onComplete }) {
                     <span className="font-bold text-[var(--chem-primary)] text-lg">→</span>
 
                     {currentProblem.missingType === 'daughter' ? (
-                      <span className="inline-flex items-center gap-1 bg-[var(--chem-card-bg)] p-1 rounded border border-[var(--chem-primary)] shadow-xs">
+                      <span className="inline-flex items-center gap-1 bg-[var(--chem-card-bg)] p-1 rounded border border-[var(--chem-primary)] shadow-sm">
                         <span className="inline-flex flex-col text-right gap-0.5">
                           <input
                             type="number"
@@ -362,7 +362,7 @@ export default function NuclearChemistry({ onComplete }) {
                       <>
                         <span className="font-bold text-[var(--chem-primary)]">+</span>
                         {currentProblem.missingType === 'particle' ? (
-                          <span className="inline-flex items-center gap-1 bg-[var(--chem-card-bg)] p-1 rounded border border-[var(--chem-primary)] shadow-xs">
+                          <span className="inline-flex items-center gap-1 bg-[var(--chem-card-bg)] p-1 rounded border border-[var(--chem-primary)] shadow-sm">
                             <span className="inline-flex flex-col text-right gap-0.5">
                               <input
                                 type="number"
@@ -486,7 +486,7 @@ export default function NuclearChemistry({ onComplete }) {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-lg transition-colors shadow-xs"
+                className="px-5 py-2.5 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-lg transition-colors shadow-sm"
               >
                 Check Answer
               </button>

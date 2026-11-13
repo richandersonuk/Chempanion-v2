@@ -35,11 +35,14 @@ const CellPotentials = ({ onComplete }) => {
   const [feedback, setFeedback] = useState({ message: '', status: '' });
 
   const halfCells = [
-    { id: 'zn', sys: <>Zn<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Zn(s)</>, e0: -0.76, solid: true, electrons: 2, name: 'zinc' },
-    { id: 'cu', sys: <>Cu<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Cu(s)</>, e0: 0.34, solid: true, electrons: 2, name: 'copper' },
     { id: 'al', sys: <>Al<sup>3+</sup>(aq) + 3e<sup>&minus;</sup> &#x21CC; Al(s)</>, e0: -1.66, solid: true, electrons: 3, name: 'aluminium' },
-    { id: 'ag', sys: <>Ag<sup>+</sup>(aq) + e<sup>&minus;</sup> &#x21CC; Ag(s)</>, e0: 0.80, solid: true, electrons: 1, name: 'silver' },
+    { id: 'zn', sys: <>Zn<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Zn(s)</>, e0: -0.76, solid: true, electrons: 2, name: 'zinc' },
+    { id: 'ni', sys: <>Ni<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Ni(s)</>, e0: -0.25, solid: true, electrons: 2, name: 'nickel' },
+    { id: 'sn', sys: <>Sn<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Sn(s)</>, e0: -0.14, solid: true, electrons: 2, name: 'tin' },
+    { id: 'cu', sys: <>Cu<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Cu(s)</>, e0: 0.34, solid: true, electrons: 2, name: 'copper' },
     { id: 'fe', sys: <>Fe<sup>3+</sup>(aq) + e<sup>&minus;</sup> &#x21CC; Fe<sup>2+</sup>(aq)</>, e0: 0.77, solid: false, electrons: 1, name: 'iron(II)/iron(III)' },
+    { id: 'ag', sys: <>Ag<sup>+</sup>(aq) + e<sup>&minus;</sup> &#x21CC; Ag(s)</>, e0: 0.80, solid: true, electrons: 1, name: 'silver' },
+    { id: 'br', sys: <>Br<sub>2</sub>(l) + 2e<sup>&minus;</sup> &#x21CC; 2Br<sup>&minus;</sup>(aq)</>, e0: 1.09, solid: false, electrons: 2, name: 'bromine/bromide' },
     { id: 'cl', sys: <>Cl<sub>2</sub>(g) + 2e<sup>&minus;</sup> &#x21CC; 2Cl<sup>&minus;</sup>(aq)</>, e0: 1.36, solid: false, electrons: 2, name: 'chlorine/chloride' },
     { id: 'mn', sys: <>MnO<sub>4</sub><sup>&minus;</sup>(aq) + 8H<sup>+</sup>(aq) + 5e<sup>&minus;</sup> &#x21CC; Mn<sup>2+</sup>(aq) + 4H<sub>2</sub>O(l)</>, e0: 1.51, solid: false, electrons: 5, name: 'manganate(VII)' }
   ];
@@ -77,11 +80,14 @@ const CellPotentials = ({ onComplete }) => {
       };
     } else if (selection === 'cell_notation') {
       const formatComponent = (cell, isAnode) => {
-        if (cell.id === 'zn') return isAnode ? <>Zn(s) | Zn<sup>2+</sup>(aq)</> : <>Zn<sup>2+</sup>(aq) | Zn(s)</>;
-        if (cell.id === 'cu') return isAnode ? <>Cu(s) | Cu<sup>2+</sup>(aq)</> : <>Cu<sup>2+</sup>(aq) | Cu(s)</>;
         if (cell.id === 'al') return isAnode ? <>Al(s) | Al<sup>3+</sup>(aq)</> : <>Al<sup>3+</sup>(aq) | Al(s)</>;
+        if (cell.id === 'zn') return isAnode ? <>Zn(s) | Zn<sup>2+</sup>(aq)</> : <>Zn<sup>2+</sup>(aq) | Zn(s)</>;
+        if (cell.id === 'ni') return isAnode ? <>Ni(s) | Ni<sup>2+</sup>(aq)</> : <>Ni<sup>2+</sup>(aq) | Ni(s)</>;
+        if (cell.id === 'sn') return isAnode ? <>Sn(s) | Sn<sup>2+</sup>(aq)</> : <>Sn<sup>2+</sup>(aq) | Sn(s)</>;
+        if (cell.id === 'cu') return isAnode ? <>Cu(s) | Cu<sup>2+</sup>(aq)</> : <>Cu<sup>2+</sup>(aq) | Cu(s)</>;
         if (cell.id === 'ag') return isAnode ? <>Ag(s) | Ag<sup>+</sup>(aq)</> : <>Ag<sup>+</sup>(aq) | Ag(s)</>;
         if (cell.id === 'fe') return isAnode ? <>Pt(s) | Fe<sup>2+</sup>(aq), Fe<sup>3+</sup>(aq)</> : <>Fe<sup>3+</sup>(aq), Fe<sup>2+</sup>(aq) | Pt(s)</>;
+        if (cell.id === 'br') return isAnode ? <>Pt(s) | 2Br<sup>&minus;</sup>(aq) | Br<sub>2</sub>(l)</> : <>Br<sub>2</sub>(l) | 2Br<sup>&minus;</sup>(aq) | Pt(s)</>;
         if (cell.id === 'cl') return isAnode ? <>Pt(s) | 2Cl<sup>&minus;</sup>(aq) | Cl<sub>2</sub>(g)</> : <>Cl<sub>2</sub>(g) | 2Cl<sup>&minus;</sup>(aq) | Pt(s)</>;
         return isAnode ? <>Pt(s) | Mn<sup>2+</sup>(aq), MnO<sub>4</sub><sup>&minus;</sup>(aq)</> : <>MnO<sub>4</sub><sup>&minus;</sup>(aq), Mn<sup>2+</sup>(aq) | Pt(s)</>;
       };
@@ -113,6 +119,7 @@ const CellPotentials = ({ onComplete }) => {
         text: <>Consider a standard cell comprising a <b>{anode.name}</b> half-cell joined across a salt bridge to a standard <b>{cathode.name}</b> half-cell.</>,
         question: "Select the correct, standard conventional representation notation layout string for this operational cell matrix.",
         choices: choices.sort(() => Math.random() - 0.5),
+        meta: { anode, cathode },
         isCards: true
       };
     } else if (selection === 'feasibility_shifts') {
@@ -196,7 +203,7 @@ const CellPotentials = ({ onComplete }) => {
       const selected = problem.choices[selectedCard];
       if (selected.isCorrect) {
         setFeedback({ message: "Flawless! Anode oxidation transitions are mapped on the left, cathode reduction stages on the right, with salt bridge and phase rules correctly maintained.", status: 'success' });
-        onComplete?.('notation');
+        onComplete?.(`notation_${problem.meta.anode.id}_${problem.meta.cathode.id}`);
       } else {
         let helpText = "Incorrect notation alignment. ";
         if (selected.trap === 'flipped') {
@@ -247,11 +254,11 @@ const CellPotentials = ({ onComplete }) => {
       )}
 
       {mode === 'calc_emf' && problem.halfCellData && (
-        <div className="w-full max-w-md mx-auto my-4 space-y-2 select-none">
+        <div className="w-full max-w-lg mx-auto my-4 space-y-2 select-none">
           {problem.halfCellData.map((cell, idx) => (
-            <div key={idx} className="bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-xl px-4 py-3 flex items-center justify-between text-xs font-mono font-bold text-[var(--chem-text-main)]">
-              <span>{cell.sys}</span>
-              <span className="text-[var(--chem-primary)] font-black bg-[var(--chem-bg-main)] px-2 py-1 border border-[var(--chem-border)] rounded-md">
+            <div key={idx} className="bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-xl px-3 sm:px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono font-bold text-[var(--chem-text-main)]">
+              <span className="break-words">{cell.sys}</span>
+              <span className="text-[var(--chem-primary)] font-black bg-[var(--chem-bg-main)] px-2 py-1 border border-[var(--chem-border)] rounded-md shrink-0">
                 E° = {cell.e0 >= 0 ? '+' : ''}{cell.e0.toFixed(2)} V
               </span>
             </div>
@@ -280,7 +287,7 @@ const CellPotentials = ({ onComplete }) => {
                 <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selectedCard === i ? 'border-[var(--chem-primary)] bg-[var(--chem-primary)] text-white text-[10px]' : 'border-[var(--chem-slate-300)]'}`}>
                   {selectedCard === i && "✓"}
                 </span>
-                <span className="font-mono tracking-wide">{choice.text}</span>
+                <span className="font-mono tracking-wide text-xs sm:text-sm break-words min-w-0">{choice.text}</span>
               </div>
             </button>
           ))}

@@ -156,7 +156,7 @@ export default function BornHaberCycle({ onComplete }) {
             onClick={() => resetProblem(sysIdx, 'born_haber', targetType)}
             className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
               mode === 'born_haber'
-                ? 'bg-[#326fa0] text-white shadow-xs'
+                ? 'bg-[#326fa0] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -167,7 +167,7 @@ export default function BornHaberCycle({ onComplete }) {
             onClick={() => resetProblem(sysIdx, 'enthalpy_solution', targetType)}
             className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
               mode === 'enthalpy_solution'
-                ? 'bg-[#326fa0] text-white shadow-xs'
+                ? 'bg-[#326fa0] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -187,7 +187,7 @@ export default function BornHaberCycle({ onComplete }) {
               onClick={() => resetProblem(idx, mode, targetType)}
               className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-all ${
                 sysIdx === idx
-                  ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-xs'
+                  ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
                   : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
               }`}
             >
@@ -214,7 +214,7 @@ export default function BornHaberCycle({ onComplete }) {
       {mode === 'born_haber' ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {/* Left: Interactive Energy Level Diagram SVG */}
-          <div className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Born-Haber Energy Cycle: {system.name}
@@ -434,7 +434,7 @@ export default function BornHaberCycle({ onComplete }) {
         </div>
       ) : (
         /* MODE 2: ENTHALPY OF SOLUTION */
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
           <div>
             <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
               Enthalpy of Solution & Hydration Cycle

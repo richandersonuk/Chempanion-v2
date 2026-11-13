@@ -24,10 +24,18 @@ const ThermometricTitration = ({ onComplete }) => {
     setMode(selection);
 
     let newProb = {};
-    const volAcid = 25.0;
+    const volAcidOptions = [20.0, 25.0, 30.0, 50.0];
+    const concAcidOptions = [0.50, 1.00, 1.50, 2.00];
+    const volAcid = volAcidOptions[Math.floor(Math.random() * volAcidOptions.length)];
+    const concAcid = concAcidOptions[Math.floor(Math.random() * concAcidOptions.length)];
     const endpointVol = parseFloat((16 + Math.random() * 12).toFixed(1));
     const tStart = parseFloat((18.5 + Math.random() * 3).toFixed(1));
-    const deltaT = parseFloat((5.2 + Math.random() * 3).toFixed(1));
+    const totalMass = volAcid + endpointVol;
+    const molesH2O = (volAcid * concAcid) / 1000;
+    const realisticDeltaT = selection === 'calc_enthalpy'
+      ? Math.max(3.2, parseFloat((((56.5 * molesH2O * 1000) / (totalMass * 4.18)) * (0.9 + Math.random() * 0.2)).toFixed(1)))
+      : parseFloat((5.2 + Math.random() * 3).toFixed(1));
+    const deltaT = realisticDeltaT;
     const tMax = parseFloat((tStart + deltaT).toFixed(1));
     const tEnd = parseFloat((tMax - (50 - endpointVol) * 0.08).toFixed(1));
 
@@ -43,20 +51,17 @@ const ThermometricTitration = ({ onComplete }) => {
         isGraph: true
       };
     } else if (selection === 'calc_enthalpy') {
-      const concAcid = 1.00;
-      const molesH2O = (volAcid * concAcid) / 1000;
-
-      const totalMass = volAcid + endpointVol;
       const energyJ = totalMass * 4.18 * deltaT;
       const enthalpyKJ = -(energyJ / 1000) / molesH2O;
 
       newProb = {
         title: "Enthalpy of Neutralisation Calculation",
-        text: <>In a thermometric titration experiment, 25.0 cm³ of 1.00 mol dm⁻³ hydrochloric acid (HCl) was neutralised by an extrapolated endpoint volume of <b>{endpointVol.toFixed(1)} cm³</b> of sodium hydroxide (NaOH). The maximum temperature rise recorded was <b>ΔT = {deltaT.toFixed(1)} °C</b>.</>,
+        text: <>In a thermometric titration experiment, <b>{volAcid.toFixed(1)} cm³</b> of <b>{concAcid.toFixed(2)} mol dm⁻³</b> hydrochloric acid (HCl) was neutralised by an extrapolated endpoint volume of <b>{endpointVol.toFixed(1)} cm³</b> of sodium hydroxide (NaOH). The maximum temperature rise recorded was <b>ΔT = {deltaT.toFixed(1)} °C</b>.</>,
         question: "Calculate the molar enthalpy of neutralisation (ΔH) in kJ mol⁻¹. State your final answer to 3 significant figures.",
         label: "ΔH =",
         unit: "kJ mol⁻¹",
         correct: enthalpyKJ.toPrecision(3),
+        instanceId: `enthalpy_${volAcid}_${concAcid}_${deltaT}_${endpointVol}`,
         isGraph: false
       };
     }
@@ -201,7 +206,7 @@ const ThermometricTitration = ({ onComplete }) => {
     const percentageError = Math.abs((userVal - correctVal) / correctVal);
     if (percentageError < 0.015) {
       setFeedback({ message: `Correct! ΔH = ${problem.correct} kJ mol⁻¹.`, status: 'success' });
-      onComplete?.(`enthalpy_${problem.correct}`);
+      onComplete?.(problem.instanceId || `enthalpy_${problem.correct}`);
     } else {
       setFeedback({
         message: "Incorrect calculation. Ensure you used combined volumes for total reacting solution mass 'm' inside Q = mcΔT.",
@@ -267,7 +272,7 @@ const ThermometricTitration = ({ onComplete }) => {
     }
 
     graphContent = (
-      <div className="w-full max-w-md mx-auto my-4 flex flex-col items-center gap-4">
+      <div className="w-full max-w-lg mx-auto my-4 flex flex-col items-center gap-4">
         <div
           className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm select-none relative cursor-w-resize touch-none overflow-hidden"
           onMouseMove={handleMouseMove}
@@ -435,12 +440,7 @@ const ThermometricTitration = ({ onComplete }) => {
       </div>
 
       {feedback.message && (
-        <div className="feedback-box feedback-error" style={{ textTransform: 'none', display: feedback.status === 'error' ? 'block' : 'none' }}>
-          {feedback.message}
-        </div>
-      )}
-      {feedback.status === 'success' && (
-        <div className="feedback-box feedback-success" style={{ textTransform: 'none' }}>
+        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
           {feedback.message}
         </div>
       )}

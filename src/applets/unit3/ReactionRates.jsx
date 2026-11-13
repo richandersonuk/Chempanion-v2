@@ -24,74 +24,131 @@ const ReactionRates = ({ onComplete }) => {
     let newProb = {};
 
     if (targetMode === 'calculate_k') {
-      const concA = (0.10 + Math.random() * 0.15).toFixed(2);
-      const concB = (0.20 + Math.random() * 0.20).toFixed(2);
-      const kVal = (0.5 + Math.random() * 2.5).toFixed(2);
-      const rate = parseFloat(kVal) * parseFloat(concA) * Math.pow(parseFloat(concB), 2);
+      const rateLaws = [
+        {
+          eq: <>Rate = k[A]</>,
+          unit: 's-1',
+          hasB: false,
+          calcRate: (k, a) => k * a,
+          rearrangeHint: 'k = Rate / [A]'
+        },
+        {
+          eq: <>Rate = k[A][B]</>,
+          unit: 'mol-1 dm3 s-1',
+          hasB: true,
+          calcRate: (k, a, b) => k * a * b,
+          rearrangeHint: 'k = Rate / ([A][B])'
+        },
+        {
+          eq: <>Rate = k[A]<sup>2</sup></>,
+          unit: 'mol-1 dm3 s-1',
+          hasB: false,
+          calcRate: (k, a) => k * a * a,
+          rearrangeHint: 'k = Rate / [A]²'
+        },
+        {
+          eq: <>Rate = k[A][B]<sup>2</sup></>,
+          unit: 'mol-2 dm6 s-1',
+          hasB: true,
+          calcRate: (k, a, b) => k * a * b * b,
+          rearrangeHint: 'k = Rate / ([A][B]²)'
+        },
+        {
+          eq: <>Rate = k[A]<sup>2</sup>[B]<sup>2</sup></>,
+          unit: 'mol-3 dm9 s-1',
+          hasB: true,
+          calcRate: (k, a, b) => k * a * a * b * b,
+          rearrangeHint: 'k = Rate / ([A]²[B]²)'
+        }
+      ];
+      const law = rateLaws[Math.floor(Math.random() * rateLaws.length)];
+      const concA = (0.10 + Math.random() * 0.25).toFixed(2);
+      const concB = (0.15 + Math.random() * 0.25).toFixed(2);
+      const kVal = (0.4 + Math.random() * 3.6).toFixed(2);
+      const rate = law.calcRate(parseFloat(kVal), parseFloat(concA), parseFloat(concB));
 
       newProb = {
         title: "Calculating the Rate Constant (k)",
         text: (
           <>
-            A reaction follows the rate equation: <b>Rate = k[A][B]<sup>2</sup></b>.<br />
+            A reaction follows the rate equation: <b>{law.eq}</b>.<br />
             At a specific temperature, an experiment yields the following data:<br />
             [A] = <b>{concA} mol dm<sup>-3</sup></b><br />
-            [B] = <b>{concB} mol dm<sup>-3</sup></b><br />
-            Initial Rate = <b>{rate.toFixed(5)} mol dm<sup>-3</sup> s<sup>-1</sup></b>
+            {law.hasB && <>[B] = <b>{concB} mol dm<sup>-3</sup></b><br /></>}
+            Initial Rate = <b>{rate >= 0.001 ? rate.toFixed(5) : rate.toExponential(3)} mol dm<sup>-3</sup> s<sup>-1</sup></b>
           </>
         ),
         question: "Calculate the value of the rate constant (k) and select its correct units.",
         label: "k =",
         correctAnswer: kVal,
-        correctUnit: "mol-2 dm6 s-1",
+        correctUnit: law.unit,
+        rearrangeHint: law.rearrangeHint,
+        instanceId: `k_${law.unit}_${kVal}_${concA}`,
         hasUnits: true,
         useSciInput: true
       };
     } else if (targetMode === 'determine_order') {
       const order = Math.floor(Math.random() * 3);
-      const baseRate = 0.0012;
-      const rate2 = order === 0 ? baseRate : (order === 1 ? baseRate * 2 : baseRate * 4);
+      const speciesList = ['X', 'A', 'NO', 'BrO₃⁻', 'H₂O₂'];
+      const species = speciesList[Math.floor(Math.random() * speciesList.length)];
+      const concOptions = [0.05, 0.10, 0.15, 0.20, 0.25];
+      const conc1 = concOptions[Math.floor(Math.random() * concOptions.length)];
+      const mult = Math.random() > 0.4 ? 2 : 3;
+      const conc2 = conc1 * mult;
+      const baseRate = parseFloat((0.0012 + Math.random() * 0.0053).toFixed(4));
+      const rate2 = baseRate * Math.pow(mult, order);
 
       newProb = {
         title: "Deducing Reaction Order",
         text: (
           <>
-            The table below shows initial rate data obtained for a reactant, <b>X</b>, at a constant temperature:<br /><br />
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1rem', border: '1px solid var(--chem-border)' }}>
-              <thead>
-                <tr style={{ backgroundColor: 'var(--chem-bg-box)' }}>
-                  <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Expt</th>
-                  <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Initial [X] / mol dm<sup>-3</sup></th>
-                  <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Initial Rate / mol dm<sup>-3</sup> s<sup>-1</sup></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>1</td>
-                  <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>0.10</td>
-                  <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{baseRate.toFixed(4)}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>2</td>
-                  <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>0.20</td>
-                  <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{rate2.toFixed(4)}</td>
-                </tr>
-              </tbody>
-            </table>
+            The table below shows initial rate data obtained for reactant <b>{species}</b>, at a constant temperature:<br /><br />
+            <div className="overflow-x-auto my-2">
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '0.5rem', border: '1px solid var(--chem-border)' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--chem-bg-box)' }}>
+                    <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Expt</th>
+                    <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Initial [{species}] / mol dm<sup>-3</sup></th>
+                    <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Initial Rate / mol dm<sup>-3</sup> s<sup>-1</sup></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>1</td>
+                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{conc1.toFixed(2)}</td>
+                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{baseRate.toFixed(4)}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>2</td>
+                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{conc2.toFixed(2)}</td>
+                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{rate2.toFixed(4)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </>
         ),
-        question: "Deduce the order of reaction with respect to reactant X.",
+        question: `Deduce the order of reaction with respect to reactant ${species}.`,
         label: "Order =",
         correctAnswer: order.toString(),
+        instanceId: `order_${order}_${species}_${conc1}_${mult}_${baseRate}`,
         hasUnits: false,
         useSciInput: false
       };
     } else {
       // WJEC Data Booklet Constants: T(K) = T(°C) + 273, R = 8.31 J K⁻¹ mol⁻¹
-      const tempCelsius = Math.floor(20 + Math.random() * 30);
+      const tempCelsius = Math.floor(15 + Math.random() * 45);
       const tempK = tempCelsius + 273;
-      const ea_kj = Math.floor(50 + Math.random() * 40);
-      const A = 1.0e11;
+      const ea_kj = Math.floor(42 + Math.random() * 55);
+      const aChoices = [
+        { val: 2.5e9, mantissa: '2.50', exp: 9 },
+        { val: 5.0e10, mantissa: '5.00', exp: 10 },
+        { val: 1.0e11, mantissa: '1.00', exp: 11 },
+        { val: 4.0e12, mantissa: '4.00', exp: 12 },
+        { val: 8.0e13, mantissa: '8.00', exp: 13 }
+      ];
+      const selectedA = aChoices[Math.floor(Math.random() * aChoices.length)];
+      const A = selectedA.val;
       const R = 8.31;
       const k = A * Math.exp(-(ea_kj * 1000) / (R * tempK));
       const lnRatio = Math.log(k / A);
@@ -100,7 +157,7 @@ const ReactionRates = ({ onComplete }) => {
         title: "The Arrhenius Equation",
         text: (
           <>
-            A reaction has a frequency factor (A) of <b>1.00 × 10<sup>11</sup> s<sup>-1</sup></b>.<br />
+            A reaction has a frequency factor (A) of <b>{selectedA.mantissa} &times; 10<sup>{selectedA.exp}</sup> s<sup>-1</sup></b>.<br />
             At a temperature of <b>{tempCelsius} °C</b>, the rate constant (k) is determined to be <b>{k.toExponential(3)} s<sup>-1</sup></b>.<br />
             <span className="text-xs text-slate-500">(Use WJEC Data Booklet constants: R = 8.31 J K⁻¹ mol⁻¹, T(K) = T(°C) + 273)</span>
           </>
@@ -109,6 +166,7 @@ const ReactionRates = ({ onComplete }) => {
         label: "Eₐ =",
         correctAnswer: ea_kj.toString(),
         unit: "kJ mol⁻¹",
+        instanceId: `arrhenius_${ea_kj}_${tempCelsius}_${selectedA.exp}`,
         hasUnits: false,
         useSciInput: false,
         arrheniusTargets: {
@@ -178,24 +236,24 @@ const ReactionRates = ({ onComplete }) => {
     if (problem.hasUnits) {
       if (error < 0.02 && studentUnit === problem.correctUnit) {
         setFeedback({ message: "Correct! Both the rate constant value and units are perfectly accurate.", status: 'success' });
-        onComplete?.(`k_${problem.correctAnswer}`);
+        onComplete?.(problem.instanceId || `k_${problem.correctAnswer}`);
       } else if (error < 0.02 && studentUnit !== problem.correctUnit) {
         setFeedback({ message: "Value correct! However, your units are incorrect. Carefully write out the rate equation units and cancel them down.", status: 'error' });
       } else {
-        setFeedback({ message: "Incorrect. Check your rearrangement: k = Rate / ([A][B]²).", status: 'error' });
+        setFeedback({ message: `Incorrect. Check your rearrangement: ${problem.rearrangeHint || 'k = Rate / [A][B]...'}.`, status: 'error' });
       }
     } else {
       if (problem.title.includes("Order")) {
         if (studentAnswer.trim() === problem.correctAnswer) {
           setFeedback({ message: `Correct! The reaction is order ${problem.correctAnswer}.`, status: 'success' });
-          onComplete?.(`order_${problem.correctAnswer}`);
+          onComplete?.(problem.instanceId || `order_${problem.correctAnswer}`);
         } else {
-          setFeedback({ message: "Incorrect. Compare how doubling the concentration changes the initial rate.", status: 'error' });
+          setFeedback({ message: "Incorrect. Compare how changing the concentration changes the initial rate.", status: 'error' });
         }
       } else {
         if (error < 0.02) {
           setFeedback({ message: `Correct! The value is ${problem.correctAnswer} ${problem.unit}.`, status: 'success' });
-          onComplete?.(`arrhenius_${problem.correctAnswer}`);
+          onComplete?.(problem.instanceId || `arrhenius_${problem.correctAnswer}`);
         } else if (Math.abs(userAns - correctAns * 1000) / (correctAns * 1000) < 0.03) {
           setFeedback({ message: "Unit Trap! You calculated Eₐ in J mol⁻¹. Divide by 1000 to convert to kJ mol⁻¹.", status: 'error' });
         } else {
@@ -245,7 +303,7 @@ const ReactionRates = ({ onComplete }) => {
 
       {/* WJEC Step 1 Unit Gate for Arrhenius Mode */}
       {mode === 'arrhenius' && problem.arrheniusTargets && (
-        <div className="w-full max-w-lg mx-auto my-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs" style={{ textTransform: 'none' }}>
+        <div className="w-full max-w-lg mx-auto my-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
           <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
             <div>
               <span className="text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">
@@ -373,7 +431,8 @@ const ReactionRates = ({ onComplete }) => {
               {[
                 { id: 's-1', display: <>s<sup>-1</sup></> },
                 { id: 'mol-1 dm3 s-1', display: <>mol<sup>-1</sup> dm<sup>3</sup> s<sup>-1</sup></> },
-                { id: 'mol-2 dm6 s-1', display: <>mol<sup>-2</sup> dm<sup>6</sup> s<sup>-1</sup></> }
+                { id: 'mol-2 dm6 s-1', display: <>mol<sup>-2</sup> dm<sup>6</sup> s<sup>-1</sup></> },
+                { id: 'mol-3 dm9 s-1', display: <>mol<sup>-3</sup> dm<sup>9</sup> s<sup>-1</sup></> }
               ].map((opt) => (
                 <button
                   key={opt.id}

@@ -40,6 +40,20 @@ const KcCalculations = ({ onComplete }) => {
       units: 'dm⁶ mol⁻²',
       targetPowers: { mol: -2, dm: 6, s: 0 },
       calcKc: (c) => Math.pow(c.nh3, 2) / (c.n2 * Math.pow(c.h2, 3))
+    },
+    {
+      eq: 'CH₃COOH(l) + C₂H₅OH(l) ⇌ CH₃COOC₂H₅(l) + H₂O(l)',
+      id: 'ester',
+      units: 'no units',
+      targetPowers: { mol: 0, dm: 0, s: 0 },
+      calcKc: (c) => (c.ester * c.h2o) / (c.acid * c.alc)
+    },
+    {
+      eq: 'CO(g) + H₂O(g) ⇌ CO₂(g) + H₂(g)',
+      id: 'water_gas',
+      units: 'no units',
+      targetPowers: { mol: 0, dm: 0, s: 0 },
+      calcKc: (c) => (c.co2 * c.h2) / (c.co * c.h2o)
     }
   ];
 
@@ -81,12 +95,26 @@ const KcCalculations = ({ onComplete }) => {
         const so3 = parseFloat((Math.random() * 0.5 + 0.3).toFixed(3));
         text = `At a fixed temperature, the components of the contact process match the following parameter values: [SO₂] = ${so2} mol dm⁻³, [O₂] = ${o2} mol dm⁻³, and [SO₃] = ${so3} mol dm⁻³. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ so2, o2, so3 });
-      } else {
+      } else if (rxn.id === 'haber') {
         const n2 = parseFloat((Math.random() * 0.3 + 0.1).toFixed(3));
         const h2 = parseFloat((Math.random() * 0.4 + 0.2).toFixed(3));
         const nh3 = parseFloat((Math.random() * 0.15 + 0.05).toFixed(3));
         text = `The Haber synthesis equilibrium produces the following data parameters: [N₂] = ${n2} mol dm⁻³, [H₂] = ${h2} mol dm⁻³, and [NH₃] = ${nh3} mol dm⁻³. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ n2, h2, nh3 });
+      } else if (rxn.id === 'ester') {
+        const acid = parseFloat((Math.random() * 0.4 + 0.15).toFixed(3));
+        const alc = parseFloat((Math.random() * 0.4 + 0.15).toFixed(3));
+        const ester = parseFloat((Math.random() * 0.6 + 0.25).toFixed(3));
+        const h2o = parseFloat((Math.random() * 0.6 + 0.25).toFixed(3));
+        text = `An esterification equilibrium mixture at 298 K contains [CH₃COOH] = ${acid} mol dm⁻³, [C₂H₅OH] = ${alc} mol dm⁻³, [CH₃COOC₂H₅] = ${ester} mol dm⁻³, and [H₂O] = ${h2o} mol dm⁻³. Calculate Kc for:`;
+        correctAnswer = rxn.calcKc({ acid, alc, ester, h2o });
+      } else {
+        const co = parseFloat((Math.random() * 0.25 + 0.1).toFixed(3));
+        const h2o = parseFloat((Math.random() * 0.25 + 0.1).toFixed(3));
+        const co2 = parseFloat((Math.random() * 0.4 + 0.2).toFixed(3));
+        const h2 = parseFloat((Math.random() * 0.4 + 0.2).toFixed(3));
+        text = `At 800 K, an equilibrium mixture contains [CO] = ${co} mol dm⁻³, [H₂O] = ${h2o} mol dm⁻³, [CO₂] = ${co2} mol dm⁻³, and [H₂] = ${h2} mol dm⁻³. Calculate Kc for the water-gas shift reaction:`;
+        correctAnswer = rxn.calcKc({ co, h2o, co2, h2 });
       }
       targetLabel = 'Kc =';
       unitExpectation = rxn.units;
@@ -100,26 +128,52 @@ const KcCalculations = ({ onComplete }) => {
         text = `A closed vessel of volume ${volume} dm³ is initially filled with ${initPcl5} mol of PCl₅ gas. At equilibrium, analysis shows that ${eqPcl3} mol of PCl₃ has formed. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ pcl5: eqPcl5Moles / volume, pcl3: eqPcl3 / volume, cl2: eqPcl3 / volume });
       } else if (rxn.id === 'h2_i2') {
-        const initH2 = parseFloat((Math.random() * 1.0 + 0.5).toFixed(2));
-        const initI2 = parseFloat((Math.random() * 1.0 + 0.5).toFixed(2));
-        const eqH2Moles = parseFloat((initH2 * 0.4).toFixed(2));
-        const changeX = initH2 - eqH2Moles;
+        const initH2 = parseFloat((Math.random() * 1.0 + 0.6).toFixed(2));
+        const initI2 = parseFloat((Math.random() * 1.0 + 0.6).toFixed(2));
+        const changeX = parseFloat((Math.min(initH2, initI2) * (0.25 + Math.random() * 0.45)).toFixed(2));
+        const eqH2Moles = parseFloat((initH2 - changeX).toFixed(2));
         const eqI2Moles = initI2 - changeX;
         const eqHiMoles = changeX * 2;
 
         text = `A chemistry student injects ${initH2} mol of H₂ and ${initI2} mol of I₂ into a container with a volume of ${volume} dm³. At equilibrium, ${eqH2Moles} mol of H₂ remains. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ h2: eqH2Moles / volume, i2: eqI2Moles / volume, hi: eqHiMoles / volume });
       } else if (rxn.id === 'so3_sys') {
-        const initSo2 = 2.0; const initO2 = 1.0; const changeX = 0.3;
-        const eqSo2 = initSo2 - (2 * changeX); const eqO2 = initO2 - changeX; const eqSo3 = 2 * changeX;
-        text = `A mixture of 2.00 mol of SO₂ and 1.00 mol of O₂ is sealed in a ${volume} dm³ container. At equilibrium, ${(eqO2).toFixed(2)} mol of O₂ remains unreacted. Calculate Kc for the process:`;
+        const initSo2 = parseFloat((1.5 + Math.random() * 1.5).toFixed(2));
+        const initO2 = parseFloat((0.8 + Math.random() * 1.2).toFixed(2));
+        const changeX = parseFloat((Math.min(initSo2 / 2, initO2) * (0.25 + Math.random() * 0.45)).toFixed(2));
+        const eqSo2 = initSo2 - (2 * changeX);
+        const eqO2 = initO2 - changeX;
+        const eqSo3 = 2 * changeX;
+        text = `A mixture of ${initSo2.toFixed(2)} mol of SO₂ and ${initO2.toFixed(2)} mol of O₂ is sealed in a ${volume} dm³ container. At equilibrium, ${eqO2.toFixed(2)} mol of O₂ remains unreacted. Calculate Kc for the process:`;
         correctAnswer = rxn.calcKc({ so2: eqSo2 / volume, o2: eqO2 / volume, so3: eqSo3 / volume });
-      } else {
-        const initN2 = 1.0; const initH2 = 3.0; const changeX = 0.2;
-        const eqN2 = initN2 - changeX; const eqH2 = initH2 - (3 * changeX); const eqNh3 = 2 * changeX;
+      } else if (rxn.id === 'haber') {
+        const initN2 = parseFloat((0.8 + Math.random() * 1.2).toFixed(2));
+        const initH2 = parseFloat((2.4 + Math.random() * 1.8).toFixed(2));
+        const changeX = parseFloat((Math.min(initN2, initH2 / 3) * (0.20 + Math.random() * 0.45)).toFixed(2));
+        const eqN2 = initN2 - changeX;
+        const eqH2 = initH2 - (3 * changeX);
+        const eqNh3 = 2 * changeX;
 
-        text = `An initial mixture containing 1.00 mol of N₂ and 3.00 mol of H₂ is locked inside a ${volume} dm³ reactor. At equilibrium, the system is found to contain ${(eqN2).toFixed(2)} mol of N₂. Calculate the value of Kc for the reaction:`;
+        text = `An initial mixture containing ${initN2.toFixed(2)} mol of N₂ and ${initH2.toFixed(2)} mol of H₂ is locked inside a ${volume} dm³ reactor. At equilibrium, the system is found to contain ${eqN2.toFixed(2)} mol of N₂. Calculate the value of Kc for the reaction:`;
         correctAnswer = rxn.calcKc({ n2: eqN2 / volume, h2: eqH2 / volume, nh3: eqNh3 / volume });
+      } else if (rxn.id === 'ester') {
+        const initAcid = parseFloat((0.6 + Math.random() * 1.2).toFixed(2));
+        const initAlc = parseFloat((0.6 + Math.random() * 1.2).toFixed(2));
+        const changeX = parseFloat((Math.min(initAcid, initAlc) * (0.3 + Math.random() * 0.4)).toFixed(2));
+        const eqAcid = initAcid - changeX;
+        const eqAlc = initAlc - changeX;
+
+        text = `A student mixes ${initAcid.toFixed(2)} mol of ethanoic acid and ${initAlc.toFixed(2)} mol of ethanol in a flask with a total liquid volume of ${volume} dm³ and leaves it to reach equilibrium. Titration shows that ${eqAcid.toFixed(2)} mol of ethanoic acid remains. Calculate Kc for:`;
+        correctAnswer = rxn.calcKc({ acid: eqAcid / volume, alc: eqAlc / volume, ester: changeX / volume, h2o: changeX / volume });
+      } else {
+        const initCo = parseFloat((0.8 + Math.random() * 1.2).toFixed(2));
+        const initH2o = parseFloat((0.8 + Math.random() * 1.2).toFixed(2));
+        const changeX = parseFloat((Math.min(initCo, initH2o) * (0.25 + Math.random() * 0.45)).toFixed(2));
+        const eqCo = initCo - changeX;
+        const eqH2o = initH2o - changeX;
+
+        text = `A ${volume} dm³ reactor is charged with ${initCo.toFixed(2)} mol of CO and ${initH2o.toFixed(2)} mol of H₂O vapour. At equilibrium, ${changeX.toFixed(2)} mol of CO₂ has formed. Calculate Kc for:`;
+        correctAnswer = rxn.calcKc({ co: eqCo / volume, h2o: eqH2o / volume, co2: changeX / volume, h2: changeX / volume });
       }
       targetLabel = 'Kc =';
       unitExpectation = rxn.units;
@@ -127,26 +181,42 @@ const KcCalculations = ({ onComplete }) => {
     } else if (targetMode === 'find_missing') {
       const assignedKc = parseFloat((Math.random() * 40 + 5).toFixed(1));
       if (rxn.id === 'pcl5') {
-        const pcl3 = 0.25; const cl2 = 0.20;
+        const pcl3 = parseFloat((0.15 + Math.random() * 0.35).toFixed(2));
+        const cl2 = parseFloat((0.15 + Math.random() * 0.35).toFixed(2));
         text = `The equilibrium constant Kc for the dissociation of PCl₅ is ${assignedKc} ${rxn.units} at a specified temperature. If [PCl₃] = ${pcl3} mol dm⁻³ and [Cl₂] = ${cl2} mol dm⁻³ at equilibrium, calculate the equilibrium concentration of PCl₅ for the reaction:`;
         correctAnswer = (pcl3 * cl2) / assignedKc;
         targetLabel = '[PCl₅] =';
+      } else if (rxn.id === 'so3_sys') {
+        const so2 = parseFloat((0.12 + Math.random() * 0.25).toFixed(2));
+        const o2 = parseFloat((0.08 + Math.random() * 0.20).toFixed(2));
+        text = `The equilibrium constant Kc for the Contact Process reaction is ${assignedKc} ${rxn.units}. If [SO₂] = ${so2} mol dm⁻³ and [O₂] = ${o2} mol dm⁻³ at equilibrium, calculate the equilibrium concentration of SO₃:`;
+        correctAnswer = Math.sqrt(assignedKc * Math.pow(so2, 2) * o2);
+        targetLabel = '[SO₃] =';
+      } else if (rxn.id === 'ester') {
+        const kcEster = parseFloat((2.5 + Math.random() * 3.0).toFixed(2));
+        const acid = parseFloat((0.15 + Math.random() * 0.25).toFixed(2));
+        const alc = parseFloat((0.15 + Math.random() * 0.25).toFixed(2));
+        const h2o = parseFloat((0.20 + Math.random() * 0.30).toFixed(2));
+        text = `The equilibrium constant Kc for esterification is ${kcEster} (no units) at 298 K. At equilibrium, [CH₃COOH] = ${acid} mol dm⁻³, [C₂H₅OH] = ${alc} mol dm⁻³, and [H₂O] = ${h2o} mol dm⁻³. Calculate [CH₃COOC₂H₅]:`;
+        correctAnswer = (kcEster * acid * alc) / h2o;
+        targetLabel = '[Ester] =';
       } else {
-        const h2 = 0.15; const i2 = 0.12;
-        text = `The equilibrium constant Kc for the reaction is ${assignedKc}. If the equilibrium concentrations of the reactants are [H₂] = ${h2} mol dm⁻³ and [I₂] = ${i2} mol dm⁻³, determine the equilibrium concentration of HI for the reaction:`;
+        const h2 = parseFloat((0.10 + Math.random() * 0.20).toFixed(2));
+        const i2 = parseFloat((0.10 + Math.random() * 0.20).toFixed(2));
+        text = `The equilibrium constant Kc for the reaction H₂(g) + I₂(g) ⇌ 2HI(g) is ${assignedKc}. If the equilibrium concentrations are [H₂] = ${h2} mol dm⁻³ and [I₂] = ${i2} mol dm⁻³, determine [HI]:`;
         correctAnswer = Math.sqrt(assignedKc * h2 * i2);
         targetLabel = '[HI] =';
       }
       unitExpectation = 'mol dm⁻³';
     } else if (targetMode === 'predict_units') {
       text = `Deduce the correct equilibrium constant (Kc) units for the following reaction:`;
-      const newProb = { text, eq: rxn.eq, targetPowers: rxn.targetPowers, targetMode };
+      const newProb = { text, eq: rxn.eq, targetPowers: rxn.targetPowers, targetMode, instanceId: `units_${rxn.id}` };
       setProblem(newProb);
       setFeedback({ type: '', message: '' });
       return;
     }
 
-    setProblem({ text, eq: rxn.eq, targetLabel, correctAnswer, targetMode, unitExpectation });
+    setProblem({ text, eq: rxn.eq, targetLabel, correctAnswer, targetMode, unitExpectation, instanceId: `${targetMode}_${rxn.id}_${correctAnswer.toPrecision(4)}` });
     setCoeff('');
     setExp('');
     setFeedback({ type: '', message: '' });
@@ -195,7 +265,7 @@ const KcCalculations = ({ onComplete }) => {
       const targets = problem.targetPowers;
       if (molIdx === targets.mol && dmIdx === targets.dm && sIdx === targets.s) {
         setFeedback({ type: 'success', message: 'Correct! Your power index configuration matches the expression requirements.' });
-        onComplete?.(`units_${problem.eq}`);
+        onComplete?.(problem.instanceId || `units_${problem.eq}`);
       } else {
         setFeedback({ type: 'error', message: `Incorrect. Set up your equilibrium expression [Products]/[Reactants], cancel down common brackets, and remember dm moves in blocks of 3.` });
       }
@@ -208,7 +278,7 @@ const KcCalculations = ({ onComplete }) => {
 
     if (error < 0.025) {
       setFeedback({ type: 'success', message: 'Correct! Your value is accurate and matches the equilibrium expression.' });
-      onComplete?.(`${mode}_${problem.eq}`);
+      onComplete?.(problem.instanceId || `${mode}_${problem.eq}`);
     } else {
       let recoveryHint = 'Incorrect. ';
       if (problem.targetMode === 'ice_table') {

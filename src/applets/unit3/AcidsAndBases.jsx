@@ -51,9 +51,11 @@ export function AcidsAndBases({ onComplete }) {
       };
     } else if (mode === 'pH_weak_acid') {
       const acids = [
-        { name: "ethanoic acid", formula: <>CH<sub>3</sub>COOH</>, ka: 1.74e-5, pka: 4.76 },
-        { name: "methanoic acid", formula: <>HCOOH</>, ka: 1.78e-4, pka: 3.75 },
-        { name: "propanoic acid", formula: <>C<sub>2</sub>H<sub>5</sub>COOH</>, ka: 1.35e-5, pka: 4.87 }
+        { name: "ethanoic acid", formula: <>CH<sub>3</sub>COOH</>, ka: 1.74e-5, kaMantissa: "1.74", kaExp: -5 },
+        { name: "methanoic acid", formula: <>HCOOH</>, ka: 1.78e-4, kaMantissa: "1.78", kaExp: -4 },
+        { name: "propanoic acid", formula: <>C<sub>2</sub>H<sub>5</sub>COOH</>, ka: 1.35e-5, kaMantissa: "1.35", kaExp: -5 },
+        { name: "benzoic acid", formula: <>C<sub>6</sub>H<sub>5</sub>COOH</>, ka: 6.30e-5, kaMantissa: "6.30", kaExp: -5 },
+        { name: "nitrous acid", formula: <>HNO<sub>2</sub></>, ka: 4.50e-4, kaMantissa: "4.50", kaExp: -4 }
       ];
       const selected = acids[Math.floor(Math.random() * acids.length)];
       const conc = parseFloat((0.02 + Math.random() * 0.18).toFixed(3));
@@ -64,7 +66,7 @@ export function AcidsAndBases({ onComplete }) {
       newProb = {
         mode,
         title: "pH of a Weak Acid",
-        text: <>An aqueous solution of {selected.name}, {selected.formula}, has a concentration of {conc} mol dm<sup>-3</sup>. (Refer to the Data Booklet for any standard constants required.)</>,
+        text: <>An aqueous solution of {selected.name}, {selected.formula}, has a concentration of {conc} mol dm<sup>-3</sup> (K<sub>a</sub> = {selected.kaMantissa} &times; 10<sup>{selected.kaExp}</sup> mol dm<sup>-3</sup>).</>,
         question: `Calculate the pH of this weak acid solution at 298 K.`,
         label: "pH =",
         correct: exactpH,
@@ -88,7 +90,7 @@ export function AcidsAndBases({ onComplete }) {
       newProb = {
         mode,
         title: "Acidic Buffer Solutions",
-        text: <>An acidic buffer solution contains ethanoic acid at a concentration of {concAcid} mol dm<sup>-3</sup> and sodium ethanoate at a concentration of {concSalt} mol dm<sup>-3</sup>. (Refer to the Data Booklet for any standard constants required.)</>,
+        text: <>An acidic buffer solution contains ethanoic acid (K<sub>a</sub> = 1.74 &times; 10<sup>-5</sup> mol dm<sup>-3</sup>) at a concentration of {concAcid} mol dm<sup>-3</sup> and sodium ethanoate at a concentration of {concSalt} mol dm<sup>-3</sup>.</>,
         question: "Calculate the exact pH of this buffer mixture at 298 K.",
         label: "pH =",
         correct: exactpH,
@@ -102,15 +104,18 @@ export function AcidsAndBases({ onComplete }) {
       };
     } else if (mode === 'kw_temp') {
       const systemData = [
-        { temp: "310 K (Body Temperature)", kw: 2.4e-14, pH: 6.81 },
+        { temp: "273 K", kw: 1.14e-15, pH: 7.47 },
+        { temp: "283 K", kw: 2.92e-15, pH: 7.27 },
+        { temp: "303 K", kw: 1.47e-14, pH: 6.92 },
+        { temp: "310 K (Body Temperature)", kw: 2.40e-14, pH: 6.81 },
         { temp: "323 K", kw: 5.48e-14, pH: 6.63 },
-        { temp: "273 K", kw: 1.14e-15, pH: 7.47 }
+        { temp: "333 K", kw: 9.55e-14, pH: 6.51 }
       ];
       const selected = systemData[Math.floor(Math.random() * systemData.length)];
       const askForMutedNeutral = Math.random() > 0.5;
 
-      const base = (selected.kw * 10**15).toFixed(2);
-      const exp = -15;
+      const exp = Math.floor(Math.log10(selected.kw));
+      const base = (selected.kw / Math.pow(10, exp)).toFixed(2);
 
       if (askForMutedNeutral) {
         newProb = {
@@ -206,7 +211,7 @@ export function AcidsAndBases({ onComplete }) {
     const res = prob.validate(valueToTest);
     setFeedback(res);
     if (res.isCorrect) {
-      onComplete?.(prob.mode);
+      onComplete?.(`${prob.mode}_${prob.correct.toPrecision(3)}`);
     }
 
     setTimeout(() => {
@@ -243,7 +248,7 @@ export function AcidsAndBases({ onComplete }) {
       <form onSubmit={handleCheck} className="bg-[var(--chem-bg-card)] border border-[var(--chem-border-subtle)] rounded-xl p-5 space-y-4">
         <div className="flex flex-wrap items-center gap-3">
           {prob.useScientific ? (
-            <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-xs">
+            <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
               <ScientificInput
                 value={sciCoeff}
                 exponent={sciExp}

@@ -221,25 +221,35 @@ export default function App() {
             </div>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {currentApplet !== 'dashboard' && (
-              <button 
-                onClick={() => setIsHowToGuideOpen(true)}
-                className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-3 md:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer"
-              >
-                <span>💡</span>
-                <span className="hidden sm:inline">How-To Guide</span>
-              </button>
+              <>
+                <button
+                  onClick={() => handleNav('dashboard')}
+                  className="md:hidden border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold h-9 px-2.5 rounded-full shadow-sm transition-all flex items-center gap-1 text-xs cursor-pointer"
+                  aria-label="Back to Home Dashboard"
+                >
+                  <span>&larr;</span>
+                  <span>Menu</span>
+                </button>
+                <button 
+                  onClick={() => setIsHowToGuideOpen(true)}
+                  className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-2.5 sm:px-3 md:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer"
+                >
+                  <span>💡</span>
+                  <span className="hidden sm:inline">How-To Guide</span>
+                </button>
+              </>
             )}
 
             <button 
               onClick={() => setIsDataBookletOpen(true)}
-              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-2 text-xs cursor-pointer"
+              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-3 sm:px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 sm:gap-2 text-xs cursor-pointer"
             >
               <span>📚</span>
               <span className="hidden sm:inline">Data Booklet</span>
             </button>
-            <button className="md:hidden p-2 text-slate-600 focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button className="md:hidden p-2 text-slate-600 focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Navigation Menu">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"} />
               </svg>
@@ -326,11 +336,14 @@ export default function App() {
         {currentApplet === 'dashboard' && (
           <div className="py-2 animate-fade-in flex flex-col items-center">
             {/* Hero updates block */}
-            <div className="w-full max-w-5xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm">
-              <div className="col-span-1 md:col-span-5 flex flex-col items-center justify-center text-center border-b border-slate-100 pb-4 md:pb-0 md:border-b-0 md:border-r md:border-slate-100 md:pr-4">
-                <div className="w-44 md:w-56 transition-all duration-200">
+            <div className="w-full max-w-7xl mx-auto mb-8 sm:mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white p-5 sm:p-6 md:p-8 border border-slate-200 rounded-3xl shadow-sm">
+              <div className="col-span-1 md:col-span-5 flex flex-col items-center justify-center text-center pb-2 md:pb-0 md:border-r md:border-slate-100 md:pr-4">
+                <div className="w-40 sm:w-44 md:w-56 transition-all duration-200">
                   <Logo className="w-full h-auto object-contain" />
                 </div>
+                <p className="md:hidden text-slate-500 font-semibold text-xs mt-2">
+                  WJEC A-Level Chemistry Interactive Practice &amp; Data Suite
+                </p>
               </div>
               <div className="hidden md:flex col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex-col justify-between">
                 <div>
@@ -349,7 +362,7 @@ export default function App() {
             </div>
 
             {/* Matrix layout */}
-            <div className="w-full max-w-5xl mx-auto text-left space-y-10">
+            <div className="w-full max-w-7xl mx-auto text-left space-y-10">
               {MAIN_UNITS.map(unitRow => {
                 const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
                 if (unitApplets.length === 0) return null;
@@ -378,7 +391,7 @@ export default function App() {
                     </div>
 
                     {isUnitOpen ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
                         {unitApplets.map(app => {
                           if (app.isExternal) {
                             return (
@@ -474,13 +487,13 @@ export default function App() {
         {/* Active view */}
         <div className="animate-fade-in">
           {currentApplet !== 'dashboard' && (
-            <div className="mb-6 flex items-center gap-2">
-              <button onClick={() => handleNav('dashboard')} className="text-sm font-bold text-[#326fa0] hover:underline flex items-center gap-1 cursor-pointer">
+            <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2 max-w-5xl mx-auto">
+              <button onClick={() => handleNav('dashboard')} className="text-xs sm:text-sm font-bold text-[#326fa0] hover:underline flex items-center gap-1 cursor-pointer">
                 &larr; Back to Dashboard Menu
               </button>
               <span className="text-slate-300">/</span>
-              <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">
-                {activeAppletObj?.label || currentApplet}
+              <span className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">
+                {activeAppletObj?.unit} &bull; {activeAppletObj?.label || currentApplet}
               </span>
             </div>
           )}

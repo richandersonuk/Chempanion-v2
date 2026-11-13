@@ -259,7 +259,7 @@ export default function HalfEquationBalancing({ onComplete }) {
             onClick={() => setPracticeMode('guided')}
             className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               practiceMode === 'guided'
-                ? 'bg-[var(--chem-primary)] text-white shadow-xs'
+                ? 'bg-[var(--chem-primary)] text-white shadow-sm'
                 : 'text-[var(--chem-text-muted)] hover:text-[var(--chem-text)]'
             }`}
           >
@@ -270,7 +270,7 @@ export default function HalfEquationBalancing({ onComplete }) {
             onClick={() => setPracticeMode('exam')}
             className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               practiceMode === 'exam'
-                ? 'bg-[var(--chem-primary)] text-white shadow-xs'
+                ? 'bg-[var(--chem-primary)] text-white shadow-sm'
                 : 'text-[var(--chem-text-muted)] hover:text-[var(--chem-text)]'
             }`}
           >
@@ -715,7 +715,7 @@ export default function HalfEquationBalancing({ onComplete }) {
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-lg transition-colors shadow-xs"
+                  className="px-5 py-2.5 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-lg transition-colors shadow-sm"
                 >
                   Check Half-Equation
                 </button>

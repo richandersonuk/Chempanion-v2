@@ -98,7 +98,7 @@ export default function InorganicTests({ onComplete }) {
           <select
             value={saltIdx}
             onChange={(e) => loadSalt(Number(e.target.value))}
-            className="bg-white border border-slate-200 text-slate-700 py-2 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] shadow-xs cursor-pointer"
+            className="bg-white border border-slate-200 text-slate-700 py-2 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] shadow-sm cursor-pointer"
           >
             {INORGANIC_SALTS.map((salt, idx) => (
               <option key={salt.id} value={idx}>
@@ -143,7 +143,7 @@ export default function InorganicTests({ onComplete }) {
                 onClick={() => runTest(station.id)}
                 className={`w-full text-left px-3.5 py-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
                   isCurrent
-                    ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-xs'
+                    ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
                     : done
                     ? 'bg-white text-slate-800 border-emerald-300 hover:border-[#326fa0]'
                     : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
@@ -165,7 +165,7 @@ export default function InorganicTests({ onComplete }) {
         </div>
 
         {/* Right Column: Visual Apparatus & Lab Observation Log */}
-        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between shadow-xs">
+        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -180,7 +180,7 @@ export default function InorganicTests({ onComplete }) {
               <button
                 type="button"
                 onClick={() => runTest(activeStation)}
-                className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-xs transition-colors"
+                className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-sm transition-colors"
               >
                 Perform This Test ▶
               </button>
@@ -293,7 +293,7 @@ export default function InorganicTests({ onComplete }) {
       </div>
 
       {/* Step 2: Cation & Anion Deduction Form */}
-      <form onSubmit={handleCheckDeduction} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
+      <form onSubmit={handleCheckDeduction} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div>
             <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
@@ -342,7 +342,7 @@ export default function InorganicTests({ onComplete }) {
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <button
             type="submit"
-            className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-xs transition-colors"
+            className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-sm transition-colors"
           >
             Verify Salt Identity
           </button>
