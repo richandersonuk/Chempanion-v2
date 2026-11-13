@@ -137,5 +137,33 @@ export const howToGuides = {
     appletUsage: <>Identify the specific decay mode. Calculate the resulting transformations to the mass number (A) and atomic number (Z), and input the correct balanced notation for the daughter isotope and emitted particle.</>,
     examApplication: <>Mirrors WJEC Unit 1 questions requiring balanced radioactive decay equations (α, β⁻, β⁺, and electron capture) to prove the conservation of nucleons and proton charge.</>,
     pitfalls: <>Beta-minus (β⁻) and electron capture are the most frequently mishandled. In β⁻ decay, a neutron decays into a proton, so the atomic number (Z) <em>increases</em> by 1. In electron capture, a proton captures an electron to become a neutron, so Z <em>decreases</em> by 1.</>
+  },
+
+  'inorganic-tests': {
+    title: "Qualitative Inorganic Analysis",
+    appletUsage: <>Perform sequential chemical tests in the virtual test-tube rack (Flame Test, NaOH(aq), SO<sub>4</sub><sup>2-</sup>(aq), H<sup>+</sup>(aq), Ba<sup>2+</sup>(aq), and Ag<sup>+</sup>(aq) followed by dilute/concentrated NH<sub>3</sub>) to deduce both the cation and anion in the unknown salt, then balance the ionic precipitation equation.</>,
+    examApplication: <>Directly targets WJEC Unit 1.6 and Unit 3.3 practical deduction questions. Remember the opposite solubility trends of Group 2 hydroxides (solubility increases down the group) and Group 2 sulfates (solubility decreases down the group).</>,
+    pitfalls: <>When testing for halide ions with AgNO<sub>3</sub>(aq), you must acidify first with dilute HNO<sub>3</sub> (never HCl or H<sub>2</sub>SO<sub>4</sub>, which introduce Cl<sup>-</sup> or SO<sub>4</sub><sup>2-</sup> ions and cause false precipitates). Always confirm silver halide precipitates with dilute and concentrated NH<sub>3</sub>(aq).</>
+  },
+
+  'half-equations': {
+    title: "Half-Equation & Redox Balancing",
+    appletUsage: <>Progress through five structured stages: (1) assign oxidation states to identify oxidation and reduction, (2) balance the main atoms, (3) balance oxygen atoms using H<sub>2</sub>O, (4) balance hydrogen atoms using H<sup>+</sup>, and (5) balance overall charge using electrons (e<sup>-</sup>).</>,
+    examApplication: <>Essential for WJEC Unit 3.1 redox and transition metal chemistry, where you must construct half-equations for oxidising agents like acidified dichromate(VI) (Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup>) or manganate(VII) (MnO<sub>4</sub><sup>-</sup>) and combine them by matching electron stoichiometry.</>,
+    pitfalls: <>The most common error is placing electrons on the wrong side or miscalculating total ionic charge. In reduction, electrons are gained (left-hand side); in oxidation, electrons are lost (right-hand side). Always verify that total charge on the left equals total charge on the right.</>
+  },
+
+  'born-haber': {
+    title: "Born-Haber & Solution Enthalpy Cycles",
+    appletUsage: <>First pass the Step 1 Stoichiometry &amp; Sign Gate by checking whether atomisation and electron affinity values need multiplying by 2 (e.g., for Group 2 halides like MgCl<sub>2</sub> or CaCl<sub>2</sub>), then apply conservation of energy across the cycle to solve for the unknown enthalpy term.</>,
+    examApplication: <>Targets high-value WJEC Unit 3.6 energetics calculations linking enthalpy of formation (Δ<sub>f</sub>H<sup>θ</sup>), atomisation (Δ<sub>at</sub>H<sup>θ</sup>), ionisation energies, electron affinities, lattice formation/dissociation enthalpy (Δ<sub>L</sub>H<sup>θ</sup>), and enthalpy of hydration/solution.</>,
+    pitfalls: <>Examiners repeatedly highlight two mistakes: forgetting to multiply Δ<sub>at</sub>H<sup>θ</sup>(Cl) and Δ<sub>ea</sub>H<sup>θ</sup>(Cl) by 2 in Group 2 MX<sub>2</sub> cycles, and confusing exothermic lattice formation enthalpy (negative) with endothermic lattice dissociation enthalpy (positive).</>
+  },
+
+  'spectra-interpreter': {
+    title: "Combined Spectral Interpreter (MS, IR, ¹³C & ¹H NMR)",
+    appletUsage: <>Switch between the four analytical tabs (Infrared, Mass Spectrometry, <sup>13</sup>C NMR, and <sup>1</sup>H NMR). Click peaks to inspect diagnostic fragments and wavenumbers, then complete the 3-step deduction panel to identify the unknown organic structure.</>,
+    examApplication: <>Mirrors the synoptic 6–10 mark "combined techniques" problem at the end of WJEC Unit 2.8 and Unit 4.8 papers, where you must cross-reference M<sup>+•</sup>, IR functional group bands, <sup>13</sup>C symmetry, and <sup>1</sup>H NMR chemical shifts, integrations, and n+1 splitting patterns.</>,
+    pitfalls: <>Don't confuse a broad alcohol O–H band (3200–3550 cm<sup>-1</sup>) with a very broad carboxylic acid O–H band (2500–3200 cm<sup>-1</sup> overlapping C–H). In <sup>1</sup>H NMR, remember that labile –OH and –NH protons appear as singlets and disappear upon shaking with D<sub>2</sub>O.</>
   }
 };

@@ -1,31 +1,26 @@
 import './App.css';
 import React, { useState, useEffect, useTransition, Suspense } from 'react';
-import { Logo, HeaderBrand } from './Branding';
-import DataBooklet from './DataBooklet';
+import { Logo, HeaderBrand } from './components/shared/Branding';
+import DataBooklet from './components/shared/DataBooklet';
+import ErrorBoundary from './components/shared/ErrorBoundary';
 import { howToGuides } from './data/howToGuides';
+import { SORTED_APPLETS, MAIN_UNITS, WJEC_UNIT_TITLES } from './data/appletRegistry';
+import { useProgress } from './hooks/useProgress';
 
-// Dynamic lazy imports
-const FormulasFromIons = React.lazy(() => import('./FormulasFromIons').then(m => m.FormulasFromIons ? { default: m.FormulasFromIons } : m));
-const FormulasFromName = React.lazy(() => import('./FormulasFromName').then(m => m.FormulasFromName ? { default: m.FormulasFromName } : m));
-const FormulaMaster = React.lazy(() => import('./FormulaMaster').then(m => m.FormulaMaster ? { default: m.FormulaMaster } : m));
-const EmpiricalFormula = React.lazy(() => import('./EmpiricalFormula').then(m => m.EmpiricalFormula ? { default: m.EmpiricalFormula } : m));
-const AcidBaseTitration = React.lazy(() => import('./AcidBaseTitration').then(m => m.AcidBaseTitration ? { default: m.AcidBaseTitration } : m));
-const IdealGas = React.lazy(() => import('./IdealGas').then(m => m.IdealGas ? { default: m.IdealGas } : m));
-const MechanismUnit2 = React.lazy(() => import('./MechanismUnit2').then(m => m.MechanismUnit2 ? { default: m.MechanismUnit2 } : m));
-const ThermometricTitration = React.lazy(() => import('./ThermometricTitration').then(m => m.ThermometricTitration ? { default: m.ThermometricTitration } : m));
-const RedoxTitration = React.lazy(() => import('./RedoxTitration').then(m => m.RedoxTitration ? { default: m.RedoxTitration } : m));
-const CellPotentials = React.lazy(() => import('./CellPotentials').then(m => m.CellPotentials ? { default: m.CellPotentials } : m));
-const EnthalpyCombustion = React.lazy(() => import('./EnthalpyCombustion').then(m => m.EnthalpyCombustion ? { default: m.EnthalpyCombustion } : m));
-const EntropyGibbs = React.lazy(() => import('./EntropyGibbs').then(m => m.EntropyGibbs ? { default: m.EntropyGibbs } : m));
-const ReactionRates = React.lazy(() => import('./ReactionRates').then(m => m.ReactionRates ? { default: m.ReactionRates } : m));
-const KcCalculations = React.lazy(() => import('./KcCalculations').then(m => m.KcCalculations ? { default: m.KcCalculations } : m));
-const KpCalculations = React.lazy(() => import('./KpCalculations').then(m => m.KpCalculations ? { default: m.KpCalculations } : m));
-const AcidsAndBases = React.lazy(() => import('./AcidsAndBases').then(m => m.AcidsAndBases ? { default: m.AcidsAndBases } : m));
-const BufferSolutions = React.lazy(() => import('./BufferSolutions').then(m => m.BufferSolutions ? { default: m.BufferSolutions } : m));
-const ChiralCenters = React.lazy(() => import('./ChiralCenters').then(m => m.ChiralCenters ? { default: m.ChiralCenters } : m));
-const MechanismMasterclass = React.lazy(() => import('./MechanismMasterclass').then(m => m.MechanismMasterclass ? { default: m.MechanismMasterclass } : m));
-const NuclearChemistry = React.lazy(() => import('./NuclearChemistry').then(m => m.default ? { default: m.default } : m));
-const HalfEquationBalancing = React.lazy(() => import('./HalfEquationBalancing').then(m => m.default ? { default: m.default } : m));
+// Resolve initial applet ID from URL (?applet=<id> or #<id>)
+const getAppletFromLocation = () => {
+  if (typeof window === 'undefined') return 'dashboard';
+  const params = new URLSearchParams(window.location.search);
+  const queryApplet = params.get('applet');
+  if (queryApplet && SORTED_APPLETS.some(a => a.id === queryApplet && !a.isExternal)) {
+    return queryApplet;
+  }
+  const hashApplet = window.location.hash.replace(/^#/, '');
+  if (hashApplet && SORTED_APPLETS.some(a => a.id === hashApplet && !a.isExternal)) {
+    return hashApplet;
+  }
+  return 'dashboard';
+};
 
 // --- WJEC EXAM METHOD REWRITE MODAL ---
 const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
@@ -88,11 +83,12 @@ const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
 };
 
 export default function App() {
-  const [currentApplet, setCurrentApplet] = useState('dashboard');
+  const [currentApplet, setCurrentApplet] = useState(getAppletFromLocation);
   const [isDataBookletOpen, setIsDataBookletOpen] = useState(false);
   const [isHowToGuideOpen, setIsHowToGuideOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { progress, recordSuccess } = useProgress();
 
   const [categoryStates, setCategoryStates] = useState(() => {
     const saved = localStorage.getItem('wjec_companion_collapsed_units');
@@ -106,51 +102,36 @@ export default function App() {
     localStorage.setItem('wjec_companion_collapsed_units', JSON.stringify(categoryStates));
   }, [categoryStates]);
 
+  // Listen to browser back/forward navigation and hash changes
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const nextApplet = getAppletFromLocation();
+      startTransition(() => {
+        setCurrentApplet(nextApplet);
+      });
+    };
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
+  }, []);
+
   const toggleCategory = (unitName) => {
     setCategoryStates(prev => ({ ...prev, [unitName]: !prev[unitName] }));
   };
 
-  const applets = [
-    { id: 'formulas-ions', label: 'Formulas from Ions', short: 'Ion Formulas', unit: 'Unit 1.1', icon: '⚛️', desc: 'Balance charge ratios and construct ionic formulas.', component: FormulasFromIons },
-    { id: 'formulas-name', label: 'Formulas from Names', short: 'Name Formulas', unit: 'Unit 1.1', icon: '🏷️', desc: 'Convert systematic chemical names directly to formulas.', component: FormulasFromName },
-    { id: 'formula-master', label: 'Ion formulas from compounds', short: 'Ions from compounds', unit: 'Unit 1.1', icon: '🧩', desc: 'Master advanced reverse operations: deduce names and split free ionic structures.', component: FormulaMaster },
-    { id: 'nuclear-decay', label: 'Nuclear Decay Equations', short: 'Nuclear Decay', unit: 'Unit 1.2', icon: '☢️', desc: 'Balance alpha, beta, gamma, and electron capture equations.', component: NuclearChemistry },
-    { id: 'spectralab', label: 'Spectra Lab', short: 'Spectra Lab', unit: 'Unit 1.2', icon: '🌈', desc: 'Standalone interactive spectroscopy web application.', isExternal: true, url: 'https://spectralab.chempanion.uk' },
-    { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.3', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.', component: EmpiricalFormula },
-    { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.3', icon: '🎈', desc: 'Master pV = nRT variables with seamless conversions.', component: IdealGas },
-    { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.7', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.', component: AcidBaseTitration },
-    { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.', component: ThermometricTitration },
-    { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.', component: MechanismUnit2 },
-    { id: 'pblock', label: 'P-Block Chemistry Lab', short: 'P-Block Lab', unit: 'Unit 3.3', icon: '🧪', desc: 'Standalone interactive p-block chemistry laboratory.', isExternal: true, url: 'https://pblock.chempanion.uk' },
-    { id: 'transition-metals-lab', label: 'Transition Metals', short: 'Transition Metals', unit: 'Unit 3.4', icon: '💎', desc: 'Standalone interactive transition metals laboratory.', isExternal: true, url: 'https://transitionmetals.chempanion.uk' },
-    { id: 'redox', label: 'Redox Titration', short: 'Redox', unit: 'Unit 3.1', icon: '🧪', desc: 'Analyze ratio pathways for complex transition elements.', component: RedoxTitration },
-    { id: 'cell-potentials', label: 'Standard Cell Potentials', short: 'Cell Potentials', unit: 'Unit 3.1', icon: '🔋', desc: 'Determine overall standard cell EMF from half-equation standard potentials.', component: CellPotentials },
-    { id: 'cell-potentials-lab', label: 'Electrode Potentials', short: 'Electrochem', unit: 'Unit 3.1', icon: '⚡', desc: 'Standalone interactive electrochemistry laboratory.', isExternal: true, url: 'https://electrodepotentials.chempanion.uk' },
-    { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 2.1', icon: '🔥', desc: 'Determine accurate energy variables and sign conventions.', component: EnthalpyCombustion },
-    { id: 'entropy-gibbs', label: 'Entropy & Gibbs Free Energy', short: 'Gibbs Free Energy', unit: 'Unit 3.7', icon: '❄️', desc: 'Balance ΔH and ΔS to determine Gibbs feasibility and temperature thresholds.', component: EntropyGibbs },
-    { id: 'rates', label: 'Reaction Rates', short: 'Rates', unit: 'Unit 3.5', icon: '⏱️', desc: 'Deduce rate equations, orders, and Arrhenius constraints.', component: ReactionRates },
-    { id: 'kc-calc', label: 'Kc Equilibrium Constants', short: 'Kc Equilibrium', unit: 'Unit 3.8', icon: '⚗️', desc: 'Construct ICE tables and determine concentration equilibrium constants.', component: KcCalculations },
-    { id: 'kp-calc', label: 'Kp Equilibrium Constants', short: 'Kp Equilibrium', unit: 'Unit 3.8', icon: '💨', desc: 'Calculate gas mole fractions, partial pressures, and Kp constants.', component: KpCalculations },
-    { id: 'acids', label: 'pH & Weak Acids', short: 'pH Acids', unit: 'Unit 3.9', icon: '🍋', desc: 'Determine Ka, pKa, and hydrogen ion parameters.', component: AcidsAndBases },
-    { id: 'buffers', label: 'Buffer Solutions', short: 'Buffers', unit: 'Unit 3.9', icon: '🛡️', desc: 'Evaluate specific system responses to salt mass changes.', component: BufferSolutions },
-    { id: 'chiral-centers', label: 'Chiral Center Identification', short: 'Chiral Carbons', unit: 'Unit 4.1', icon: '🧬', desc: 'Audit asymmetric carbon nodes and identify stereoisomers in skeletal structures.', component: ChiralCenters },
-    { id: 'mechanisms-masterclass', label: 'Organic Mechanisms', short: 'Mechanisms', unit: 'Unit 4.4', icon: '🏹', desc: 'Master carbonyl reactions by tracking induced dipoles and curly arrows step-by-step.', component: MechanismMasterclass }
-  ];
-
-  // Automatically sort applets numerically by unit (e.g. Unit 1.1 before Unit 1.2, etc.)
-  const sortedApplets = [...applets].sort((a, b) => 
-    a.unit.localeCompare(b.unit, undefined, { numeric: true })
-  );
-
-  const mainUnits = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
-  const wjecUnitTitles = {
-    'Unit 1': 'Chemical Particles and Quantitative Chemistry',
-    'Unit 2': 'Organic Compounds and Energy',
-    'Unit 3': 'Physical and Inorganic Chemistry',
-    'Unit 4': 'Organic Chemistry and Analysis'
-  };
-
   const handleNav = (id) => {
+    const url = new URL(window.location.href);
+    url.hash = '';
+    if (id === 'dashboard') {
+      url.searchParams.delete('applet');
+    } else {
+      url.searchParams.set('applet', id);
+    }
+    window.history.pushState({ applet: id }, '', url.toString());
+
     startTransition(() => {
       setCurrentApplet(id);
       setMobileMenuOpen(false);
@@ -158,7 +139,7 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  const activeAppletObj = sortedApplets.find(a => a.id === currentApplet);
+  const activeAppletObj = SORTED_APPLETS.find(a => a.id === currentApplet);
   const ActiveComponent = activeAppletObj ? activeAppletObj.component : null;
 
   return (
@@ -166,24 +147,24 @@ export default function App() {
       {/* Header Banner */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <button onClick={() => handleNav('dashboard')} className="hover:opacity-80 transition-opacity text-left">
+          <button onClick={() => handleNav('dashboard')} className="hover:opacity-80 transition-opacity text-left cursor-pointer">
             <HeaderBrand />
           </button>
 
           <nav className="hidden md:flex items-center gap-2">
             <button 
               onClick={() => handleNav('dashboard')}
-              className={`px-3 py-2 text-xs font-bold rounded-xl transition-all ${currentApplet === 'dashboard' ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${currentApplet === 'dashboard' ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'}`}
             >
               Home Dashboard
             </button>
             <div className="relative group">
-              <button className="px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100 flex items-center gap-1">
+              <button className="px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100 flex items-center gap-1 cursor-pointer">
                 Quick Jump Menu ▾
               </button>
               <div className="absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 opacity-0 pointer-events-none scale-95 origin-top-right group-hover:opacity-100 group-hover:scale-100 group-hover:!pointer-events-auto transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block">
-                {mainUnits.map(unitRow => {
-                  const unitApplets = sortedApplets.filter(a => a.unit.startsWith(unitRow));
+                {MAIN_UNITS.map(unitRow => {
+                  const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
                   if (unitApplets.length === 0) return null;
                   const isCatOpen = categoryStates[unitRow];
                   return (
@@ -191,7 +172,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleCategory(unitRow); }}
-                        className="w-full flex items-center justify-between px-2.5 py-1.5 bg-slate-100/50 hover:bg-slate-100 text-[10px] font-black text-slate-500 tracking-wide transition-colors"
+                        className="w-full flex items-center justify-between px-2.5 py-1.5 bg-slate-100/50 hover:bg-slate-100 text-[10px] font-black text-slate-500 tracking-wide transition-colors cursor-pointer"
                       >
                         <span>{unitRow.toUpperCase()}</span>
                         <span className="text-[9px] text-slate-400 font-bold">{isCatOpen ? 'HIDE' : 'SHOW'}</span>
@@ -217,10 +198,17 @@ export default function App() {
                               <button
                                 key={app.id}
                                 onClick={() => handleNav(app.id)}
-                                className="w-full text-left px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 rounded-md"
+                                className="w-full text-left px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center justify-between gap-2 rounded-md cursor-pointer"
                               >
-                                <span>{app.icon}</span>
-                                <span>{app.short}</span>
+                                <div className="flex items-center gap-2.5 truncate">
+                                  <span>{app.icon}</span>
+                                  <span className="truncate">{app.short}</span>
+                                </div>
+                                {(progress[app.id]?.count || 0) > 0 && (
+                                  <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full shrink-0">
+                                    ✓ {progress[app.id].count}
+                                  </span>
+                                )}
                               </button>
                             )
                           ))}
@@ -237,7 +225,7 @@ export default function App() {
             {currentApplet !== 'dashboard' && (
               <button 
                 onClick={() => setIsHowToGuideOpen(true)}
-                className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-3 md:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs"
+                className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-3 md:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer"
               >
                 <span>💡</span>
                 <span className="hidden sm:inline">How-To Guide</span>
@@ -246,7 +234,7 @@ export default function App() {
 
             <button 
               onClick={() => setIsDataBookletOpen(true)}
-              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-2 text-xs"
+              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-2 text-xs cursor-pointer"
             >
               <span>📚</span>
               <span className="hidden sm:inline">Data Booklet</span>
@@ -268,8 +256,8 @@ export default function App() {
             >
               🏠 Go to Home Dashboard
             </button>
-            {mainUnits.map(unitRow => {
-              const unitApplets = sortedApplets.filter(a => a.unit.startsWith(unitRow));
+            {MAIN_UNITS.map(unitRow => {
+              const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
               if (unitApplets.length === 0) return null;
               const isCatOpen = categoryStates[unitRow];
               return (
@@ -351,7 +339,7 @@ export default function App() {
                     <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform Updates & Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    New Update: Unit 3.3 P-Block Chemistry Lab is now live! Explore Group 4, 5, and 7 chemistry trends, reactions, and properties interactively at{' '}
+                    New Update: Added Qualitative Inorganic Analysis (Unit 1.6), Half-Equation Balancing (Unit 3.1), Born-Haber Cycles (Unit 3.6), and Combined Spectral Interpreter (Unit 4.8), plus Unit-Conversion Gates and Mastery Tracking! Also explore P-Block Chemistry at{' '}
                     <a href="https://pblock.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
                       pblock.chempanion.uk
                     </a>.
@@ -362,8 +350,8 @@ export default function App() {
 
             {/* Matrix layout */}
             <div className="w-full max-w-5xl mx-auto text-left space-y-10">
-              {mainUnits.map(unitRow => {
-                const unitApplets = sortedApplets.filter(a => a.unit.startsWith(unitRow));
+              {MAIN_UNITS.map(unitRow => {
+                const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
                 if (unitApplets.length === 0) return null;
                 const isUnitOpen = categoryStates[unitRow];
 
@@ -375,13 +363,13 @@ export default function App() {
                           {unitRow}
                         </span>
                         <h2 className="text-xs sm:text-sm font-black text-slate-500 tracking-wide uppercase leading-tight">
-                          {wjecUnitTitles[unitRow]}
+                          {WJEC_UNIT_TITLES[unitRow]}
                         </h2>
                       </div>
                       <button
                         type="button"
                         onClick={() => toggleCategory(unitRow)}
-                        className={`text-[10px] font-black px-3 py-1 rounded-xl border transition-all shrink-0 ${
+                        className={`text-[10px] font-black px-3 py-1 rounded-xl border transition-all shrink-0 cursor-pointer ${
                           isUnitOpen ? 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-sm'
                         }`}
                       >
@@ -399,7 +387,7 @@ export default function App() {
                                 href={app.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-5 bg-slate-700 border border-slate-600 rounded-2xl text-left hover:bg-slate-800 hover:border-slate-500 hover:shadow-lg transition-all group flex flex-col justify-between h-40 w-full"
+                                className="p-5 bg-slate-700 border border-slate-600 rounded-2xl text-left hover:bg-slate-800 hover:border-slate-500 hover:shadow-lg transition-all group flex flex-col justify-between h-44 w-full"
                               >
                                 <div className="w-full">
                                   <div className="flex items-center justify-between mb-2">
@@ -420,14 +408,22 @@ export default function App() {
                                     {app.desc}
                                   </p>
                                 </div>
+                                <div className="pt-2 border-t border-slate-600/60 flex items-center justify-between text-[10px] font-bold text-slate-300">
+                                  <span>External Lab</span>
+                                  <span>Launch &rarr;</span>
+                                </div>
                               </a>
                             );
                           }
+
+                          const solvedCount = progress[app.id]?.count || 0;
+                          const targetCount = app.targetMastery || 10;
+
                           return (
                             <button 
                               key={app.id}
                               onClick={() => handleNav(app.id)}
-                              className="p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between h-40 w-full"
+                              className="p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between h-44 w-full cursor-pointer"
                             >
                               <div className="w-full">
                                 <div className="flex items-center justify-between mb-2">
@@ -442,6 +438,22 @@ export default function App() {
                                 <p className="text-slate-400 font-medium text-xs line-clamp-2 leading-normal">
                                   {app.desc}
                                 </p>
+                              </div>
+                              <div className="w-full pt-2 border-t border-slate-100 flex items-center justify-between">
+                                <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                                  solvedCount >= targetCount
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                    : solvedCount > 0
+                                    ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                    : 'bg-slate-50 text-slate-400 border-slate-200'
+                                }`}>
+                                  {solvedCount >= targetCount
+                                    ? `★ Mastered (${solvedCount})`
+                                    : `${solvedCount}/${targetCount} Mastered`}
+                                </span>
+                                <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#326fa0] transition-colors">
+                                  Practice &rarr;
+                                </span>
                               </div>
                             </button>
                           );
@@ -463,30 +475,45 @@ export default function App() {
         <div className="animate-fade-in">
           {currentApplet !== 'dashboard' && (
             <div className="mb-6 flex items-center gap-2">
-              <button onClick={() => handleNav('dashboard')} className="text-sm font-bold text-[#326fa0] hover:underline flex items-center gap-1">
+              <button onClick={() => handleNav('dashboard')} className="text-sm font-bold text-[#326fa0] hover:underline flex items-center gap-1 cursor-pointer">
                 &larr; Back to Dashboard Menu
               </button>
               <span className="text-slate-300">/</span>
               <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">
-                {sortedApplets.find(a => a.id === currentApplet)?.label || currentApplet}
+                {activeAppletObj?.label || currentApplet}
               </span>
             </div>
           )}
 
-          <Suspense fallback={
-            <div className="flex flex-col items-center justify-center py-20 bg-white border border-slate-200 rounded-3xl">
-              <div className="w-10 h-10 border-4 border-slate-200 border-t-[#326fa0] rounded-full animate-spin mb-4" />
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Compiling Reagent Metrics...</p>
-            </div>
-          }>
-            {ActiveComponent && <ActiveComponent />}
-          </Suspense>
+          {ActiveComponent && (
+            <ErrorBoundary
+              resetKey={currentApplet}
+              onReturnHome={() => handleNav('dashboard')}
+            >
+              <Suspense fallback={
+                <div className="flex flex-col items-center justify-center py-20 bg-white border border-slate-200 rounded-3xl">
+                  <div className="w-10 h-10 border-4 border-slate-200 border-t-[#326fa0] rounded-full animate-spin mb-4" />
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Compiling Reagent Metrics...</p>
+                </div>
+              }>
+                <ActiveComponent onComplete={(scenarioId) => recordSuccess(currentApplet, scenarioId)} />
+              </Suspense>
+            </ErrorBoundary>
+          )}
         </div>
       </main>
 
       {/* Slide-in elements */}
-      <DataBooklet isOpen={isDataBookletOpen} onClose={() => setIsDataBookletOpen(false)} />
-      <HowToGuideModal isOpen={isHowToGuideOpen} onClose={() => setIsHowToGuideOpen(false)} appletId={currentApplet} />
+      <DataBooklet
+        isOpen={isDataBookletOpen}
+        onClose={() => setIsDataBookletOpen(false)}
+        activeAppletId={currentApplet}
+      />
+      <HowToGuideModal
+        isOpen={isHowToGuideOpen}
+        onClose={() => setIsHowToGuideOpen(false)}
+        appletId={currentApplet}
+      />
     </div>
   );
 }
