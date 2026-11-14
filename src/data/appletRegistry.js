@@ -56,7 +56,7 @@ export const APPLETS = [
   // Unit 2
   { id: 'thermometric', label: 'Thermometric Titrations', short: 'Thermometric', unit: 'Unit 2.1', icon: '📈', desc: 'Extrapolate graph endpoint parameters and calculate accurate enthalpy changes.', component: ThermometricTitration, targetMastery: 5 },
   { id: 'enthalpy', label: 'Enthalpy of Combustion', short: 'Enthalpy', unit: 'Unit 2.1', icon: '🔥', desc: 'Determine accurate calorimetry energy variables, unit conversions, and sign conventions.', component: EnthalpyCombustion, targetMastery: 8 },
-  { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.', component: MechanismUnit2, targetMastery: 3 },
+  { id: 'mechanisms-unit2', label: 'AS Organic Mechanisms', short: 'AS Mechanisms', unit: 'Unit 2.5', icon: '🏹', desc: 'Master fundamental alkene addition and substitution dipoles and arrows.', component: MechanismUnit2, targetMastery: 5 },
 
   // Unit 3
   { id: 'half-equations', label: 'Half-Equation & Redox Balancing', short: 'Half-Equations', unit: 'Unit 3.1', icon: '⚖️', desc: 'Deduce oxidation states, balance acidic/alkaline half-equations, and combine redox systems.', component: HalfEquationBalancing, targetMastery: 10 },
@@ -75,7 +75,7 @@ export const APPLETS = [
 
   // Unit 4
   { id: 'chiral-centers', label: 'Chiral Center Identification', short: 'Chiral Carbons', unit: 'Unit 4.1', icon: '🧬', desc: 'Audit asymmetric carbon nodes and identify stereoisomers in skeletal structures.', component: ChiralCenters, targetMastery: 16 },
-  { id: 'mechanisms-masterclass', label: 'Organic Mechanisms', short: 'Mechanisms', unit: 'Unit 4.4', icon: '🏹', desc: 'Master carbonyl and aromatic reactions by tracking induced dipoles and curly arrows.', component: MechanismMasterclass, targetMastery: 3 },
+  { id: 'mechanisms-masterclass', label: 'Organic Mechanisms', short: 'Mechanisms', unit: 'Unit 4.4', icon: '🏹', desc: 'Master carbonyl and aromatic reactions by tracking induced dipoles and curly arrows.', component: MechanismMasterclass, targetMastery: 5 },
   { id: 'spectra-interpreter', label: 'Combined Spectral Interpreter', short: 'NMR, IR & MS', unit: 'Unit 4.8', icon: '📊', desc: 'Identify unknown organic structures using Mass Spectrometry, IR, ¹³C NMR, and ¹H NMR splitting.', component: SpectraInterpreter, targetMastery: 6 }
 ];
 

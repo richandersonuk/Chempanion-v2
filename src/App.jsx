@@ -22,61 +22,250 @@ const getAppletFromLocation = () => {
   return 'dashboard';
 };
 
-// --- WJEC EXAM METHOD REWRITE MODAL ---
-const HowToGuideModal = ({ isOpen, onClose, appletId }) => {
+// --- WJEC HOW-TO & EXAM METHOD GUIDE MODAL ---
+const GUIDE_TABS = [
+  { id: 'applet', label: '🕹️ Applet Guide' },
+  { id: 'exam', label: '📐 Exam Method' },
+  { id: 'example', label: '📝 Worked Example' },
+  { id: 'pitfalls', label: '⚠️ Examiner Pitfalls' },
+];
+
+const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
+  const [activeTab, setActiveTab] = useState('applet');
+
+  useEffect(() => {
+    setActiveTab('applet');
+  }, [isOpen, appletId]);
+
   if (!isOpen) return null;
   const currentGuide = howToGuides[appletId];
   if (!currentGuide) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all animate-fade-in">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150">
-        
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm transition-all animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-[95vw] max-w-3xl overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="bg-amber-500 p-4 flex items-center justify-between text-white shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">💡</span>
-            <div>
-              <h3 className="font-black text-sm uppercase tracking-wider">Exam Method Guide</h3>
-              <span className="text-[10px] opacity-90 block font-bold">{currentGuide.title}</span>
+        <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-4 sm:p-5 flex items-start justify-between gap-3 text-white shrink-0">
+          <div className="flex items-start gap-3 min-w-0">
+            <span className="text-2xl shrink-0 mt-0.5">💡</span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full">
+                  {currentGuide.unit}
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-wider opacity-90">
+                  Applet &amp; WJEC Exam Guide
+                </span>
+              </div>
+              <h3 className="font-black text-base sm:text-lg leading-tight truncate">
+                {currentGuide.title}
+              </h3>
+              <p className="text-xs text-amber-50 font-medium mt-1 leading-snug">
+                {currentGuide.summary}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full font-black text-sm transition-colors cursor-pointer">&times;</button>
+          <button
+            onClick={onClose}
+            aria-label="Close guide"
+            className="w-8 h-8 shrink-0 flex items-center justify-center bg-black/15 hover:bg-black/25 rounded-full font-black text-base transition-colors cursor-pointer"
+          >
+            &times;
+          </button>
         </div>
 
-        {/* Dynamic JSX Render Body Container */}
-        <div className="p-6 overflow-y-auto space-y-5 text-left text-xs text-slate-600 leading-relaxed">
-          
-          <div>
-            <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">How to Use this Applet:</span>
-            <div className="text-slate-700 font-medium text-xs">
-              {currentGuide.appletUsage}
-            </div>
-          </div>
+        {/* Tab Strip */}
+        <div className="bg-slate-50 border-b border-slate-200 px-3 sm:px-5 pt-2.5 flex items-center gap-1.5 overflow-x-auto shrink-0">
+          {GUIDE_TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3.5 py-2 rounded-t-xl text-xs font-extrabold whitespace-nowrap border border-b-0 transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-white text-slate-900 border-slate-200 shadow-xs -mb-px'
+                    : 'bg-transparent text-slate-500 border-transparent hover:text-slate-800 hover:bg-slate-100/70'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
 
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-3.5 text-blue-900">
-            <span className="block text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1">Application to WJEC Examinations:</span>
-            <div className="text-slate-700 font-medium text-xs">
-              {currentGuide.examApplication}
+        {/* Active Tab Content */}
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-4 text-left text-xs sm:text-sm text-slate-700 leading-relaxed flex-1">
+          {activeTab === 'applet' && (
+            <div className="space-y-3">
+              <div className="text-[11px] font-black uppercase tracking-widest text-amber-600">
+                Using the Interactive Applet
+              </div>
+              <ol className="space-y-2.5">
+                {currentGuide.appletSteps.map((step, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-start gap-3 bg-amber-50/50 border border-amber-100 rounded-2xl p-3.5"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-amber-500 text-white font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <div className="text-slate-700 font-medium [&_code]:bg-amber-100/80 [&_code]:text-amber-950 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-[11px]">
+                      {step}
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </div>
-          </div>
+          )}
 
-          <div className="bg-rose-50 border border-rose-100 rounded-xl p-3.5 text-rose-800">
-            <span className="block text-[10px] font-black uppercase tracking-widest text-rose-500 mb-1">Top Exam Pitfall:</span>
-            <div className="font-semibold text-xs text-rose-900">
-              {currentGuide.pitfalls}
+          {activeTab === 'exam' && (
+            <div className="space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-2">
+                <div className="text-[11px] font-black uppercase tracking-widest text-blue-600">
+                  Key Equations &amp; Core Rules
+                </div>
+                <div className="space-y-1.5">
+                  {currentGuide.examMethod.formulas.map((formula, idx) => (
+                    <div
+                      key={idx}
+                      className="font-mono text-xs sm:text-[13px] font-bold text-blue-950 bg-white/85 border border-blue-100 rounded-xl px-3 py-2"
+                    >
+                      {formula}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                  Step-by-Step WJEC Exam Strategy
+                </div>
+                <ol className="space-y-2">
+                  {currentGuide.examMethod.steps.map((step, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-start gap-3 bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5"
+                    >
+                      <span className="w-6 h-6 rounded-lg bg-[#326fa0] text-white font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
+                        {idx + 1}
+                      </span>
+                      <span className="font-medium text-slate-700">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
             </div>
-          </div>
+          )}
 
+          {activeTab === 'example' && (
+            <div className="space-y-4">
+              <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4">
+                <div className="text-[11px] font-black uppercase tracking-widest text-indigo-600 mb-1.5">
+                  Representative Exam Question
+                </div>
+                <p className="font-bold text-indigo-950 text-xs sm:text-sm leading-relaxed">
+                  {currentGuide.workedExample.question}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                  Method &amp; Full ECF Working
+                </div>
+                <ol className="space-y-2">
+                  {currentGuide.workedExample.steps.map((step, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-start gap-3 bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5"
+                    >
+                      <span className="px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 font-black text-[11px] shrink-0 mt-0.5">
+                        Step {idx + 1}
+                      </span>
+                      <span className="font-medium text-slate-700">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700">
+                  Final Mark-Scheme Answer
+                </span>
+                <span className="font-mono font-black text-sm text-emerald-950 bg-white px-3 py-1.5 rounded-xl border border-emerald-200">
+                  {currentGuide.workedExample.answer}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'pitfalls' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="text-[11px] font-black uppercase tracking-widest text-rose-600">
+                  Common Examiner Pitfalls
+                </div>
+                <ul className="space-y-2">
+                  {currentGuide.examinerTips.pitfalls.map((pitfall, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-start gap-2.5 bg-rose-50 border border-rose-200/80 rounded-2xl p-3.5 text-rose-950 font-semibold"
+                    >
+                      <span className="text-rose-600 shrink-0 mt-0.5">✕</span>
+                      <span>{pitfall}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 space-y-2">
+                <div className="text-[11px] font-black uppercase tracking-widest text-emerald-700">
+                  Quick Mark-Scheme Checklist
+                </div>
+                <ul className="space-y-1.5">
+                  {currentGuide.examinerTips.checklist.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-start gap-2.5 text-emerald-950 font-semibold text-xs sm:text-sm"
+                    >
+                      <span className="text-emerald-600 font-black shrink-0">✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="bg-slate-50 px-6 py-3.5 border-t border-slate-100 flex justify-end shrink-0">
-          <button onClick={onClose} className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer">
+        <div className="bg-slate-50 px-5 sm:px-6 py-3.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+          {onOpenDataBooklet ? (
+            <button
+              type="button"
+              onClick={onOpenDataBooklet}
+              className="px-4 py-2 bg-white hover:bg-blue-50 text-[#326fa0] border border-slate-200 hover:border-blue-300 font-black text-xs uppercase tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
+            >
+              📚 Open Data Booklet
+            </button>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
+          >
             Got It ✓
           </button>
         </div>
-        
       </div>
     </div>
   );
@@ -526,6 +715,10 @@ export default function App() {
         isOpen={isHowToGuideOpen}
         onClose={() => setIsHowToGuideOpen(false)}
         appletId={currentApplet}
+        onOpenDataBooklet={() => {
+          setIsHowToGuideOpen(false);
+          setIsDataBookletOpen(true);
+        }}
       />
     </div>
   );
