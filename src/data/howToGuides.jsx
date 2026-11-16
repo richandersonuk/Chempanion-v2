@@ -598,7 +598,7 @@ export const howToGuides = {
         'Standard notation (ROOR):  Reduced | Oxidised || Oxidised | Reduced   (with Pt(s) if no solid metal electrode)',
       ],
       steps: [
-        'Compare standard reduction potentials (check the Data Booklet Electrode Potentials table): the more positive half-cell goes forward (reduction); the less positive/more negative reverses (oxidation).',
+        'Compare standard reduction potentials (using the standard electrode potentials table provided in the question): the more positive half-cell goes forward (reduction); the less positive/more negative reverses (oxidation).',
         'Calculate E°_cell = E°(reduction) − E°(oxidation); NEVER multiply E° values by stoichiometric coefficients.',
         'Write IUPAC cell notation left-to-right: oxidation half-cell on LHS (negative electrode), salt bridge ||, reduction half-cell on RHS (positive electrode); use commas `,` between same-phase aqueous ions and `|` for phase boundaries.',
         'Predict concentration shifts: increasing reactant ion concentration drives that half-cell forward, shifting its E value more positive.',

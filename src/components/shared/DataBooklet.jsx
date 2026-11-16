@@ -139,7 +139,7 @@ const APPLET_TAB_MAP = {
   'titration': 'units',
   'inorganic-tests': 'periodic',
   'thermometric': 'constants',
-  'enthalpy': 'bonds',
+  'enthalpy': 'constants',
   'born-haber': 'constants',
   'entropy-gibbs': 'units',
   'rates': 'constants',
@@ -147,12 +147,12 @@ const APPLET_TAB_MAP = {
   'kp-calc': 'units',
   'acids': 'constants',
   'buffers': 'constants',
-  'redox': 'electrodes',
-  'half-equations': 'electrodes',
-  'cell-potentials': 'electrodes',
+  'redox': 'periodic',
+  'half-equations': 'periodic',
+  'cell-potentials': 'constants',
   'spectra-interpreter': 'IR',
   'chiral-centers': '13C',
-  'mechanisms-unit2': 'bonds',
+  'mechanisms-unit2': 'periodic',
   'mechanisms-masterclass': 'IR'
 };
 
@@ -237,8 +237,6 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
     { id: 'constants', label: 'Constants' },
     { id: 'units', label: 'Units' },
     { id: 'periodic', label: 'Periodic Table' },
-    { id: 'electrodes', label: 'Electrode Potentials' },
-    { id: 'bonds', label: 'Bond Enthalpies' },
     { id: 'IR', label: 'IR Absorptions' },
     { id: '13C', label: <span><sup>13</sup>C NMR</span> },
     { id: '1H', label: <span><sup>1</sup>H NMR</span> }
@@ -255,35 +253,6 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
     { n: 'specific heat capacity of water', s: 'c', v: <>4.18 J g<sup>&minus;1</sup> K<sup>&minus;1</sup></> },
     { n: 'density of water / solutions', s: 'ρ', v: <>1.00 g cm<sup>&minus;3</sup></> },
     { n: 'ionic product of water (298 K)', s: <>K<sub>w</sub></>, v: <>1.00 &times; 10<sup>&minus;14</sup> mol² dm<sup>&minus;6</sup></> }
-  ];
-
-  const electrodeData = [
-    { eq: <>Zn<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Zn(s)</>, e0: '-0.76' },
-    { eq: <>Fe<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Fe(s)</>, e0: '-0.44' },
-    { eq: <>2H<sup>+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; H<sub>2</sub>(g)</>, e0: '0.00' },
-    { eq: <>Cu<sup>2+</sup>(aq) + 2e<sup>&minus;</sup> &#x21CC; Cu(s)</>, e0: '+0.34' },
-    { eq: <>I<sub>2</sub>(aq) + 2e<sup>&minus;</sup> &#x21CC; 2I<sup>&minus;</sup>(aq)</>, e0: '+0.54' },
-    { eq: <>Fe<sup>3+</sup>(aq) + e<sup>&minus;</sup> &#x21CC; Fe<sup>2+</sup>(aq)</>, e0: '+0.77' },
-    { eq: <>Ag<sup>+</sup>(aq) + e<sup>&minus;</sup> &#x21CC; Ag(s)</>, e0: '+0.80' },
-    { eq: <>Br<sub>2</sub>(aq) + 2e<sup>&minus;</sup> &#x21CC; 2Br<sup>&minus;</sup>(aq)</>, e0: '+1.09' },
-    { eq: <>Cr<sub>2</sub>O<sub>7</sub><sup>2&minus;</sup>(aq) + 14H<sup>+</sup>(aq) + 6e<sup>&minus;</sup> &#x21CC; 2Cr<sup>3+</sup>(aq) + 7H<sub>2</sub>O(l)</>, e0: '+1.33' },
-    { eq: <>Cl<sub>2</sub>(g) + 2e<sup>&minus;</sup> &#x21CC; 2Cl<sup>&minus;</sup>(aq)</>, e0: '+1.36' },
-    { eq: <>MnO<sub>4</sub><sup>&minus;</sup>(aq) + 8H<sup>+</sup>(aq) + 5e<sup>&minus;</sup> &#x21CC; Mn<sup>2+</sup>(aq) + 4H<sub>2</sub>O(l)</>, e0: '+1.51' }
-  ];
-
-  const bondEnthalpyData = [
-    { b: 'C–H', v: '412' },
-    { b: 'C–C', v: '348' },
-    { b: 'C=C', v: '612' },
-    { b: 'C–O', v: '360' },
-    { b: 'C=O', v: '743 (805 in CO₂)' },
-    { b: 'O–H', v: '463' },
-    { b: 'O=O', v: '496' },
-    { b: 'H–H', v: '436' },
-    { b: 'N≡N', v: '944' },
-    { b: 'N–H', v: '388' },
-    { b: 'C–Cl', v: '338' },
-    { b: 'C–Br', v: '276' }
   ];
 
   const irData = [
@@ -488,54 +457,6 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
                     </tbody>
                   </table>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'electrodes' && (
-            <div className="max-w-3xl mx-auto space-y-4 text-slate-900" style={{ textTransform: 'none' }}>
-              <h3 className="font-black text-lg text-slate-800 text-center uppercase tracking-tight">Standard Electrode Potentials (298 K, 1.0 mol dm⁻³, 1 atm)</h3>
-              <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left">
-                  <thead className="bg-slate-50 border-b">
-                    <tr>
-                      <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Half-Reaction</th>
-                      <th className="py-3 px-4 text-xs font-bold text-slate-500 text-right">E° / V</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {electrodeData.map((row, i) => (
-                      <tr key={i} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 text-sm font-mono font-bold text-slate-800">{row.eq}</td>
-                        <td className="py-3 px-4 text-sm font-mono text-right text-[#326fa0] font-black">{row.e0}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'bonds' && (
-            <div className="max-w-3xl mx-auto space-y-4 text-slate-900" style={{ textTransform: 'none' }}>
-              <h3 className="font-black text-lg text-slate-800 text-center uppercase tracking-tight">Average Bond Enthalpies</h3>
-              <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left">
-                  <thead className="bg-slate-50 border-b">
-                    <tr>
-                      <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Bond</th>
-                      <th className="py-3 px-4 text-xs font-bold text-slate-500 text-right">Average Bond Enthalpy / kJ mol⁻¹</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {bondEnthalpyData.map((row, i) => (
-                      <tr key={i} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 text-sm font-mono font-bold text-slate-800">{row.b}</td>
-                        <td className="py-3 px-4 text-sm font-mono text-right text-[#326fa0] font-black">{row.v}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
             </div>
           )}

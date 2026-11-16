@@ -69,8 +69,8 @@ const CellPotentials = ({ onComplete }) => {
     if (selection === 'calc_emf') {
       newProb = {
         title: "Standard Cell Potential Calculation (E°cell)",
-        text: <>An electrochemical cell is constructed under standard laboratory conditions using the following two half-cells:</>,
-        halfCellData: [anode, cathode],
+        text: <>An electrochemical cell is constructed under standard laboratory conditions using the <b>{cellA.name}</b> and <b>{cellB.name}</b> half-cells (see the Standard Electrode Potentials table below):</>,
+        halfCellData: [cellA, cellB],
         question: "Calculate the overall standard cell potential (E°cell) in volts.",
         label: "E°cell =",
         unit: "V",
@@ -116,7 +116,7 @@ const CellPotentials = ({ onComplete }) => {
 
       newProb = {
         title: "Conventional Cell Diagrams",
-        text: <>Consider a standard cell comprising a <b>{anode.name}</b> half-cell joined across a salt bridge to a standard <b>{cathode.name}</b> half-cell.</>,
+        text: <>Consider a standard cell comprising a <b>{cellA.name}</b> half-cell joined across a salt bridge to a standard <b>{cellB.name}</b> half-cell (refer to the Standard Electrode Potentials table below).</>,
         question: "Select the correct, standard conventional representation notation layout string for this operational cell matrix.",
         choices: choices.sort(() => Math.random() - 0.5),
         meta: { anode, cathode },
@@ -253,18 +253,37 @@ const CellPotentials = ({ onComplete }) => {
         <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />
       )}
 
-      {mode === 'calc_emf' && problem.halfCellData && (
-        <div className="w-full max-w-lg mx-auto my-4 space-y-2 select-none">
-          {problem.halfCellData.map((cell, idx) => (
-            <div key={idx} className="bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-xl px-3 sm:px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono font-bold text-[var(--chem-text-main)]">
-              <span className="break-words">{cell.sys}</span>
-              <span className="text-[var(--chem-primary)] font-black bg-[var(--chem-bg-main)] px-2 py-1 border border-[var(--chem-border)] rounded-md shrink-0">
-                E° = {cell.e0 >= 0 ? '+' : ''}{cell.e0.toFixed(2)} V
-              </span>
-            </div>
-          ))}
+      {/* Dedicated Exam-Style Standard Electrode Potentials Table (not in WJEC Data Booklet) */}
+      <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            Standard Electrode Potentials (298 K, 1.0 mol dm⁻³, 1 atm)
+          </span>
+          <span className="text-[10px] font-bold text-slate-400">
+            Provided in Question
+          </span>
         </div>
-      )}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="py-2 px-3 text-[11px] font-bold text-slate-500 uppercase">Half-Reaction</th>
+                <th className="py-2 px-3 text-[11px] font-bold text-slate-500 text-right">E° / V</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {halfCells.map((cell) => (
+                <tr key={cell.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="py-2 px-3 text-xs font-mono font-bold text-slate-800">{cell.sys}</td>
+                  <td className="py-2 px-3 text-xs font-mono text-right text-[#326fa0] font-black whitespace-nowrap">
+                    {cell.e0 > 0 ? `+${cell.e0.toFixed(2)}` : cell.e0.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div className="font-bold my-6 text-center text-[0.95rem] px-3 text-[var(--chem-text-main)]">
         {problem.question}

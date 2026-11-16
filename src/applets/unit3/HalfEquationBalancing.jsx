@@ -293,9 +293,6 @@ export default function HalfEquationBalancing({ onComplete }) {
             <p className="text-xs sm:text-sm text-[var(--chem-text-muted)] italic">
               {currentProblem.context}
             </p>
-            <p className="text-xs text-[var(--chem-text-muted)] pt-1">
-              (Refer to the Data Booklet for standard electrode potentials or oxidation rules if required.)
-            </p>
           </div>
 
           <div className="w-full overflow-x-auto my-4 py-4 px-3 bg-[var(--chem-bg-main)] rounded-lg border border-[var(--chem-border)] flex flex-col items-center justify-center gap-2">
