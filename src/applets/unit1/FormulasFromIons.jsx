@@ -7,6 +7,7 @@ export function FormulasFromIons({ onComplete }) {
   const [userFormula, setUserFormula] = useState('');
   const [feedback, setFeedback] = useState(null);
   const feedbackRef = useRef(null);
+  const inputRef = useRef(null);
 
   const getLCM = (a, b) => {
     const min = Math.min(a, b);
@@ -27,6 +28,7 @@ export function FormulasFromIons({ onComplete }) {
 
     setCation(randomCation);
     setAnion(randomAnion);
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   useEffect(() => {
@@ -105,6 +107,10 @@ export function FormulasFromIons({ onComplete }) {
 
   const handleVerify = (e) => {
     e.preventDefault();
+    if (feedback?.isCorrect) {
+      generatePair();
+      return;
+    }
     if (!cation || !anion || !userFormula.trim()) return;
 
     const cleanedInput = userFormula.replace(/\s+/g, '');
@@ -152,19 +158,8 @@ export function FormulasFromIons({ onComplete }) {
   if (!cation || !anion) return <div className="text-center p-8 text-[var(--chem-text-muted)]">Loading workspace matrix...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="border-b border-[var(--chem-border-subtle)] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight text-[var(--chem-text-main)]">Formulas from Ions Builder</h2>
-          <p className="text-xs text-[var(--chem-text-muted)] font-medium mt-0.5">Core Skill Scaffold: Constructing Net Neutral Empirical Ionic Compounds</p>
-        </div>
-        <button
-          onClick={generatePair}
-          className="px-3 py-1.5 text-xs font-bold bg-[var(--chem-bg-muted)] hover:bg-[var(--chem-border-subtle)] border border-[var(--chem-border-subtle)] rounded-lg transition-colors text-[var(--chem-text-main)] shrink-0 self-start sm:self-center"
-        >
-          🎲 Shuffle Ions
-        </button>
-      </div>
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">Formulas from Ions</div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-4 text-center shadow-inner">
@@ -185,16 +180,17 @@ export function FormulasFromIons({ onComplete }) {
             Deduce the Combined Neutral Formula:
           </label>
           <p className="text-xs text-[var(--chem-text-muted)] leading-relaxed">
-            Type standard continuous values. Use brackets for multiple polyatomic units. The layout widget below renders active subscripts cleanly alongside your typing context.
+            Type standard continuous values. Use brackets for multiple polyatomic units. Press Enter to check, and press Enter again for the next ion pair.
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
             <input
+              ref={inputRef}
               type="text"
               value={userFormula}
-              onChange={(e) => setUserFormula(e.target.value)}
+              onChange={(e) => { setUserFormula(e.target.value); setFeedback(null); }}
               placeholder="e.g. Al2(SO4)3"
               className="flex-1 px-4 py-2.5 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-slate-800 font-mono font-bold tracking-wide shadow-inner placeholder-slate-400"
               spellCheck="false"
@@ -207,12 +203,14 @@ export function FormulasFromIons({ onComplete }) {
                 {renderLiveFormulaPreview(userFormula)}
               </div>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              className="px-5 py-2.5 h-10 text-sm font-bold bg-[var(--chem-primary)] text-white hover:bg-[var(--chem-primary-hover)] rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] shrink-0"
-            >
-              Check Balance
+          <div className="button-group">
+            <button type="submit" className="btn btn-primary">
+              Check Answer
+            </button>
+            <button type="button" onClick={generatePair} className="btn btn-secondary">
+              Next Problem &rarr;
             </button>
           </div>
         </div>
@@ -221,17 +219,26 @@ export function FormulasFromIons({ onComplete }) {
       {feedback && (
         <div
           ref={feedbackRef}
-          className={`p-4 rounded-xl border flex items-start gap-3 transition-all animate-[fadeIn_0.2s_ease-out] ${
-            feedback.isCorrect
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-800'
+          className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+            feedback.isCorrect ? 'feedback-success' : 'feedback-error'
           }`}
         >
-          <span className="text-lg mt-0.5">{feedback.isCorrect ? '✅' : '❌'}</span>
-          <div>
-            <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Empirical Balance Reached' : 'Stoichiometry Mismatch'}</h4>
-            <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+          <div className="flex items-start gap-2.5">
+            <span className="text-lg">{feedback.isCorrect ? '✅' : '❌'}</span>
+            <div>
+              <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Empirical Balance Reached' : 'Stoichiometry Mismatch'}</h4>
+              <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+            </div>
           </div>
+          {feedback.isCorrect && (
+            <button
+              type="button"
+              onClick={generatePair}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

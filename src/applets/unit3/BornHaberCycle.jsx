@@ -76,6 +76,10 @@ export default function BornHaberCycle({ onComplete }) {
 
   const handleCheckAnswer = (e) => {
     e.preventDefault();
+    if (feedback?.isCorrect) {
+      resetProblem((sysIdx + 1) % BORN_HABER_SYSTEMS.length, mode, targetType);
+      return;
+    }
     const val = parseFloat(userAnswer);
     if (isNaN(val)) return;
 
@@ -135,26 +139,18 @@ export default function BornHaberCycle({ onComplete }) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6" style={{ textTransform: 'none' }}>
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
       {/* Header & Mode Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-widest bg-blue-100 text-[#326fa0] rounded-md">
-              WJEC Unit 3.6
-            </span>
-            <span className="text-xs font-bold text-slate-400">Energetics & Ionic Lattices</span>
-          </div>
-          <h2 className="text-xl font-black text-slate-800 mt-1">
-            Born-Haber & Solution Enthalpy Cycle Builder
-          </h2>
-        </div>
+      <div className="applet-header !mb-0">
+        Born-Haber &amp; Solution Enthalpy Cycle Builder
+      </div>
 
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+      <div className="flex justify-center">
+        <div className="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             type="button"
             onClick={() => resetProblem(sysIdx, 'born_haber', targetType)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
               mode === 'born_haber'
                 ? 'bg-[#326fa0] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -165,7 +161,7 @@ export default function BornHaberCycle({ onComplete }) {
           <button
             type="button"
             onClick={() => resetProblem(sysIdx, 'enthalpy_solution', targetType)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
               mode === 'enthalpy_solution'
                 ? 'bg-[#326fa0] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -306,8 +302,8 @@ export default function BornHaberCycle({ onComplete }) {
             {/* Step 1 Gate */}
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">
-                  Step 1: WJEC Stoichiometry & Sign Gate
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  Step 1: WJEC Stoichiometry &amp; Sign Gate
                 </span>
                 <h3 className="text-xs font-black text-slate-800 mt-1">
                   Check Multipliers for {system.formula} Before Calculating
@@ -407,26 +403,26 @@ export default function BornHaberCycle({ onComplete }) {
                   inputMode="decimal"
                   onWheel={(e) => e.currentTarget.blur()}
                   value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
+                  onChange={(e) => { setUserAnswer(e.target.value); setFeedback(null); }}
                   placeholder="e.g. -2526"
                   className="flex-1 px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-sm focus:outline-none focus:border-[#326fa0]"
                 />
                 <span className="font-mono font-bold text-xs text-slate-500">kJ mol⁻¹</span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="button-group">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black uppercase tracking-wider rounded-xl transition-colors"
+                  className="btn btn-primary"
                 >
                   Check Calculation
                 </button>
                 <button
                   type="button"
                   onClick={() => resetProblem((sysIdx + 1) % BORN_HABER_SYSTEMS.length, mode, targetType)}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+                  className="btn btn-secondary"
                 >
-                  Next Crystal →
+                  Next Crystal &rarr;
                 </button>
               </div>
             </form>
@@ -462,39 +458,59 @@ export default function BornHaberCycle({ onComplete }) {
             </div>
           </div>
 
-          <form onSubmit={handleCheckAnswer} className="flex flex-wrap items-center gap-3 pt-2">
-            <label className="font-mono font-black text-sm text-slate-700">
-              ΔH_sol({system.formula}) =
-            </label>
-            <input
-              type="number"
-              step="any"
-              inputMode="decimal"
-              onWheel={(e) => e.currentTarget.blur()}
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              placeholder="e.g. -155 or +4"
-              className="w-40 px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-sm focus:outline-none focus:border-[#326fa0]"
-            />
-            <span className="font-mono font-bold text-xs text-slate-500">kJ mol⁻¹</span>
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black uppercase tracking-wider rounded-xl transition-colors"
-            >
-              Verify ΔH_sol
-            </button>
+          <form onSubmit={handleCheckAnswer} className="space-y-4 pt-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="font-mono font-black text-sm text-slate-700">
+                ΔH_sol({system.formula}) =
+              </label>
+              <input
+                type="number"
+                step="any"
+                inputMode="decimal"
+                onWheel={(e) => e.currentTarget.blur()}
+                value={userAnswer}
+                onChange={(e) => { setUserAnswer(e.target.value); setFeedback(null); }}
+                placeholder="e.g. -155 or +4"
+                className="w-40 px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-sm focus:outline-none focus:border-[#326fa0]"
+              />
+              <span className="font-mono font-bold text-xs text-slate-500">kJ mol⁻¹</span>
+            </div>
+            <div className="button-group">
+              <button
+                type="submit"
+                className="btn btn-primary"
+              >
+                Verify ΔH_sol
+              </button>
+              <button
+                type="button"
+                onClick={() => resetProblem((sysIdx + 1) % BORN_HABER_SYSTEMS.length, mode, targetType)}
+                className="btn btn-secondary"
+              >
+                Next Crystal &rarr;
+              </button>
+            </div>
           </form>
         </div>
       )}
 
       {feedback && (
-        <div className={`p-4 rounded-2xl border text-xs font-bold leading-relaxed ${
-          feedback.isCorrect
-            ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
-            : 'bg-rose-50 border-rose-300 text-rose-900'
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+          feedback.isCorrect ? 'feedback-success' : 'feedback-error'
         }`}>
-          {feedback.isCorrect ? '✅ ' : '❌ '}
-          {feedback.msg}
+          <span>
+            {feedback.isCorrect ? '✅ ' : '❌ '}
+            {feedback.msg}
+          </span>
+          {feedback.isCorrect && (
+            <button
+              type="button"
+              onClick={() => resetProblem((sysIdx + 1) % BORN_HABER_SYSTEMS.length, mode, targetType)}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Crystal &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -197,6 +197,10 @@ export function AcidsAndBases({ onComplete }) {
 
   const handleCheck = (e) => {
     e.preventDefault();
+    if (feedback?.isCorrect) {
+      generateProblem();
+      return;
+    }
     if (!prob) return;
 
     let valueToTest = userAns;
@@ -222,19 +226,8 @@ export function AcidsAndBases({ onComplete }) {
   if (!prob) return <div className="text-center p-8 text-[var(--chem-text-muted)]">Loading parameters...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="border-b border-[var(--chem-border-subtle)] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight text-[var(--chem-text-main)]">{prob.title}</h2>
-          <p className="text-xs text-[var(--chem-text-muted)] font-medium mt-0.5">WJEC Unit 3: Acids, Bases and Buffer Equilibria</p>
-        </div>
-        <button
-          onClick={generateProblem}
-          className="px-3 py-1.5 text-xs font-bold bg-[var(--chem-bg-muted)] hover:bg-[var(--chem-border-subtle)] border border-[var(--chem-border-subtle)] rounded-lg transition-colors text-[var(--chem-text-main)] shrink-0 self-start sm:self-center"
-        >
-          🎲 New Variant
-        </button>
-      </div>
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">{prob.title}</div>
 
       <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-5 shadow-inner">
         <p className="text-sm text-[var(--chem-text-main)] leading-relaxed font-medium">
@@ -246,14 +239,14 @@ export function AcidsAndBases({ onComplete }) {
       </div>
 
       <form onSubmit={handleCheck} className="bg-[var(--chem-bg-card)] border border-[var(--chem-border-subtle)] rounded-xl p-5 space-y-4">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           {prob.useScientific ? (
             <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
               <ScientificInput
                 value={sciCoeff}
                 exponent={sciExp}
-                onValueChange={setSciCoeff}
-                onExponentChange={setSciExp}
+                onValueChange={(v) => { setSciCoeff(v); if (feedback) setFeedback(null); }}
+                onExponentChange={(v) => { setSciExp(v); if (feedback) setFeedback(null); }}
                 label={prob.label}
                 status={feedback ? (feedback.isCorrect ? 'success' : 'error') : ''}
               />
@@ -267,17 +260,20 @@ export function AcidsAndBases({ onComplete }) {
                 type="text"
                 inputMode="decimal"
                 value={userAns}
-                onChange={(e) => setUserAns(e.target.value)}
+                onChange={(e) => { setUserAns(e.target.value); if (feedback) setFeedback(null); }}
                 placeholder="e.g. 4.76"
-                className="flex-1 min-w-[160px] max-w-xs px-3.5 py-2 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-[var(--chem-text-main)] font-medium"
+                className="flex-1 min-w-[160px] max-w-xs px-3.5 py-2 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-[var(--chem-text-main)] font-medium text-center"
               />
             </>
           )}
-          <button
-            type="submit"
-            className="px-5 py-2 text-sm font-bold bg-[var(--chem-primary)] text-white hover:bg-[var(--chem-primary-hover)] rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)]"
-          >
-            Submit Answer
+        </div>
+
+        <div className="button-group">
+          <button type="submit" className="btn btn-primary">
+            Check Answer
+          </button>
+          <button type="button" onClick={generateProblem} className="btn btn-secondary">
+            Next Problem &rarr;
           </button>
         </div>
       </form>
@@ -285,17 +281,26 @@ export function AcidsAndBases({ onComplete }) {
       {feedback && (
         <div
           ref={feedbackRef}
-          className={`p-4 rounded-xl border flex items-start gap-3 transition-all animate-[fadeIn_0.2s_ease-out] ${
-            feedback.isCorrect
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-800'
+          className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+            feedback.isCorrect ? 'feedback-success' : 'feedback-error'
           }`}
         >
-          <span className="text-lg mt-0.5">{feedback.isCorrect ? '✅' : '❌'}</span>
-          <div>
-            <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Mark Awarded' : 'Check Working'}</h4>
-            <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+          <div className="flex items-start gap-2.5">
+            <span className="text-lg">{feedback.isCorrect ? '✅' : '❌'}</span>
+            <div>
+              <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Mark Awarded' : 'Check Working'}</h4>
+              <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+            </div>
           </div>
+          {feedback.isCorrect && (
+            <button
+              type="button"
+              onClick={generateProblem}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

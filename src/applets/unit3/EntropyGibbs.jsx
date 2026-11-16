@@ -104,31 +104,29 @@ export default function EntropyGibbs({ onComplete }) {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 md:p-6 bg-white border border-blue-100 rounded-2xl shadow-xl text-slate-800 font-sans">
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-blue-100 gap-3">
-        <div>
-          <h1 className="text-xl font-black text-blue-900 mt-1">
-            Entropy, Gibbs Free Energy & Feasibility
-          </h1>
-        </div>
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">
+        Entropy, Gibbs Free Energy &amp; Feasibility
+      </div>
 
-        <div className="flex items-center gap-1.5 p-1 bg-blue-50/80 justify-center border border-blue-200/60 rounded-xl">
+      <div className="flex justify-center">
+        <div className="inline-flex items-center gap-1.5 p-1 bg-slate-100 border border-slate-200 rounded-xl">
           <button
             onClick={() => setActiveTab('trainer')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'trainer'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 hover:text-blue-900'
+                ? 'bg-[var(--chem-primary)] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Exam Question Trainer
           </button>
           <button
             onClick={() => setActiveTab('explorer')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'explorer'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 hover:text-blue-900'
+                ? 'bg-[var(--chem-primary)] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Quadrant Explorer
@@ -185,11 +183,11 @@ export default function EntropyGibbs({ onComplete }) {
               </button>
             </div>
 
-            <div className="flex items-baseline gap-2 mt-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 mt-2">
               <h2 className="text-lg font-bold text-slate-900">{currentQ.title}</h2>
               {currentQ.isPastPaper && (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200">
-                  WJEC Past Paper
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+                  Past Paper Question
                 </span>
               )}
             </div>
@@ -436,6 +434,18 @@ export default function EntropyGibbs({ onComplete }) {
           {submittedStep2 && isStep2Correct && (
             <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900 font-mono">
               <strong className="text-blue-950">Examiner Reminder:</strong> A reaction with ΔG &lt; 0 is thermodynamically feasible, but may not occur at room temperature due to high activation energy (kinetic stability).
+            </div>
+          )}
+
+          {submittedStep2 && isStep2Correct && (boundaryType === 'always' || boundaryType === 'never' || (submittedStep3 && isStep3Correct())) && (
+            <div className="button-group pt-2">
+              <button
+                type="button"
+                onClick={handleNextQuestion}
+                className="btn btn-primary"
+              >
+                Next Reaction &rarr;
+              </button>
             </div>
           )}
         </div>

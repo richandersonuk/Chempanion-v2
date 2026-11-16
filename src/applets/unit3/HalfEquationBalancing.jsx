@@ -81,10 +81,12 @@ export default function HalfEquationBalancing({ onComplete }) {
 
   const handleGuidedInputChange = (field, val) => {
     setGuidedInputs((prev) => ({ ...prev, [field]: val }));
+    if (feedback) setFeedback(null);
   };
 
   const handleExamInputChange = (field, val) => {
     setExamInputs((prev) => ({ ...prev, [field]: val }));
+    if (feedback) setFeedback(null);
   };
 
   const checkOSMatch = (inputVal, targetVal) => {
@@ -185,6 +187,10 @@ export default function HalfEquationBalancing({ onComplete }) {
 
   const handleExamSubmit = (e) => {
     e.preventDefault();
+    if (feedback?.status === 'success') {
+      generateProblem();
+      return;
+    }
     if (!currentProblem) return;
 
     const p = currentProblem;
@@ -242,22 +248,15 @@ export default function HalfEquationBalancing({ onComplete }) {
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-3 sm:p-6 bg-[var(--chem-bg-main)] text-[var(--chem-text)] font-sans transition-colors duration-200">
-      <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[var(--chem-border)] pb-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[var(--chem-primary)] flex items-center gap-2">
-            <span>⚡</span> Redox Half-Equations
-          </h1>
-          <p className="text-xs sm:text-sm text-[var(--chem-text-muted)] mt-1">
-            WJEC A-Level Chemistry • Unit 3.1 & Unit 3.4
-          </p>
-        </div>
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">Redox Half-Equations</div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto bg-[var(--chem-card-bg)] p-1 rounded-lg border border-[var(--chem-border)]">
+      <div className="flex justify-center">
+        <div className="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             type="button"
             onClick={() => setPracticeMode('guided')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
               practiceMode === 'guided'
                 ? 'bg-[var(--chem-primary)] text-white shadow-sm'
                 : 'text-[var(--chem-text-muted)] hover:text-[var(--chem-text)]'
@@ -268,7 +267,7 @@ export default function HalfEquationBalancing({ onComplete }) {
           <button
             type="button"
             onClick={() => setPracticeMode('exam')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
               practiceMode === 'exam'
                 ? 'bg-[var(--chem-primary)] text-white shadow-sm'
                 : 'text-[var(--chem-text-muted)] hover:text-[var(--chem-text)]'
@@ -277,12 +276,11 @@ export default function HalfEquationBalancing({ onComplete }) {
             Exam Practice
           </button>
         </div>
-      </header>
+      </div>
 
       {currentProblem && (
-        <div className="bg-[var(--chem-card-bg)] rounded-xl border border-[var(--chem-border)] p-4 sm:p-6 shadow-sm mb-6">
-          <div className="flex justify-between items-center border-b border-[var(--chem-border)] pb-3 mb-4 text-xs font-mono text-[var(--chem-text-muted)]">
-            <span>WJEC Unit 3.1 • Redox Half-Equations</span>
+        <div className="bg-[var(--chem-card-bg)] rounded-xl border border-[var(--chem-border)] p-4 sm:p-6 shadow-sm">
+          <div className="flex justify-end items-center border-b border-[var(--chem-border)] pb-2.5 mb-4 text-xs font-mono text-[var(--chem-text-muted)]">
             <span className="font-semibold text-[var(--chem-accent)]">
               [{practiceMode === 'guided' ? `Step ${activeStep + 1} of 6` : '2 marks'}]
             </span>
@@ -712,48 +710,50 @@ export default function HalfEquationBalancing({ onComplete }) {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div className="button-group pt-2">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-lg transition-colors shadow-sm"
+                  className="btn btn-primary"
                 >
                   Check Half-Equation
                 </button>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowMarkScheme(!showMarkScheme)}
-                    className="px-3.5 py-2.5 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] hover:border-[var(--chem-primary)] text-[var(--chem-text)] text-xs sm:text-sm font-medium rounded-lg transition-colors"
-                  >
-                    {showMarkScheme ? 'Hide Mark Scheme' : 'View Mark Scheme'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={generateProblem}
-                    className="px-3.5 py-2.5 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] hover:border-[var(--chem-primary)] text-[var(--chem-text)] text-xs sm:text-sm font-medium rounded-lg transition-colors"
-                  >
-                    Next Question
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowMarkScheme(!showMarkScheme)}
+                  className="btn btn-secondary"
+                >
+                  {showMarkScheme ? 'Hide Mark Scheme' : 'View Mark Scheme'}
+                </button>
+                <button
+                  type="button"
+                  onClick={generateProblem}
+                  className="btn btn-secondary"
+                >
+                  Next Question &rarr;
+                </button>
               </div>
             </form>
           )}
 
           {feedback && (
             <div
-              className={`mt-6 p-4 rounded-lg border text-xs sm:text-sm leading-relaxed ${
-                feedback.status === 'success'
-                  ? 'bg-[var(--chem-bg-main)] border-[var(--chem-success)] text-[var(--chem-text)]'
-                  : 'bg-[var(--chem-bg-main)] border-[var(--chem-error)] text-[var(--chem-text)]'
+              className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left text-xs sm:text-sm leading-relaxed ${
+                feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
               }`}
             >
               <div className="flex items-start gap-2">
                 <span>{feedback.status === 'success' ? '✅' : '❌'}</span>
-                <div>
-                  <p className="font-semibold">{feedback.message}</p>
-                </div>
+                <p className="font-semibold">{feedback.message}</p>
               </div>
+              {feedback.status === 'success' && (practiceMode === 'exam' || activeStep === 5) && (
+                <button
+                  type="button"
+                  onClick={generateProblem}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Half-Equation &rarr;
+                </button>
+              )}
             </div>
           )}
 

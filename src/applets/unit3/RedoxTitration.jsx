@@ -174,16 +174,16 @@ const RedoxTitration = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 bg-[var(--chem-bg-main)] rounded-xl shadow-md border border-[var(--chem-border)]">
-      <div className="w-full max-w-md mx-auto mb-8 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-[var(--chem-text-muted)] mb-1.5 text-center">
+    <div className="applet-container" style={{ textTransform: 'none' }}>
+      <div className="w-full max-w-md mx-auto mb-6 px-4">
+        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex flex-col sm:flex-row items-center gap-2">
           <select
             value={mode === 'random' ? '' : mode}
             onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 w-full min-w-0 bg-white border border-[var(--chem-border)] text-[var(--chem-text-main)] py-2.5 px-3 rounded-xl text-sm font-bold outline-none focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)] transition-all cursor-pointer shadow-sm"
+            className="flex-1 w-full min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm"
           >
             <option value="purity_iron">Percentage Purity of Iron</option>
             <option value="ethanedioate">Analysis of Ethanedioate Ions</option>
@@ -194,10 +194,10 @@ const RedoxTitration = ({ onComplete }) => {
           <button
             type="button"
             onClick={() => { setMode('random'); generateProblem('random'); }}
-            className={`w-full sm:w-auto px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
+            className={`w-full sm:w-auto px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 cursor-pointer ${
               mode === 'random'
                 ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-[var(--chem-border)] text-[var(--chem-text-muted)] hover:bg-gray-50'
+                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
             }`}
           >
             Random 🎲
@@ -205,64 +205,72 @@ const RedoxTitration = ({ onComplete }) => {
         </div>
       </div>
 
-      <h2 className="text-xl font-bold text-center text-[var(--chem-text-main)] mb-4">{problem.title}</h2>
+      <div className="applet-header">{problem.title}</div>
 
-      <div className="text-center text-[var(--chem-text-main)] mb-6 leading-relaxed">
+      <div className="question-text text-center px-2 leading-relaxed">
         {problem.text}
       </div>
 
-      <div className="font-bold mb-6 text-center text-[var(--chem-text-main)] text-lg">
+      <div className="font-bold mb-6 text-center text-[0.95rem] px-2 text-slate-700">
         {problem.question}
       </div>
 
-      <div className="flex justify-center items-center gap-3 mb-8">
+      <div className="input-group">
         <label className="font-bold text-[var(--chem-text-main)]">{problem.label}</label>
         <input
           type="number"
           step="any"
           inputMode="decimal"
           onWheel={(e) => e.currentTarget.blur()}
-          className={`w-32 text-center p-2 border rounded-lg focus:outline-none focus:ring-2 ${
-            feedback.status === 'error' ? 'border-[var(--chem-error-bg)] focus:ring-[var(--chem-error-bg)]' :
-            feedback.status === 'success' ? 'border-[var(--chem-success-bg)] focus:ring-[var(--chem-success-bg)]' :
-            'border-[var(--chem-border)] focus:ring-[var(--chem-primary)]'
-          }`}
+          className={`chem-input ${feedback.status}`}
           value={studentAnswer}
-          onChange={(e) => setStudentAnswer(e.target.value)}
+          onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: null, status: '' }); }}
+          onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
           placeholder="0.00"
         />
         <span className="font-bold text-[var(--chem-text-main)]">{problem.unit}</span>
       </div>
 
-      <div className="flex justify-center gap-4 mb-6">
+      <div className="button-group">
         <button
-          className="px-6 py-2.5 bg-[var(--chem-primary)] text-white rounded-lg font-bold shadow hover:opacity-90 transition-opacity"
+          className="btn btn-primary"
           onClick={checkAnswer}
         >
           Check Answer
         </button>
         <button
-          className="px-6 py-2.5 bg-gray-100 text-[var(--chem-text-main)] rounded-lg font-bold border border-[var(--chem-border)] hover:bg-gray-200 transition-colors"
+          className="btn btn-secondary"
           onClick={() => generateProblem()}
         >
-          New Problem
+          Next Problem &rarr;
         </button>
       </div>
 
       {feedback.message && (
-        <div className={`p-4 rounded-lg mb-4 text-center ${
-          feedback.status === 'success' ? 'bg-[var(--chem-success-bg)] text-[var(--chem-success-text)]' : 'bg-[var(--chem-error-bg)] text-[var(--chem-error-text)]'
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+          feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
         }`}>
-          {feedback.message}
-          {feedback.status === 'error' && !showSolution && (
-            <div className="mt-3">
-              <button
-                onClick={() => setShowSolution(true)}
-                className="text-sm px-4 py-1.5 bg-transparent border border-current rounded hover:bg-black hover:bg-opacity-5 transition-colors"
-              >
-                Show Worked Solution
-              </button>
-            </div>
+          <div>
+            {feedback.message}
+            {feedback.status === 'error' && !showSolution && (
+              <div className="mt-3">
+                <button
+                  onClick={() => setShowSolution(true)}
+                  className="text-xs px-3.5 py-1.5 bg-white border border-current rounded-lg font-bold hover:bg-rose-50 transition-colors cursor-pointer"
+                >
+                  Show Worked Solution
+                </button>
+              </div>
+            )}
+          </div>
+          {feedback.status === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblem()}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
           )}
         </div>
       )}

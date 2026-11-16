@@ -79,41 +79,31 @@ export default function InorganicTests({ onComplete }) {
   const isRevealed = Boolean(revealedTests[activeStation]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6" style={{ textTransform: 'none' }}>
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
       {/* Header & Unknown Salt Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-widest bg-blue-100 text-[#326fa0] rounded-md">
-              WJEC Unit 1.6 & 3.3
-            </span>
-            <span className="text-xs font-bold text-slate-400">Qualitative Inorganic Analysis</span>
-          </div>
-          <h2 className="text-xl font-black text-slate-800 mt-1">
-            Sequential Unknown Salt Deduction Lab
-          </h2>
-        </div>
+      <div className="applet-header !mb-0">
+        Sequential Unknown Salt Deduction Lab
+      </div>
 
-        <div className="flex items-center gap-2">
-          <select
-            value={saltIdx}
-            onChange={(e) => loadSalt(Number(e.target.value))}
-            className="bg-white border border-slate-200 text-slate-700 py-2 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] shadow-sm cursor-pointer"
-          >
-            {INORGANIC_SALTS.map((salt, idx) => (
-              <option key={salt.id} value={idx}>
-                Unknown {salt.code} ({idx + 1}/{INORGANIC_SALTS.length})
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={() => loadSalt((saltIdx + 1) % INORGANIC_SALTS.length)}
-            className="px-3 py-2 text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
-          >
-            Next Sample →
-          </button>
-        </div>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <select
+          value={saltIdx}
+          onChange={(e) => loadSalt(Number(e.target.value))}
+          className="bg-white border border-slate-200 text-slate-700 py-2 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] shadow-sm cursor-pointer"
+        >
+          {INORGANIC_SALTS.map((salt, idx) => (
+            <option key={salt.id} value={idx}>
+              Unknown {salt.code} ({idx + 1}/{INORGANIC_SALTS.length})
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={() => loadSalt((saltIdx + 1) % INORGANIC_SALTS.length)}
+          className="px-3 py-2 text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
+        >
+          Next Sample &rarr;
+        </button>
       </div>
 
       {/* Virtual Test-Tube Bench */}
@@ -339,19 +329,19 @@ export default function InorganicTests({ onComplete }) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 pt-1">
+        <div className="button-group pt-1">
           <button
             type="submit"
-            className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-sm transition-colors"
+            className="btn btn-primary"
           >
             Verify Salt Identity
           </button>
           <button
             type="button"
             onClick={() => loadSalt((saltIdx + 1) % INORGANIC_SALTS.length)}
-            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+            className="btn btn-secondary"
           >
-            Try Another Unknown
+            Next Sample &rarr;
           </button>
         </div>
       </form>
@@ -368,7 +358,18 @@ export default function InorganicTests({ onComplete }) {
           <div className="flex items-start gap-2.5">
             <span className="text-lg">{feedback.isCorrect ? '✅' : '❌'}</span>
             <div className="space-y-2 flex-1">
-              <h4 className="text-sm font-black">{feedback.message}</h4>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 className="text-sm font-black">{feedback.message}</h4>
+                {feedback.isCorrect && (
+                  <button
+                    type="button"
+                    onClick={() => loadSalt((saltIdx + 1) % INORGANIC_SALTS.length)}
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                  >
+                    Next Sample &rarr;
+                  </button>
+                )}
+              </div>
               {feedback.ionicEquations && (
                 <div className="bg-white/90 border border-emerald-200 rounded-xl p-3 space-y-1">
                   <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 block">

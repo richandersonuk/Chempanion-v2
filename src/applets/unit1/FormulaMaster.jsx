@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const FormulaMaster = ({ onComplete }) => {
   const [activeMode, setActiveMode] = useState('ions-from-formula-gcse');
@@ -10,6 +10,7 @@ const FormulaMaster = ({ onComplete }) => {
 
   const [aniText, setAniText] = useState('');
   const [aniChargeVal, setAniChargeVal] = useState(1);
+  const catInputRef = useRef(null);
 
   const ionicUniverse = {
     gcse: {
@@ -156,6 +157,7 @@ const FormulaMaster = ({ onComplete }) => {
     setAniText('');
     setAniChargeVal(1);
     setFeedback({ message: null, status: '' });
+    setTimeout(() => catInputRef.current?.focus(), 0);
   };
 
   const triggerRandomModeSwap = () => {
@@ -294,7 +296,9 @@ const FormulaMaster = ({ onComplete }) => {
               <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-2 text-center">Cation Formula</span>
               <div className="flex gap-2 items-center w-full justify-center">
                 <input
-                  type="text" value={catText} onChange={(e) => setCatText(e.target.value)}
+                  ref={catInputRef}
+                  type="text" value={catText} onChange={(e) => { setCatText(e.target.value); setFeedback({ message: null, status: '' }); }}
+                  onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
                   placeholder="e.g., Na"
                   className="w-24 px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-xs outline-none focus:border-[#326fa0]"
                 />
@@ -316,7 +320,8 @@ const FormulaMaster = ({ onComplete }) => {
               <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-2 text-center">Anion Formula</span>
               <div className="flex gap-2 items-center w-full justify-center">
                 <input
-                  type="text" value={aniText} onChange={(e) => setAniText(e.target.value)}
+                  type="text" value={aniText} onChange={(e) => { setAniText(e.target.value); setFeedback({ message: null, status: '' }); }}
+                  onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
                   placeholder="e.g., SO4"
                   className="w-24 px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-xs outline-none focus:border-rose-500"
                 />
@@ -337,12 +342,21 @@ const FormulaMaster = ({ onComplete }) => {
 
       <div className="button-group mt-6">
         <button type="button" className="btn btn-primary" onClick={executeAnswerAudit}>Check Answer</button>
-        <button type="button" className="btn btn-secondary" onClick={() => generateProblemInstance(activeMode)}>Next Problem</button>
+        <button type="button" className="btn btn-secondary" onClick={() => generateProblemInstance(activeMode)}>Next Problem &rarr;</button>
       </div>
 
       {feedback.message && (
-        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+          <div>{feedback.message}</div>
+          {feedback.status === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblemInstance(activeMode)}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

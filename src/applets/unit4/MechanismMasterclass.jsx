@@ -353,12 +353,30 @@ const MechanismMasterclass = ({ onComplete }) => {
       <div className="button-group mt-4">
         {stage === 'dipoles' && <button type="button" className="btn btn-primary" onClick={verifyDipolesStage}>Verify assigned Dipoles</button>}
         {stage === 'arrow' && <button type="button" className="btn btn-primary" onClick={verifyMechanismArrowStage}>Submit Mechanism Step</button>}
+        {stage === 'success' && (
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => changeAssignment((problemIndex + 1) % mechanismPool.length)}
+          >
+            Next Mechanism &rarr;
+          </button>
+        )}
         <button type="button" className="btn btn-secondary" onClick={() => changeAssignment(problemIndex)}>Clear Canvas Grid</button>
       </div>
 
       {feedback.message && (
-        <div className={`mt-4 p-4 rounded-2xl text-xs font-bold border transition-all ${feedback.status === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+          <span>{feedback.message}</span>
+          {stage === 'success' && (
+            <button
+              type="button"
+              onClick={() => changeAssignment((problemIndex + 1) % mechanismPool.length)}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Mechanism &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -258,42 +258,36 @@ export const SpectraInterpreter = ({ onComplete }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 md:p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-6">
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-        <div>
-          <span className="inline-block text-[10px] font-black uppercase tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-full mb-1">
-            {problem.unit} • Combined Spectral Analysis
-          </span>
-          <h2 className="text-xl font-black text-slate-800">
-            Unknown Organic Compound #{problemIdx + 1} (Mᵣ = {problem.mr})
-          </h2>
-        </div>
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {SPECTRA_PROBLEMS.map((p, idx) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => loadProblem(idx)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                idx === problemIdx
-                  ? 'bg-[#326fa0] text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              Sample {idx + 1}
-            </button>
-          ))}
-        </div>
+      <div className="applet-header !mb-0">
+        Unknown Organic Compound #{problemIdx + 1}
+      </div>
+
+      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+        {SPECTRA_PROBLEMS.map((p, idx) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => loadProblem(idx)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              idx === problemIdx
+                ? 'bg-[#326fa0] text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            Sample {idx + 1}
+          </button>
+        ))}
       </div>
 
       {/* Spectrum Technique Selector Tabs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {[
-          { id: 'ir', label: '1. Infrared (IR)', badge: `${problem.irPeaks.length} bands` },
-          { id: 'ms', label: '2. Mass Spec (MS)', badge: `M⁺• = ${problem.mr}` },
-          { id: 'c13', label: '3. ¹³C NMR', badge: `${problem.c13Peaks.length} signals` },
-          { id: 'h1', label: '4. ¹H NMR', badge: `${problem.h1Peaks.length} signals` }
+          { id: 'ir', label: '1. Infrared (IR)', badge: 'Wavenumber (cm⁻¹)' },
+          { id: 'ms', label: '2. Mass Spec (MS)', badge: 'm/z Spectrum' },
+          { id: 'c13', label: '3. ¹³C NMR', badge: 'Proton-decoupled' },
+          { id: 'h1', label: '4. ¹H NMR', badge: 'δ ppm & Splitting' }
         ].map((t) => (
           <button
             key={t.id}
@@ -317,7 +311,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
         {activeTab === 'ir' && (
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <span className="text-xs font-black uppercase tracking-wider text-slate-600">
                 Infrared Absorption Spectrum (Click any trough to inspect)
               </span>
@@ -338,7 +332,8 @@ export const SpectraInterpreter = ({ onComplete }) => {
                       : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                   }`}
                 >
-                  🔍 {pk.label}
+                  🔍 {pk.wavenumber} cm⁻¹ ({pk.width} band, {pk.transmittance}% transmittance)
+                  {solved ? ` — ${pk.label}` : ''}
                 </button>
               ))}
             </div>
@@ -347,12 +342,12 @@ export const SpectraInterpreter = ({ onComplete }) => {
 
         {activeTab === 'ms' && (
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <span className="text-xs font-black uppercase tracking-wider text-slate-600">
                 Electron Impact Mass Spectrum (Click fragment bars to inspect)
               </span>
-              <span className="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-                Molecular Ion M⁺• at m/z = {problem.mr}
+              <span className="text-[10px] font-bold text-slate-400">
+                Use Data Booklet Periodic Table for Relative Atomic Masses
               </span>
             </div>
             <div className="bg-white border border-slate-200 rounded-xl p-2">
@@ -370,7 +365,8 @@ export const SpectraInterpreter = ({ onComplete }) => {
                       : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                   }`}
                 >
-                  m/z {frag.mz}: {frag.label} ({frag.intensity}%)
+                  m/z = {frag.mz} ({frag.intensity}% rel. abundance)
+                  {solved ? ` — ${frag.label}` : ''}
                 </button>
               ))}
             </div>
@@ -379,12 +375,12 @@ export const SpectraInterpreter = ({ onComplete }) => {
 
         {activeTab === 'c13' && (
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <span className="text-xs font-black uppercase tracking-wider text-slate-600">
                 Proton-Decoupled ¹³C NMR Spectrum
               </span>
-              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">
-                {problem.c13Peaks.length} Unique Carbon Environment(s)
+              <span className="text-[10px] font-bold text-slate-400">
+                Use Data Booklet for ¹³C NMR Shifts
               </span>
             </div>
             <div className="bg-white border border-slate-200 rounded-xl p-2">
@@ -393,10 +389,15 @@ export const SpectraInterpreter = ({ onComplete }) => {
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
               {problem.c13Peaks.map((pk, idx) => (
                 <div key={idx} className="bg-white border border-slate-200 rounded-xl p-2.5 text-xs">
+                  <span className="font-bold text-slate-500 mr-1.5">Signal {idx + 1}:</span>
                   <span className="font-mono font-black text-purple-700">δ {pk.ppm} ppm</span>
-                  <span className="text-slate-400 mx-1.5">•</span>
-                  <span className="font-bold text-slate-700">{pk.group}</span>
-                  {solved && <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">Assignment: {pk.env}</div>}
+                  {solved && (
+                    <>
+                      <span className="text-slate-400 mx-1.5">•</span>
+                      <span className="font-bold text-slate-700">{pk.group}</span>
+                      <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">Assignment: {pk.env}</div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -405,12 +406,12 @@ export const SpectraInterpreter = ({ onComplete }) => {
 
         {activeTab === 'h1' && (
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
               <span className="text-xs font-black uppercase tracking-wider text-slate-600">
                 High-Resolution ¹H NMR Summary Table (Relative to TMS)
               </span>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                n + 1 Splitting Rule Active
+              <span className="text-[10px] font-bold text-slate-400">
+                Use Data Booklet for ¹H NMR Shifts
               </span>
             </div>
             <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl">
@@ -420,7 +421,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
                     <th className="p-3">Chemical Shift δ (ppm)</th>
                     <th className="p-3">Relative Peak Area (Integration)</th>
                     <th className="p-3">Splitting Pattern</th>
-                    <th className="p-3">WJEC n + 1 Rule Deduction</th>
+                    {solved && <th className="p-3">WJEC n + 1 Rule Deduction &amp; Assignment</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
@@ -429,10 +430,12 @@ export const SpectraInterpreter = ({ onComplete }) => {
                       <td className="p-3 font-mono font-black text-blue-700">{pk.ppm.toFixed(1)} ppm</td>
                       <td className="p-3 font-mono font-bold">{pk.integration}H</td>
                       <td className="p-3 font-bold text-slate-800">{pk.splitting}</td>
-                      <td className="p-3 text-slate-600">
-                        {pk.nPlusOne}
-                        {solved && <span className="block text-emerald-700 font-bold mt-0.5">({pk.env})</span>}
-                      </td>
+                      {solved && (
+                        <td className="p-3 text-slate-600">
+                          {pk.nPlusOne}
+                          <span className="block text-emerald-700 font-bold mt-0.5">({pk.env})</span>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -500,18 +503,18 @@ export const SpectraInterpreter = ({ onComplete }) => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+        <div className="button-group pt-2">
           <button
             type="button"
             onClick={handleVerify}
-            className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
+            className="btn btn-primary"
           >
             Verify Spectral Deduction
           </button>
           <button
             type="button"
             onClick={handleNext}
-            className="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
+            className="btn btn-secondary"
           >
             Next Unknown &rarr;
           </button>
@@ -519,13 +522,20 @@ export const SpectraInterpreter = ({ onComplete }) => {
 
         {feedback && (
           <div
-            className={`p-4 rounded-xl text-xs font-bold border ${
-              feedback.type === 'success'
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                : 'bg-rose-50 border-rose-200 text-rose-900'
+            className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+              feedback.type === 'success' ? 'feedback-success' : 'feedback-error'
             }`}
           >
-            {feedback.text}
+            <span>{feedback.text}</span>
+            {feedback.type === 'success' && (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+              >
+                Next Unknown &rarr;
+              </button>
+            )}
           </div>
         )}
       </div>

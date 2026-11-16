@@ -245,7 +245,7 @@ const IdealGas = ({ onComplete }) => {
       <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
         <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               WJEC Unit Trap Gate
             </span>
             <h4 className="text-xs font-black text-slate-800 mt-1">
@@ -387,12 +387,21 @@ const IdealGas = ({ onComplete }) => {
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={checkAnswer} disabled={isStep2Locked}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>New Problem</button>
+        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
       </div>
 
       {feedback.message && (
-        <div className={`feedback-box ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+          <span>{feedback.message}</span>
+          {feedback.type === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblem()}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

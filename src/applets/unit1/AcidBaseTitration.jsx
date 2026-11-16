@@ -483,10 +483,10 @@ const AcidBaseTitration = ({ onComplete }) => {
             inputMode="decimal"
             className={`chem-input ${feedback.status}`}
             value={studentAnswer}
-            onChange={(e) => setStudentAnswer(e.target.value)}
+            onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
             placeholder="0.00"
             disabled={mode === 'table_practice' && !tableVerified}
-            onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+            onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
             style={{ maxWidth: '10rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: '800', textTransform: 'none' }}
           />
           <span className="text-sm font-black text-slate-500 select-none" style={{ textTransform: 'none' }}>{problem.unit}</span>
@@ -495,12 +495,21 @@ const AcidBaseTitration = ({ onComplete }) => {
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={checkAnswer} disabled={mode === 'table_practice' && !tableVerified}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>New Problem</button>
+        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
       </div>
 
       {feedback.message && (
-        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
+          <span>{feedback.message}</span>
+          {feedback.status === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblem()}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

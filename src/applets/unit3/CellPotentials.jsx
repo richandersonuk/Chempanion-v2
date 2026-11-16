@@ -228,16 +228,16 @@ const CellPotentials = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="bg-[var(--chem-bg-main)] p-4 md:p-8 rounded-2xl shadow-sm border border-[var(--chem-border)] max-w-2xl mx-auto">
+    <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-[var(--chem-text-muted)] mb-1.5 text-center">
+        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex items-center justify-center">
           <select
             value={mode}
             onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="w-full max-w-xs bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] text-[var(--chem-text-main)] py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)] transition-all cursor-pointer shadow-sm text-center"
+            className="w-full max-w-xs bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
           >
             <option value="calc_emf">Calculate Standard Cell EMF (E°cell)</option>
             <option value="cell_notation">Build Conventional Cell Notation</option>
@@ -246,8 +246,8 @@ const CellPotentials = ({ onComplete }) => {
         </div>
       </div>
 
-      <div className="text-xl font-bold text-center text-[var(--chem-text-main)] mb-3">{problem.title}</div>
-      <div className="text-center px-4 text-[var(--chem-text-muted)] leading-relaxed">{problem.text}</div>
+      <div className="applet-header">{problem.title}</div>
+      <div className="question-text text-center px-4 leading-relaxed">{problem.text}</div>
 
       {mode === 'calc_emf' && problem.requiresDiagram && (
         <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />
@@ -303,34 +303,43 @@ const CellPotentials = ({ onComplete }) => {
               inputMode="decimal"
               className={`w-32 bg-white text-center text-lg font-extrabold py-2 px-3 rounded-lg border focus:outline-none transition-colors ${feedback.status === 'error' ? 'border-red-400 text-red-600 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-[var(--chem-border)] text-[var(--chem-text-main)] focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)]'}`}
               value={studentAnswer}
-              onChange={(e) => setStudentAnswer(e.target.value)}
+              onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
               placeholder="+1.10"
-              onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+              onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem(mode) : checkAnswer())}
             />
             {problem.unit && <span className="text-sm font-black text-[var(--chem-text-muted)] select-none">{problem.unit}</span>}
           </div>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+      <div className="button-group mt-6">
         <button
-          className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-[var(--chem-primary)] text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="btn btn-primary disabled:opacity-50"
           onClick={checkAnswer}
           disabled={problem.isCards && selectedCard === null}
         >
           Check Answer
         </button>
         <button
-          className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-[var(--chem-bg-alt)] text-[var(--chem-text-main)] border border-[var(--chem-border)] hover:bg-[var(--chem-slate-200)] transition-colors"
+          className="btn btn-secondary"
           onClick={() => generateProblem(mode)}
         >
-          New Problem
+          Next Problem &rarr;
         </button>
       </div>
 
       {feedback.message && (
-        <div className={`mt-6 p-4 rounded-xl text-sm font-semibold border ${feedback.status === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+          <span>{feedback.message}</span>
+          {feedback.status === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblem(mode)}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

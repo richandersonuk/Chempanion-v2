@@ -401,12 +401,21 @@ const KcCalculations = ({ onComplete }) => {
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>New Problem</button>
+        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
       </div>
 
       {feedback.message && (
-        <div className={`feedback-box ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
+          <span>{feedback.message}</span>
+          {feedback.type === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblem()}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

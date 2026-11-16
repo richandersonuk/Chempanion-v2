@@ -103,20 +103,29 @@ const FormulasFromName = ({ onComplete }) => {
 
       <FormulaInput
         value={studentAnswer}
-        onChange={setStudentAnswer}
+        onChange={(val) => { setStudentAnswer(val); if (feedback.message) setFeedback({ message: '', status: '' }); }}
         status={feedback.status}
         placeholder="e.g. MgCl₂"
-        onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+        onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
       />
 
       <div className="button-group">
         <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>New Problem</button>
+        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
       </div>
 
       {feedback.message && (
-        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+          <span>{feedback.message}</span>
+          {feedback.status === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblem()}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>

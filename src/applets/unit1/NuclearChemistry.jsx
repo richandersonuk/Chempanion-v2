@@ -95,10 +95,15 @@ export default function NuclearChemistry({ onComplete }) {
 
   const handleInputChange = (key, value) => {
     setUserInputs((prev) => ({ ...prev, [key]: value }));
+    if (feedback) setFeedback(null);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (feedback?.status === 'success') {
+      generateProblem();
+      return;
+    }
     if (!currentProblem) return;
 
     if (currentProblem.type === 'equation') {
@@ -204,17 +209,12 @@ export default function NuclearChemistry({ onComplete }) {
     "w-12 h-6 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-3 sm:p-6 bg-[var(--chem-bg-main)] text-[var(--chem-text)] font-sans transition-colors duration-200">
-      <header className="mb-6 border-b border-[var(--chem-border)] pb-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-[var(--chem-primary)] flex items-center gap-2">
-          <span>⚛️</span> Nuclear Chemistry & Radioactivity
-        </h1>
-        <p className="text-xs sm:text-sm text-[var(--chem-text-muted)] mt-1">
-          WJEC A-Level Chemistry • Unit 1.2
-        </p>
-      </header>
+    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">
+        Nuclear Chemistry &amp; Radioactivity
+      </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap justify-center gap-2">
         {[
           { id: 'equation', label: 'Nuclear Decay Equations' },
           { id: 'halfLife', label: 'Half-Life Calculations' },
@@ -224,7 +224,7 @@ export default function NuclearChemistry({ onComplete }) {
             key={tab.id}
             type="button"
             onClick={() => setQuestionType(tab.id)}
-            className={`px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg border transition-all ${
+            className={`px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg border transition-all cursor-pointer ${
               questionType === tab.id
                 ? 'bg-[var(--chem-card-bg)] border-[var(--chem-primary)] text-[var(--chem-primary)] shadow-sm'
                 : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-muted)] hover:border-[var(--chem-primary)]'
@@ -236,9 +236,8 @@ export default function NuclearChemistry({ onComplete }) {
       </div>
 
       {currentProblem && (
-        <div className="bg-[var(--chem-card-bg)] rounded-xl border border-[var(--chem-border)] p-4 sm:p-6 shadow-sm mb-6">
-          <div className="flex justify-between items-center border-b border-[var(--chem-border)] pb-3 mb-4 text-xs font-mono text-[var(--chem-text-muted)]">
-            <span>WJEC Unit 1.2 • Radioactivity</span>
+        <div className="bg-[var(--chem-card-bg)] rounded-xl border border-[var(--chem-border)] p-4 sm:p-6 shadow-sm">
+          <div className="flex justify-end items-center border-b border-[var(--chem-border)] pb-2.5 mb-4 text-xs font-mono text-[var(--chem-text-muted)]">
             <span className="font-semibold text-[var(--chem-accent)]">
               [{currentProblem.marks} mark{currentProblem.marks > 1 ? 's' : ''}]
             </span>
@@ -483,49 +482,53 @@ export default function NuclearChemistry({ onComplete }) {
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div className="button-group pt-2">
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-lg transition-colors shadow-sm"
+                className="btn btn-primary"
               >
                 Check Answer
               </button>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowMarkScheme(!showMarkScheme)}
-                  className="px-3.5 py-2.5 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] hover:border-[var(--chem-primary)] text-[var(--chem-text)] text-xs sm:text-sm font-medium rounded-lg transition-colors"
-                >
-                  {showMarkScheme ? 'Hide Mark Scheme' : 'View Mark Scheme'}
-                </button>
-                <button
-                  type="button"
-                  onClick={generateProblem}
-                  className="px-3.5 py-2.5 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] hover:border-[var(--chem-primary)] text-[var(--chem-text)] text-xs sm:text-sm font-medium rounded-lg transition-colors"
-                >
-                  Next Question
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowMarkScheme(!showMarkScheme)}
+                className="btn btn-secondary"
+              >
+                {showMarkScheme ? 'Hide Mark Scheme' : 'View Mark Scheme'}
+              </button>
+              <button
+                type="button"
+                onClick={generateProblem}
+                className="btn btn-secondary"
+              >
+                Next Question &rarr;
+              </button>
             </div>
           </form>
 
           {feedback && (
             <div
-              className={`mt-6 p-4 rounded-lg border text-xs sm:text-sm leading-relaxed ${
+              className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left text-xs sm:text-sm leading-relaxed ${
                 feedback.status === 'success'
-                  ? 'bg-[var(--chem-bg-main)] border-[var(--chem-success)] text-[var(--chem-text)]'
+                  ? 'feedback-success'
                   : feedback.status === 'warning'
-                  ? 'bg-[var(--chem-bg-main)] border-[var(--chem-warning)] text-[var(--chem-text)]'
-                  : 'bg-[var(--chem-bg-main)] border-[var(--chem-error)] text-[var(--chem-text)]'
+                  ? 'bg-amber-50 border border-amber-200 text-amber-900'
+                  : 'feedback-error'
               }`}
             >
               <div className="flex items-start gap-2">
                 <span>{feedback.status === 'success' ? '✅' : feedback.status === 'warning' ? '⚠️' : '❌'}</span>
-                <div>
-                  <p className="font-semibold">{feedback.message}</p>
-                </div>
+                <p className="font-semibold">{feedback.message}</p>
               </div>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={generateProblem}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Question &rarr;
+                </button>
+              )}
             </div>
           )}
 

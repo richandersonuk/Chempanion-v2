@@ -173,7 +173,8 @@ const BufferSolutions = ({ onComplete }) => {
           onWheel={(e) => e.currentTarget.blur()}
           className={`chem-input ${feedback.status}`}
           value={coeff}
-          onChange={(e) => setCoeff(e.target.value)}
+          onChange={(e) => { setCoeff(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+          onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
           placeholder="0.00"
           style={{ maxWidth: '12rem', textAlign: 'center' }}
         />
@@ -184,13 +185,22 @@ const BufferSolutions = ({ onComplete }) => {
           Check Answer
         </button>
         <button className="btn btn-secondary" onClick={() => generateProblem()}>
-          New Problem
+          Next Problem &rarr;
         </button>
       </div>
 
       {feedback.message && (
-        <div className={`feedback-box ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          {feedback.message}
+        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+          <span>{feedback.message}</span>
+          {feedback.status === 'success' && (
+            <button
+              type="button"
+              onClick={() => generateProblem()}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+            >
+              Next Problem &rarr;
+            </button>
+          )}
         </div>
       )}
     </div>
