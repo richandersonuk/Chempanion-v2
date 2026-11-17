@@ -326,7 +326,7 @@ const MechanismTrainer = ({
 
   // --- CURLY ARROWS HANDLERS ---
   const createArrowBetween = (fromNode, toNode) => {
-    const maxAllowed = (currentStep.requiredArrows || []).length;
+    const maxAllowed = Math.max(2, (currentStep.requiredArrows || []).length);
     const matchedReq = (currentStep.requiredArrows || []).find(
       (r) => r.from === fromNode.id && r.to === toNode.id
     );
@@ -345,9 +345,6 @@ const MechanismTrainer = ({
     setArrows((prev) => {
       // Avoid exact duplicate source->target
       const deduped = prev.filter((a) => !(a.fromId === newArrow.fromId && a.toId === newArrow.toId));
-      if (maxAllowed === 1) {
-        return [newArrow];
-      }
       if (deduped.length >= maxAllowed) {
         // Replace first error arrow if one exists, otherwise replace oldest
         const errIdx = deduped.findIndex((a) => a.status === 'error');
@@ -616,11 +613,8 @@ const MechanismTrainer = ({
     }
 
     if (matchedIndices.size > 0 && matchedIndices.size < required.length) {
-      const missingReq = required.find((_, idx) => !matchedIndices.has(idx));
-      const missingFrom = elementsMap[missingReq.from]?.label || 'the breaking bond';
-      const missingTo = elementsMap[missingReq.to]?.label || 'the receiving atom';
       setFeedback({
-        message: `First curly arrow correct (✓)! Now add the second required curly arrow (check from ${missingFrom} toward ${missingTo}).`,
+        message: 'First curly arrow correct (✓)! Another curly arrow is still needed to complete this step (use "💡 Need a Hint?" if stuck).',
         status: 'error',
       });
       return;
@@ -867,7 +861,7 @@ const MechanismTrainer = ({
               </div>
 
               <span className="text-[11px] font-black bg-slate-100 border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg">
-                Arrows: {arrows.length} / {(currentStep.requiredArrows || []).length}
+                Arrows drawn: {arrows.length}
               </span>
             </div>
           )}

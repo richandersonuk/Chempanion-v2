@@ -266,7 +266,7 @@ export const howToGuides = {
 
   'inorganic-tests': {
     title: 'Qualitative Inorganic Analysis',
-    unit: 'Unit 1.6 / 3.3',
+    unit: 'Unit 1.6',
     summary: 'Use the virtual test-tube rack to run sequential cation, anion, and flame tests and write balanced ionic precipitation equations.',
     appletSteps: [
       <><strong>Load Unknown Sample:</strong> Select a mystery salt from the dropdown or click <em>Random 🎲</em>.</>,
@@ -494,7 +494,7 @@ export const howToGuides = {
 
   'half-equations': {
     title: 'Balancing Redox Half-Equations',
-    unit: 'Unit 3.1',
+    unit: 'Unit 3.2',
     summary: 'Follow the 5-stage acidic-medium checklist (oxidation states, main atoms, H₂O, H⁺, e⁻) to build flawless half-equations.',
     appletSteps: [
       <><strong>Load Half-Reaction:</strong> Work step-by-step through the <strong>5 verification stages</strong> using the LHS/RHS selectors and coefficient inputs.</>,
@@ -540,7 +540,7 @@ export const howToGuides = {
 
   redox: {
     title: 'Volumetric Redox Titrations',
-    unit: 'Unit 3.1',
+    unit: 'Unit 3.2',
     summary: 'Combine redox half-equations to find exact stoichiometric ratios and calculate purity, water of crystallisation, or molar mass.',
     appletSteps: [
       <><strong>Choose Redox System:</strong> Practise across 5 WJEC contexts (<em>Iron Purity</em>, <em>Ethanedioate</em>, <em>Hydrogen Peroxide</em>, <em>Copper/Thiosulfate</em>, <em>Molar Mass</em>) or press <em>Random 🎲</em>.</>,

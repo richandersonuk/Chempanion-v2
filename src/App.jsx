@@ -541,7 +541,7 @@ export default function App() {
                     <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform Updates & Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    New Update: Added Qualitative Inorganic Analysis (Unit 1.6), Half-Equation Balancing (Unit 3.1), Born-Haber Cycles (Unit 3.6), and Combined Spectral Interpreter (Unit 4.8), plus Unit-Conversion Gates and Mastery Tracking! Also explore P-Block Chemistry at{' '}
+                    New Update: Added Qualitative Inorganic Analysis (Unit 1.6), Half-Equation Balancing (Unit 3.2), Born-Haber Cycles (Unit 3.6), and Combined Spectral Interpreter (Unit 4.8), plus Unit-Conversion Gates and Mastery Tracking! Also explore P-Block Chemistry at{' '}
                     <a href="https://pblock.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
                       pblock.chempanion.uk
                     </a>.

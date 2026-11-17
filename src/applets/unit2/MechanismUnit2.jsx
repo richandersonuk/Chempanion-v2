@@ -21,8 +21,8 @@ const AS_MECHANISMS = [
         id: 'u2_0_dipoles',
         label: 'Dipoles',
         type: 'dipoles',
-        prompt: 'Assign the permanent partial charges (δ⁺ and δ⁻) to the polar bond in this reaction.',
-        hint: 'Bromine (electronegativity 3.0) pulls electrons away from hydrogen (2.2). The symmetrical C=C bond has zero dipole.',
+        prompt: 'Stage 1: Assign the partial charges (δ⁺ and δ⁻) on the reactants.',
+        hint: 'Assign δ⁺ to H and δ⁻ to Br across the polar H—Br bond (bromine is more electronegative than hydrogen; the symmetrical C=C bond is non-polar).',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 95, y1: 65, x2: 175, y2: 65, order: 2 },
@@ -60,8 +60,8 @@ const AS_MECHANISMS = [
         id: 'u2_0_step1',
         label: 'Step 1 Arrows',
         type: 'arrows',
-        prompt: 'Draw 2 curly arrows for Step 1: (1) attack from the C=C π-bond onto Hδ⁺, and (2) heterolytic fission of the H—Br bond.',
-        hint: 'Arrow 1 starts at the C=C double bond midpoint and points to H. Arrow 2 starts on the H—Br bond midpoint and points to Br.',
+        prompt: 'Step 1: Draw the curly arrows for the initial electrophilic addition step.',
+        hint: 'Draw 2 curly arrows: (1) from the C=C π-bond midpoint to Hδ⁺, and (2) heterolytic fission from the H—Br bond midpoint onto Brδ⁻.',
         viewBox: '0 0 340 200',
         fixedDipoles: { node_H: 'plus', node_Br: 'minus' },
         staticBonds: [
@@ -108,8 +108,8 @@ const AS_MECHANISMS = [
         id: 'u2_0_step2',
         label: 'Step 2 Intermediate',
         type: 'arrows',
-        prompt: 'Step 2: Draw the curly arrow from the bromide lone pair (:Br⁻) to the positively charged carbon of the carbocation.',
-        hint: 'Start the arrow on the amber lone pair (••) of :Br⁻ and point directly to the C⁺ carbon centre.',
+        prompt: 'Step 2: Draw the curly arrow to show how the carbocation intermediate forms bromoethane.',
+        hint: 'Start the curly arrow on the lone pair (••) of :Br⁻ and point directly to the positively charged C⁺ carbon centre.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 95, y1: 75, x2: 165, y2: 75 },
@@ -155,8 +155,8 @@ const AS_MECHANISMS = [
         id: 'u2_1_dipoles',
         label: 'Dipoles',
         type: 'dipoles',
-        prompt: 'Assign the permanent partial dipoles (δ⁺ and δ⁻) on the attacking H—Br reagent.',
-        hint: 'Focus on the polar H—Br bond. The alkene C=C bond has no permanent dipole.',
+        prompt: 'Stage 1: Assign the partial charges (δ⁺ and δ⁻) on the reactants.',
+        hint: 'Focus on the polar H—Br bond (Hδ⁺—Brδ⁻). The alkene C=C bond has no permanent dipole.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 68, y1: 88, x2: 105, y2: 62 },
@@ -187,8 +187,8 @@ const AS_MECHANISMS = [
         id: 'u2_1_step1',
         label: 'Step 1 Arrows',
         type: 'arrows',
-        prompt: 'Draw the 2 curly arrows for Step 1: C=C π-bond attacking Hδ⁺, and H—Br bond breaking onto Brδ⁻.',
-        hint: 'Start arrow 1 from the C=C π-bond midpoint to Hδ⁺, and arrow 2 from the H—Br bond midpoint to Brδ⁻.',
+        prompt: 'Step 1: Draw the curly arrows for the initial electrophilic addition step.',
+        hint: 'Draw 2 curly arrows: (1) from the C=C π-bond midpoint to Hδ⁺, and (2) from the H—Br bond midpoint onto Brδ⁻.',
         viewBox: '0 0 340 200',
         fixedDipoles: { node_H: 'plus', node_Br: 'minus' },
         staticBonds: [
@@ -277,8 +277,8 @@ const AS_MECHANISMS = [
         id: 'u2_1_step2',
         label: 'Step 2 Intermediate',
         type: 'arrows',
-        prompt: 'Complete the major pathway: draw the curly arrow from :Br⁻ to C2⁺ on the secondary carbocation.',
-        hint: 'Connect the lone pair (••) on :Br⁻ to the central C⁺ atom between the two methyl groups.',
+        prompt: 'Step 2: Complete the mechanism from the major carbocation intermediate to form 2-bromopropane.',
+        hint: 'Draw a curly arrow from the lone pair (••) on :Br⁻ to the central C2⁺ carbocation carbon.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 88, y1: 82, x2: 155, y2: 82 },
@@ -324,8 +324,8 @@ const AS_MECHANISMS = [
         id: 'u2_2_dipoles',
         label: 'Dipoles',
         type: 'dipoles',
-        prompt: 'Identify the permanent δ⁺ and δ⁻ dipole across the carbon–halogen bond.',
-        hint: 'Bromine is much more electronegative than carbon, pulling electron density along the C—Br bond.',
+        prompt: 'Stage 1: Assign the partial charges (δ⁺ and δ⁻) on bromoethane.',
+        hint: 'Bromine is more electronegative than carbon, polarising the C—Br bond (α-carbon is δ⁺, Br is δ⁻).',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 82, y1: 78, x2: 150, y2: 78 },
@@ -355,8 +355,8 @@ const AS_MECHANISMS = [
         id: 'u2_2_arrows',
         label: 'Sₙ2 Arrows',
         type: 'arrows',
-        prompt: 'Draw 2 simultaneous curly arrows: (1) :OH⁻ lone pair attacking Cδ⁺, and (2) heterolytic C—Br bond cleavage.',
-        hint: 'Arrow 1 starts on the oxygen lone pair (••) and ends at Cδ⁺. Arrow 2 starts on the C—Br bond midpoint and ends on Br.',
+        prompt: 'Draw the curly arrows for this concerted Sₙ2 nucleophilic substitution reaction.',
+        hint: 'Draw 2 simultaneous curly arrows: (1) from the :OH⁻ oxygen lone pair (••) to the α-carbon (Cδ⁺), and (2) from the C—Br bond midpoint onto Brδ⁻.',
         viewBox: '0 0 340 200',
         fixedDipoles: { node_C_alpha: 'plus', node_Br: 'minus' },
         staticBonds: [
@@ -445,8 +445,8 @@ const AS_MECHANISMS = [
         id: 'u2_3_dipoles',
         label: 'Induced Dipole',
         type: 'dipoles',
-        prompt: 'Assign the temporary INDUCED dipole (δ⁺ and δ⁻) on Br₂ as it approaches the electron-rich C=C bond.',
-        hint: 'Electrons in the Br—Br bond are repelled AWAY from the high electron density of the C=C double bond.',
+        prompt: 'Stage 1: Assign the partial charges (δ⁺ and δ⁻) on the reactants.',
+        hint: 'As Br₂ approaches the electron-rich C=C π-bond, electrons in Br—Br are repelled away from the double bond, inducing δ⁺ on the closer Br and δ⁻ on the further Br.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 95, y1: 62, x2: 175, y2: 62, order: 2 },
@@ -483,8 +483,8 @@ const AS_MECHANISMS = [
         id: 'u2_3_step1',
         label: 'Step 1 Arrows',
         type: 'arrows',
-        prompt: 'Draw 2 curly arrows: C=C π-bond attacking the closer Brδ⁺, and Br—Br bond breaking onto the further Brδ⁻.',
-        hint: 'Arrow 1 goes from C=C π-bond to the closer Br (δ⁺). Arrow 2 goes from the Br—Br bond midpoint to the further Br (δ⁻).',
+        prompt: 'Step 1: Draw the curly arrows for the initial electrophilic addition step.',
+        hint: 'Draw 2 curly arrows: (1) from the C=C π-bond midpoint to the closer Br (δ⁺), and (2) from the Br—Br bond midpoint to the further Br (δ⁻).',
         viewBox: '0 0 340 200',
         fixedDipoles: { node_Br1: 'plus', node_Br2: 'minus' },
         staticBonds: [
@@ -525,8 +525,8 @@ const AS_MECHANISMS = [
         id: 'u2_3_step2',
         label: 'Step 2 Intermediate',
         type: 'arrows',
-        prompt: 'Draw the curly arrow from the bromide ion (:Br⁻) lone pair to C⁺ to form 1,2-dibromoethane.',
-        hint: 'Point the arrow from the :Br⁻ lone pair (••) directly to the C⁺ centre.',
+        prompt: 'Step 2: Draw the curly arrow to complete the formation of 1,2-dibromoethane.',
+        hint: 'Start the curly arrow on the :Br⁻ lone pair (••) and point directly to the C⁺ carbocation centre.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 68, y1: 78, x2: 112, y2: 78 },
@@ -558,7 +558,7 @@ const AS_MECHANISMS = [
   {
     completionId: 'u2_mech_4',
     shortLabel: '5. Bromoethane + NH₃',
-    title: '5. Nucleophilic Substitution: Bromoethane + Excess NH₃ (Unit 2.6)',
+    title: '5. Nucleophilic Substitution: Bromoethane + Excess NH₃ (Unit 2.6 / 4.6)',
     subtitle: 'CH₃CH₂Br + 2NH₃ → CH₃CH₂NH₂ + NH₄Br (substitution + deprotonation)',
     reagents: 'Excess conc. NH₃ in ethanol, sealed tube under pressure',
     markScheme: [
@@ -574,8 +574,8 @@ const AS_MECHANISMS = [
         id: 'u2_4_dipoles',
         label: 'Dipoles',
         type: 'dipoles',
-        prompt: 'Assign the permanent partial dipoles across the C—Br bond.',
-        hint: 'Bromine is more electronegative than carbon, leaving the α-carbon δ⁺.',
+        prompt: 'Stage 1: Assign the partial charges (δ⁺ and δ⁻) on bromoethane.',
+        hint: 'Bromine is more electronegative than carbon, making the α-carbon δ⁺ and bromine δ⁻.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 82, y1: 72, x2: 150, y2: 72 },
@@ -608,8 +608,8 @@ const AS_MECHANISMS = [
         id: 'u2_4_step1',
         label: 'Step 1 Substitution',
         type: 'arrows',
-        prompt: 'Draw 2 curly arrows: :NH₃ lone pair attacking Cδ⁺, and C—Br bond cleavage onto Brδ⁻.',
-        hint: 'Start arrow 1 on the nitrogen lone pair (••) toward Cδ⁺, and arrow 2 on the C—Br bond midpoint toward Br.',
+        prompt: 'Step 1: Draw the curly arrows for the initial nucleophilic substitution step.',
+        hint: 'Draw 2 curly arrows: (1) from the :NH₃ nitrogen lone pair (••) to Cδ⁺, and (2) from the C—Br bond midpoint onto Brδ⁻.',
         viewBox: '0 0 340 200',
         fixedDipoles: { node_C_alpha: 'plus', node_Br: 'minus' },
         staticBonds: [
@@ -648,8 +648,8 @@ const AS_MECHANISMS = [
         id: 'u2_4_step2',
         label: 'Step 2 Deprotonation',
         type: 'arrows',
-        prompt: 'Step 2: Draw 2 curly arrows showing a second :NH₃ molecule removing H⁺ and returning the N—H bond electrons to N⁺.',
-        hint: 'Arrow 1: second :NH₃ lone pair (••) → H. Arrow 2: N—H bond midpoint → N⁺.',
+        prompt: 'Step 2: Draw the curly arrows to show how the alkylammonium intermediate forms ethylamine.',
+        hint: 'Draw 2 curly arrows: (1) from the second :NH₃ lone pair (••) to the leaving H, and (2) from the N—H bond midpoint onto N⁺.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 80, y1: 95, x2: 126, y2: 95 },
@@ -696,7 +696,7 @@ const AS_MECHANISMS = [
   {
     completionId: 'u2_mech_5',
     shortLabel: '6. Bromoethane + CN⁻',
-    title: '6. Nucleophilic Substitution: Bromoethane + CN⁻ (Unit 2.6)',
+    title: '6. Nucleophilic Substitution: Bromoethane + CN⁻ (Unit 2.6 / 4.5)',
     subtitle: 'CH₃CH₂Br + CN⁻ → CH₃CH₂CN + Br⁻ (carbon-chain extension)',
     reagents: 'KCN in aqueous ethanol, heated under reflux',
     markScheme: [
@@ -712,8 +712,8 @@ const AS_MECHANISMS = [
         id: 'u2_5_dipoles',
         label: 'Dipoles',
         type: 'dipoles',
-        prompt: 'Assign the δ⁺ and δ⁻ partial charges across the polar C—Br bond.',
-        hint: 'Focus on the C—Br bond on bromoethane.',
+        prompt: 'Stage 1: Assign the partial charges (δ⁺ and δ⁻) on bromoethane.',
+        hint: 'Assign δ⁺ to the α-carbon and δ⁻ to bromine across the polar C—Br bond.',
         viewBox: '0 0 340 200',
         staticBonds: [
           { x1: 82, y1: 72, x2: 150, y2: 72 },
@@ -743,8 +743,8 @@ const AS_MECHANISMS = [
         id: 'u2_5_arrows',
         label: 'Sₙ2 Arrows',
         type: 'arrows',
-        prompt: 'Draw 2 curly arrows: (1) from the :CN⁻ CARBON lone pair to Cδ⁺, and (2) heterolytic C—Br bond fission onto Brδ⁻.',
-        hint: 'Be careful to start the nucleophilic attack on the CARBON lone pair (••) of :CN⁻, NOT on the Nitrogen atom!',
+        prompt: 'Draw the curly arrows for this concerted Sₙ2 nucleophilic substitution reaction.',
+        hint: 'Draw 2 curly arrows: (1) from the CARBON lone pair (••) on :CN⁻ (not N!) to Cδ⁺, and (2) from the C—Br bond midpoint onto Brδ⁻.',
         viewBox: '0 0 340 200',
         fixedDipoles: { node_C_alpha: 'plus', node_Br: 'minus' },
         staticBonds: [
