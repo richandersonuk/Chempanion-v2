@@ -2,16 +2,31 @@
 :root {
   --chem-primary: #235478;
   --chem-primary-hover: #163650;
+  --chem-accent: #d97706;
   --chem-secondary: #e5e7eb;
   --chem-secondary-hover: #d1d5db;
+  --chem-text: #111827;
   --chem-text-main: #111827;
   --chem-text-muted: #4b5563;
   --chem-bg-main: #ffffff;
   --chem-bg-box: #f9fafb;
+  --chem-bg-alt: #f8fafc;
+  --chem-bg-card: #ffffff;
+  --chem-card-bg: #ffffff;
+  --chem-bg-muted: #f1f5f9;
+  --chem-bg-highlight: #f0f9ff;
+  --chem-input-bg: #ffffff;
+  --chem-input-border: #cbd5e1;
   --chem-border: #d1d5db;
+  --chem-border-subtle: #e2e8f0;
+  --chem-slate-200: #e2e8f0;
+  --chem-slate-300: #cbd5e1;
+  --chem-success: #16a34a;
   --chem-success-bg: #f0fdf4;
   --chem-success-text: #166534;
   --chem-success-border: #bbf7d0;
+  --chem-warning: #d97706;
+  --chem-error: #dc2626;
   --chem-error-bg: #fef2f2;
   --chem-error-text: #991b1b;
   --chem-error-border: #fecaca;
@@ -25,24 +40,49 @@
 
 /* --- APPLET COMPONENTS --- */
 .applet-container {
-  max-width: 42rem;
-  margin: 1.5rem auto;
-  padding: 2rem;
+  max-width: 56rem;
+  width: 100%;
+  margin: 0.5rem auto 2rem auto;
+  padding: 1.25rem;
   background-color: var(--chem-bg-main);
   border: 1px solid var(--chem-border);
-  border-radius: 0.5rem;
+  border-radius: 1.5rem;
   font-family: var(--font-main);
   color: var(--chem-text-main);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px -5px rgb(15 23 42 / 0.06), 0 8px 10px -6px rgb(15 23 42 / 0.04);
+}
+
+@media (min-width: 640px) {
+  .applet-container {
+    margin: 1.5rem auto 2.5rem auto;
+    padding: 2rem 2.5rem;
+  }
 }
 
 .applet-header {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
   font-weight: 700;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
   text-align: center;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--chem-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.input-row > .flex-1 {
+  min-width: 180px;
 }
 
 .applet-layout {

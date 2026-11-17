@@ -11,11 +11,25 @@ html, body, #root, main {
   color: #111827 !important;
 }
 
-/* Target EVERY single input element explicitly */
-input, select, textarea, .chem-input {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  background: #ffffff !important;
-  border: 2px solid #326fa0 !important;
-  opacity: 1 !important;
+/* Force light theme cleanly without breaking specialized inputs or validation styling */
+input:not([type="range"]):not([type="checkbox"]):not(.scientific-inner-input),
+select,
+textarea,
+.chem-input {
+  background-color: #ffffff;
+  color: #1e293b;
+  color-scheme: light;
+}
+
+.scientific-inner-input {
+  background-color: transparent !important;
+  border: none !important;
+  color: #1e293b;
+  color-scheme: light;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
 }
