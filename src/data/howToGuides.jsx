@@ -451,12 +451,12 @@ export const howToGuides = {
 
   'mechanisms-unit2': {
     title: 'AS Organic Mechanisms',
-    unit: 'Unit 2.5',
-    summary: 'Assign partial dipoles (δ⁺/δ⁻) and draw precise curly electron-pair arrows for electrophilic additions and nucleophilic substitutions.',
+    unit: 'Unit 2.5 / 2.6',
+    summary: 'Master complete multi-step AS reactions by assigning dipoles (δ⁺/δ⁻), drawing multi-arrow curly mechanisms, and clearing Markovnikov and hydrolysis-rate exam checkpoints.',
     appletSteps: [
-      <><strong>Pick AS Reaction:</strong> Select from the 5 AS mechanisms (<em>Ethene + HBr</em>, <em>Propene + HBr</em>, <em>Bromoethane + OH⁻</em>, <em>Ethene + Br₂</em>, <em>Bromoethane + NH₃</em>).</>,
-      <><strong>Stage 1 — Assign Dipoles:</strong> Tap highlighted bond nodes on the canvas to cycle <code>δ⁺</code> and <code>δ⁻</code> charges, then press <em>Verify assigned Dipoles</em>.</>,
-      <><strong>Stage 2 — Draw Curly Arrows:</strong> Drag from the exact electron source (π-bond or lone pair) to the electron sink, adjust the curve with the start/mid/end handles, and click <em>Submit Mechanism Step</em>.</>,
+      <><strong>Pick AS Reaction:</strong> Select from the 6 AS mechanisms (<em>Ethene + HBr</em>, <em>Propene + HBr</em>, <em>Bromoethane + OH⁻</em>, <em>Ethene + Br₂</em>, <em>Bromoethane + NH₃</em>, <em>Bromoethane + CN⁻</em>).</>,
+      <><strong>Assign Dipoles with Visible Hotspots:</strong> Tap dashed atom rings on the canvas to cycle <code>δ⁺</code> / <code>δ⁻</code>, or pick a brush from the <em>Dipole Paint Bar</em> and press <em>Verify Dipoles</em>.</>,
+      <><strong>Draw Multi-Step Curly Arrows:</strong> Either <strong>drag</strong> from electron source to sink OR <strong>tap source then tap target</strong>. Use the arrow chips to <em>↺ Flip</em> curve direction or remove an arrow, then clear intermediate &amp; exam checkpoints.</>,
     ],
     examMethod: {
       formulas: [
@@ -987,12 +987,12 @@ export const howToGuides = {
 
   'mechanisms-masterclass': {
     title: 'A2 Organic Mechanisms',
-    unit: 'Unit 4.4',
-    summary: 'Master nucleophilic addition (HCN + carbonyls), electrophilic aromatic substitution (benzene nitration/bromination), and SN1 mechanisms.',
+    unit: 'Unit 4.2 – 4.4',
+    summary: 'Master multi-step nucleophilic additions (HCN + carbonyls), electrophilic aromatic substitutions (nitration, bromination, Friedel–Crafts acylation), and Sₙ1 pathways.',
     appletSteps: [
-      <><strong>Pick A2 Reaction:</strong> Choose from the 5 A2 mechanisms (<em>HCN + Ethanal</em>, <em>Benzene Nitration</em>, <em>SN1 Tertiary Haloalkane Fission</em>, <em>HCN + Propanone</em>, <em>Benzene Bromination</em>).</>,
-      <><strong>Stage 1 — Assign Dipoles:</strong> Tap highlighted sites to place <code>δ⁺</code>, <code>δ⁻</code>, or formal charges and click <em>Verify assigned Dipoles</em>.</>,
-      <><strong>Stage 2 — Draw Curly Arrows:</strong> Drag from the exact electron source (:CN⁻ carbon, π-ring, or breaking bond) to the electron sink, tune the curve handles, and click <em>Submit Mechanism Step</em>.</>,
+      <><strong>Pick A2 Reaction:</strong> Choose from the 6 A2 mechanisms (<em>Ethanal + HCN</em>, <em>Benzene Nitration</em>, <em>Tertiary Sₙ1</em>, <em>Propanone + HCN</em>, <em>Benzene Bromination</em>, <em>Friedel–Crafts Acylation</em>).</>,
+      <><strong>Clear Electrophile &amp; Dipole Gates:</strong> Verify <code>δ⁺</code>/<code>δ⁻</code> dipoles with the <em>Dipole Paint Bar</em> or select balanced catalyst equations generating <code>NO₂⁺</code>, <code>Br⁺</code>, or <code>CH₃C⁺=O</code>.</>,
+      <><strong>Draw Multi-Step Curly Arrows:</strong> Drag between highlighted hotspots (or tap source then tap target) across attack, Wheland intermediate rearomatisation, and protonation steps, using <em>↺ Flip</em> to tune arrow curves.</>,
     ],
     examMethod: {
       formulas: [
