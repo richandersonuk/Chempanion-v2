@@ -550,7 +550,7 @@ export function VSEPRShapes({ onComplete }) {
       <div className="applet-header !mb-0 flex-col sm:flex-row !justify-between">
         <div className="text-left">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-[#326fa0] border border-blue-200">
+            <span className="text-[10px] font-black tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-[#326fa0] border border-blue-200">
               WJEC Unit 1.4(b), (h)–(i)
             </span>
           </div>
@@ -646,7 +646,7 @@ export function VSEPRShapes({ onComplete }) {
             {/* Prompt Header + Hidden Hint */}
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
                   {currentMolecule.unitRef} • Central Atom: {currentMolecule.centralAtom} ({currentMolecule.centralGroup})
                 </span>
                 <h3 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5">
@@ -673,7 +673,7 @@ export function VSEPRShapes({ onComplete }) {
 
             {/* Step 1: Bonding Regions & Lone Pairs Steppers */}
             <div className="space-y-2.5">
-              <div className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <div className="text-xs font-black tracking-wider text-slate-600">
                 Step 1 — Deduce Electron Regions on Central Atom ({currentMolecule.centralAtom})
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -747,7 +747,7 @@ export function VSEPRShapes({ onComplete }) {
 
             {/* Step 2: Shape Name & Bond Angle */}
             <div className="space-y-3">
-              <div className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <div className="text-xs font-black tracking-wider text-slate-600">
                 Step 2 — Predict 3D Molecular Shape &amp; Bond Angle
               </div>
               <div className="space-y-2">
@@ -805,7 +805,7 @@ export function VSEPRShapes({ onComplete }) {
 
             {/* Step 3: Polarity OR Coordinate/Ion Reasoning */}
             <div className="space-y-2">
-              <div className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <div className="text-xs font-black tracking-wider text-slate-600">
                 {currentMolecule.isIon
                   ? `Step 3 — ${currentMolecule.ionQuestion.prompt}`
                   : 'Step 3 — Overall Molecular Polarity'}
@@ -877,7 +877,7 @@ export function VSEPRShapes({ onComplete }) {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black uppercase tracking-wider shadow-sm transition-colors cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black tracking-wider shadow-sm transition-colors cursor-pointer"
               >
                 Check Answer
               </button>
@@ -915,7 +915,7 @@ export function VSEPRShapes({ onComplete }) {
 
                     <div className="lg:col-span-7 space-y-3">
                       <div className="bg-white/85 border border-emerald-200 rounded-xl p-3 space-y-1">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+                        <div className="text-[10px] font-black tracking-widest text-[#326fa0]">
                           Valence Electron Count Breakdown
                         </div>
                         <ul className="list-disc list-inside text-xs font-semibold text-slate-700 space-y-1">
@@ -926,7 +926,7 @@ export function VSEPRShapes({ onComplete }) {
                       </div>
 
                       <div className="bg-white/85 border border-emerald-200 rounded-xl p-3 space-y-1">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                        <div className="text-[10px] font-black tracking-widest text-emerald-700">
                           Official WJEC Mark-Scheme Points
                         </div>
                         <ul className="list-disc list-inside text-xs font-bold text-slate-800 space-y-1">
@@ -954,7 +954,7 @@ export function VSEPRShapes({ onComplete }) {
         <div className="space-y-5">
           {/* Species Catalogue Selector */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
-            <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <div className="text-[10px] font-black tracking-widest text-slate-500">
               Select Any WJEC Molecule or Ion to Inspect in 3D
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -983,7 +983,7 @@ export function VSEPRShapes({ onComplete }) {
             <div className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+                  <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
                     {explorerMolecule.unitRef}
                   </span>
                   <h3 className="text-lg font-black text-slate-900">
@@ -1029,15 +1029,15 @@ export function VSEPRShapes({ onComplete }) {
             <div className="lg:col-span-6 space-y-4">
               <div className="grid grid-cols-3 gap-2.5 text-center">
                 <div className="bg-white border border-slate-200 rounded-2xl p-3">
-                  <div className="text-[10px] font-black uppercase text-slate-400">Bonding (BP)</div>
+                  <div className="text-[10px] font-black text-slate-400">Bonding (BP)</div>
                   <div className="text-xl font-black text-[#326fa0] font-mono">{explorerMolecule.bp}</div>
                 </div>
                 <div className="bg-white border border-slate-200 rounded-2xl p-3">
-                  <div className="text-[10px] font-black uppercase text-slate-400">Lone Pairs (LP)</div>
+                  <div className="text-[10px] font-black text-slate-400">Lone Pairs (LP)</div>
                   <div className="text-xl font-black text-amber-700 font-mono">{explorerMolecule.lp}</div>
                 </div>
                 <div className="bg-white border border-slate-200 rounded-2xl p-3">
-                  <div className="text-[10px] font-black uppercase text-slate-400">Total Regions</div>
+                  <div className="text-[10px] font-black text-slate-400">Total Regions</div>
                   <div className="text-xl font-black text-slate-800 font-mono">
                     {explorerMolecule.bp + explorerMolecule.lp}
                   </div>
@@ -1046,7 +1046,7 @@ export function VSEPRShapes({ onComplete }) {
 
               <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  <span className="text-[10px] font-black tracking-widest text-slate-500">
                     Polarity &amp; Structure Summary
                   </span>
                   {!explorerMolecule.isIon ? (
@@ -1074,7 +1074,7 @@ export function VSEPRShapes({ onComplete }) {
               </div>
 
               <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-1">
-                <div className="text-[10px] font-black uppercase tracking-widest text-amber-800">
+                <div className="text-[10px] font-black tracking-widest text-amber-800">
                   VSEPR Repulsion Rule (WJEC 1.4(h))
                 </div>
                 <p className="text-xs sm:text-sm font-semibold text-amber-950 leading-relaxed">

@@ -534,7 +534,7 @@ export default function NuclearChemistry({ onComplete }) {
 
           {showMarkScheme && (
             <div className="mt-6 p-4 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] rounded-lg space-y-2 text-xs sm:text-sm">
-              <h4 className="font-bold text-[var(--chem-primary)] uppercase tracking-wider text-[0.7rem]">
+              <h4 className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem]">
                 WJEC Examiner Mark Scheme Guidance
               </h4>
               {currentProblem.type === 'equation' && (

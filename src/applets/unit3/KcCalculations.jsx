@@ -297,7 +297,7 @@ const KcCalculations = ({ onComplete }) => {
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex items-center gap-2" style={{ textTransform: 'none' }}>
@@ -316,7 +316,7 @@ const KcCalculations = ({ onComplete }) => {
           <button
             type="button"
             onClick={() => generateProblem('random')}
-            className="px-4 py-2.5 text-xs font-black uppercase bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl transition-all shrink-0"
+            className="px-4 py-2.5 text-xs font-black bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl transition-all shrink-0"
           >
             Random 🎲
           </button>
@@ -343,7 +343,7 @@ const KcCalculations = ({ onComplete }) => {
 
       {mode === 'predict_units' ? (
         <div className="w-full max-w-sm mx-auto my-6 bg-slate-50 border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center gap-4" style={{ textTransform: 'none' }}>
-          <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Select Power Indexes</span>
+          <span className="text-[10px] font-black tracking-wider text-slate-400">Select Power Indexes</span>
 
           <div className="grid grid-cols-3 gap-4 w-full">
             <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
@@ -375,7 +375,7 @@ const KcCalculations = ({ onComplete }) => {
           </div>
 
           <div className="w-full bg-white border border-slate-200/60 rounded-xl p-2.5 text-center mt-1 flex flex-col items-center gap-0.5">
-            <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Current Sorted Selection</span>
+            <span className="text-[9px] font-extrabold text-slate-400 tracking-wider">Current Sorted Selection</span>
             <div className="h-6 flex items-center justify-center">{renderSortedUnitsPreview()}</div>
           </div>
         </div>
@@ -393,7 +393,7 @@ const KcCalculations = ({ onComplete }) => {
           </div>
 
           <div className="mt-3 text-center select-none whitespace-nowrap" style={{ textTransform: 'none' }}>
-            <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mr-1">Units:</span>
+            <span className="text-xs font-extrabold text-slate-400 tracking-widest mr-1">Units:</span>
             <span className="text-sm font-black text-slate-500 font-mono inline-block bg-white border border-slate-200/60 px-2.5 py-0.5 rounded-lg shadow-sm">{problem.unitExpectation}</span>
           </div>
         </div>

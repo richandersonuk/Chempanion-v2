@@ -318,7 +318,7 @@ const ThermometricTitration = ({ onComplete }) => {
                 <text x={getX(v)} y={yBottom + 11} textAnchor="middle" className="text-[8px] font-mono font-black fill-slate-400">{v}</text>
               </g>
             ))}
-            <text x="160" y="154" textAnchor="middle" className="text-[9px] font-black fill-slate-400 uppercase tracking-wider">Volume of NaOH added (cm³)</text>
+            <text x="160" y="154" textAnchor="middle" className="text-[9px] font-black fill-slate-400 tracking-wider">Volume of NaOH added (cm³)</text>
 
             {[Math.floor(tStart), Math.ceil(tMax)].map((t) => (
               <g key={t}>
@@ -347,7 +347,7 @@ const ThermometricTitration = ({ onComplete }) => {
         </div>
 
         <div className="w-full bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-inner flex flex-col items-center select-none">
-          <span className="text-[8px] font-black tracking-widest uppercase text-amber-400 mb-2.5">Magnified Tracking Lens (0.1 cm³ subdivisions)</span>
+          <span className="text-[8px] font-black tracking-widest text-amber-400 mb-2.5">Magnified Tracking Lens (0.1 cm³ subdivisions)</span>
 
           <svg viewBox="0 0 300 45" className="w-full h-auto overflow-hidden">
             <rect x="0" y="0" width="300" height="35" fill="#1e293b" opacity="0.4" />
@@ -389,7 +389,7 @@ const ThermometricTitration = ({ onComplete }) => {
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex items-center justify-center" style={{ textTransform: 'none' }}>

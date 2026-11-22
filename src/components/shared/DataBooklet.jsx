@@ -117,7 +117,7 @@ const ZoomablePeriodicTable = () => {
               >
                 <span className="text-[10px] font-bold text-slate-700 leading-none">{el.m}</span>
                 <span className="text-2xl font-black text-slate-900 leading-none">{el.s}</span>
-                <span className={`uppercase text-slate-500 font-bold text-center leading-tight overflow-hidden ${el.n.length > 10 ? 'text-[5.5px]' : 'text-[7px]'}`}>{el.n}</span>
+                <span className={` text-slate-500 font-bold text-center leading-tight overflow-hidden ${el.n.length > 10 ?'text-[5.5px]' :'text-[7px]'}`}>{el.n}</span>
                 <span className="text-[10px] font-bold text-slate-500 leading-none">{el.z}</span>
               </div>
             ))}
@@ -322,7 +322,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
               <span className="text-[var(--chem-logo-lightblue)]">Book</span>
             </div>
             {activeAppletId !== 'dashboard' && APPLET_TAB_MAP[activeAppletId] && (
-              <span className="hidden sm:inline-block ml-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-blue-50 text-[#326fa0] border border-blue-200 rounded-full">
+              <span className="hidden sm:inline-block ml-2 text-[10px] font-bold tracking-wider px-2 py-0.5 bg-blue-50 text-[#326fa0] border border-blue-200 rounded-full">
                 Contextual View
               </span>
             )}
@@ -355,7 +355,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
 
           {/* --- MOBILE DROPDOWN SELECTION SECTOR --- */}
           <div className="lg:hidden py-3 px-4 bg-white border-b border-slate-100 w-full relative">
-            <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+            <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
               Select Data Section
             </span>
             <button
@@ -436,7 +436,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
                 </table>
               </div>
               <div>
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest text-center mb-4">Prefixes</h3>
+                <h3 className="text-xs font-black text-slate-400 tracking-widest text-center mb-4">Prefixes</h3>
                 <div className="max-w-sm mx-auto rounded-lg border border-slate-200 overflow-hidden shadow-sm">
                   <table className="w-full text-left">
                     <thead className="bg-slate-50 border-b">
@@ -466,7 +466,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b">
                   <tr>
-                    <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Bond</th>
+                    <th className="py-3 px-4 text-xs font-bold text-slate-500">Bond</th>
                     <th className="py-3 px-4 text-xs font-bold text-slate-500 text-right">Wavenumber / cm⁻¹</th>
                   </tr>
                 </thead>
@@ -484,12 +484,12 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
 
           {activeTab === '13C' && (
             <div className="max-w-3xl mx-auto space-y-4 text-slate-900" style={{ textTransform: 'none' }}>
-              <h3 className="font-black text-xl text-slate-800 text-center uppercase tracking-tighter"><sup>13</sup>C NMR Chemical Shifts</h3>
+              <h3 className="font-black text-xl text-slate-800 text-center tracking-tighter"><sup>13</sup>C NMR Chemical Shifts</h3>
               <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-white">
                 <table className="w-full text-left">
                   <thead className="bg-slate-50 border-b">
                     <tr>
-                      <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Type of carbon</th>
+                      <th className="py-3 px-4 text-xs font-bold text-slate-500">Type of carbon</th>
                       <th className="py-3 px-4 text-xs font-bold text-slate-500 lowercase text-right">&delta; / ppm</th>
                     </tr>
                   </thead>
@@ -508,12 +508,12 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
 
           {activeTab === '1H' && (
             <div className="max-w-3xl mx-auto space-y-4 text-slate-900" style={{ textTransform: 'none' }}>
-              <h3 className="font-black text-xl text-slate-800 text-center uppercase tracking-tighter"><sup>1</sup>H NMR Chemical Shifts</h3>
+              <h3 className="font-black text-xl text-slate-800 text-center tracking-tighter"><sup>1</sup>H NMR Chemical Shifts</h3>
               <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-white">
                 <table className="w-full text-left">
                   <thead className="bg-slate-50 border-b">
                     <tr>
-                      <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Type of proton</th>
+                      <th className="py-3 px-4 text-xs font-bold text-slate-500">Type of proton</th>
                       <th className="py-3 px-4 text-xs font-bold text-slate-500 lowercase text-right">&delta; / ppm</th>
                     </tr>
                   </thead>

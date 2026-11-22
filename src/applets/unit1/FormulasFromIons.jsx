@@ -163,12 +163,12 @@ export function FormulasFromIons({ onComplete }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-4 text-center shadow-inner">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 block mb-1">Target Cation</span>
+          <span className="text-[10px] font-bold tracking-wider text-amber-600 block mb-1">Target Cation</span>
           <div className="text-2xl font-bold text-[var(--chem-text-main)] font-mono">{cation.html}</div>
           <div className="text-xs font-medium text-[var(--chem-text-muted)] mt-1">{cation.name} (Charge: +{cation.charge})</div>
         </div>
         <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-4 text-center shadow-inner">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block mb-1">Target Anion</span>
+          <span className="text-[10px] font-bold tracking-wider text-indigo-600 block mb-1">Target Anion</span>
           <div className="text-2xl font-bold text-[var(--chem-text-main)] font-mono">{anion.html}</div>
           <div className="text-xs font-medium text-[var(--chem-text-muted)] mt-1">{anion.name} (Charge: -{anion.charge})</div>
         </div>
@@ -198,7 +198,7 @@ export function FormulasFromIons({ onComplete }) {
             />
 
             <div className="min-w-[140px] px-3.5 py-2 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5 h-10 select-none shrink-0 text-center shadow-sm">
-              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 border-r border-slate-200 pr-1.5 leading-none">Render:</span>
+              <span className="text-[9px] font-black tracking-widest text-slate-400 border-r border-slate-200 pr-1.5 leading-none">Render:</span>
               <div className="text-sm font-mono tracking-wide leading-none h-5 flex items-center overflow-hidden">
                 {renderLiveFormulaPreview(userFormula)}
               </div>

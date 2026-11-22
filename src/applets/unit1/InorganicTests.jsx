@@ -111,7 +111,7 @@ export default function InorganicTests({ onComplete }) {
         {/* Left Column: Reagent Bench Controls */}
         <div className="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <span className="text-[10px] font-black tracking-widest text-slate-400">
               1. Perform Wet & Flame Tests
             </span>
             <button
@@ -158,7 +158,7 @@ export default function InorganicTests({ onComplete }) {
         <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <span className="text-[10px] font-black tracking-widest text-slate-400">
                 Active Observation Chamber • Sample {currentSalt.code}
               </span>
               <h3 className="text-sm font-black text-slate-800">
@@ -239,7 +239,7 @@ export default function InorganicTests({ onComplete }) {
             <div className="flex-1 space-y-2 text-left">
               {isRevealed ? (
                 <>
-                  <span className="inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                  <span className="inline-block text-[10px] font-black tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
                     Recorded Laboratory Observation
                   </span>
                   <p className="text-sm font-bold text-slate-800 leading-relaxed">
@@ -261,7 +261,7 @@ export default function InorganicTests({ onComplete }) {
 
           {/* Summary Table of Completed Tests */}
           <div className="space-y-1.5">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">
+            <span className="text-[10px] font-black tracking-widest text-slate-400 block">
               Completed Test Notebook ({Object.keys(revealedTests).length}/5)
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
@@ -286,7 +286,7 @@ export default function InorganicTests({ onComplete }) {
       <form onSubmit={handleCheckDeduction} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+            <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
               2. Final Salt Identification
             </span>
             <h3 className="text-sm font-black text-slate-800">
@@ -372,7 +372,7 @@ export default function InorganicTests({ onComplete }) {
               </div>
               {feedback.ionicEquations && (
                 <div className="bg-white/90 border border-emerald-200 rounded-xl p-3 space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 block">
+                  <span className="text-[10px] font-black tracking-widest text-emerald-700 block">
                     Essential WJEC Ionic Equations (Include State Symbols!)
                   </span>
                   {feedback.ionicEquations.map((eq, i) => (

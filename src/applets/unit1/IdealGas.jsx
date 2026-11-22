@@ -206,7 +206,7 @@ const IdealGas = ({ onComplete }) => {
   return (
     <div className="applet-container">
       <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex items-center gap-2">
@@ -224,7 +224,7 @@ const IdealGas = ({ onComplete }) => {
           <button
             type="button"
             onClick={() => { generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
+            className={`px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 ${
               mode === 'random'
                 ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
                 : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
@@ -245,7 +245,7 @@ const IdealGas = ({ onComplete }) => {
       <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
         <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <span className="text-[10px] font-black tracking-widest text-slate-400">
               WJEC Unit Trap Gate
             </span>
             <h4 className="text-xs font-black text-slate-800 mt-1">

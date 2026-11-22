@@ -56,10 +56,10 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
             <span className="text-2xl shrink-0 mt-0.5">💡</span>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-0.5">
-                <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-black tracking-widest bg-white/20 px-2 py-0.5 rounded-full">
                   {currentGuide.unit}
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider opacity-90">
+                <span className="text-[10px] font-black tracking-wider opacity-90">
                   Applet &amp; WJEC Exam Guide
                 </span>
               </div>
@@ -105,7 +105,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
         <div className="p-5 sm:p-6 overflow-y-auto space-y-4 text-left text-xs sm:text-sm text-slate-700 leading-relaxed flex-1">
           {activeTab === 'applet' && (
             <div className="space-y-3">
-              <div className="text-[11px] font-black uppercase tracking-widest text-amber-600">
+              <div className="text-[11px] font-black tracking-widest text-amber-600">
                 Using the Interactive Applet
               </div>
               <ol className="space-y-2.5">
@@ -129,7 +129,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           {activeTab === 'exam' && (
             <div className="space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-blue-600">
+                <div className="text-[11px] font-black tracking-widest text-blue-600">
                   Key Equations &amp; Core Rules
                 </div>
                 <div className="space-y-1.5">
@@ -145,7 +145,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="space-y-2.5">
-                <div className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                <div className="text-[11px] font-black tracking-widest text-slate-500">
                   Step-by-Step WJEC Exam Strategy
                 </div>
                 <ol className="space-y-2">
@@ -168,7 +168,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           {activeTab === 'example' && (
             <div className="space-y-4">
               <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4">
-                <div className="text-[11px] font-black uppercase tracking-widest text-indigo-600 mb-1.5">
+                <div className="text-[11px] font-black tracking-widest text-indigo-600 mb-1.5">
                   Representative Exam Question
                 </div>
                 <p className="font-bold text-indigo-950 text-xs sm:text-sm leading-relaxed">
@@ -177,7 +177,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                <div className="text-[11px] font-black tracking-widest text-slate-500">
                   Method &amp; Full ECF Working
                 </div>
                 <ol className="space-y-2">
@@ -196,7 +196,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700">
+                <span className="text-[11px] font-black tracking-widest text-emerald-700">
                   Final Mark-Scheme Answer
                 </span>
                 <span className="font-mono font-black text-sm text-emerald-950 bg-white px-3 py-1.5 rounded-xl border border-emerald-200">
@@ -209,7 +209,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           {activeTab === 'pitfalls' && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-rose-600">
+                <div className="text-[11px] font-black tracking-widest text-rose-600">
                   Common Examiner Pitfalls
                 </div>
                 <ul className="space-y-2">
@@ -226,7 +226,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-emerald-700">
+                <div className="text-[11px] font-black tracking-widest text-emerald-700">
                   Quick Mark-Scheme Checklist
                 </div>
                 <ul className="space-y-1.5">
@@ -251,7 +251,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
             <button
               type="button"
               onClick={onOpenDataBooklet}
-              className="px-4 py-2 bg-white hover:bg-blue-50 text-[#326fa0] border border-slate-200 hover:border-blue-300 font-black text-xs uppercase tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="px-4 py-2 bg-white hover:bg-blue-50 text-[#326fa0] border border-slate-200 hover:border-blue-300 font-black text-xs tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               📚 Open Data Booklet
             </button>
@@ -261,7 +261,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
+            className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
           >
             Got It ✓
           </button>
@@ -363,8 +363,8 @@ export default function App() {
                         onClick={(e) => { e.stopPropagation(); toggleCategory(unitRow); }}
                         className="w-full flex items-center justify-between px-2.5 py-1.5 bg-slate-100/50 hover:bg-slate-100 text-[10px] font-black text-slate-500 tracking-wide transition-colors cursor-pointer"
                       >
-                        <span>{unitRow.toUpperCase()}</span>
-                        <span className="text-[9px] text-slate-400 font-bold">{isCatOpen ? 'HIDE' : 'SHOW'}</span>
+                        <span>{unitRow}</span>
+                        <span className="text-[9px] text-slate-400 font-bold">{isCatOpen ? 'Hide' : 'Show'}</span>
                       </button>
                       {isCatOpen && (
                         <div className="p-0.5 bg-white space-y-0.5">
@@ -451,7 +451,7 @@ export default function App() {
           <div className="md:hidden bg-white border-t border-slate-100 max-h-[calc(100vh-4rem)] overflow-y-auto p-4 space-y-2 shadow-inner">
             <button
               onClick={() => handleNav('dashboard')}
-              className="w-full text-left px-4 py-3 rounded-xl font-black text-xs text-[#326fa0] uppercase tracking-wider bg-blue-50 mb-3 block"
+              className="w-full text-left px-4 py-3 rounded-xl font-black text-xs text-[#326fa0] tracking-wider bg-blue-50 mb-3 block"
             >
               🏠 Go to Home Dashboard
             </button>
@@ -486,7 +486,7 @@ export default function App() {
                                 <span className="text-xs text-white">{app.label}</span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] bg-slate-600 text-slate-300 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
+                                <span className="text-[9px] bg-slate-600 text-slate-300 font-extrabold px-2 py-0.5 rounded-md tracking-wider">{app.unit}</span>
                                 <svg className="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                               </div>
                             </div>
@@ -502,7 +502,7 @@ export default function App() {
                                 <span className="mr-3 text-lg">{app.icon}</span>
                                 <span className="text-xs">{app.label}</span>
                               </div>
-                              <span className="text-[9px] bg-slate-100 text-slate-400 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
+                              <span className="text-[9px] bg-slate-100 text-slate-400 font-extrabold px-2 py-0.5 rounded-md tracking-wider">{app.unit}</span>
                             </div>
                           </button>
                         )
@@ -538,10 +538,14 @@ export default function App() {
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-sm">✨</span>
-                    <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform Updates & Status</h3>
+                    <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    New Update: Added Qualitative Inorganic Analysis (Unit 1.6), Half-Equation Balancing (Unit 3.2), Born-Haber Cycles (Unit 3.6), and Combined Spectral Interpreter (Unit 4.8), plus Unit-Conversion Gates and Mastery Tracking! Also explore P-Block Chemistry at{' '}
+                    Latest Updates: Added <strong>VSEPR Shapes &amp; Polarity</strong> (Unit 1.4), <strong>Bonding Continuum &amp; IMFs</strong> (Unit 1.4 / 1.5), upgraded <strong>AS &amp; A2 Organic Mechanisms</strong> (Unit 2.5 / 2.6 &amp; Unit 4.2 – 4.4), and linked the <strong>Electron Configuration Game</strong> (Unit 1.2) plus the polished{' '}
+                    <a href="https://periodictable.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
+                      periodictable.chempanion.uk
+                    </a>{' '}
+                    lab (Unit 1.6) alongside Qualitative Inorganic Analysis, Half-Equation Balancing, Born-Haber Cycles, Combined Spectral Interpreter, and{' '}
                     <a href="https://pblock.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
                       pblock.chempanion.uk
                     </a>.
@@ -561,10 +565,10 @@ export default function App() {
                   <div key={unitRow} className="animate-fade-in">
                     <div className="border-b-2 border-slate-200 pb-2 mb-5 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <span className="inline-flex items-center justify-center text-center bg-slate-800 text-white text-xs font-black h-7 px-3 rounded-md tracking-wider shadow-sm uppercase shrink-0 min-w-[4.8rem]">
+                        <span className="inline-flex items-center justify-center text-center bg-slate-800 text-white text-xs font-black h-7 px-3 rounded-md tracking-wider shadow-sm shrink-0 min-w-[4.8rem]">
                           {unitRow}
                         </span>
-                        <h2 className="text-xs sm:text-sm font-black text-slate-500 tracking-wide uppercase leading-tight">
+                        <h2 className="text-xs sm:text-sm font-black text-slate-500 tracking-wide leading-tight">
                           {WJEC_UNIT_TITLES[unitRow]}
                         </h2>
                       </div>
@@ -597,7 +601,7 @@ export default function App() {
                                       {app.icon}
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                      <span className="text-[10px] bg-slate-600 text-slate-300 font-bold px-2 py-0.5 rounded uppercase tracking-wider">{app.unit}</span>
+                                      <span className="text-[10px] bg-slate-600 text-slate-300 font-bold px-2 py-0.5 rounded tracking-wider">{app.unit}</span>
                                       <svg className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                       </svg>
@@ -632,7 +636,7 @@ export default function App() {
                                   <div className="w-10 h-10 bg-slate-50 text-[#326fa0] rounded-xl flex items-center justify-center text-2xl group-hover:bg-[#326fa0] group-hover:text-white transition-colors">
                                     {app.icon}
                                   </div>
-                                  <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all uppercase tracking-wider">{app.unit}</span>
+                                  <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all tracking-wider">{app.unit}</span>
                                 </div>
                                 <div className="font-black text-base text-slate-800 leading-snug mb-1 group-hover:text-[#326fa0] transition-colors line-clamp-1">
                                   {app.label}
@@ -642,7 +646,7 @@ export default function App() {
                                 </p>
                               </div>
                               <div className="w-full pt-2 border-t border-slate-100 flex items-center justify-between">
-                                <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                                <span className={`text-[10px] font-black tracking-wider px-2 py-0.5 rounded-full border ${
                                   solvedCount >= targetCount
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                                     : solvedCount > 0
@@ -681,7 +685,7 @@ export default function App() {
                 &larr; Back to Dashboard Menu
               </button>
               <span className="text-slate-300">/</span>
-              <span className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">
+              <span className="text-xs sm:text-sm font-bold text-slate-400 tracking-widest">
                 {activeAppletObj?.unit} &bull; {activeAppletObj?.label || currentApplet}
               </span>
             </div>
@@ -695,7 +699,7 @@ export default function App() {
               <Suspense fallback={
                 <div className="flex flex-col items-center justify-center py-20 bg-white border border-slate-200 rounded-3xl">
                   <div className="w-10 h-10 border-4 border-slate-200 border-t-[#326fa0] rounded-full animate-spin mb-4" />
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Compiling Reagent Metrics...</p>
+                  <p className="text-xs font-bold text-slate-400 tracking-widest">Compiling Reagent Metrics...</p>
                 </div>
               }>
                 <ActiveComponent onComplete={(scenarioId) => recordSuccess(currentApplet, scenarioId)} />

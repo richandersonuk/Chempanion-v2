@@ -296,7 +296,7 @@ export default function HalfEquationBalancing({ onComplete }) {
           </div>
 
           <div className="w-full overflow-x-auto my-4 py-4 px-3 bg-[var(--chem-bg-main)] rounded-lg border border-[var(--chem-border)] flex flex-col items-center justify-center gap-2">
-            <span className="text-[0.65rem] uppercase font-mono font-bold tracking-wider text-[var(--chem-text-muted)]">
+            <span className="text-[0.65rem] font-mono font-bold tracking-wider text-[var(--chem-text-muted)]">
               Constructed Half-Equation
             </span>
             <div className="flex items-center gap-2 min-w-max text-sm sm:text-base font-bold">
@@ -621,7 +621,7 @@ export default function HalfEquationBalancing({ onComplete }) {
               <div className="bg-[var(--chem-bg-main)] p-4 rounded-xl border border-[var(--chem-border)] space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
                   <div className="p-3 bg-[var(--chem-card-bg)] rounded-lg border border-[var(--chem-border)] space-y-3">
-                    <span className="font-bold text-[var(--chem-primary)] uppercase tracking-wider text-[0.7rem] block">
+                    <span className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem] block">
                       Left-Hand Side (Reactants)
                     </span>
                     <div className="flex items-center gap-2">
@@ -662,7 +662,7 @@ export default function HalfEquationBalancing({ onComplete }) {
                   </div>
 
                   <div className="p-3 bg-[var(--chem-card-bg)] rounded-lg border border-[var(--chem-border)] space-y-3">
-                    <span className="font-bold text-[var(--chem-primary)] uppercase tracking-wider text-[0.7rem] block">
+                    <span className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem] block">
                       Right-Hand Side (Products)
                     </span>
                     <div className="flex items-center gap-2">
@@ -756,7 +756,7 @@ export default function HalfEquationBalancing({ onComplete }) {
 
           {showMarkScheme && (
             <div className="mt-6 p-4 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] rounded-lg space-y-2 text-xs sm:text-sm">
-              <h4 className="font-bold text-[var(--chem-primary)] uppercase tracking-wider text-[0.7rem]">
+              <h4 className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem]">
                 WJEC Examiner Mark Scheme & Guidance
               </h4>
               <ul className="list-disc pl-5 space-y-1 text-[var(--chem-text)]">

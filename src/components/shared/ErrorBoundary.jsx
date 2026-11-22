@@ -49,7 +49,7 @@ export default class ErrorBoundary extends React.Component {
             <button
               type="button"
               onClick={this.handleReset}
-              className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
+              className="px-5 py-2.5 bg-[#326fa0] hover:bg-[#255580] text-white font-black text-xs tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
             >
               Reset Applet ↻
             </button>
@@ -60,7 +60,7 @@ export default class ErrorBoundary extends React.Component {
                   this.setState({ hasError: false, error: null });
                   this.props.onReturnHome();
                 }}
-                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs tracking-wider rounded-xl transition-colors cursor-pointer"
               >
                 Dashboard Home
               </button>

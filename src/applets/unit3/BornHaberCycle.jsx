@@ -175,7 +175,7 @@ export default function BornHaberCycle({ onComplete }) {
       {/* Crystal System Selector */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-black text-slate-500 uppercase tracking-wider mr-1">Ionic Lattice:</span>
+          <span className="text-xs font-black text-slate-500 tracking-wider mr-1">Ionic Lattice:</span>
           {BORN_HABER_SYSTEMS.map((s, idx) => (
             <button
               key={s.id}
@@ -194,7 +194,7 @@ export default function BornHaberCycle({ onComplete }) {
 
         {mode === 'born_haber' && (
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-black uppercase text-slate-400">Solve for:</span>
+            <span className="text-[10px] font-black text-slate-400">Solve for:</span>
             <select
               value={targetType}
               onChange={(e) => resetProblem(sysIdx, mode, e.target.value)}
@@ -212,7 +212,7 @@ export default function BornHaberCycle({ onComplete }) {
           {/* Left: Interactive Energy Level Diagram SVG */}
           <div className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <span className="text-[10px] font-black tracking-widest text-slate-400">
                 Born-Haber Energy Cycle: {system.name}
               </span>
               <span className="text-[10px] font-mono font-bold text-[#326fa0]">kJ mol⁻¹</span>
@@ -273,7 +273,7 @@ export default function BornHaberCycle({ onComplete }) {
             </svg>
 
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-1">
-              <div className="font-black text-slate-700 uppercase text-[10px] tracking-wider mb-1">
+              <div className="font-black text-slate-700 text-[10px] tracking-wider mb-1">
                 Provided Thermodynamic Data (kJ mol⁻¹)
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[11px]">
@@ -302,7 +302,7 @@ export default function BornHaberCycle({ onComplete }) {
             {/* Step 1 Gate */}
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <span className="text-[10px] font-black tracking-widest text-slate-400">
                   Step 1: WJEC Stoichiometry &amp; Sign Gate
                 </span>
                 <h3 className="text-xs font-black text-slate-800 mt-1">
@@ -361,7 +361,7 @@ export default function BornHaberCycle({ onComplete }) {
                 type="button"
                 onClick={handleVerifyGate}
                 disabled={gateVerified}
-                className="w-full py-2 bg-[#326fa0] hover:bg-[#255580] disabled:bg-emerald-600 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-colors"
+                className="w-full py-2 bg-[#326fa0] hover:bg-[#255580] disabled:bg-emerald-600 text-white text-xs font-black tracking-wider rounded-xl transition-colors"
               >
                 {gateVerified ? 'Step 1 Verified ✓' : 'Verify Stoichiometry & Sign Rules'}
               </button>
@@ -385,7 +385,7 @@ export default function BornHaberCycle({ onComplete }) {
               }`}
             >
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
                   Step 2: Apply Hess&apos;s Law
                 </span>
                 <h3 className="text-sm font-black text-slate-800 mt-0.5">
@@ -432,7 +432,7 @@ export default function BornHaberCycle({ onComplete }) {
         /* MODE 2: ENTHALPY OF SOLUTION */
         <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+            <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
               Enthalpy of Solution & Hydration Cycle
             </span>
             <h3 className="text-base font-black text-slate-800 mt-0.5">

@@ -230,7 +230,7 @@ const CellPotentials = ({ onComplete }) => {
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex items-center justify-center">
@@ -256,7 +256,7 @@ const CellPotentials = ({ onComplete }) => {
       {/* Dedicated Exam-Style Standard Electrode Potentials Table (not in WJEC Data Booklet) */}
       <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <span className="text-[10px] font-black tracking-widest text-slate-500">
             Standard Electrode Potentials (298 K, 1.0 mol dm⁻³, 1 atm)
           </span>
           <span className="text-[10px] font-bold text-slate-400">
@@ -267,7 +267,7 @@ const CellPotentials = ({ onComplete }) => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="py-2 px-3 text-[11px] font-bold text-slate-500 uppercase">Half-Reaction</th>
+                <th className="py-2 px-3 text-[11px] font-bold text-slate-500">Half-Reaction</th>
                 <th className="py-2 px-3 text-[11px] font-bold text-slate-500 text-right">E° / V</th>
               </tr>
             </thead>

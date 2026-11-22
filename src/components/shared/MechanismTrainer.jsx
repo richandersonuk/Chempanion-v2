@@ -766,7 +766,7 @@ const MechanismTrainer = ({
       {mechanismDone ? (
         <div className="w-full max-w-2xl mx-auto my-4 bg-emerald-50/60 border border-emerald-200 rounded-3xl p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-700">
+            <span className="text-xs font-black tracking-wider text-emerald-700">
               ★ Full Mark-Scheme Summary
             </span>
             <span className="text-[11px] font-bold bg-white text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full">
@@ -780,7 +780,7 @@ const MechanismTrainer = ({
 
           {currentProblem.markScheme && (
             <div className="bg-white border border-emerald-200 rounded-2xl p-4 space-y-2 text-left">
-              <div className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+              <div className="text-[10px] font-black tracking-widest text-emerald-700">
                 WJEC Examiner Mark Points
               </div>
               <ul className="space-y-1.5">
@@ -816,7 +816,7 @@ const MechanismTrainer = ({
           {/* DIPOLE PAINT BAR (Dipoles step only) */}
           {isDipolesStep && (
             <div className="w-full max-w-xl mx-auto mb-3 flex items-center justify-center gap-1.5 flex-wrap">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 mr-1">
+              <span className="text-[10px] font-black tracking-wider text-slate-400 mr-1">
                 Tool:
               </span>
               {[

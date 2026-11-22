@@ -308,7 +308,7 @@ const AcidBaseTitration = ({ onComplete }) => {
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex items-center gap-2" style={{ textTransform: 'none' }}>
@@ -327,7 +327,7 @@ const AcidBaseTitration = ({ onComplete }) => {
           <button
             type="button"
             onClick={() => { generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
+            className={`px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 ${
               mode === 'random' ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
             }`}
           >
@@ -387,7 +387,7 @@ const AcidBaseTitration = ({ onComplete }) => {
           <div className="w-full overflow-x-auto pb-1">
             <table className="w-full min-w-[520px] text-center text-xs font-bold border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] tracking-wider">
                   <th className="p-3 text-left">Burette Readings</th>
                   <th className="p-3 bg-slate-100/60 text-slate-400">Rough</th>
                   <th className="p-3">Titre 1</th>
@@ -458,7 +458,7 @@ const AcidBaseTitration = ({ onComplete }) => {
               <span className="text-xs font-black text-slate-700">Calculated Mean Titre (cm³):</span>
               <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={studentMean} onChange={(e) => setStudentMean(e.target.value)} className="w-20 p-1.5 text-center border border-slate-300 rounded-lg font-mono font-bold text-sm bg-white" placeholder="0.00" disabled={tableVerified} />
             </div>
-            <button type="button" onClick={handleVerifyTable} disabled={tableVerified} className="px-5 py-2 bg-[#326fa0] text-white font-black text-xs uppercase rounded-xl tracking-wider shadow-sm hover:bg-[#255580] disabled:bg-emerald-600 transition-colors">
+            <button type="button" onClick={handleVerifyTable} disabled={tableVerified} className="px-5 py-2 bg-[#326fa0] text-white font-black text-xs rounded-xl tracking-wider shadow-sm hover:bg-[#255580] disabled:bg-emerald-600 transition-colors">
               {tableVerified ? "Table Verified ✓" : "Verify Table Data"}
             </button>
           </div>

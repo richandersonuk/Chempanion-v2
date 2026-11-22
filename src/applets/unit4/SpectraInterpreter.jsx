@@ -104,10 +104,10 @@ export const SpectraInterpreter = ({ onComplete }) => {
         <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
         <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
 
-        <text x={14} y={padT + plotH / 2} textAnchor="middle" transform={`rotate(-90, 14, ${padT + plotH / 2})`} className="text-[9px] font-black fill-slate-500 uppercase">
+        <text x={14} y={padT + plotH / 2} textAnchor="middle" transform={`rotate(-90, 14, ${padT + plotH / 2})`} className="text-[9px] font-black fill-slate-500">
           % Transmittance
         </text>
-        <text x={padL + plotW / 2} y={height - 1} textAnchor="middle" className="text-[8px] font-black fill-slate-400 uppercase tracking-wider">
+        <text x={padL + plotW / 2} y={height - 1} textAnchor="middle" className="text-[8px] font-black fill-slate-400 tracking-wider">
           Wavenumber (cm⁻¹)
         </text>
 
@@ -183,7 +183,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
         <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
         <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
 
-        <text x={padL + plotW / 2} y={height - 4} textAnchor="middle" className="text-[9px] font-black fill-slate-500 uppercase tracking-wider">
+        <text x={padL + plotW / 2} y={height - 4} textAnchor="middle" className="text-[9px] font-black fill-slate-500 tracking-wider">
           m/z (Mass-to-Charge Ratio)
         </text>
 
@@ -232,7 +232,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
           );
         })}
         <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
-        <text x={padL + plotW / 2} y={height - 1} textAnchor="middle" className="text-[9px] font-black fill-slate-500 uppercase tracking-wider">
+        <text x={padL + plotW / 2} y={height - 1} textAnchor="middle" className="text-[9px] font-black fill-slate-500 tracking-wider">
           Chemical Shift δ (ppm)
         </text>
 
@@ -312,7 +312,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
         {activeTab === 'ir' && (
           <div>
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <span className="text-xs font-black tracking-wider text-slate-600">
                 Infrared Absorption Spectrum (Click any trough to inspect)
               </span>
               <span className="text-[10px] font-bold text-slate-400">Use Data Booklet for Wavenumber Ranges</span>
@@ -343,7 +343,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
         {activeTab === 'ms' && (
           <div>
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <span className="text-xs font-black tracking-wider text-slate-600">
                 Electron Impact Mass Spectrum (Click fragment bars to inspect)
               </span>
               <span className="text-[10px] font-bold text-slate-400">
@@ -376,7 +376,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
         {activeTab === 'c13' && (
           <div>
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <span className="text-xs font-black tracking-wider text-slate-600">
                 Proton-Decoupled ¹³C NMR Spectrum
               </span>
               <span className="text-[10px] font-bold text-slate-400">
@@ -407,7 +407,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
         {activeTab === 'h1' && (
           <div>
             <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <span className="text-xs font-black tracking-wider text-slate-600">
                 High-Resolution ¹H NMR Summary Table (Relative to TMS)
               </span>
               <span className="text-[10px] font-bold text-slate-400">
@@ -417,7 +417,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
             <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-slate-100 text-slate-600 font-black uppercase text-[10px]">
+                  <tr className="bg-slate-100 text-slate-600 font-black text-[10px]">
                     <th className="p-3">Chemical Shift δ (ppm)</th>
                     <th className="p-3">Relative Peak Area (Integration)</th>
                     <th className="p-3">Splitting Pattern</th>
@@ -447,14 +447,14 @@ export const SpectraInterpreter = ({ onComplete }) => {
 
       {/* Structured 3-Step WJEC Deduction Panel */}
       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
-        <div className="text-xs font-black uppercase tracking-wider text-slate-700">
+        <div className="text-xs font-black tracking-wider text-slate-700">
           Structured Spectral Deduction
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Step 1 */}
           <div className="bg-white p-3.5 rounded-xl border border-slate-200">
-            <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-[10px] font-black tracking-wider text-slate-400 mb-1.5">
               Step 1: Principal Functional Group
             </label>
             <select
@@ -471,7 +471,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
 
           {/* Step 2 */}
           <div className="bg-white p-3.5 rounded-xl border border-slate-200">
-            <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-[10px] font-black tracking-wider text-slate-400 mb-1.5">
               Step 2: Number of ¹³C Environments
             </label>
             <input
@@ -487,7 +487,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
 
           {/* Step 3 */}
           <div className="bg-white p-3.5 rounded-xl border border-slate-200">
-            <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-[10px] font-black tracking-wider text-slate-400 mb-1.5">
               Step 3: Deduce Unknown Identity
             </label>
             <select

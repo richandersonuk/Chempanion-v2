@@ -458,7 +458,7 @@ export function BondingIMFLab({ onComplete }) {
       <div className="applet-header !mb-0 flex-col sm:flex-row !justify-between">
         <div className="text-left">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-[#326fa0] border border-blue-200">
+            <span className="text-[10px] font-black tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-[#326fa0] border border-blue-200">
               WJEC Unit 1.4 / 1.5
             </span>
           </div>
@@ -502,7 +502,7 @@ export function BondingIMFLab({ onComplete }) {
           {/* Preset Strip */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              <span className="text-[10px] font-black tracking-widest text-slate-500">
                 Curated WJEC Bonding Presets
               </span>
               <span className="text-[11px] font-bold text-slate-500">
@@ -538,7 +538,7 @@ export function BondingIMFLab({ onComplete }) {
                   {bondInfo.label}
                 </span>
                 {isExactPreset && (
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                  <span className="text-[10px] font-black tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600">
                     {activePreset.unitRef}
                   </span>
                 )}
@@ -586,7 +586,7 @@ export function BondingIMFLab({ onComplete }) {
             {/* Electron Density & Bonding Visualiser */}
             <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm space-y-3">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">
+                <h3 className="text-xs font-black tracking-wider text-slate-700">
                   Electron Cloud &amp; Bonding Model
                 </h3>
                 <span className="text-[11px] font-mono font-bold text-[#326fa0]">
@@ -908,7 +908,7 @@ export function BondingIMFLab({ onComplete }) {
             {/* Potential Energy Well Graph */}
             <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">
+                <h3 className="text-xs font-black tracking-wider text-slate-700">
                   Potential Energy Curve (V vs r)
                 </h3>
                 <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${distanceRegion.badgeClass}`}>
@@ -1106,11 +1106,11 @@ export function BondingIMFLab({ onComplete }) {
             ].map((card) => (
               <div key={card.label} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-700">
+                  <span className="text-xs font-black tracking-wider text-slate-700">
                     {card.label}: {card.baseEl.name} ({card.baseEl.symbol})
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">
                       {formatCategoryLabel(card.baseEl.category)}
                     </span>
                     {card.override !== null && (
@@ -1195,7 +1195,7 @@ export function BondingIMFLab({ onComplete }) {
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
                   {activeDataset.unitRef} • Interactive Temperature Control
                 </span>
                 <p className="text-xs font-bold text-slate-600 mt-0.5">{activeDataset.subtitle}</p>
@@ -1237,7 +1237,7 @@ export function BondingIMFLab({ onComplete }) {
           {/* Clickable SVG Boiling/Melting Point Chart */}
           <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">
+              <h3 className="text-xs font-black tracking-wider text-slate-700">
                 Melting Point &amp; Boiling Point Profile (°C)
               </h3>
               <span className="text-[11px] font-bold text-slate-500">
@@ -1478,7 +1478,7 @@ export function BondingIMFLab({ onComplete }) {
           {/* Selected Substance Detail + Dataset Takeaway */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-1.5">
-              <div className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+              <div className="text-[10px] font-black tracking-widest text-[#326fa0]">
                 Selected Substance Explanation — {selectedDatasetItem.formula}
               </div>
               <p className="text-xs sm:text-sm font-medium text-slate-700 leading-relaxed">
@@ -1487,7 +1487,7 @@ export function BondingIMFLab({ onComplete }) {
             </div>
 
             <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-1.5">
-              <div className="text-[10px] font-black uppercase tracking-widest text-amber-800">
+              <div className="text-[10px] font-black tracking-widest text-amber-800">
                 Core WJEC Exam Takeaway
               </div>
               <p className="text-xs sm:text-sm font-semibold text-amber-950 leading-relaxed">
@@ -1534,7 +1534,7 @@ export function BondingIMFLab({ onComplete }) {
             {/* Title + Spec Ref + Hint Button */}
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#326fa0]">
+                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
                   {currentChallenge.unitRef}
                 </span>
                 <h3 className="text-base sm:text-lg font-black text-slate-900">
@@ -1580,7 +1580,7 @@ export function BondingIMFLab({ onComplete }) {
 
             {/* Part 1: Single-Select Classification */}
             <div className="space-y-2">
-              <div className="text-xs font-black uppercase tracking-wider text-slate-600">
+              <div className="text-xs font-black tracking-wider text-slate-600">
                 Part 1 — {currentChallenge.part1.question}
               </div>
               <div className="space-y-2">
@@ -1617,7 +1617,7 @@ export function BondingIMFLab({ onComplete }) {
             {/* Part 2: Multi-Select Mark-Scheme Reasoning */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-slate-600">
+                <span className="text-xs font-black tracking-wider text-slate-600">
                   Part 2 — {currentChallenge.part2.question}
                 </span>
                 <span className="text-[11px] font-bold text-slate-500">
@@ -1653,7 +1653,7 @@ export function BondingIMFLab({ onComplete }) {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black uppercase tracking-wider shadow-sm transition-colors cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black tracking-wider shadow-sm transition-colors cursor-pointer"
               >
                 Check Answer
               </button>
@@ -1689,7 +1689,7 @@ export function BondingIMFLab({ onComplete }) {
                 {challengeFeedback.isCorrect && (
                   <>
                     <div className="bg-white/80 border border-emerald-200 rounded-xl p-3 space-y-1.5">
-                      <div className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                      <div className="text-[10px] font-black tracking-widest text-emerald-700">
                         Official WJEC Mark-Scheme Points
                       </div>
                       <ul className="list-disc list-inside space-y-1 text-xs font-bold text-slate-800">

@@ -259,7 +259,7 @@ const KpCalculations = ({ onComplete }) => {
   return (
     <div className="applet-container">
       <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex items-center gap-2">
@@ -276,7 +276,7 @@ const KpCalculations = ({ onComplete }) => {
           <button
             type="button"
             onClick={() => { generateProblem('random'); }}
-            className="px-4 py-2.5 text-xs font-black uppercase bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl transition-all shrink-0"
+            className="px-4 py-2.5 text-xs font-black bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl transition-all shrink-0"
           >
             Random 🎲
           </button>

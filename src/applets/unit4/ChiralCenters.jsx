@@ -57,7 +57,7 @@ const ChiralCenters = ({ onComplete }) => {
 
       {/* --- INTERACTIVE STRUCTURAL MODEL CANVAS --- */}
       <div className="w-full max-w-md mx-auto my-6 flex flex-col items-center select-none bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative">
-        <span className="text-[9px] font-black tracking-widest uppercase text-slate-400 mb-4 block">
+        <span className="text-[9px] font-black tracking-widest text-slate-400 mb-4 block">
           Interactive Model: {problem.name}
         </span>
         
@@ -149,7 +149,7 @@ const ChiralCenters = ({ onComplete }) => {
 
         {/* --- IUPAC CONVENTION EXAM NOTE --- */}
         <div className="mt-4 pt-2 border-t border-slate-100 w-full text-center">
-          <span className="inline-block text-[8px] font-black tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded uppercase">
+          <span className="inline-block text-[8px] font-black tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
             IUPAC Nomenclature Note
           </span>
           <p className="text-[10px] text-slate-400 font-semibold mt-1">

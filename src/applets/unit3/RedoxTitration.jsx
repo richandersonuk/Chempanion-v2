@@ -176,7 +176,7 @@ const RedoxTitration = ({ onComplete }) => {
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
         <div className="flex flex-col sm:flex-row items-center gap-2">
@@ -194,7 +194,7 @@ const RedoxTitration = ({ onComplete }) => {
           <button
             type="button"
             onClick={() => { setMode('random'); generateProblem('random'); }}
-            className={`w-full sm:w-auto px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 cursor-pointer ${
+            className={`w-full sm:w-auto px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 cursor-pointer ${
               mode === 'random'
                 ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
                 : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'

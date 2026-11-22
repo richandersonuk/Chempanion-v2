@@ -139,7 +139,7 @@ export default function EntropyGibbs({ onComplete }) {
           <div className="p-5 bg-blue-50/50 border border-blue-100 rounded-xl">
             <div className="flex flex-wrap items-center justify-center gap-2">
               <div className="flex items-center gap-2">
-                <p className="text-xs font-semibold text-blue-600 uppercase tracking-widest">
+                <p className="text-xs font-semibold text-blue-600 tracking-widest">
                   Reaction bank:
                 </p>
 
@@ -186,7 +186,7 @@ export default function EntropyGibbs({ onComplete }) {
             <div className="flex flex-wrap items-baseline justify-between gap-2 mt-2">
               <h2 className="text-lg font-bold text-slate-900">{currentQ.title}</h2>
               {currentQ.isPastPaper && (
-                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] font-mono font-bold text-slate-500 tracking-wider">
                   Past Paper Question
                 </span>
               )}
@@ -508,7 +508,7 @@ export default function EntropyGibbs({ onComplete }) {
               ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
               : 'bg-rose-50 border-rose-300 text-rose-900'
           }`}>
-            <span className="text-xs uppercase tracking-wider block">Calculated Free Energy</span>
+            <span className="text-xs tracking-wider block">Calculated Free Energy</span>
             <span className="text-2xl font-black">
               ΔG = {explorerG.toFixed(1)} kJ mol⁻¹
             </span>
