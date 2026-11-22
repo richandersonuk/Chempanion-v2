@@ -1119,6 +1119,50 @@ export const howToGuides = {
     },
   },
 
+  'organic-synthesis': {
+    title: 'Organic Synthesis Pathways & Reagents Map',
+    unit: 'Unit 4.7',
+    summary: 'Plan two-step aliphatic and aromatic syntheses linking halogenoalkanes, nitriles, carbonyls, acyl chlorides, benzene, phenylamine, and azo dyes with Unit 4.7(b) practical purification methods.',
+    appletSteps: [
+      <><strong>Choose Synthesis Tier:</strong> Filter between <em>Aliphatic &amp; Chain Extension</em> and <em>Aromatic &amp; Azo</em> challenges, or pick any numbered transformation chip.</>,
+      <><strong>Build the Two-Step Route:</strong> Select Step 1 reagents and conditions, the resulting intermediate compound, and Step 2 reagents while watching the live synthesis schematic update.</>,
+      <><strong>Verify &amp; Review Pitfalls:</strong> Click <em>Need a Hint?</em> for conceptual prompts before submitting; full accuracy unlocks official WJEC mark-scheme equations and common examiner traps.</>,
+      <><strong>Search the Reagent Map:</strong> Switch to the <em>Interactive Reagent &amp; Pathway Map</em> tab to filter AS/A2 reactions by functional group or reagent and review Unit 4.7(b) reflux, distillation, drying, and recrystallisation checks.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Chain extension (+1 C):  R–X + KCN(aq/EtOH, reflux) → R–CN  ⇒  LiAlH₄ → R–CH₂NH₂  OR  H⁺(aq)/reflux → R–COOH',
+        'Aromatic amine & azo route:  C₆H₆ → C₆H₅NO₂ (50–55 °C) → C₆H₅NH₂ (Sn/HCl, then NaOH) → C₆H₅N₂⁺ (< 5 °C)',
+      ],
+      steps: [
+        'Compare carbon chain length first: if the target has ONE extra carbon, plan immediately through a nitrile (KCN/aq EtOH reflux for halogenoalkanes, or HCN/KCN for aldehydes/ketones).',
+        'For C-1 → C-2 substituent shifts (e.g. propan-1-ol → 2-bromopropane), dehydrate to the alkene (conc. H₂SO₄, ~170 °C) and add HX electrophilically via the more stable carbocation.',
+        'Keep strict reagent/solvent/temperature pairs together: aqueous NaOH (alcohol) vs ethanolic KOH (alkene); distillation (aldehyde) vs vertical reflux (carboxylic acid); < 5–10 °C for diazonium coupling; 50–55 °C for benzene nitration; NaOH(aq) work-up after Sn/conc. HCl.',
+        'Practise Unit 4.7(b) purification steps: dissolving crude solid in minimum hot solvent → hot filtration → slow cooling → Buchner filtration → washing cold → drying & melting point range.',
+      ],
+    },
+    workedExample: {
+      question: 'Outline a two-step synthesis of propylamine (CH₃CH₂CH₂NH₂) starting from bromoethane (CH₃CH₂Br), naming all reagents and conditions.',
+      steps: [
+        'Chain length increases from 2 carbons to 3 carbons, so use nucleophilic substitution with cyanide ion: heat bromoethane under reflux with KCN dissolved in aqueous ethanol → propanenitrile (CH₃CH₂CN).',
+        'Reduce propanenitrile completely using LiAlH₄ in dry ether (or H₂ with a nickel catalyst and heat) → propylamine (CH₃CH₂CH₂NH₂).',
+      ],
+      answer: '1) KCN in aqueous ethanol, heat under reflux (→ CH₃CH₂CN)   2) LiAlH₄ in dry ether',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Forgetting NaOH(aq) after reducing nitrobenzene with Sn + conc. HCl (leaving phenylammonium chloride salt instead of free phenylamine).',
+        'Using ethanolic KOH when an alcohol was wanted, or aqueous NaOH when an alkene was wanted.',
+        'Omitting “below 5 °C / 10 °C” in diazotisation, omitting “anhydrous AlCl₃” in Friedel–Crafts acylation, or using NaBH₄ on nitriles instead of LiAlH₄.',
+      ],
+      checklist: [
+        'Carbon chain count checked between start and target (nitrile needed if +1 C?)',
+        'Exact solvent, catalyst, temperature (< 5 °C, 50–55 °C, 170 °C), and work-up (NaOH(aq)) included',
+        'Reflux vs immediate distillation matched cleanly to complete vs partial oxidation',
+      ],
+    },
+  },
+
   'spectra-interpreter': {
     title: 'Combined Spectroscopy Interpreter (IR, MS & NMR)',
     unit: 'Unit 4.8',
