@@ -7,6 +7,8 @@ const FormulaMaster = React.lazy(() => import('../applets/unit1/FormulaMaster').
 const NuclearChemistry = React.lazy(() => import('../applets/unit1/NuclearChemistry').then(m => m.default ? { default: m.default } : m));
 const EmpiricalFormula = React.lazy(() => import('../applets/unit1/EmpiricalFormula').then(m => m.EmpiricalFormula ? { default: m.EmpiricalFormula } : m));
 const IdealGas = React.lazy(() => import('../applets/unit1/IdealGas').then(m => m.IdealGas ? { default: m.IdealGas } : m));
+const VSEPRShapes = React.lazy(() => import('../applets/unit1/VSEPRShapes').then(m => m.VSEPRShapes ? { default: m.VSEPRShapes } : m));
+const BondingIMFLab = React.lazy(() => import('../applets/unit1/BondingIMFLab').then(m => m.BondingIMFLab ? { default: m.BondingIMFLab } : m));
 const InorganicTests = React.lazy(() => import('../applets/unit1/InorganicTests').then(m => m.InorganicTests ? { default: m.InorganicTests } : m));
 const AcidBaseTitration = React.lazy(() => import('../applets/unit1/AcidBaseTitration').then(m => m.AcidBaseTitration ? { default: m.AcidBaseTitration } : m));
 
@@ -51,6 +53,8 @@ export const APPLETS = [
   { id: 'econfigs-game', label: 'Electron Configuration Game', short: 'Electron Configs', unit: 'Unit 1.2', icon: '⚡', desc: 'Interactive game practising s-, p-, and d-orbital electron configurations.', isExternal: true, url: 'https://games.alchemix.uk/econfigs' },
   { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.3', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.', component: EmpiricalFormula, targetMastery: 10 },
   { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.3', icon: '🎈', desc: 'Master pV = nRT variables with SI unit-conversion verification.', component: IdealGas, targetMastery: 10 },
+  { id: 'vsepr-shapes', label: 'VSEPR Shapes & Polarity', short: 'VSEPR Shapes', unit: 'Unit 1.4', icon: '📐', desc: 'Count bonding and lone pairs to deduce 3D shapes, bond angles, coordinate ions, and molecular polarity.', component: VSEPRShapes, targetMastery: 10 },
+  { id: 'bonding-imf-lab', label: 'Bonding Continuum & IMFs', short: 'Bonding & IMFs', unit: 'Unit 1.4 / 1.5', icon: '🔗', desc: 'Explore the ionic–covalent continuum, potential energy wells, boiling-point trends, and WJEC IMF exam challenges.', component: BondingIMFLab, targetMastery: 8 },
   { id: 'inorganic-tests', label: 'Qualitative Inorganic Analysis', short: 'Inorganic Tests', unit: 'Unit 1.6', icon: '🔬', desc: 'Deduce unknown salts using sequential flame, Group 2, carbonate, sulfate, and halide tests.', component: InorganicTests, targetMastery: 8 },
   { id: 'periodictable-lab', label: 'Periodic Table Lab', short: 'Periodic Table', unit: 'Unit 1.6', icon: '🧪', desc: 'Standalone interactive Unit 1.6 periodic trends, flame tests, and practicals lab.', isExternal: true, url: 'https://periodictable.chempanion.uk' },
   { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.7', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.', component: AcidBaseTitration, targetMastery: 10 },

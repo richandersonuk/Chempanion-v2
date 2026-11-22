@@ -264,6 +264,96 @@ export const howToGuides = {
     },
   },
 
+  'vsepr-shapes': {
+    title: 'VSEPR Shapes, Bond Angles & Polarity',
+    unit: 'Unit 1.4',
+    summary: 'Determine bonding regions and lone pairs on a central atom to deduce 3D molecular geometry, lone-pair compression angles, coordinate ions, and whole-molecule polarity.',
+    appletSteps: [
+      <><strong>Filter &amp; Select Species:</strong> Use the tier pills (<em>Core Shapes</em>, <em>Coordinate Ions</em>, <em>Polarity &amp; Stretch</em>) or pick any numbered molecule/ion chip.</>,
+      <><strong>Count Electron Regions:</strong> Dial in <em>Bonding Regions (BP)</em> (counting double/triple bonds as one region) and <em>Lone Pairs (LP)</em> using the central atom’s Group number and any ionic charge.</>,
+      <><strong>Predict Geometry &amp; Polarity:</strong> Choose the 3D molecular shape and bond angle, then decide whether dipoles cancel (or identify the coordinate-bonding behaviour for ions).</>,
+      <><strong>Unlock 3D Diagram &amp; Explorer:</strong> Check your answer to reveal the wedge-dash 3D visualiser and WJEC mark scheme, or browse any species freely in the <em>3D Geometry Explorer</em> tab.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Total valence e⁻ on central atom = Group number − (+ve charge) OR + (|−ve charge|)',
+        'Repulsion hierarchy:  Lone Pair–Lone Pair  >  Lone Pair–Bonding Pair  >  Bonding Pair–Bonding Pair',
+      ],
+      steps: [
+        'Find valence electrons around the central atom (adjust −1 per +1 charge, +1 per −1 charge).',
+        'Subtract 1 electron per single bond (or 2 per double bond) to find leftover unshared electrons, then divide by 2 for Lone Pairs (LP).',
+        'Use total regions (BP + LP) for the base geometry (2 linear 180°, 3 trigonal planar 120°, 4 tetrahedral 109.5°, 5 trigonal bipyramidal 90° & 120°, 6 octahedral 90°), reducing tetrahedral angles by ~2.5° per lone pair (107°, 104.5°).',
+        'Check whole-molecule polarity: if all outer groups are identical and arranged symmetrically with 0 lone pairs (e.g. CO₂, BF₃, CCl₄, SF₆, plus trans-square-planar XeF₄), bond dipoles cancel → non-polar.',
+      ],
+    },
+    workedExample: {
+      question: 'Deduce the shape, bond angle, and polarity of H₃O⁺ and CHCl₃, explaining the angle in H₃O⁺.',
+      steps: [
+        'For H₃O⁺: O is in Group 6 (6 e⁻); +1 charge leaves 5 e⁻. Forming 3 O–H bonds (including 1 coordinate bond) leaves 2 e⁻ = 1 lone pair → 3 BP + 1 LP.',
+        'Four electron regions arrange tetrahedrally, but greater LP–BP repulsion compresses the H–O–H angle to ~107°; shape is trigonal pyramidal.',
+        'For CHCl₃: C (Group 4) forms 4 single bonds (4 BP, 0 LP) → tetrahedral (~109.5°). Because H differs from the three electronegative Cl atoms, dipoles do not cancel → polar.',
+      ],
+      answer: 'H₃O⁺: Trigonal pyramidal (~107°)  |  CHCl₃: Tetrahedral (109.5°), Polar',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Naming the electron-pair arrangement (“tetrahedral”) instead of the molecular shape formed by ATOMS (“trigonal pyramidal” for NH₃/H₃O⁺, “bent” for H₂O).',
+        'Treating a C=O double bond in CO₂ as 2 separate bonding regions or giving CO₂ a bent shape.',
+        'Writing “lone pairs are present” without stating the mark-scheme reason: lone pairs repel MORE strongly than bonding pairs.',
+      ],
+      checklist: [
+        'Exact BP and LP counts stated on the central atom',
+        'Relative repulsion (LP–LP > LP–BP > BP–BP) stated whenever lone pairs compress an angle',
+        'Individual bond polarity distinguished from whole-molecule symmetry cancellation',
+      ],
+    },
+  },
+
+  'bonding-imf-lab': {
+    title: 'Bonding Continuum, Potential Wells & IMFs',
+    unit: 'Unit 1.4 / 1.5',
+    summary: 'Explore the transition across covalent, polar, intermediate, ionic, and metallic bonding, trace potential energy curves, compare boiling-point trends, and solve WJEC mark-scheme challenges.',
+    appletSteps: [
+      <><strong>Bonding Continuum &amp; Energy Well:</strong> Select a WJEC preset (such as <em>AlCl₃</em>, <em>HCl</em>, <em>NaCl</em>, or <em>Mg</em>) or pick any custom element pair and adjust Pauling electronegativity (<code>χ</code>) to observe electron cloud shift and bonding classification.</>,
+      <><strong>Potential Curve Interaction:</strong> Drag the separation slider or click directly on the <em>V vs r</em> graph to compare nuclear repulsion (<code>r &lt; r₀</code>), the equilibrium well (<code>F_net ≈ 0</code>), and separated atoms.</>,
+      <><strong>IMF &amp; Boiling Point Explorer:</strong> Switch between Group 7 halogens, Group 6 hydrides, hydrogen halides, and giant lattices; slide the temperature control to watch physical states switch across melting and boiling points.</>,
+      <><strong>WJEC Exam Challenges:</strong> Classify the bonding or intermolecular force and select the matching WJEC mark-scheme statements (use <em>Need a Hint?</em> whenever you want a conceptual clue) to earn dashboard mastery.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Δχ = |χ_B − χ_A|     (covalent Δχ < 0.5  |  polar Δχ ≈ 0.5–1.6  |  ionic metal+non-metal Δχ ≥ 1.7)',
+        'Ionic lattice attraction increases with higher ionic charges (q₁ × q₂) and smaller ionic radii',
+      ],
+      steps: [
+        'Decide first whether the substance is a GIANT lattice (ionic, metallic, or giant covalent) or SIMPLE MOLECULAR: giant lattices overcome strong electrostatic/covalent bonds on melting, whereas simple molecules only overcome weak intermolecular forces.',
+        'For simple molecules, list ALL intermolecular forces present: all molecules have London dispersion forces; polar unsymmetrical molecules also have permanent dipole–dipole forces; molecules with H covalently bonded to N, O, or F also form hydrogen bonds.',
+        'Compare electron counts when London forces dominate (e.g. F₂ → I₂, HCl → HI, H₂S → H₂Te): more electrons = larger, more polarisable electron cloud = stronger London forces.',
+        'For intermediate character (e.g. AlCl₃, BeCl₂), invoke high cation charge density strongly polarising a large anion electron cloud.',
+      ],
+    },
+    workedExample: {
+      question: 'Explain why water (H₂O, Mᵣ = 18, bp 100 °C) has a much higher boiling point than hydrogen sulfide (H₂S, Mᵣ = 34, bp −60 °C), whereas H₂Te (bp −2 °C) boils higher than H₂S.',
+      steps: [
+        'H₂O forms intermolecular hydrogen bonds (H bonded to highly electronegative O attracted to a lone pair on an adjacent O), which are much stronger than the permanent dipole–dipole and London forces in H₂S.',
+        'Neither H₂S nor H₂Te can form hydrogen bonds (S and Te are insufficiently electronegative). Both have permanent dipole–dipole and London dispersion forces.',
+        'From H₂S (18 e⁻) to H₂Te (54 e⁻), the total number of electrons increases substantially, strengthening London dispersion forces more than dipole–dipole strength decreases.',
+      ],
+      answer: 'H₂O: intermolecular hydrogen bonds  |  H₂S → H₂Te: more electrons → stronger London forces',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Claiming covalent bonds (such as O–H or I–I) break when molecular liquids boil — ONLY intermolecular forces are overcome.',
+        'Saying H₂S / HBr / HI have "permanent dipole forces only" — ALL molecules possess London forces, and London forces cause the downward group rise.',
+        'Referring to "molecules" or "intermolecular forces" in giant ionic lattices (NaCl, MgO) or metals (Na, Mg).',
+      ],
+      checklist: [
+        'Simple molecular vs giant lattice explicitly identified',
+        'Correct intermolecular force named cleanly (London dispersion vs permanent dipole–dipole vs hydrogen bonding)',
+        'Total electron count / polarisability linked to London strength; charge density & ion size linked to lattice strength',
+      ],
+    },
+  },
+
   'inorganic-tests': {
     title: 'Qualitative Inorganic Analysis',
     unit: 'Unit 1.6',
