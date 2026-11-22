@@ -52,6 +52,7 @@ export const APPLETS = [
   { id: 'empirical-formula', label: 'Empirical & Molecular Formulas', short: 'Empirical', unit: 'Unit 1.3', icon: '🧮', desc: 'Convert mass composition properties into empirical and molecular formulas.', component: EmpiricalFormula, targetMastery: 10 },
   { id: 'idealgas', label: 'Ideal Gas Calculations', short: 'Ideal Gas', unit: 'Unit 1.3', icon: '🎈', desc: 'Master pV = nRT variables with SI unit-conversion verification.', component: IdealGas, targetMastery: 10 },
   { id: 'inorganic-tests', label: 'Qualitative Inorganic Analysis', short: 'Inorganic Tests', unit: 'Unit 1.6', icon: '🔬', desc: 'Deduce unknown salts using sequential flame, Group 2, carbonate, sulfate, and halide tests.', component: InorganicTests, targetMastery: 8 },
+  { id: 'periodictable-lab', label: 'Periodic Table Lab', short: 'Periodic Table', unit: 'Unit 1.6', icon: '🧪', desc: 'Standalone interactive Unit 1.6 periodic trends, flame tests, and practicals lab.', isExternal: true, url: 'https://periodictable.chempanion.uk' },
   { id: 'titration', label: 'Acid-Base Titrations', short: 'Titrations', unit: 'Unit 1.7', icon: '🧪', desc: 'Solve classic standard neutralizing calculation sequences.', component: AcidBaseTitration, targetMastery: 10 },
 
   // Unit 2
