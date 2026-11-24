@@ -541,14 +541,8 @@ export default function App() {
                     <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    Latest Updates: Added <strong>Organic Synthesis Pathways</strong> (Unit 4.7), <strong>VSEPR Shapes &amp; Polarity</strong> (Unit 1.4), <strong>Bonding Continuum &amp; IMFs</strong> (Unit 1.4 / 1.5), upgraded <strong>AS &amp; A2 Organic Mechanisms</strong> (Unit 2.5 / 2.6 &amp; Unit 4.2 – 4.4), and linked the <strong>Electron Configuration Game</strong> (Unit 1.2) plus the polished{' '}
-                    <a href="https://periodictable.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
-                      periodictable.chempanion.uk
-                    </a>{' '}
-                    lab (Unit 1.6) alongside Qualitative Inorganic Analysis, Half-Equation Balancing, Born-Haber Cycles, Combined Spectral Interpreter, and{' '}
-                    <a href="https://pblock.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
-                      pblock.chempanion.uk
-                    </a>.
+                    Latest Updates: Added <strong>Organic Synthesis Pathways</strong> (Unit 4.7), <strong>VSEPR Shapes &amp; Polarity</strong> (Unit 1.4), <strong>Bonding Continuum &amp; IMFs</strong> (Unit 1.4 / 1.5).
+                   
                   </p>
                 </div>
               </div>
