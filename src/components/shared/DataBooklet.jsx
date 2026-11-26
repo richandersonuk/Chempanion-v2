@@ -174,7 +174,7 @@ const getCenteredModalPosition = () => {
   };
 };
 
-const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
+const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard', zIndexClass = 'z-50', onFocusWindow }) => {
   const [activeTab, setActiveTab] = useState('constants');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [position, setPosition] = useState(getCenteredModalPosition);
@@ -308,7 +308,8 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
 
   return (
     <div 
-      className="fixed z-50 pointer-events-none" 
+      data-floating-tool="true"
+      className={`fixed ${zIndexClass} pointer-events-none`} 
       style={{ 
         left: isMobileViewport ? '2vw' : `${position.x}px`, 
         top: isMobileViewport ? '6vh' : `${position.y}px`,
@@ -316,6 +317,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
       }}
     >
       <div 
+        onPointerDown={() => onFocusWindow?.()}
         className="pointer-events-auto bg-white w-[96vw] sm:w-[94vw] max-w-4xl h-[86vh] sm:h-[78vh] max-h-[780px] min-w-[290px] min-h-[340px] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-300 sm:resize" 
         style={{ textTransform: 'none' }}
       >

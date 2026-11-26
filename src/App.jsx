@@ -2,6 +2,7 @@ import './App.css';
 import React, { useState, useEffect, useTransition, useRef, Suspense } from 'react';
 import { Logo, HeaderBrand } from './components/shared/Branding';
 import DataBooklet from './components/shared/DataBooklet';
+import ScientificCalculator from './components/shared/ScientificCalculator';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { howToGuides } from './data/howToGuides';
 import { SORTED_APPLETS, MAIN_UNITS, WJEC_UNIT_TITLES, belongsToUnitSection } from './data/appletRegistry';
@@ -30,7 +31,7 @@ const GUIDE_TABS = [
   { id: 'pitfalls', label: '⚠️ Examiner Pitfalls' },
 ];
 
-const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
+const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet, onOpenCalculator }) => {
   const [activeTab, setActiveTab] = useState('applet');
 
   useEffect(() => {
@@ -247,17 +248,26 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
 
         {/* Footer */}
         <div className="bg-slate-50 px-5 sm:px-6 py-3.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
-          {onOpenDataBooklet ? (
-            <button
-              type="button"
-              onClick={onOpenDataBooklet}
-              className="px-4 py-2 bg-white hover:bg-blue-50 text-[#326fa0] border border-slate-200 hover:border-blue-300 font-black text-xs tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
-            >
-              📚 Open Data Booklet
-            </button>
-          ) : (
-            <span />
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenDataBooklet && (
+              <button
+                type="button"
+                onClick={onOpenDataBooklet}
+                className="px-3.5 py-2 bg-white hover:bg-blue-50 text-[#326fa0] border border-slate-200 hover:border-blue-300 font-black text-xs tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                📚 Data Booklet
+              </button>
+            )}
+            {onOpenCalculator && (
+              <button
+                type="button"
+                onClick={onOpenCalculator}
+                className="px-3.5 py-2 bg-white hover:bg-emerald-50 text-emerald-700 border border-slate-200 hover:border-emerald-300 font-black text-xs tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                🧮 Calculator
+              </button>
+            )}
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -274,6 +284,8 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
 export default function App() {
   const [currentApplet, setCurrentApplet] = useState(getAppletFromLocation);
   const [isDataBookletOpen, setIsDataBookletOpen] = useState(false);
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [topFloatingTool, setTopFloatingTool] = useState('calculator');
   const [isHowToGuideOpen, setIsHowToGuideOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickJumpOpen, setQuickJumpOpen] = useState(false);
@@ -446,16 +458,16 @@ export default function App() {
             </div>
           </nav>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {currentApplet !== 'dashboard' && (
               <>
                 <button
                   onClick={() => handleNav('dashboard')}
-                  className="md:hidden border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold h-9 px-2.5 rounded-full shadow-sm transition-all flex items-center gap-1 text-xs cursor-pointer"
+                  className="md:hidden border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold h-9 px-2 sm:px-2.5 rounded-full shadow-sm transition-all flex items-center gap-1 text-xs cursor-pointer"
                   aria-label="Back to Home Dashboard"
                 >
                   <span>&larr;</span>
-                  <span>Menu</span>
+                  <span className="hidden min-[420px]:inline">Menu</span>
                 </button>
                 <button 
                   onClick={() => setIsHowToGuideOpen(true)}
@@ -469,7 +481,34 @@ export default function App() {
             )}
 
             <button 
-              onClick={() => setIsDataBookletOpen(true)}
+              type="button"
+              onClick={() => {
+                setIsCalculatorOpen((prev) => {
+                  const next = !prev;
+                  if (next) setTopFloatingTool('calculator');
+                  return next;
+                });
+              }}
+              className={`border-2 font-bold h-9 px-2.5 sm:px-3.5 lg:px-4 py-2 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer ${
+                isCalculatorOpen
+                  ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-white border-emerald-600 text-emerald-700 hover:bg-emerald-50'
+              }`}
+              aria-label="Scientific Calculator"
+            >
+              <span>🧮</span>
+              <span className="hidden lg:inline">Calculator</span>
+              <span className="hidden sm:inline lg:hidden">Calc</span>
+            </button>
+
+            <button 
+              onClick={() => {
+                setIsDataBookletOpen((prev) => {
+                  const next = !prev;
+                  if (next) setTopFloatingTool('booklet');
+                  return next;
+                });
+              }}
               className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-2.5 sm:px-3.5 lg:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 text-xs cursor-pointer"
               aria-label="Data Booklet"
             >
@@ -551,6 +590,17 @@ export default function App() {
                 </div>
               );
             })}
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setIsCalculatorOpen(true);
+                setTopFloatingTool('calculator');
+              }}
+              className="w-full text-left px-4 py-3 rounded-xl font-black text-xs text-emerald-700 tracking-wider bg-emerald-50 border border-emerald-200 mb-2 block cursor-pointer"
+            >
+              🧮 Open Scientific Calculator
+            </button>
           </div>
         )}
       </header>
@@ -584,7 +634,7 @@ export default function App() {
                   </button>
                   {mobileUpdatesOpen && (
                     <div className="mt-2 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 font-semibold leading-relaxed">
-                      Latest Updates: Site-wide adaptive mobile, tablet &amp; HD desktop workbench layouts across all 30 applets, CSS-styled selectors, plus the interactive <strong>Hess Cycle Builder</strong> &amp; <strong>Synoptic Labs</strong>.
+                      Latest Updates: Added movable &amp; resizable <strong>Scientific Calculator</strong> with one-click answer insertion, adaptive layouts across all 30 applets, <strong>Hess Cycle Builder</strong>, &amp; <strong>Synoptic Labs</strong>.
                     </div>
                   )}
                 </div>
@@ -596,7 +646,7 @@ export default function App() {
                     <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    Latest Updates: Site-wide adaptive mobile, tablet &amp; HD desktop workbench layouts across all 30 applets, CSS-styled selectors, plus the interactive <strong>Hess Cycle Builder</strong> &amp; <strong>Synoptic Labs</strong>.
+                    Latest Updates: Added movable &amp; resizable <strong>Scientific Calculator</strong> with one-click answer insertion, adaptive layouts across all 30 applets, <strong>Hess Cycle Builder</strong>, &amp; <strong>Synoptic Labs</strong>.
                   </p>
                 </div>
               </div>
@@ -757,11 +807,19 @@ export default function App() {
         </div>
       </main>
 
-      {/* Slide-in elements */}
+      {/* Slide-in & Floating Tools */}
       <DataBooklet
         isOpen={isDataBookletOpen}
         onClose={() => setIsDataBookletOpen(false)}
         activeAppletId={currentApplet}
+        zIndexClass={topFloatingTool === 'booklet' ? 'z-[55]' : 'z-50'}
+        onFocusWindow={() => setTopFloatingTool('booklet')}
+      />
+      <ScientificCalculator
+        isOpen={isCalculatorOpen}
+        onClose={() => setIsCalculatorOpen(false)}
+        zIndexClass={topFloatingTool === 'calculator' ? 'z-[55]' : 'z-50'}
+        onFocusWindow={() => setTopFloatingTool('calculator')}
       />
       <HowToGuideModal
         isOpen={isHowToGuideOpen}
@@ -770,6 +828,12 @@ export default function App() {
         onOpenDataBooklet={() => {
           setIsHowToGuideOpen(false);
           setIsDataBookletOpen(true);
+          setTopFloatingTool('booklet');
+        }}
+        onOpenCalculator={() => {
+          setIsHowToGuideOpen(false);
+          setIsCalculatorOpen(true);
+          setTopFloatingTool('calculator');
         }}
       />
     </div>

@@ -14,6 +14,42 @@ const ScientificInput = ({
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const expInputRef = useRef(null);
+  const innerInputRef = useRef(null);
+  const onValueChangeRef = useRef(onValueChange);
+  const onExponentChangeRef = useRef(onExponentChange);
+
+  useEffect(() => {
+    onValueChangeRef.current = onValueChange;
+    onExponentChangeRef.current = onExponentChange;
+  }, [onValueChange, onExponentChange]);
+
+  useEffect(() => {
+    const el = innerInputRef.current;
+    if (!el) return undefined;
+    const handleCalcInsert = (e) => {
+      const { numericValue, formattedPlain, sigFigs } = e.detail || {};
+      if (typeof numericValue !== 'number' || !Number.isFinite(numericValue)) return;
+      if (numericValue === 0) {
+        onValueChangeRef.current('0');
+        onExponentChangeRef.current('');
+        return;
+      }
+      const absVal = Math.abs(numericValue);
+      if (absVal < 1e-2 || absVal >= 1e4) {
+        const digits = sigFigs ? Math.max(0, sigFigs - 1) : 5;
+        const expParts = numericValue.toExponential(digits).split('e');
+        const mantStr = sigFigs ? expParts[0] : String(Number(expParts[0]));
+        const expInt = parseInt(expParts[1], 10);
+        onValueChangeRef.current(mantStr);
+        onExponentChangeRef.current(String(expInt));
+      } else {
+        onValueChangeRef.current(formattedPlain ?? String(numericValue));
+        onExponentChangeRef.current('');
+      }
+    };
+    el.addEventListener('chempanion:insert-number', handleCalcInsert);
+    return () => el.removeEventListener('chempanion:insert-number', handleCalcInsert);
+  }, []);
 
   useEffect(() => {
     if (showModal && expInputRef.current) {
@@ -56,6 +92,8 @@ const ScientificInput = ({
         
         <div className="flex items-center gap-1 leading-none flex-1 min-w-0 justify-center">
           <input
+            ref={innerInputRef}
+            data-scientific-input="true"
             type="number"
             step="any"
             inputMode="decimal"
