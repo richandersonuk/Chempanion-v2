@@ -49,7 +49,7 @@ const AcidBaseTitration = ({ onComplete }) => {
         const concBase = (concAcid * titre) / volBase;
 
         newProb = {
-          title: "Standard Titration (1:1 Ratio)",
+          title: "Standard Titration",
           text: <>A 25.0 cm³ sample of sodium hydroxide solution (NaOH) was titrated against {concAcid.toFixed(3)} mol dm⁻³ hydrochloric acid (HCl). The mean titre recorded was {titre.toFixed(2)} cm³.</>,
           question: "Calculate the concentration of the sodium hydroxide solution in mol dm⁻³.",
           label: "[NaOH] =",
@@ -61,7 +61,7 @@ const AcidBaseTitration = ({ onComplete }) => {
         const concBase = (2 * concAcid * titre) / volBase;
 
         newProb = {
-          title: "Standard Titration (2:1 Ratio Trap)",
+          title: "Standard Titration",
           text: <>A 25.0 cm³ sample of sodium hydroxide solution (NaOH) required a mean titre of {titre.toFixed(2)} cm³ of {concAcid.toFixed(3)} mol dm⁻³ sulfuric acid (H₂SO₄) for complete neutralisation.</>,
           question: "Calculate the concentration of the sodium hydroxide solution in mol dm⁻³.",
           label: "[NaOH] =",
