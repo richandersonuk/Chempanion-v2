@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ScientificInput from '../../components/shared/ScientificInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 
 const BASE_BOND_ENTHALPIES = [
   { bond: 'C–H', value: 412 },
@@ -437,39 +438,42 @@ const EnthalpyCombustion = ({ onComplete }) => {
   const isStep2Locked = gateEnabled && !gateVerified;
 
   return (
-    <div className="applet-container">
-      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-          >
-            <option value="calorimetry">Experimental Calorimetry (q = mcΔT)</option>
-            <option value="bond_enthalpy">Mean Bond Enthalpies (Calculate ΔH)</option>
-            <option value="unknown_bond">Unknown Bond Enthalpy from ΔH</option>
-          </select>
+    <div className="applet-container space-y-4 sm:space-y-5">
+      <div className="applet-header !mb-0">{problem.title}</div>
 
-          <button
-            type="button"
-            onClick={() => { setMode('random'); generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 cursor-pointer ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={[
+          {
+            value: 'calorimetry',
+            label: 'Experimental Calorimetry (q = mcΔT)',
+            shortLabel: 'Calorimetry (q = mcΔT)',
+          },
+          {
+            value: 'bond_enthalpy',
+            label: 'Mean Bond Enthalpies (Calculate ΔH)',
+            shortLabel: 'Mean Bond Enthalpies',
+          },
+          {
+            value: 'unknown_bond',
+            label: 'Unknown Bond Enthalpy from ΔH',
+            shortLabel: 'Unknown Bond Enthalpy',
+          },
+        ]}
+        value={mode}
+        isRandomActive={mode === 'random'}
+        onChange={(val) => {
+          setMode(val);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setMode('random');
+          generateProblem('random');
+        }}
+        className="max-w-2xl"
+      />
 
-      <div className="applet-header">{problem.title}</div>
-
-      <div className="flex flex-col items-center mb-4">
+      <div className="flex flex-col items-center">
         <button
           type="button"
           onClick={() => setShowHint((prev) => !prev)}
@@ -713,6 +717,21 @@ const EnthalpyCombustion = ({ onComplete }) => {
                     <button className="btn btn-primary" onClick={checkAnswer} disabled={isStep2Locked}>Check Answer</button>
                     <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
                   </div>
+
+                  {feedback.message && (
+                    <div className={`feedback-box !mt-0 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+                      <span>{feedback.message}</span>
+                      {feedback.type === 'success' && (
+                        <button
+                          type="button"
+                          onClick={() => generateProblem()}
+                          className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                        >
+                          Next Problem &rarr;
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -758,31 +777,36 @@ const EnthalpyCombustion = ({ onComplete }) => {
                   Provided in Question
                 </span>
               </div>
-              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-200">
-                  {[problem.tableRows.slice(0, 6), problem.tableRows.slice(6)].map((col, colIdx) => (
-                    <table key={colIdx} className="w-full text-left border-collapse">
+              <div className="grid grid-cols-2 gap-2">
+                {[problem.tableRows.slice(0, 6), problem.tableRows.slice(6)].map((col, colIdx) => (
+                  <div key={colIdx} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                    <table className="w-full text-left border-collapse">
                       <thead className="bg-slate-50 border-b border-slate-200">
                         <tr>
-                          <th className="py-2 px-3 text-[11px] font-bold text-slate-500">Bond</th>
-                          <th className="py-2 px-3 text-[11px] font-bold text-slate-500 text-right">kJ mol⁻¹</th>
+                          <th className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-slate-500">Bond</th>
+                          <th className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-slate-500 text-right">kJ mol⁻¹</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {col.map((row) => (
                           <tr key={row.bond} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-2 px-3 text-xs font-mono font-bold text-slate-800">{row.bond}</td>
-                            <td className={`py-2 px-3 text-xs font-mono text-right font-black whitespace-nowrap ${
+                            <td className="px-2 py-1 text-[11px] sm:text-xs font-mono font-bold text-slate-800 whitespace-nowrap">{row.bond}</td>
+                            <td className={`px-2 py-1 text-[11px] sm:text-xs font-mono text-right font-black ${
                               row.value === '?' ? 'text-rose-600 bg-rose-50/70' : 'text-[#326fa0]'
                             }`}>
-                              {row.value} {row.note && <span className="font-semibold text-slate-500">{row.note}</span>}
+                              <span className="whitespace-nowrap">{row.value}</span>
+                              {row.note && (
+                                <span className="block sm:inline sm:ml-1 text-[10px] font-semibold text-slate-500 whitespace-nowrap">
+                                  {row.note}
+                                </span>
+                              )}
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -904,23 +928,23 @@ const EnthalpyCombustion = ({ onComplete }) => {
                 <button className="btn btn-primary" onClick={checkAnswer} disabled={isStep2Locked}>Check Answer</button>
                 <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
               </div>
+
+              {feedback.message && (
+                <div className={`feedback-box !mt-0 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+                  <span>{feedback.message}</span>
+                  {feedback.type === 'success' && (
+                    <button
+                      type="button"
+                      onClick={() => generateProblem()}
+                      className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                    >
+                      Next Problem &rarr;
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      )}
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.type === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
-          )}
         </div>
       )}
     </div>

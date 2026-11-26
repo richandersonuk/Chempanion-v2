@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { AdaptivePicker, StyledSelect } from '../../components/shared/AdaptivePicker';
 
 function shuffleArray(items) {
   const arr = [...items];
@@ -762,40 +763,6 @@ export default function IupacIsomerism({ onComplete }) {
 
   return (
     <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-2xl mx-auto px-4">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => {
-              setMode(e.target.value);
-              generateProblem(e.target.value);
-            }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] shadow-sm cursor-pointer"
-          >
-            <option value="ez_isomerism">E/Z Stereoisomerism &amp; CIP Priority</option>
-            <option value="iupac_naming">Systematic IUPAC Naming</option>
-            <option value="structural_isomers">Structural Isomer Classification</option>
-          </select>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('random');
-              generateProblem('random');
-            }}
-            className={`px-4 py-2.5 text-xs font-black rounded-xl border transition-all shrink-0 cursor-pointer ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
-
       <div className="applet-header !mb-0">
         {state.subMode === 'ez_isomerism'
           ? 'E/Z Stereoisomerism & CIP Priority'
@@ -803,6 +770,38 @@ export default function IupacIsomerism({ onComplete }) {
           ? 'Systematic IUPAC Nomenclature'
           : 'Structural Isomerism Classifier'}
       </div>
+
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={[
+          {
+            value: 'ez_isomerism',
+            label: 'E/Z Stereoisomerism & CIP Priority',
+            shortLabel: 'E/Z & CIP Priority',
+          },
+          {
+            value: 'iupac_naming',
+            label: 'Systematic IUPAC Naming',
+            shortLabel: 'IUPAC Naming',
+          },
+          {
+            value: 'structural_isomers',
+            label: 'Structural Isomer Classification',
+            shortLabel: 'Structural Isomers',
+          },
+        ]}
+        value={mode}
+        isRandomActive={mode === 'random'}
+        onChange={(val) => {
+          setMode(val);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setMode('random');
+          generateProblem('random');
+        }}
+        className="max-w-2xl"
+      />
 
       <div className="applet-workbench">
         {/* Left Sticky Workbench Column: Structure Visualiser */}
@@ -896,38 +895,44 @@ export default function IupacIsomerism({ onComplete }) {
                   <label className="block text-[11px] font-black text-slate-700 mb-1.5">
                     Higher CIP Priority on C1:
                   </label>
-                  <select
+                  <StyledSelect
+                    ariaLabel="Higher CIP Priority on C1"
+                    placeholder="-- Select or N/A --"
                     value={c1TopChoice}
-                    onChange={(e) => {
-                      setC1TopChoice(e.target.value);
+                    onChange={(val) => {
+                      setC1TopChoice(val);
                       setFeedback(null);
                     }}
-                    className="w-full p-2 rounded-lg border border-slate-300 bg-white text-xs font-bold"
-                  >
-                    <option value="">-- Select or N/A --</option>
-                    {state.problem.c1Groups.map((g) => (
-                      <option key={g.id} value={g.id}>—{g.label}</option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: '', label: '-- Select or N/A --' },
+                      ...state.problem.c1Groups.map((g) => ({
+                        value: g.id,
+                        label: `—${g.label}`,
+                      })),
+                    ]}
+                  />
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
                   <label className="block text-[11px] font-black text-slate-700 mb-1.5">
                     Higher CIP Priority on C2:
                   </label>
-                  <select
+                  <StyledSelect
+                    ariaLabel="Higher CIP Priority on C2"
+                    placeholder="-- Select or N/A --"
                     value={c2TopChoice}
-                    onChange={(e) => {
-                      setC2TopChoice(e.target.value);
+                    onChange={(val) => {
+                      setC2TopChoice(val);
                       setFeedback(null);
                     }}
-                    className="w-full p-2 rounded-lg border border-slate-300 bg-white text-xs font-bold"
-                  >
-                    <option value="">-- Select or N/A --</option>
-                    {state.problem.c2Groups.map((g) => (
-                      <option key={g.id} value={g.id}>—{g.label}</option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: '', label: '-- Select or N/A --' },
+                      ...state.problem.c2Groups.map((g) => ({
+                        value: g.id,
+                        label: `—${g.label}`,
+                      })),
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -965,20 +970,22 @@ export default function IupacIsomerism({ onComplete }) {
                 <label className="block text-xs font-black text-slate-700 mb-1.5">
                   Step 1: Longest Carbon Chain Stem (with principal group)
                 </label>
-                <select
+                <StyledSelect
+                  ariaLabel="Longest Carbon Chain Stem"
+                  placeholder="-- Select Longest Chain --"
                   value={chainGuess}
-                  onChange={(e) => {
-                    setChainGuess(e.target.value);
+                  onChange={(val) => {
+                    setChainGuess(val);
                     setFeedback(null);
                   }}
-                  className="w-full p-2.5 rounded-lg border border-slate-300 bg-white text-xs font-bold"
-                >
-                  <option value="">-- Select Longest Chain --</option>
-                  <option value="3 (prop-)">3 carbons (prop-)</option>
-                  <option value="4 (but-)">4 carbons (but-)</option>
-                  <option value="5 (pent-)">5 carbons (pent-)</option>
-                  <option value="6 (hex-)">6 carbons (hex-)</option>
-                </select>
+                  options={[
+                    { value: '', label: '-- Select Longest Chain --' },
+                    { value: '3 (prop-)', label: '3 carbons (prop-)' },
+                    { value: '4 (but-)', label: '4 carbons (but-)' },
+                    { value: '5 (pent-)', label: '5 carbons (pent-)' },
+                    { value: '6 (hex-)', label: '6 carbons (hex-)' },
+                  ]}
+                />
               </div>
 
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5">

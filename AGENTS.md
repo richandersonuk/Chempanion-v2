@@ -24,3 +24,8 @@ Whenever adding, updating, or removing an applet or external resource tile, alwa
 ## 5. Git & Environment Workflow
 - Work on `dev-branch`. **Never push (`git push`) or push/merge to `main` unless explicitly instructed by the user.**
 - Check if `node` / `npm` is available before assuming a local build can run; never report a build or runtime check as passing unless it was actually executed cleanly.
+
+## 6. Adaptive Multi-Device Layout (Mobile, Tablet & HD Desktop)
+- **Universal Workbench Architecture:** Every internal applet should use `.applet-workbench` + `.applet-workbench-sticky` (stacking cleanly on phones, splitting into 2 balanced columns from `768px` tablet through `82rem` HD desktop) with **zero container width jumps** when switching tabs, modes, or steps.
+- **Adaptive Selectors Only (`AdaptivePicker` / `StyledSelect`):** Never use raw unstyled OS `<select>` elements or tall multi-row mobile button walls. Use `AdaptivePicker` (compact CSS-styled dropdown on mobile, horizontal pills on tablet/desktop) and `StyledSelect` for in-form choices.
+- **360px Mobile & Touch Safety:** Prevent horizontal overflow on `360px` viewports, maintain `>= 36–40px` touch targets on interactive pills/steppers, and keep SVG labels legible across screen sizes without placing HTML `<sub>`/`<sup>` inside `<svg>`.

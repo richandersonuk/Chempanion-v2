@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import FormulaInput from '../../components/shared/FormulaInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 import { NOMENCLATURE_DATABASE } from '../../data/questions/formulaQuestions';
+
+const MODE_OPTIONS = [
+  { value: 'simple', label: 'Simple Binary Valencies' },
+  { value: 'roman', label: 'Transition Metal Oxidation States' },
+  { value: 'complex', label: 'Advanced Polyatomic Salts' },
+];
 
 const FormulasFromName = ({ onComplete }) => {
   const [mode, setMode] = useState('simple');
@@ -48,7 +55,7 @@ const FormulasFromName = ({ onComplete }) => {
       setFeedback({ message: 'Correct systematic formula configuration!', status: 'success' });
       onComplete?.(problem.formula);
     } else if (cleanInput.toLowerCase() === problem.formula.toLowerCase()) {
-      setFeedback({ message: 'Casing mismatch detected. Elements must use standard uppercase starts (e.g. NaCl, not nacl).', status: 'error' });
+      setFeedback({ message: 'Casing mismatch detected. Elements must use standard capital letter starts (e.g. NaCl, not nacl).', status: 'error' });
     } else {
       setFeedback({
         message: 'Incorrect formula. Check the Group charges or Roman numeral oxidation state, and use brackets around polyatomic ions when more than one is needed.',
@@ -60,95 +67,83 @@ const FormulasFromName = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container">
-      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-          >
-            <option value="simple">Simple Binary Valencies</option>
-            <option value="roman">Transition Metal Oxidation States</option>
-            <option value="complex">Advanced Polyatomic Salts</option>
-          </select>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">Formulas from Names</div>
 
-          <button
-            type="button"
-            onClick={() => { generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
-
-      <div className="applet-header">Formulas from Names</div>
-
-      <div className="flex flex-col items-center mb-4">
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-        {showHint && (
-          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-            <strong className="font-black text-amber-900">Formula Method: </strong>
-            Balance total positive and negative ion charges to zero. A Roman numeral (e.g. Iron(III)) gives the metal cation charge directly (3+). Common polyatomic ions: OH⁻, NO₃⁻, CO₃²⁻, SO₄²⁻, NH₄⁺ — enclose polyatomic ions in brackets whenever subscript &ge; 2 (e.g. Ca(NO₃)₂).
-          </div>
-        )}
-      </div>
-
-      <div className="question-text text-center">
-        Deduce the balanced chemical formula for:
-        <div
-          style={{
-            fontSize: '1.6rem',
-            fontWeight: '800',
-            margin: '1rem 0',
-            color: '#1e293b',
-          }}
-        >
-          {problem.name}
-        </div>
-      </div>
-
-      <FormulaInput
-        value={studentAnswer}
-        onChange={(val) => { setStudentAnswer(val); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-        status={feedback.status}
-        placeholder="e.g. MgCl₂"
-        onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        onChange={(val) => { setMode(val); generateProblem(val); }}
+        onRandom={() => generateProblem('random')}
+        isRandomActive={mode === 'random'}
+        collapseBelow="sm"
       />
 
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
-      </div>
+      <div className="applet-workbench">
+        <div className="applet-workbench-sticky space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm text-center space-y-4">
+            <div className="text-sm font-semibold text-slate-600">
+              Deduce the balanced chemical formula for:
+            </div>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-800 break-words px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl">
+              {problem.name}
+            </div>
 
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
+            <div className="flex flex-col items-center pt-1">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[36px] px-3.5 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                  <strong className="font-black text-amber-900">Formula Method: </strong>
+                  Balance total positive and negative ion charges to zero. A Roman numeral (e.g. Iron(III)) gives the metal cation charge directly (3+). Common polyatomic ions: OH⁻, NO₃⁻, CO₃²⁻, SO₄²⁻, NH₄⁺ — enclose polyatomic ions in brackets whenever subscript &ge; 2 (e.g. Ca(NO₃)₂).
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <label className="text-xs font-black text-slate-500 block text-center">
+              Enter Balanced Chemical Formula
+            </label>
+
+            <FormulaInput
+              value={studentAnswer}
+              onChange={(val) => { setStudentAnswer(val); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+              status={feedback.status}
+              placeholder="e.g. MgCl₂"
+              onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+            />
+
+            <div className="button-group">
+              <button type="button" className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+              <button type="button" className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
+            </div>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span className="text-xs sm:text-sm font-semibold">{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

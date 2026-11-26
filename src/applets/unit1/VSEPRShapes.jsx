@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 import {
   SHAPE_OPTIONS,
   ANGLE_OPTIONS,
@@ -489,6 +490,14 @@ export function VSEPRShapes({ onComplete }) {
     resetFormForSpecies(next.id);
   };
 
+  const handleRandomExplorerSpecies = () => {
+    const pool = VSEPR_MOLECULES.length > 1
+      ? VSEPR_MOLECULES.filter((m) => m.id !== explorerMolecule.id)
+      : VSEPR_MOLECULES;
+    const next = pool[Math.floor(Math.random() * pool.length)] || explorerMolecule;
+    setExpMoleculeId(next.id);
+  };
+
   const handleSelectTier = (tierId) => {
     setTierFilter(tierId);
     const list = tierId === 'all' ? VSEPR_MOLECULES : VSEPR_MOLECULES.filter((m) => m.tier === tierId);
@@ -592,7 +601,7 @@ export function VSEPRShapes({ onComplete }) {
       </div>
 
       {/* Mode Tabs */}
-      <div className="flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+      <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -600,7 +609,7 @@ export function VSEPRShapes({ onComplete }) {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 min-w-[180px] px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              className={`min-h-[40px] px-3 py-2 rounded-xl text-xs font-black transition-all cursor-pointer text-center ${
                 isActive
                   ? 'bg-white text-[#326fa0] shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white/60 border border-transparent'
@@ -615,9 +624,9 @@ export function VSEPRShapes({ onComplete }) {
       {/* ==================== TAB 1: VSEPR TRAINER ==================== */}
       {activeTab === 'trainer' && (
         <div className="space-y-5">
-          {/* Tier Filters & Species Chips */}
+          {/* Tier Filters & Adaptive Species Selector */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
               {TIER_FILTERS.map((tf) => {
                 const isSelected = tierFilter === tf.id;
                 return (
@@ -625,7 +634,7 @@ export function VSEPRShapes({ onComplete }) {
                     key={tf.id}
                     type="button"
                     onClick={() => handleSelectTier(tf.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-colors cursor-pointer ${
+                    className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-black border transition-colors cursor-pointer ${
                       isSelected
                         ? 'bg-[#326fa0] text-white border-[#326fa0]'
                         : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
@@ -635,323 +644,304 @@ export function VSEPRShapes({ onComplete }) {
                   </button>
                 );
               })}
-              <button
-                type="button"
-                onClick={handleRandomSpecies}
-                className="ml-auto px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
-              >
-                🎲 Random Species
-              </button>
             </div>
 
-            <div className="flex flex-wrap gap-1.5">
-              {filteredMolecules.map((mol) => {
-                const isCurrent = mol.id === currentMolecule.id;
+            <AdaptivePicker
+              options={filteredMolecules.map((mol) => {
                 const isDone = completedIds.includes(mol.id);
-                return (
-                  <button
-                    key={mol.id}
-                    type="button"
-                    onClick={() => resetFormForSpecies(mol.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
-                      isCurrent
-                        ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                        : isDone
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:border-[#326fa0]'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <span>{mol.formula}</span>
-                    {isDone && <span aria-label="Mastered">✓</span>}
-                  </button>
-                );
+                return {
+                  value: mol.id,
+                  label: `${mol.formula} — ${mol.name}${isDone ? ' ✓' : ''}`,
+                  shortLabel: `${mol.formula}${isDone ? ' ✓' : ''}`,
+                };
               })}
-              <button
-                type="button"
-                onClick={handleRandomSpecies}
-                className="ml-auto px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
-              >
-                🎲 Random Species
-              </button>
-            </div>
+              value={currentMolecule.id}
+              onChange={(id) => resetFormForSpecies(id)}
+              onRandom={handleRandomSpecies}
+              randomLabel="🎲 Random Species"
+              collapseBelow="lg"
+            />
           </div>
 
-          {/* Active Problem Form */}
-          <form
-            onSubmit={handleCheckAnswer}
-            className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm"
-          >
-            {/* Prompt Header + Hidden Hint */}
-            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
-              <div>
-                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
-                  {currentMolecule.unitRef} • Central Atom: {currentMolecule.centralAtom} ({currentMolecule.centralGroup})
-                </span>
-                <h3 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5">
-                  {currentMolecule.formula}{' '}
-                  <span className="text-sm font-bold text-slate-500">({currentMolecule.name})</span>
-                </h3>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowHint((prev) => !prev)}
-                className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer shrink-0"
-              >
-                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-              </button>
-            </div>
-
-            {showHint && (
-              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm font-medium text-amber-950">
-                <strong className="font-black text-amber-900">Hint: </strong>
-                {currentMolecule.hint}
-              </div>
-            )}
-
-            {/* Step 1: Bonding Regions & Lone Pairs Steppers */}
-            <div className="space-y-2.5">
-              <div className="text-xs font-black tracking-wider text-slate-600">
-                Step 1 — Deduce Electron Regions on Central Atom ({currentMolecule.centralAtom})
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Bonding Pairs Stepper */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-black text-slate-800">Bonding Regions (BP)</div>
-                    <div className="text-[11px] font-semibold text-slate-500">Multiple bonds count as 1 region</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setBpInput((v) => Math.max(0, v - 1));
-                        clearErrorBanner();
-                      }}
-                      className="w-8 h-8 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer"
-                    >
-                      −
-                    </button>
-                    <span className="w-6 text-center font-mono text-base font-black text-[#326fa0]">
-                      {bpInput}
+          {/* Active Problem Workbench */}
+          <form onSubmit={handleCheckAnswer} className="applet-workbench">
+            {/* Left Column: Species Header, Step 1 Electron Pairs, Step 2 Shape & Bond Angle */}
+            <div className="applet-workbench-sticky space-y-4">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
+                {/* Prompt Header + Hidden Hint */}
+                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-black tracking-widest text-[#326fa0] block">
+                      {currentMolecule.unitRef} • Central Atom: {currentMolecule.centralAtom} ({currentMolecule.centralGroup})
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setBpInput((v) => Math.min(6, v + 1));
-                        clearErrorBanner();
-                      }}
-                      className="w-8 h-8 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer"
-                    >
-                      +
-                    </button>
+                    <h3 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5 break-words">
+                      {currentMolecule.formula}{' '}
+                      <span className="text-sm font-bold text-slate-500">({currentMolecule.name})</span>
+                    </h3>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowHint((prev) => !prev)}
+                    className="min-h-[36px] px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer shrink-0"
+                  >
+                    💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+                  </button>
                 </div>
 
-                {/* Lone Pairs Stepper */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-black text-slate-800">Lone Pairs (LP)</div>
-                    <div className="text-[11px] font-semibold text-slate-500">Unshared pairs on central atom</div>
+                {showHint && (
+                  <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm font-medium text-amber-950">
+                    <strong className="font-black text-amber-900">Hint: </strong>
+                    {currentMolecule.hint}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLpInput((v) => Math.max(0, v - 1));
-                        clearErrorBanner();
-                      }}
-                      className="w-8 h-8 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer"
-                    >
-                      −
-                    </button>
-                    <span className="w-6 text-center font-mono text-base font-black text-amber-700">
-                      {lpInput}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLpInput((v) => Math.min(3, v + 1));
-                        clearErrorBanner();
-                      }}
-                      className="w-8 h-8 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer"
-                    >
-                      +
-                    </button>
+                )}
+
+                {/* Step 1: Bonding Regions & Lone Pairs Steppers */}
+                <div className="space-y-2.5">
+                  <div className="text-xs font-black tracking-wider text-slate-600">
+                    Step 1 — Deduce Electron Regions on Central Atom ({currentMolecule.centralAtom})
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 2: Shape Name & Bond Angle */}
-            <div className="space-y-3">
-              <div className="text-xs font-black tracking-wider text-slate-600">
-                Step 2 — Predict 3D Molecular Shape &amp; Bond Angle
-              </div>
-              <div className="space-y-2">
-                <div className="text-[11px] font-bold text-slate-500">Molecular Shape:</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {SHAPE_OPTIONS.map((opt) => {
-                    const isSelected = shapeInput === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => {
-                          setShapeInput(opt.id);
-                          clearErrorBanner();
-                        }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                            : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="text-[11px] font-bold text-slate-500">Bond Angle:</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {ANGLE_OPTIONS.map((ang) => {
-                    const isSelected = angleInput === ang;
-                    return (
-                      <button
-                        key={ang}
-                        type="button"
-                        onClick={() => {
-                          setAngleInput(ang);
-                          clearErrorBanner();
-                        }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-mono font-black border transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                            : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
-                        }`}
-                      >
-                        {ang}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Step 3: Polarity OR Coordinate/Ion Reasoning */}
-            <div className="space-y-2">
-              <div className="text-xs font-black tracking-wider text-slate-600">
-                {currentMolecule.isIon
-                  ? `Step 3 — ${currentMolecule.ionQuestion.prompt}`
-                  : 'Step 3 — Overall Molecular Polarity'}
-              </div>
-
-              {!currentMolecule.isIon ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {[
-                    { id: 'polar', label: 'Polar molecule (net dipole — asymmetrical)' },
-                    { id: 'nonpolar', label: 'Non-polar molecule (bond dipoles cancel by symmetry)' },
-                  ].map((opt) => {
-                    const checked = polarityInput === opt.id;
-                    return (
-                      <label
-                        key={opt.id}
-                        className={`flex items-start gap-2.5 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                          checked
-                            ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
-                            : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name={`polarity-${currentMolecule.id}`}
-                          checked={checked}
-                          onChange={() => {
-                            setPolarityInput(opt.id);
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Bonding Pairs Stepper */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-xs font-black text-slate-800">Bonding Regions (BP)</div>
+                        <div className="text-[11px] font-semibold text-slate-500">Multiple bonds = 1 region</div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBpInput((v) => Math.max(0, v - 1));
                             clearErrorBanner();
                           }}
-                          className="mt-0.5 accent-[#326fa0]"
-                        />
-                        <span>{opt.label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {shuffledIonOptions.map((opt) => {
-                    const checked = ionOptInput === opt.id;
-                    return (
-                      <label
-                        key={opt.id}
-                        className={`flex items-start gap-2.5 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                          checked
-                            ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
-                            : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name={`ion-q-${currentMolecule.id}`}
-                          checked={checked}
-                          onChange={() => {
-                            setIonOptInput(opt.id);
+                          className="w-9 h-9 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer flex items-center justify-center"
+                          aria-label="Decrease bonding regions"
+                        >
+                          −
+                        </button>
+                        <span className="w-6 text-center font-mono text-base font-black text-[#326fa0]">
+                          {bpInput}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBpInput((v) => Math.min(6, v + 1));
                             clearErrorBanner();
                           }}
-                          className="mt-0.5 accent-[#326fa0]"
-                        />
-                        <span>{opt.label}</span>
-                      </label>
-                    );
-                  })}
+                          className="w-9 h-9 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer flex items-center justify-center"
+                          aria-label="Increase bonding regions"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Lone Pairs Stepper */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-xs font-black text-slate-800">Lone Pairs (LP)</div>
+                        <div className="text-[11px] font-semibold text-slate-500">Unshared pairs</div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLpInput((v) => Math.max(0, v - 1));
+                            clearErrorBanner();
+                          }}
+                          className="w-9 h-9 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer flex items-center justify-center"
+                          aria-label="Decrease lone pairs"
+                        >
+                          −
+                        </button>
+                        <span className="w-6 text-center font-mono text-base font-black text-amber-700">
+                          {lpInput}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLpInput((v) => Math.min(3, v + 1));
+                            clearErrorBanner();
+                          }}
+                          className="w-9 h-9 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 cursor-pointer flex items-center justify-center"
+                          aria-label="Increase lone pairs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
+
+                {/* Step 2: Shape Name & Bond Angle */}
+                <div className="space-y-3 pt-1">
+                  <div className="text-xs font-black tracking-wider text-slate-600">
+                    Step 2 — Predict 3D Molecular Shape &amp; Bond Angle
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold text-slate-500">Molecular Shape:</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SHAPE_OPTIONS.map((opt) => {
+                        const isSelected = shapeInput === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => {
+                              setShapeInput(opt.id);
+                              clearErrorBanner();
+                            }}
+                            className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
+                                : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold text-slate-500">Bond Angle:</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ANGLE_OPTIONS.map((ang) => {
+                        const isSelected = angleInput === ang;
+                        return (
+                          <button
+                            key={ang}
+                            type="button"
+                            onClick={() => {
+                              setAngleInput(ang);
+                              clearErrorBanner();
+                            }}
+                            className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-black border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
+                                : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
+                            }`}
+                          >
+                            {ang}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Submit & Next Buttons */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
-              <button
-                type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black tracking-wider shadow-sm transition-colors cursor-pointer"
-              >
-                Check Answer
-              </button>
+            {/* Right Column: Step 3 Polarity + Check/Reset + Feedback + 3D Molecular Geometry Card */}
+            <div className="space-y-4">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
+                {/* Step 3: Polarity OR Coordinate/Ion Reasoning */}
+                <div className="space-y-2.5">
+                  <div className="text-xs font-black tracking-wider text-slate-600">
+                    {currentMolecule.isIon
+                      ? `Step 3 — ${currentMolecule.ionQuestion.prompt}`
+                      : 'Step 3 — Overall Molecular Polarity'}
+                  </div>
 
-              <button
-                type="button"
-                onClick={goNextSpecies}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-colors cursor-pointer"
-              >
-                Next Species &rarr;
-              </button>
-            </div>
+                  {!currentMolecule.isIon ? (
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {[
+                        { id: 'polar', label: 'Polar molecule (net dipole — asymmetrical)' },
+                        { id: 'nonpolar', label: 'Non-polar molecule (bond dipoles cancel by symmetry)' },
+                      ].map((opt) => {
+                        const checked = polarityInput === opt.id;
+                        return (
+                          <label
+                            key={opt.id}
+                            className={`flex items-start gap-2.5 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                              checked
+                                ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
+                                : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={`polarity-${currentMolecule.id}`}
+                              checked={checked}
+                              onChange={() => {
+                                setPolarityInput(opt.id);
+                                clearErrorBanner();
+                              }}
+                              className="mt-0.5 accent-[#326fa0]"
+                            />
+                            <span>{opt.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {shuffledIonOptions.map((opt) => {
+                        const checked = ionOptInput === opt.id;
+                        return (
+                          <label
+                            key={opt.id}
+                            className={`flex items-start gap-2.5 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                              checked
+                                ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
+                                : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={`ion-q-${currentMolecule.id}`}
+                              checked={checked}
+                              onChange={() => {
+                                setIonOptInput(opt.id);
+                                clearErrorBanner();
+                              }}
+                              className="mt-0.5 accent-[#326fa0]"
+                            />
+                            <span>{opt.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
-            {/* Feedback & Unlocked 3D Solution */}
-            {feedback && (
-              <div
-                className={`p-4 rounded-2xl border space-y-4 ${
-                  feedback.isCorrect
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
-                    : 'bg-rose-50 border-rose-200 text-rose-950'
-                }`}
-              >
-                <div className="font-black text-sm">{feedback.message}</div>
+                {/* Submit & Next Buttons */}
+                <div className="button-group pt-2 border-t border-slate-100">
+                  <button type="submit" className="btn btn-primary">
+                    Check Answer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={goNextSpecies}
+                    className="btn btn-secondary"
+                  >
+                    Next Species &rarr;
+                  </button>
+                </div>
+              </div>
 
-                {feedback.isCorrect && (
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-                    <div className="lg:col-span-5">
+              {/* Feedback & Unlocked 3D Solution */}
+              {feedback && (
+                <div
+                  className={`p-4 rounded-2xl border space-y-4 ${
+                    feedback.isCorrect
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
+                      : 'bg-rose-50 border-rose-200 text-rose-950'
+                  }`}
+                >
+                  <div className="font-black text-sm">{feedback.message}</div>
+
+                  {feedback.isCorrect && (
+                    <div className="space-y-3">
                       <MoleculeGeometrySVG
                         molecule={currentMolecule}
                         showLonePairs={true}
                         showAngle={true}
                         showDipoles={!currentMolecule.isIon}
                       />
-                    </div>
 
-                    <div className="lg:col-span-7 space-y-3">
                       <div className="bg-white/85 border border-emerald-200 rounded-xl p-3 space-y-1">
                         <div className="text-[10px] font-black tracking-widest text-[#326fa0]">
                           Valence Electron Count Breakdown
@@ -979,10 +969,10 @@ export function VSEPRShapes({ onComplete }) {
                         {currentMolecule.examinerPitfall}
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </form>
         </div>
       )}
@@ -992,40 +982,24 @@ export function VSEPRShapes({ onComplete }) {
         <div className="space-y-5">
           {/* Species Catalogue Selector */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
-            <div className="text-[10px] font-black tracking-widest text-slate-500">
-              Select Any WJEC Molecule or Ion to Inspect in 3D
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {VSEPR_MOLECULES.map((mol) => {
-                const isSelected = mol.id === explorerMolecule.id;
-                return (
-                  <button
-                    key={mol.id}
-                    type="button"
-                    onClick={() => setExpMoleculeId(mol.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
-                    }`}
-                  >
-                    {mol.formula}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                onClick={handleRandomSpecies}
-                className="ml-auto px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
-              >
-                🎲 Random Species
-              </button>
-            </div>
+            <AdaptivePicker
+              label="Select Any WJEC Molecule or Ion to Inspect in 3D"
+              options={VSEPR_MOLECULES.map((mol) => ({
+                value: mol.id,
+                label: `${mol.formula} — ${mol.name}`,
+                shortLabel: mol.formula,
+              }))}
+              value={explorerMolecule.id}
+              onChange={(id) => setExpMoleculeId(id)}
+              onRandom={handleRandomExplorerSpecies}
+              randomLabel="🎲 Random Species"
+              collapseBelow="lg"
+            />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <div className="applet-workbench">
             {/* Left: 3D Wedge-Dash Diagram & Layer Toggles */}
-            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
+            <div className="applet-workbench-sticky bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
@@ -1056,7 +1030,7 @@ export function VSEPRShapes({ onComplete }) {
                 ].map((tg) => (
                   <label
                     key={tg.label}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer"
                   >
                     <input
                       type="checkbox"
@@ -1071,7 +1045,7 @@ export function VSEPRShapes({ onComplete }) {
             </div>
 
             {/* Right: Electron Pair Metrics, Repulsion Hierarchy & Notes */}
-            <div className="lg:col-span-6 space-y-4">
+            <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2.5 text-center">
                 <div className="bg-white border border-slate-200 rounded-2xl p-3">
                   <div className="text-[10px] font-black text-slate-400">Bonding (BP)</div>
@@ -1090,7 +1064,7 @@ export function VSEPRShapes({ onComplete }) {
               </div>
 
               <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2">
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-[10px] font-black tracking-widest text-slate-500">
                     Polarity &amp; Structure Summary
                   </span>

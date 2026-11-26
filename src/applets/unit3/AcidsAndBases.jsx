@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ScientificInput from '../../components/shared/ScientificInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'pH_strong_acid', label: 'Strong Acid / Base' },
+  { value: 'pH_weak_acid', label: 'Weak Acid (Ka)' },
+  { value: 'pH_buffer', label: 'Buffer pH' },
+  { value: 'kw_temp', label: 'Kw vs Temp' },
+  { value: 'ka_pka_conv', label: 'Ka ↔ pKa' },
+];
 
 export function AcidsAndBases({ onComplete }) {
+  const [selectedMode, setSelectedMode] = useState('random');
   const [prob, setProb] = useState(null);
   const [userAns, setUserAns] = useState('');
   const [sciCoeff, setSciCoeff] = useState('');
@@ -10,7 +20,7 @@ export function AcidsAndBases({ onComplete }) {
   const [showHint, setShowHint] = useState(false);
   const feedbackRef = useRef(null);
 
-  const generateProblem = () => {
+  const generateProblem = (modeArg = null) => {
     setUserAns('');
     setSciCoeff('');
     setSciExp('');
@@ -18,7 +28,10 @@ export function AcidsAndBases({ onComplete }) {
     setShowHint(false);
 
     const modes = ['pH_strong_acid', 'pH_weak_acid', 'pH_buffer', 'kw_temp', 'ka_pka_conv'];
-    const mode = modes[Math.floor(Math.random() * modes.length)];
+    const requested = modeArg || selectedMode;
+    const mode = requested === 'random' || !modes.includes(requested)
+      ? modes[Math.floor(Math.random() * modes.length)]
+      : requested;
 
     let newProb = {};
 
@@ -194,7 +207,7 @@ export function AcidsAndBases({ onComplete }) {
   };
 
   useEffect(() => {
-    generateProblem();
+    generateProblem('random');
   }, []);
 
   const handleCheck = (e) => {
@@ -228,107 +241,131 @@ export function AcidsAndBases({ onComplete }) {
   if (!prob) return <div className="text-center p-8 text-[var(--chem-text-muted)]">Loading parameters...</div>;
 
   return (
-    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
       <div className="applet-header !mb-0">{prob.title}</div>
 
-      <div className="flex flex-col items-center">
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-        {showHint && (
-          <div className="mt-2 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-            <strong className="font-black text-amber-900">Equilibrium Method: </strong>
-            {prob.mode === 'pH_strong_acid'
-              ? 'Strong acids dissociate completely: find [H⁺] directly from acid concentration (×2 for dibasic H₂SO₄), then compute pH = −log₁₀[H⁺].'
-              : prob.mode === 'pH_weak_acid'
-              ? 'Apply the weak-acid approximation Kₐ = [H⁺]² ÷ [HA], solve [H⁺] = √(Kₐ × [HA]), then evaluate pH = −log₁₀[H⁺].'
-              : prob.mode === 'pH_buffer'
-              ? 'Rearrange Kₐ = [H⁺][A⁻] ÷ [HA] to find [H⁺] = Kₐ × ([acid] ÷ [salt]), then calculate pH = −log₁₀[H⁺].'
-              : prob.mode === 'kw_temp'
-              ? 'In pure water [H⁺] = [OH⁻], so [H⁺] = √Kw. In a strong base, first find [OH⁻], then calculate [H⁺] = Kw ÷ [OH⁻] before pH = −log₁₀[H⁺].'
-              : 'Use the logarithmic definitions: pKₐ = −log₁₀(Kₐ) and Kₐ = 10^(−pKₐ).'}
-          </div>
-        )}
-      </div>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={prob.mode}
+        isRandomActive={selectedMode === 'random'}
+        onChange={(val) => {
+          setSelectedMode(val);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setSelectedMode('random');
+          generateProblem('random');
+        }}
+        collapseBelow="sm"
+      />
 
-      <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-5 shadow-inner">
-        <p className="text-sm text-[var(--chem-text-main)] leading-relaxed font-medium">
-          {prob.text}
-        </p>
-        <p className="text-sm font-bold text-[var(--chem-primary)] mt-3">
-          {prob.question}
-        </p>
-      </div>
+      <div className="applet-workbench">
+        {/* Left Column: Problem Card & Collapsible Hint */}
+        <div className="applet-workbench-sticky space-y-3.5">
+          <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-2xl p-4 sm:p-5 shadow-inner space-y-4">
+            <p className="text-sm sm:text-base text-[var(--chem-text-main)] leading-relaxed font-medium">
+              {prob.text}
+            </p>
+            <p className="text-sm font-bold text-[var(--chem-primary)]">
+              {prob.question}
+            </p>
 
-      <form onSubmit={handleCheck} className="bg-[var(--chem-bg-card)] border border-[var(--chem-border-subtle)] rounded-xl p-5 space-y-4">
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {prob.useScientific ? (
-            <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
-              <ScientificInput
-                value={sciCoeff}
-                exponent={sciExp}
-                onValueChange={(v) => { setSciCoeff(v); if (feedback) setFeedback(null); }}
-                onExponentChange={(v) => { setSciExp(v); if (feedback) setFeedback(null); }}
-                label={prob.label}
-                status={feedback ? (feedback.isCorrect ? 'success' : 'error') : ''}
-              />
-            </div>
-          ) : (
-            <>
-              <label className="text-sm font-bold text-[var(--chem-text-main)] min-w-[50px]">
-                {prob.label}
-              </label>
-              <input
-                type="text"
-                inputMode="decimal"
-                value={userAns}
-                onChange={(e) => { setUserAns(e.target.value); if (feedback) setFeedback(null); }}
-                placeholder="e.g. 4.76"
-                className="flex-1 min-w-[160px] max-w-xs px-3.5 py-2 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-[var(--chem-text-main)] font-medium text-center"
-              />
-            </>
-          )}
-        </div>
-
-        <div className="button-group">
-          <button type="submit" className="btn btn-primary">
-            Check Answer
-          </button>
-          <button type="button" onClick={generateProblem} className="btn btn-secondary">
-            Next Problem &rarr;
-          </button>
-        </div>
-      </form>
-
-      {feedback && (
-        <div
-          ref={feedbackRef}
-          className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
-            feedback.isCorrect ? 'feedback-success' : 'feedback-error'
-          }`}
-        >
-          <div className="flex items-start gap-2.5">
-            <span className="text-lg">{feedback.isCorrect ? '✅' : '❌'}</span>
-            <div>
-              <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Mark Awarded' : 'Check Working'}</h4>
-              <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+            <div className="flex flex-col items-start">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[34px] px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                  <strong className="font-black text-amber-900">Equilibrium Method: </strong>
+                  {prob.mode === 'pH_strong_acid'
+                    ? 'Strong acids dissociate completely: find [H⁺] directly from acid concentration (×2 for dibasic H₂SO₄), then compute pH = −log₁₀[H⁺].'
+                    : prob.mode === 'pH_weak_acid'
+                    ? 'Apply the weak-acid approximation Kₐ = [H⁺]² ÷ [HA], solve [H⁺] = √(Kₐ × [HA]), then evaluate pH = −log₁₀[H⁺].'
+                    : prob.mode === 'pH_buffer'
+                    ? 'Rearrange Kₐ = [H⁺][A⁻] ÷ [HA] to find [H⁺] = Kₐ × ([acid] ÷ [salt]), then calculate pH = −log₁₀[H⁺].'
+                    : prob.mode === 'kw_temp'
+                    ? 'In pure water [H⁺] = [OH⁻], so [H⁺] = √Kw. In a strong base, first find [OH⁻], then calculate [H⁺] = Kw ÷ [OH⁻] before pH = −log₁₀[H⁺].'
+                    : 'Use the logarithmic definitions: pKₐ = −log₁₀(Kₐ) and Kₐ = 10^(−pKₐ).'}
+                </div>
+              )}
             </div>
           </div>
-          {feedback.isCorrect && (
-            <button
-              type="button"
-              onClick={generateProblem}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+        </div>
+
+        {/* Right Column: Input Card, Actions & Feedback */}
+        <div className="space-y-4">
+          <form onSubmit={handleCheck} className="bg-[var(--chem-bg-card)] border border-[var(--chem-border-subtle)] rounded-2xl p-3.5 sm:p-5 space-y-4 shadow-xs">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {prob.useScientific ? (
+                <div className="px-3 sm:px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm w-full sm:w-auto">
+                  <ScientificInput
+                    value={sciCoeff}
+                    exponent={sciExp}
+                    onValueChange={(v) => { setSciCoeff(v); if (feedback) setFeedback(null); }}
+                    onExponentChange={(v) => { setSciExp(v); if (feedback) setFeedback(null); }}
+                    label={prob.label}
+                    status={feedback ? (feedback.isCorrect ? 'success' : 'error') : ''}
+                  />
+                </div>
+              ) : (
+                <>
+                  <label className="text-sm font-bold text-[var(--chem-text-main)] min-w-[44px]">
+                    {prob.label}
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={userAns}
+                    onChange={(e) => { setUserAns(e.target.value); if (feedback) setFeedback(null); }}
+                    placeholder="e.g. 4.76"
+                    className="flex-1 min-w-[140px] max-w-xs min-h-[40px] px-3.5 py-2 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-[var(--chem-text-main)] font-medium text-center"
+                  />
+                </>
+              )}
+            </div>
+
+            <div className="button-group">
+              <button type="submit" className="btn btn-primary">
+                Check Answer
+              </button>
+              <button type="button" onClick={() => generateProblem()} className="btn btn-secondary">
+                Next Problem &rarr;
+              </button>
+            </div>
+          </form>
+
+          {feedback && (
+            <div
+              ref={feedbackRef}
+              className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+                feedback.isCorrect ? 'feedback-success' : 'feedback-error'
+              }`}
             >
-              Next Problem &rarr;
-            </button>
+              <div className="flex items-start gap-2.5">
+                <span className="text-lg">{feedback.isCorrect ? '✅' : '❌'}</span>
+                <div>
+                  <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Mark Awarded' : 'Check Working'}</h4>
+                  <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+                </div>
+              </div>
+              {feedback.isCorrect && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

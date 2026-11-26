@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import ScientificInput from '../../components/shared/ScientificInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'calculate_P', label: 'Calculate Pressure (p)', shortLabel: 'Pressure (p)' },
+  { value: 'calculate_V', label: 'Calculate Volume (V)', shortLabel: 'Volume (V)' },
+  { value: 'calculate_n', label: 'Calculate Amount (n)', shortLabel: 'Amount (n)' },
+  { value: 'calculate_T', label: 'Calculate Temperature (T)', shortLabel: 'Temp (T)' },
+];
 
 const IdealGas = ({ onComplete }) => {
   const [mode, setMode] = useState('calculate_P');
@@ -78,7 +86,7 @@ const IdealGas = ({ onComplete }) => {
       }
 
       case 'calculate_V':
-        questionText = `Determine the ideal geometric volume in cubic meters (m³) occupied by a mass of ${mass} g of gaseous ${gas.name} (${gas.formula}) under a recorded system pressure of ${supplyAtm ? `${pressAtm} atm` : `${pressKpa} kPa`} and a temperature of ${tempCelsius} °C.`;
+        questionText = `Determine the ideal geometric volume in cubic metres (m³) occupied by a mass of ${mass} g of gaseous ${gas.name} (${gas.formula}) under a recorded system pressure of ${supplyAtm ? `${pressAtm} atm` : `${pressKpa} kPa`} and a temperature of ${tempCelsius} °C.`;
         targetLabel = 'V =';
         correctAnswer = volM3;
         unitExpectation = 'm³';
@@ -206,222 +214,226 @@ const IdealGas = ({ onComplete }) => {
   const isStep2Locked = gateEnabled && !gateVerified;
 
   return (
-    <div className="applet-container">
-      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-          >
-            <option value="calculate_P">Calculate Pressure (p)</option>
-            <option value="calculate_V">Calculate Volume (V)</option>
-            <option value="calculate_n">Calculate Amount (n)</option>
-            <option value="calculate_T">Calculate Temperature (T)</option>
-          </select>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">Ideal Gas Calculations</div>
 
-          <button
-            type="button"
-            onClick={() => { generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        onChange={(val) => { setMode(val); generateProblem(val); }}
+        onRandom={() => generateProblem('random')}
+        isRandomActive={mode === 'random'}
+        collapseBelow="sm"
+      />
 
-      <div className="applet-header">Ideal Gas Calculations</div>
+      <div className="applet-workbench">
+        <div className="applet-workbench-sticky space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+              <span className="text-[10px] font-black tracking-widest text-slate-400">
+                Gas Law Scenario
+              </span>
+              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-blue-50 text-[#326fa0] border border-blue-200">
+                R = 8.31 J K⁻¹ mol⁻¹
+              </span>
+            </div>
 
-      <div className="question-text text-center px-2 leading-relaxed">
-        {problem.questionText}
-      </div>
+            <div className="text-sm sm:text-base text-slate-800 leading-relaxed">
+              {problem.questionText}
+            </div>
 
-      <div className="flex flex-col items-center mb-4">
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-        {showHint && (
-          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-            <strong className="font-black text-amber-900">pV = nRT Method: </strong>
-            Always convert all quantities to strict SI units before substituting into pV = nRT (R = 8.31 J K⁻¹ mol⁻¹): p in Pa, V in m³ (÷ 10⁶ from cm³ or ÷ 10³ from dm³), T in K (°C + 273), and n = mass (g) ÷ Mᵣ.
-          </div>
-        )}
-      </div>
-
-      {/* WJEC Step 1 SI Unit-Conversion Gate */}
-      <div className="w-full max-w-3xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
-        <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
-          <div>
-            <span className="text-[10px] font-black tracking-widest text-slate-400">
-              WJEC Unit Trap Gate
-            </span>
-            <h4 className="text-xs font-black text-slate-800 mt-1">
-              Step 1: Convert Given Quantities to SI Units (Pa, m³, K, mol)
-            </h4>
-          </div>
-          <button
-            type="button"
-            onClick={() => setGateEnabled(!gateEnabled)}
-            className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 shrink-0"
-          >
-            {gateEnabled ? 'Skip Gate' : 'Enable Gate'}
-          </button>
-        </div>
-
-        {gateEnabled && (
-          <div className="mt-3 space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
-              {problem.targetMode !== 'calculate_P' && (
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                    p ({problem.siTargets.pressDisplay}) in Pa:
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    inputMode="decimal"
-                    onWheel={(e) => e.currentTarget.blur()}
-                    disabled={gateVerified}
-                    value={gateInputs.pPa}
-                    onChange={(e) => setGateInputs({ ...gateInputs, pPa: e.target.value })}
-                    placeholder="e.g. 101000"
-                    className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                  />
-                </div>
-              )}
-
-              {problem.targetMode !== 'calculate_V' && (
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                    V ({problem.siTargets.volDisplay}) in m³:
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    inputMode="decimal"
-                    onWheel={(e) => e.currentTarget.blur()}
-                    disabled={gateVerified}
-                    value={gateInputs.vM3}
-                    onChange={(e) => setGateInputs({ ...gateInputs, vM3: e.target.value })}
-                    placeholder="e.g. 0.0025"
-                    className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                  />
-                </div>
-              )}
-
-              {problem.targetMode !== 'calculate_T' && (
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                    T ({problem.siTargets.tempDisplay}) in K:
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    inputMode="decimal"
-                    onWheel={(e) => e.currentTarget.blur()}
-                    disabled={gateVerified}
-                    value={gateInputs.tK}
-                    onChange={(e) => setGateInputs({ ...gateInputs, tK: e.target.value })}
-                    placeholder="°C + 273"
-                    className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                  />
-                </div>
-              )}
-
-              {problem.targetMode !== 'calculate_n' && (
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                    n = m / M<sub>r</sub> in mol:
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    inputMode="decimal"
-                    onWheel={(e) => e.currentTarget.blur()}
-                    disabled={gateVerified}
-                    value={gateInputs.nMol}
-                    onChange={(e) => setGateInputs({ ...gateInputs, nMol: e.target.value })}
-                    placeholder="mol (3 s.f.)"
-                    className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                  />
+            <div className="flex flex-col items-start pt-1">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[36px] px-3.5 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                  <strong className="font-black text-amber-900">pV = nRT Method: </strong>
+                  Always convert all quantities to strict SI units before substituting into pV = nRT (R = 8.31 J K⁻¹ mol⁻¹): p in Pa, V in m³ (÷ 10⁶ from cm³ or ÷ 10³ from dm³), T in K (°C + 273), and n = mass (g) ÷ Mᵣ.
                 </div>
               )}
             </div>
+          </div>
+        </div>
 
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[10px] text-slate-500 font-medium">
-                1 dm³ = 10⁻³ m³ • 1 cm³ = 10⁻⁶ m³ • 1 atm = 1.01 × 10⁵ Pa
-              </span>
+        <div className="space-y-4">
+          {/* WJEC Step 1 SI Unit-Conversion Gate */}
+          <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+              <div>
+                <span className="text-[10px] font-black tracking-widest text-slate-400">
+                  WJEC Unit Trap Gate
+                </span>
+                <h4 className="text-xs font-black text-slate-800 mt-1">
+                  Step 1: Convert Given Quantities to SI Units (Pa, m³, K, mol)
+                </h4>
+              </div>
               <button
                 type="button"
-                onClick={verifyUnitGate}
-                disabled={gateVerified}
-                className="px-4 py-1.5 bg-[#326fa0] text-white text-xs font-black rounded-xl hover:bg-[#255580] disabled:bg-emerald-600 transition-colors shrink-0"
+                onClick={() => setGateEnabled(!gateEnabled)}
+                className="text-[10px] font-bold px-2.5 py-1.5 min-h-[32px] rounded-lg border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 shrink-0 cursor-pointer"
               >
-                {gateVerified ? 'Units Verified ✓' : 'Verify SI Units'}
+                {gateEnabled ? 'Skip Gate' : 'Enable Gate'}
               </button>
             </div>
 
-            {gateFeedback.message && (
-              <div className={`p-2.5 rounded-xl text-xs font-bold ${
-                gateFeedback.type === 'success'
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                  : 'bg-rose-50 text-rose-800 border border-rose-200'
-              }`}>
-                {gateFeedback.message}
+            {gateEnabled && (
+              <div className="mt-3 space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 text-left">
+                  {problem.targetMode !== 'calculate_P' && (
+                    <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                      <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                        p ({problem.siTargets.pressDisplay}) in Pa:
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        inputMode="decimal"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        disabled={gateVerified}
+                        value={gateInputs.pPa}
+                        onChange={(e) => setGateInputs({ ...gateInputs, pPa: e.target.value })}
+                        placeholder="e.g. 101000"
+                        className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                      />
+                    </div>
+                  )}
+
+                  {problem.targetMode !== 'calculate_V' && (
+                    <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                      <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                        V ({problem.siTargets.volDisplay}) in m³:
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        inputMode="decimal"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        disabled={gateVerified}
+                        value={gateInputs.vM3}
+                        onChange={(e) => setGateInputs({ ...gateInputs, vM3: e.target.value })}
+                        placeholder="e.g. 0.0025"
+                        className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                      />
+                    </div>
+                  )}
+
+                  {problem.targetMode !== 'calculate_T' && (
+                    <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                      <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                        T ({problem.siTargets.tempDisplay}) in K:
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        inputMode="decimal"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        disabled={gateVerified}
+                        value={gateInputs.tK}
+                        onChange={(e) => setGateInputs({ ...gateInputs, tK: e.target.value })}
+                        placeholder="°C + 273"
+                        className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                      />
+                    </div>
+                  )}
+
+                  {problem.targetMode !== 'calculate_n' && (
+                    <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                      <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                        n = m / M<sub>r</sub> in mol:
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        inputMode="decimal"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        disabled={gateVerified}
+                        value={gateInputs.nMol}
+                        onChange={(e) => setGateInputs({ ...gateInputs, nMol: e.target.value })}
+                        placeholder="mol (3 s.f.)"
+                        className="w-full px-2 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[10px] text-slate-500 font-medium">
+                    1 dm³ = 10⁻³ m³ • 1 cm³ = 10⁻⁶ m³ • 1 atm = 1.01 × 10⁵ Pa
+                  </span>
+                  <button
+                    type="button"
+                    onClick={verifyUnitGate}
+                    disabled={gateVerified}
+                    className="px-4 py-1.5 min-h-[36px] bg-[#326fa0] text-white text-xs font-black rounded-xl hover:bg-[#255580] disabled:bg-emerald-600 transition-colors shrink-0 cursor-pointer"
+                  >
+                    {gateVerified ? 'Units Verified ✓' : 'Verify SI Units'}
+                  </button>
+                </div>
+
+                {gateFeedback.message && (
+                  <div className={`p-2.5 rounded-xl text-xs font-bold ${
+                    gateFeedback.type === 'success'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : 'bg-rose-50 text-rose-800 border border-rose-200'
+                  }`}>
+                    {gateFeedback.message}
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
-      </div>
 
-      {/* Step 2: Final pV = nRT Calculation */}
-      <div className={`w-full flex items-center justify-center my-6 overflow-x-auto transition-opacity ${isStep2Locked ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-        <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
-          <ScientificInput
-            value={coeff}
-            exponent={exp}
-            onValueChange={setCoeff}
-            onExponentChange={setExp}
-            label={problem.targetLabel}
-            status={feedback.type}
-          />
-          <span className="text-sm font-bold text-slate-500 ml-1 select-none">
-            {problem.unitExpectation}
-          </span>
-        </div>
-      </div>
+          {/* Step 2: Final pV = nRT Calculation */}
+          <div className={`bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 transition-opacity ${isStep2Locked ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+            <span className="text-[10px] font-black tracking-widest text-slate-400 block">
+              Step 2: Solve pV = nRT
+            </span>
 
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer} disabled={isStep2Locked}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
-      </div>
+            <div className="w-full flex items-center justify-center">
+              <div className="w-full flex flex-row items-center justify-center flex-wrap gap-2 px-3 sm:px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
+                <ScientificInput
+                  value={coeff}
+                  exponent={exp}
+                  onValueChange={setCoeff}
+                  onExponentChange={setExp}
+                  label={problem.targetLabel}
+                  status={feedback.type}
+                  className="!w-auto"
+                />
+                <span className="text-sm font-bold text-slate-500 select-none">
+                  {problem.unitExpectation}
+                </span>
+              </div>
+            </div>
 
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.type === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
+            <div className="button-group">
+              <button type="button" className="btn btn-primary" onClick={checkAnswer} disabled={isStep2Locked}>Check Answer</button>
+              <button type="button" className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
+            </div>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span className="text-xs sm:text-sm font-semibold">{feedback.message}</span>
+              {feedback.type === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

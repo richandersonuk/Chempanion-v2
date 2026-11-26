@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 
 const DeltaH = ({ sub, std = true }) => (
   <span className="whitespace-nowrap">
@@ -287,6 +288,27 @@ export default function HessLawCycles({ onComplete }) {
   const [builderVerified, setBuilderVerified] = useState(false);
   const [builderFeedback, setBuilderFeedback] = useState(null);
   const [builderRouteEq, setBuilderRouteEq] = useState('');
+  const [showBuilderDetails, setShowBuilderDetails] = useState(false);
+  const [intermediateMenuOpen, setIntermediateMenuOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!intermediateMenuOpen) return undefined;
+    const handlePointerDown = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIntermediateMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setIntermediateMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [intermediateMenuOpen]);
 
   // Step 1 Route Gate (calculation modes)
   const [gateEnabled, setGateEnabled] = useState(true);
@@ -392,6 +414,8 @@ export default function HessLawCycles({ onComplete }) {
     setBuilderVerified(false);
     setBuilderFeedback(null);
     setBuilderRouteEq('');
+    setShowBuilderDetails(false);
+    setIntermediateMenuOpen(false);
 
     // Reset gate & answer state
     setGateFormula('');
@@ -427,6 +451,7 @@ export default function HessLawCycles({ onComplete }) {
 
   const handleVerifyBuilder = () => {
     if (!problem) return;
+    setIntermediateMenuOpen(false);
     const isFormationCycle = problem.type === 'formation';
     const subChar = isFormationCycle ? 'f' : 'c';
     const expectedDir = isFormationCycle ? 'up' : 'down';
@@ -436,12 +461,12 @@ export default function HessLawCycles({ onComplete }) {
       messages.push(
         isFormationCycle ? (
           <span key="bottom">
-            Check the bottom intermediate box: with <DeltaH sub="f" /> data, the cycle is rooted in balanced{' '}
+            Check the Intermediate Species dropdown on the diagram: with <DeltaH sub="f" /> data, the bottom box must hold balanced{' '}
             <strong>constituent elements in their standard states at 298 K</strong> matching the atom counts on either side of the equation.
           </span>
         ) : (
           <span key="bottom">
-            Check the bottom intermediate box: with <DeltaH sub="c" /> data, the cycle goes to balanced{' '}
+            Check the Intermediate Species dropdown on the diagram: with <DeltaH sub="c" /> data, the bottom box must hold balanced{' '}
             <strong>complete combustion products (CO₂(g) + H₂O(l))</strong> matching every C and H atom in the equation.
           </span>
         )
@@ -451,7 +476,7 @@ export default function HessLawCycles({ onComplete }) {
     if (!builderLeftDir || !builderRightDir) {
       messages.push(
         <span key="dir-missing">
-          Select directions for <strong>both diagonal cycle arrows</strong> (tap the diagonal legs on the diagram or use the buttons below).
+          Tap both diagonal legs directly on the Hess cycle diagram to set their arrow directions.
         </span>
       );
     } else if (builderLeftDir !== builderRightDir) {
@@ -464,11 +489,11 @@ export default function HessLawCycles({ onComplete }) {
       messages.push(
         isFormationCycle ? (
           <span key="dir-wrong">
-            Reverse both arrows: <DeltaH sub="f" /> defines forming each compound <strong>from</strong> its elements, so both arrows point <strong>upwards</strong> from the intermediate box.
+            Tap both arrows again to reverse them: <DeltaH sub="f" /> defines forming each compound <strong>from</strong> its elements, so both arrows point <strong>upwards</strong> from the intermediate box.
           </span>
         ) : (
           <span key="dir-wrong">
-            Reverse both arrows: <DeltaH sub="c" /> defines burning reactants and products <strong>into</strong> oxides, so both arrows point <strong>downwards</strong> to CO₂(g) + H₂O(l).
+            Tap both arrows again to reverse them: <DeltaH sub="c" /> defines burning reactants and products <strong>into</strong> oxides, so both arrows point <strong>downwards</strong> to CO₂(g) + H₂O(l).
           </span>
         )
       );
@@ -682,60 +707,78 @@ export default function HessLawCycles({ onComplete }) {
     0
   );
 
-  const modeTabs = [
-    { id: 'cycle_builder', label: 'Hess Cycle Builder' },
-    { id: 'formation_cycle', label: <><DeltaH sub="f" /> Cycles</> },
-    { id: 'combustion_cycle', label: <><DeltaH sub="c" /> Cycles</> },
-    { id: 'unknown_species', label: <>Unknown ΔH° from <DeltaH sub="r" /></> },
+  const modeOptions = [
+    { value: 'cycle_builder', label: 'Hess Cycle Builder' },
+    { value: 'formation_cycle', label: <><DeltaH sub="f" /> Cycles</> },
+    { value: 'combustion_cycle', label: <><DeltaH sub="c" /> Cycles</> },
+    { value: 'unknown_species', label: <>Unknown ΔH° from <DeltaH sub="r" /></> },
   ];
 
   return (
-    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-4xl mx-auto px-2">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-2 text-center">
-          Choose Hess Cycle Mode
-        </span>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          {modeTabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => {
-                setMode(tab.id);
-                generateProblem(tab.id);
-              }}
-              className={`px-3 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer text-center ${
-                mode === tab.id
-                  ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              setMode('random');
-              generateProblem('random');
-            }}
-            className={`col-span-2 sm:col-span-1 px-3 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer text-center ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
+    <div className="applet-container space-y-4 sm:space-y-5" style={{ textTransform: 'none' }}>
+      <AdaptivePicker
+        label="Choose Hess Cycle Mode"
+        collapseBelow="sm"
+        options={modeOptions}
+        value={mode}
+        isRandomActive={mode === 'random'}
+        onChange={(val) => {
+          setMode(val);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setMode('random');
+          generateProblem('random');
+        }}
+        className="max-w-4xl"
+      />
 
       <div className="applet-header !mb-0">{problem.title}</div>
 
+      {/* Prompt & Collapsible Hint */}
+      <div className="w-full max-w-3xl mx-auto flex flex-col items-center gap-2 text-center px-1">
+        <p className="text-xs sm:text-sm font-black text-slate-700 leading-relaxed">
+          {isBuilder ? (
+            <>Tap the cycle diagram to pick the intermediate box and orient both arrows, then calculate <DeltaH sub="r" /> in kJ mol⁻¹.</>
+          ) : problem.subMode === 'unknown_species' ? (
+            <>Calculate <DeltaH sub={subChar} />({problem.unknownMeta.label}) in kJ mol⁻¹.</>
+          ) : (
+            <>Calculate the overall enthalpy change (<DeltaH sub="r" />) in kJ mol⁻¹.</>
+          )}
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Hess’s Law Method: </strong>
+            {isBuilder ? (
+              <>
+                Check the subscript in the Standard Enthalpy Data table first: <DeltaH sub="f" /> values define forming compounds from balanced <strong>elements in their standard states</strong> (tap both diagonal arrows <strong>up</strong>, choose the balanced elements from the bottom dropdown, and set standard-state elements to <DeltaH sub="f" /> = 0). <DeltaH sub="c" /> values define burning species completely into <strong>CO₂(g) + H₂O(l)</strong> (tap both diagonal arrows <strong>down</strong> and pick the balanced oxides in the bottom dropdown). Along any indirect path, add values moved <strong>with</strong> an arrow and subtract values moved <strong>against</strong> an arrow.
+              </>
+            ) : isFormation ? (
+              <>
+                Formation arrows point <strong>up</strong> from elements to compounds, so{' '}
+                <DeltaH sub="r" /> = Σ<DeltaH sub="f" />(products) − Σ<DeltaH sub="f" />(reactants). Unlisted elements in their standard states (e.g. Fe(s), O₂(g), H₂(g), N₂(g)) always have <DeltaH sub="f" /> = 0.
+              </>
+            ) : (
+              <>
+                Combustion arrows point <strong>down</strong> from reactants and products to CO₂/H₂O, so{' '}
+                <DeltaH sub="r" /> = Σ<DeltaH sub="c" />(reactants) − Σ<DeltaH sub="c" />(products). Always multiply each molar enthalpy by its stoichiometric coefficient.
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
       <div className="applet-workbench">
-        {/* Left Sticky Workbench Column: Interactive Hess Triangle SVG + Thermodynamic Data Table */}
+        {/* Left Sticky Workbench Column: Interactive Hybrid Hess Triangle Canvas + Thermodynamic Data Table */}
         <div className="applet-workbench-sticky space-y-4">
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-sm space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
               <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
                 WJEC Unit 2.1 •{' '}
@@ -745,188 +788,233 @@ export default function HessLawCycles({ onComplete }) {
                   ? 'Formation Cycle (Arrows Up)'
                   : 'Combustion Cycle (Arrows Down)'}
               </span>
-              <span className="text-[10px] font-mono font-bold text-slate-500">kJ mol⁻¹</span>
+              {isBuilder && !builderVerified ? (
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                  Tap arrows &amp; pick bottom box
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono font-bold text-slate-500">kJ mol⁻¹</span>
+              )}
             </div>
 
             <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-center font-mono font-black text-xs sm:text-sm text-slate-800">
               {problem.equation}
             </div>
 
-            {/* Hess Triangle SVG (uses <tspan> for SVG subscripts — never HTML <sub>) */}
-            <svg viewBox="0 0 410 225" className="w-full h-auto select-none bg-slate-50/50 rounded-xl border border-slate-100">
-              <defs>
-                <marker id="hess-arrow-blue" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
-                  <polygon points="0 0, 6 3, 0 6" fill="#235478" />
-                </marker>
-                <marker id="hess-arrow-amber" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
-                  <polygon points="0 0, 6 3, 0 6" fill="#d97706" />
-                </marker>
-              </defs>
+            {/* Interactive Hybrid HTML/CSS + SVG Hess Cycle Canvas (no overflow-hidden so dropdown renders freely) */}
+            <div className="bg-slate-50/70 rounded-xl border border-slate-200/80 p-2.5 sm:p-3.5 space-y-1">
+              {/* Top Row: Reactants -- ΔHr° --> Products */}
+              <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5 sm:gap-2.5">
+                <div className="bg-white border border-slate-300 rounded-xl px-2 py-2 text-center shadow-2xs">
+                  <span className="block text-[9px] font-bold text-slate-400 leading-none mb-1">Reactants</span>
+                  <span className="block font-mono font-black text-[11px] sm:text-xs text-slate-800 leading-snug break-words">
+                    {problem.lhsText}
+                  </span>
+                </div>
 
-              {/* Top boxes: Reactants & Products */}
-              <rect x="10" y="14" width="148" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
-              <text x="84" y="28" textAnchor="middle" className="text-[8px] font-sans font-bold fill-slate-400">
-                Reactants
-              </text>
-              <text x="84" y="45" textAnchor="middle" className="text-[8.5px] font-mono font-black fill-slate-800">
-                {problem.lhsText}
-              </text>
+                <div className="flex flex-col items-center justify-center px-0.5 sm:px-1">
+                  <span className="font-mono font-black text-[10px] sm:text-xs text-[#235478] whitespace-nowrap">
+                    <DeltaH sub="r" /> ={' '}
+                    {problem.subMode === 'unknown_species'
+                      ? `${problem.deltaHr > 0 ? '+' : ''}${problem.deltaHr}`
+                      : '?'}
+                  </span>
+                  <svg viewBox="0 0 64 14" className="w-12 sm:w-16 h-3.5 overflow-visible" aria-hidden="true">
+                    <line x1="2" y1="7" x2="54" y2="7" stroke="#235478" strokeWidth="2.4" strokeLinecap="round" />
+                    <polygon points="52,2 62,7 52,12" fill="#235478" />
+                  </svg>
+                </div>
 
-              <rect x="252" y="14" width="148" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
-              <text x="326" y="28" textAnchor="middle" className="text-[8px] font-sans font-bold fill-slate-400">
-                Products
-              </text>
-              <text x="326" y="45" textAnchor="middle" className="text-[8.5px] font-mono font-black fill-slate-800">
-                {problem.rhsText}
-              </text>
+                <div className="bg-white border border-slate-300 rounded-xl px-2 py-2 text-center shadow-2xs">
+                  <span className="block text-[9px] font-bold text-slate-400 leading-none mb-1">Products</span>
+                  <span className="block font-mono font-black text-[11px] sm:text-xs text-slate-800 leading-snug break-words">
+                    {problem.rhsText}
+                  </span>
+                </div>
+              </div>
 
-              {/* Top horizontal arrow ΔHr° */}
-              <line x1="162" y1="36" x2="245" y2="36" stroke="#235478" strokeWidth="2.4" markerEnd="url(#hess-arrow-blue)" />
-              <text x="204" y="23" textAnchor="middle" className="text-[10px] font-mono font-black fill-[#235478]">
-                ΔH
-                <tspan dy="2.5" fontSize="7.5">r</tspan>
-                <tspan dy="-2.5">
-                  ° = {problem.subMode === 'unknown_species'
-                    ? `${problem.deltaHr > 0 ? '+' : ''}${problem.deltaHr}`
-                    : '?'}
-                </tspan>
-              </text>
+              {/* Middle Diagonal Arrow Connector Zone (tapping arrows on canvas is the ONLY way to set them) */}
+              <div className="relative h-24 sm:h-28 w-full select-none">
+                <svg viewBox="0 0 400 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
+                  <defs>
+                    <marker id="hess-arrow-amber" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
+                      <polygon points="0 0, 6 3, 0 6" fill="#d97706" />
+                    </marker>
+                  </defs>
 
-              {/* Bottom Intermediate Box */}
-              {isBuilder ? (
-                builderBottom ? (
-                  <>
-                    <rect
-                      x="65"
-                      y="162"
-                      width="280"
-                      height="46"
-                      rx="8"
-                      fill={builderVerified ? '#ecfdf5' : '#eff6ff'}
-                      stroke={builderVerified ? '#10b981' : '#3b82f6'}
-                      strokeWidth="1.8"
+                  {/* Left diagonal leg */}
+                  {svgLeftDir === 'up' ? (
+                    <line x1="148" y1="94" x2="82" y2="8" stroke="#d97706" strokeWidth="2.6" markerEnd="url(#hess-arrow-amber)" />
+                  ) : svgLeftDir === 'down' ? (
+                    <line x1="80" y1="6" x2="146" y2="92" stroke="#d97706" strokeWidth="2.6" markerEnd="url(#hess-arrow-amber)" />
+                  ) : (
+                    <line x1="148" y1="94" x2="80" y2="6" stroke="#94a3b8" strokeDasharray="5 4" strokeWidth="2.2" />
+                  )}
+                  {isBuilder && !builderVerified && (
+                    <line
+                      x1="148"
+                      y1="94"
+                      x2="80"
+                      y2="6"
+                      stroke="transparent"
+                      strokeWidth="28"
+                      className="cursor-pointer"
+                      onClick={() => cycleArrowDir('left')}
                     />
-                    <text x="205" y="177" textAnchor="middle" className="text-[8.5px] font-sans font-bold fill-slate-500">
-                      {builderVerified
-                        ? isFormation
-                          ? 'Verified: Elements in Standard States'
-                          : 'Verified: Combustion Oxides (CO₂ + H₂O)'
-                        : 'Selected Intermediate'}
-                    </text>
-                    <text x="205" y="195" textAnchor="middle" className="text-[9.5px] font-mono font-black fill-[#235478]">
-                      {builderBottom}
-                    </text>
+                  )}
+
+                  {/* Right diagonal leg */}
+                  {svgRightDir === 'up' ? (
+                    <line x1="252" y1="94" x2="318" y2="8" stroke="#d97706" strokeWidth="2.6" markerEnd="url(#hess-arrow-amber)" />
+                  ) : svgRightDir === 'down' ? (
+                    <line x1="320" y1="6" x2="254" y2="92" stroke="#d97706" strokeWidth="2.6" markerEnd="url(#hess-arrow-amber)" />
+                  ) : (
+                    <line x1="252" y1="94" x2="320" y2="6" stroke="#94a3b8" strokeDasharray="5 4" strokeWidth="2.2" />
+                  )}
+                  {isBuilder && !builderVerified && (
+                    <line
+                      x1="252"
+                      y1="94"
+                      x2="320"
+                      y2="6"
+                      stroke="transparent"
+                      strokeWidth="28"
+                      className="cursor-pointer"
+                      onClick={() => cycleArrowDir('right')}
+                    />
+                  )}
+                </svg>
+
+                {/* Overlay Diagonal Leg Tap Buttons / Read-only Labels */}
+                {isBuilder && !builderVerified ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => cycleArrowDir('left')}
+                      aria-label="Toggle left diagonal arrow direction"
+                      className={`absolute left-[22%] sm:left-[24%] top-1/2 -translate-x-1/2 -translate-y-1/2 min-h-[40px] px-2.5 py-1.5 rounded-xl border text-[11px] font-black shadow-xs transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
+                        builderLeftDir
+                          ? 'bg-amber-50 border-amber-500 text-amber-900'
+                          : 'bg-white border-dashed border-slate-400 text-slate-600 hover:border-[#326fa0] hover:text-[#326fa0]'
+                      }`}
+                    >
+                      {builderLeftDir === 'up' ? '▲ Up' : builderLeftDir === 'down' ? '▼ Down' : '⇅ Tap arrow'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => cycleArrowDir('right')}
+                      aria-label="Toggle right diagonal arrow direction"
+                      className={`absolute right-[22%] sm:right-[24%] top-1/2 translate-x-1/2 -translate-y-1/2 min-h-[40px] px-2.5 py-1.5 rounded-xl border text-[11px] font-black shadow-xs transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
+                        builderRightDir
+                          ? 'bg-amber-50 border-amber-500 text-amber-900'
+                          : 'bg-white border-dashed border-slate-400 text-slate-600 hover:border-[#326fa0] hover:text-[#326fa0]'
+                      }`}
+                    >
+                      {builderRightDir === 'up' ? '▲ Up' : builderRightDir === 'down' ? '▼ Down' : '⇅ Tap arrow'}
+                    </button>
                   </>
                 ) : (
                   <>
-                    <rect
-                      x="65"
-                      y="162"
-                      width="280"
-                      height="46"
-                      rx="8"
-                      fill="#f8fafc"
-                      stroke="#94a3b8"
-                      strokeDasharray="4 3"
-                      strokeWidth="1.5"
-                    />
-                    <text x="205" y="188" textAnchor="middle" className="text-[9.5px] font-sans font-bold fill-slate-500">
-                      ① Select intermediate species on the right
-                    </text>
+                    <span className="absolute left-[22%] sm:left-[24%] top-1/2 -translate-x-1/2 -translate-y-1/2 px-2 py-0.5 rounded-lg bg-white/95 border border-amber-200 font-mono font-black text-[10px] sm:text-[11px] text-amber-700 shadow-2xs whitespace-nowrap">
+                      Σ<DeltaH sub={subChar} />(React)
+                    </span>
+                    <span className="absolute right-[22%] sm:right-[24%] top-1/2 translate-x-1/2 -translate-y-1/2 px-2 py-0.5 rounded-lg bg-white/95 border border-amber-200 font-mono font-black text-[10px] sm:text-[11px] text-amber-700 shadow-2xs whitespace-nowrap">
+                      Σ<DeltaH sub={subChar} />(Prod)
+                    </span>
                   </>
-                )
+                )}
+              </div>
+
+              {/* Bottom Row: CSS-Styled Dropdown Selector for Intermediates */}
+              {isBuilder && !builderVerified ? (
+                <div ref={dropdownRef} className="relative w-full max-w-[20rem] mx-auto">
+                  <button
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded={intermediateMenuOpen}
+                    onClick={() => setIntermediateMenuOpen((prev) => !prev)}
+                    className={`w-full rounded-xl border-2 px-3 py-2 text-left transition-all flex items-center justify-between gap-2 cursor-pointer shadow-xs ${
+                      builderBottom
+                        ? 'bg-blue-50/80 border-solid border-[#326fa0]'
+                        : 'bg-white border-dashed border-slate-400 hover:border-[#326fa0]'
+                    }`}
+                  >
+                    <div className="min-w-0">
+                      <span className="block text-[9px] font-bold text-slate-400 leading-none mb-1">
+                        Intermediate Species (Bottom Box)
+                      </span>
+                      <span
+                        className={
+                          builderBottom
+                            ? 'block font-mono font-black text-xs text-[#235478] break-words'
+                            : 'block font-sans font-bold text-xs text-slate-500'
+                        }
+                      >
+                        {builderBottom || 'Select intermediate species...'}
+                      </span>
+                    </div>
+                    <span
+                      className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black shrink-0 transition-transform ${
+                        intermediateMenuOpen
+                          ? 'rotate-180 bg-[#326fa0] text-white'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      ▾
+                    </span>
+                  </button>
+
+                  {intermediateMenuOpen && (
+                    <div
+                      role="listbox"
+                      aria-label="Intermediate species choices"
+                      className="absolute left-0 right-0 top-full mt-1.5 z-30 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 space-y-1"
+                    >
+                      {problem.bottomChoices.map((choice) => {
+                        const active = builderBottom === choice;
+                        return (
+                          <button
+                            key={choice}
+                            type="button"
+                            role="option"
+                            aria-selected={active}
+                            onClick={() => {
+                              setBuilderBottom(choice);
+                              setIntermediateMenuOpen(false);
+                              setBuilderFeedback(null);
+                            }}
+                            className={`w-full px-3 py-2.5 rounded-lg font-mono font-bold text-xs flex items-center justify-between gap-2 text-left transition-colors cursor-pointer ${
+                              active
+                                ? 'bg-blue-50 text-[#235478]'
+                                : 'text-slate-700 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span className="break-words">{choice}</span>
+                            {active && <span className="text-[#326fa0] font-black shrink-0">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               ) : (
-                <>
-                  <rect x="65" y="162" width="280" height="46" rx="8" fill="#eff6ff" stroke="#93c5fd" strokeWidth="1.5" />
-                  <text x="205" y="177" textAnchor="middle" className="text-[8.5px] font-sans font-bold fill-slate-500">
+                <div
+                  className={`w-full max-w-[20rem] mx-auto rounded-xl border px-3 py-2 text-center ${
+                    builderVerified
+                      ? 'bg-emerald-50 border-emerald-400'
+                      : 'bg-blue-50 border-blue-300'
+                  }`}
+                >
+                  <span className="block text-[9px] font-bold text-slate-500 leading-none mb-1">
                     {isFormation ? 'Elements in Standard States' : 'Combustion Oxides (CO₂ + H₂O)'}
-                  </text>
-                  <text x="205" y="195" textAnchor="middle" className="text-[9.5px] font-mono font-black fill-[#235478]">
+                  </span>
+                  <span className="block font-mono font-black text-xs text-[#235478] break-words">
                     {problem.bottomBox}
-                  </text>
-                </>
+                  </span>
+                </div>
               )}
-
-              {/* Left diagonal leg (Reactants <-> Bottom Box) */}
-              <g
-                onClick={() => cycleArrowDir('left')}
-                className={isBuilder && !builderVerified ? 'cursor-pointer' : undefined}
-              >
-                {svgLeftDir === 'up' ? (
-                  <line x1="142" y1="158" x2="88" y2="63" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
-                ) : svgLeftDir === 'down' ? (
-                  <line x1="88" y1="62" x2="142" y2="156" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
-                ) : (
-                  <line x1="142" y1="158" x2="88" y2="63" stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="2" />
-                )}
-                {isBuilder && !builderVerified && (
-                  <line x1="142" y1="158" x2="88" y2="63" stroke="transparent" strokeWidth="24" />
-                )}
-                {!isBuilder || builderVerified ? (
-                  <text x="103" y="116" textAnchor="end" className="text-[9.5px] font-mono font-black fill-amber-700">
-                    ΣΔH
-                    <tspan dy="2.5" fontSize="7.5">{subChar}</tspan>
-                    <tspan dy="-2.5">°(React)</tspan>
-                  </text>
-                ) : (
-                  <>
-                    <rect
-                      x="20"
-                      y="97"
-                      width="78"
-                      height="24"
-                      rx="6"
-                      fill={builderLeftDir ? '#fffbeb' : '#ffffff'}
-                      stroke={builderLeftDir ? '#f59e0b' : '#cbd5e1'}
-                      strokeWidth="1.2"
-                    />
-                    <text x="59" y="113" textAnchor="middle" className={`text-[9px] font-sans font-bold ${builderLeftDir ? 'fill-amber-800' : 'fill-slate-500'}`}>
-                      {builderLeftDir === 'up' ? '▲ Up' : builderLeftDir === 'down' ? '▼ Down' : '② Tap arrow'}
-                    </text>
-                  </>
-                )}
-              </g>
-
-              {/* Right diagonal leg (Products <-> Bottom Box) */}
-              <g
-                onClick={() => cycleArrowDir('right')}
-                className={isBuilder && !builderVerified ? 'cursor-pointer' : undefined}
-              >
-                {svgRightDir === 'up' ? (
-                  <line x1="268" y1="158" x2="322" y2="63" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
-                ) : svgRightDir === 'down' ? (
-                  <line x1="322" y1="62" x2="268" y2="156" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
-                ) : (
-                  <line x1="268" y1="158" x2="322" y2="63" stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="2" />
-                )}
-                {isBuilder && !builderVerified && (
-                  <line x1="268" y1="158" x2="322" y2="63" stroke="transparent" strokeWidth="24" />
-                )}
-                {!isBuilder || builderVerified ? (
-                  <text x="307" y="116" textAnchor="start" className="text-[9.5px] font-mono font-black fill-amber-700">
-                    ΣΔH
-                    <tspan dy="2.5" fontSize="7.5">{subChar}</tspan>
-                    <tspan dy="-2.5">°(Prod)</tspan>
-                  </text>
-                ) : (
-                  <>
-                    <rect
-                      x="312"
-                      y="97"
-                      width="78"
-                      height="24"
-                      rx="6"
-                      fill={builderRightDir ? '#fffbeb' : '#ffffff'}
-                      stroke={builderRightDir ? '#f59e0b' : '#cbd5e1'}
-                      strokeWidth="1.2"
-                    />
-                    <text x="351" y="113" textAnchor="middle" className={`text-[9px] font-sans font-bold ${builderRightDir ? 'fill-amber-800' : 'fill-slate-500'}`}>
-                      {builderRightDir === 'up' ? '▲ Up' : builderRightDir === 'down' ? '▼ Down' : '② Tap arrow'}
-                    </text>
-                  </>
-                )}
-              </g>
-            </svg>
+            </div>
 
             {/* Standard Enthalpy Data Table */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
@@ -963,232 +1051,156 @@ export default function HessLawCycles({ onComplete }) {
 
         {/* Right Workbench Column */}
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-black text-slate-700">
-              {isBuilder ? (
-                <>Build the Hess cycle from the enthalpy data, then calculate <DeltaH sub="r" /> in kJ mol⁻¹.</>
-              ) : problem.subMode === 'unknown_species' ? (
-                <>Calculate <DeltaH sub={subChar} />({problem.unknownMeta.label}) in kJ mol⁻¹.</>
-              ) : (
-                <>Calculate the overall enthalpy change (<DeltaH sub="r" />) in kJ mol⁻¹.</>
-              )}
-            </span>
-            <button
-              type="button"
-              onClick={() => setShowHint((prev) => !prev)}
-              className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-            >
-              💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-            </button>
-          </div>
-
-          {showHint && (
-            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-              <strong className="font-black text-amber-900">Hess’s Law Method: </strong>
-              {isBuilder ? (
-                <>
-                  Check the subscript in the Standard Enthalpy Data table first: <DeltaH sub="f" /> values define forming compounds from balanced <strong>elements in their standard states</strong> (arrows point <strong>up</strong>, and standard-state elements have <DeltaH sub="f" /> = 0). <DeltaH sub="c" /> values define burning species completely into <strong>CO₂(g) + H₂O(l)</strong> (arrows point <strong>down</strong>). Along any indirect path, add values moved <strong>with</strong> an arrow and subtract values moved <strong>against</strong> an arrow.
-                </>
-              ) : isFormation ? (
-                <>
-                  Formation arrows point <strong>up</strong> from elements to compounds, so{' '}
-                  <DeltaH sub="r" /> = Σ<DeltaH sub="f" />(products) − Σ<DeltaH sub="f" />(reactants). Unlisted elements in their standard states (e.g. Fe(s), O₂(g), H₂(g), N₂(g)) always have <DeltaH sub="f" /> = 0.
-                </>
-              ) : (
-                <>
-                  Combustion arrows point <strong>down</strong> from reactants and products to CO₂/H₂O, so{' '}
-                  <DeltaH sub="r" /> = Σ<DeltaH sub="c" />(reactants) − Σ<DeltaH sub="c" />(products). Always multiply each molar enthalpy by its stoichiometric coefficient.
-                </>
-              )}
-            </div>
-          )}
-
           {isBuilder ? (
             <>
-              {/* Builder Step 1 Card */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-4 shadow-sm">
-                <div className="border-b border-slate-200 pb-2">
-                  <span className="text-[10px] font-black tracking-widest text-slate-400">
-                    Step 1: Construct the Hess Cycle Diagram
-                  </span>
-                  <h4 className="text-xs font-black text-slate-800 mt-0.5">
-                    Select Intermediate Box, Arrow Directions &amp; Multipliers
-                  </h4>
-                </div>
-
-                {/* ① Bottom Box */}
-                <div className="space-y-2">
-                  <div className="text-[11px] font-black text-slate-700">
-                    ① Choose the balanced intermediate species for the bottom box:
+              {/* Builder Step 1 Card: Collapses to sleek summary once verified unless expanded */}
+              {builderVerified && !showBuilderDetails ? (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 shadow-xs flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-bold text-emerald-900">
+                    <span>✅ Step 1 Cycle Verified</span>
+                    <span className="font-mono text-[11px] text-emerald-800">
+                      Reactants: {problem.reactantSum} • Products: {problem.productSum} kJ mol⁻¹
+                    </span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {problem.bottomChoices.map((choice) => {
-                      const active = builderBottom === choice;
-                      return (
-                        <button
-                          key={choice}
-                          type="button"
-                          disabled={builderVerified}
-                          onClick={() => {
-                            setBuilderBottom(choice);
-                            setBuilderFeedback(null);
-                          }}
-                          className={`px-3 py-2.5 rounded-xl border font-mono font-bold text-xs text-left transition-all cursor-pointer disabled:cursor-default ${
-                            active
-                              ? 'bg-blue-50 border-[#326fa0] text-[#235478] shadow-xs ring-1 ring-[#326fa0]'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100/70'
-                          }`}
-                        >
-                          {choice}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* ② Diagonal Arrow Directions */}
-                <div className="space-y-2">
-                  <div className="text-[11px] font-black text-slate-700">
-                    ② Orient both enthalpy-definition arrows (or tap the legs on the diagram):
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-white border border-slate-200 rounded-xl p-2.5 space-y-1.5">
-                      <span className="block text-[10px] font-black text-slate-500">
-                        Left Leg (Reactants ↔ Intermediate)
-                      </span>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        {[
-                          { id: 'up', label: '⬆ Up to Reactants' },
-                          { id: 'down', label: '⬇ Down to Bottom' },
-                        ].map((opt) => (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            disabled={builderVerified}
-                            onClick={() => {
-                              setBuilderLeftDir(opt.id);
-                              setBuilderFeedback(null);
-                            }}
-                            className={`px-2 py-1.5 rounded-lg border text-[11px] font-bold transition-all cursor-pointer disabled:cursor-default ${
-                              builderLeftDir === opt.id
-                                ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-xs'
-                                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                            }`}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="bg-white border border-slate-200 rounded-xl p-2.5 space-y-1.5">
-                      <span className="block text-[10px] font-black text-slate-500">
-                        Right Leg (Products ↔ Intermediate)
-                      </span>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        {[
-                          { id: 'up', label: '⬆ Up to Products' },
-                          { id: 'down', label: '⬇ Down to Bottom' },
-                        ].map((opt) => (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            disabled={builderVerified}
-                            onClick={() => {
-                              setBuilderRightDir(opt.id);
-                              setBuilderFeedback(null);
-                            }}
-                            className={`px-2 py-1.5 rounded-lg border text-[11px] font-bold transition-all cursor-pointer disabled:cursor-default ${
-                              builderRightDir === opt.id
-                                ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-xs'
-                                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                            }`}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ③ Stoichiometric Multipliers */}
-                <div className="space-y-2">
-                  <div className="text-[11px] font-black text-slate-700">
-                    ③ Set the stoichiometric multiplier for each species:
-                  </div>
-                  <div className="space-y-2.5">
-                    {[
-                      { heading: 'Reactant Leg', prefix: 'r', list: problem.reactants, allSet: allReactMultsSet, liveSum: liveReactSum },
-                      { heading: 'Product Leg', prefix: 'p', list: problem.products, allSet: allProdMultsSet, liveSum: liveProdSum },
-                    ].map((group) => (
-                      <div key={group.prefix} className="bg-white border border-slate-200 rounded-xl p-3 space-y-2">
-                        <div className="flex items-center justify-between text-[10px] font-black text-slate-500">
-                          <span>{group.heading}</span>
-                          {group.allSet && (
-                            <span className="font-mono text-[#326fa0]">
-                              Selected sum = {group.liveSum} kJ mol⁻¹
-                            </span>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          {group.list.map((sp, idx) => {
-                            const key = `${group.prefix}-${idx}`;
-                            return (
-                              <div key={key} className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 first:border-t-0 first:pt-0">
-                                <span className="font-mono font-black text-xs text-slate-800">{sp.label}</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {MULTIPLIER_OPTIONS.map((opt) => (
-                                    <button
-                                      key={opt.val}
-                                      type="button"
-                                      disabled={builderVerified}
-                                      onClick={() => handleSetMultiplier(key, opt.val)}
-                                      className={`px-2 py-1 rounded-lg border text-[11px] font-bold transition-all cursor-pointer disabled:cursor-default ${
-                                        builderMults[key] === opt.val
-                                          ? 'bg-blue-50 border-[#326fa0] text-[#235478]'
-                                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                                      }`}
-                                    >
-                                      {opt.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleVerifyBuilder}
-                  disabled={builderVerified}
-                  className="w-full py-2.5 bg-[#326fa0] hover:bg-[#255580] disabled:bg-emerald-600 text-white text-xs font-black rounded-xl transition-colors cursor-pointer"
-                >
-                  {builderVerified ? 'Step 1 Cycle Verified ✓' : 'Verify Constructed Hess Cycle'}
-                </button>
-
-                {builderFeedback && (
-                  <div
-                    className={`p-3 rounded-xl text-xs font-bold space-y-1.5 ${
-                      builderFeedback.isCorrect
-                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
-                        : 'bg-rose-50 text-rose-900 border border-rose-200'
-                    }`}
+                  <button
+                    type="button"
+                    onClick={() => setShowBuilderDetails(true)}
+                    className="px-2.5 py-1 rounded-lg bg-white hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-black transition-colors cursor-pointer shrink-0"
                   >
-                    {builderFeedback.messages.map((msg, i) => (
-                      <div key={i} className="leading-relaxed">
-                        {!builderFeedback.isCorrect ? '⚠️ ' : null}
-                        {msg}
-                      </div>
-                    ))}
+                    View details
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3.5 shadow-sm">
+                  <div className="flex items-start justify-between gap-2 border-b border-slate-200 pb-2">
+                    <div>
+                      <span className="text-[10px] font-black tracking-widest text-slate-400">
+                        Step 1: Species Multipliers &amp; Cycle Verification
+                      </span>
+                      <h4 className="text-xs font-black text-slate-800 mt-0.5">
+                        Assign Stoichiometric Multipliers
+                      </h4>
+                    </div>
+                    {builderVerified && (
+                      <button
+                        type="button"
+                        onClick={() => setShowBuilderDetails(false)}
+                        className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-black transition-colors cursor-pointer shrink-0"
+                      >
+                        Hide details
+                      </button>
+                    )}
                   </div>
-                )}
-              </div>
+
+                  {/* Read-only Canvas Selection Status */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div
+                      className={`px-2.5 py-2 rounded-xl border text-[11px] font-bold flex items-center justify-between gap-1 ${
+                        builderBottom
+                          ? 'bg-blue-50/70 border-blue-200 text-[#235478]'
+                          : 'bg-white border-slate-200 text-slate-500'
+                      }`}
+                    >
+                      <span className="truncate">
+                        Intermediate: {builderBottom ? '✓ Selected' : 'Select on diagram'}
+                      </span>
+                    </div>
+                    <div
+                      className={`px-2.5 py-2 rounded-xl border text-[11px] font-bold flex items-center justify-between gap-1 ${
+                        builderLeftDir && builderRightDir
+                          ? 'bg-amber-50/70 border-amber-200 text-amber-900'
+                          : 'bg-white border-slate-200 text-slate-500'
+                      }`}
+                    >
+                      <span className="truncate">
+                        Arrows:{' '}
+                        {builderLeftDir || builderRightDir
+                          ? `${builderLeftDir === 'up' ? '▲' : builderLeftDir === 'down' ? '▼' : '?'} / ${
+                              builderRightDir === 'up' ? '▲' : builderRightDir === 'down' ? '▼' : '?'
+                            }`
+                          : 'Tap diagram'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Stoichiometric Multipliers */}
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-black text-slate-700">
+                      Assign the stoichiometric multiplier for each species:
+                    </div>
+                    <div className="space-y-2.5">
+                      {[
+                        { heading: 'Reactant Leg', prefix: 'r', list: problem.reactants, allSet: allReactMultsSet, liveSum: liveReactSum },
+                        { heading: 'Product Leg', prefix: 'p', list: problem.products, allSet: allProdMultsSet, liveSum: liveProdSum },
+                      ].map((group) => (
+                        <div key={group.prefix} className="bg-white border border-slate-200 rounded-xl p-3 space-y-2">
+                          <div className="flex items-center justify-between text-[10px] font-black text-slate-500">
+                            <span>{group.heading}</span>
+                            {group.allSet && (
+                              <span className="font-mono text-[#326fa0]">
+                                Selected sum = {group.liveSum} kJ mol⁻¹
+                              </span>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            {group.list.map((sp, idx) => {
+                              const key = `${group.prefix}-${idx}`;
+                              return (
+                                <div key={key} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 pt-1.5 border-t border-slate-100 first:border-t-0 first:pt-0">
+                                  <span className="font-mono font-black text-xs text-slate-800">{sp.label}</span>
+                                  <div className="w-full sm:w-auto grid grid-cols-3 sm:flex flex-wrap gap-1">
+                                    {MULTIPLIER_OPTIONS.map((opt) => (
+                                      <button
+                                        key={opt.val}
+                                        type="button"
+                                        disabled={builderVerified}
+                                        onClick={() => handleSetMultiplier(key, opt.val)}
+                                        className={`min-h-[34px] sm:min-h-0 px-2 py-1 rounded-lg border text-[11px] font-bold transition-all cursor-pointer disabled:cursor-default ${
+                                          builderMults[key] === opt.val
+                                            ? 'bg-blue-50 border-[#326fa0] text-[#235478]'
+                                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                                        }`}
+                                      >
+                                        {opt.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleVerifyBuilder}
+                    disabled={builderVerified}
+                    className="w-full py-2.5 bg-[#326fa0] hover:bg-[#255580] disabled:bg-emerald-600 text-white text-xs font-black rounded-xl transition-colors cursor-pointer"
+                  >
+                    {builderVerified ? 'Step 1 Cycle Verified ✓' : 'Verify Constructed Hess Cycle'}
+                  </button>
+
+                  {builderFeedback && (
+                    <div
+                      className={`p-3 rounded-xl text-xs font-bold space-y-1.5 ${
+                        builderFeedback.isCorrect
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {builderFeedback.messages.map((msg, i) => (
+                        <div key={i} className="leading-relaxed">
+                          {!builderFeedback.isCorrect ? '⚠️ ' : null}
+                          {msg}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Builder Step 2 Card */}
               <form

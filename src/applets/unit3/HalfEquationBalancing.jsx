@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { HALF_EQUATIONS_DATA } from '../../data/questions/halfEquationQuestions';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'guided', label: 'Step-by-Step Builder' },
+  { value: 'exam', label: 'Exam Practice' },
+];
 
 export default function HalfEquationBalancing({ onComplete }) {
   const [practiceMode, setPracticeMode] = useState('guided');
@@ -38,7 +44,7 @@ export default function HalfEquationBalancing({ onComplete }) {
   const [showHint, setShowHint] = useState(false);
 
   const noSpinnerInputClass =
-    "w-12 h-8 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:border-[var(--chem-primary)] focus:outline-none";
+    "w-12 h-9 text-center text-xs sm:text-sm font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded-lg text-[var(--chem-text)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:border-[var(--chem-primary)] focus:outline-none";
 
   const generateProblem = () => {
     setFeedback(null);
@@ -264,554 +270,575 @@ export default function HalfEquationBalancing({ onComplete }) {
     { num: 6, label: 'Add H₂O (H & O)' }
   ];
 
+  const sidePillClass = (selected) =>
+    `min-h-[38px] px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+      selected
+        ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-2xs'
+        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+    }`;
+
   return (
-    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
       <div className="applet-header !mb-0">Redox Half-Equations</div>
 
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <div className="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
-          <button
-            type="button"
-            onClick={() => setPracticeMode('guided')}
-            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
-              practiceMode === 'guided'
-                ? 'bg-[var(--chem-primary)] text-white shadow-sm'
-                : 'text-[var(--chem-text-muted)] hover:text-[var(--chem-text)]'
-            }`}
-          >
-            Step-by-Step Builder
-          </button>
-          <button
-            type="button"
-            onClick={() => setPracticeMode('exam')}
-            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
-              practiceMode === 'exam'
-                ? 'bg-[var(--chem-primary)] text-white shadow-sm'
-                : 'text-[var(--chem-text-muted)] hover:text-[var(--chem-text)]'
-            }`}
-          >
-            Exam Practice
-          </button>
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-            showHint
-              ? 'bg-amber-100 text-amber-900 border-amber-300'
-              : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'
-          }`}
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-      </div>
-
-      {showHint && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs sm:text-sm text-amber-900 space-y-1.5 shadow-sm">
-          <p className="font-bold">Balancing Acidic Half-Equations (KOHES):</p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li><strong>K</strong>ey atoms: balance every atom except O and H first.</li>
-            <li><strong>O</strong>xygen: add 1 H<sub>2</sub>O for each missing oxygen atom.</li>
-            <li><strong>H</strong>ydrogen: add 1 H<sup>+</sup> for each missing hydrogen atom.</li>
-            <li><strong>E</strong>lectrons &amp; <strong>S</strong>tates: add e<sup>−</sup> to the more positive side so total charge balances across both sides.</li>
-          </ul>
-        </div>
-      )}
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={practiceMode}
+        onChange={(val) => setPracticeMode(val)}
+        collapseBelow="sm"
+      />
 
       {currentProblem && (
-        <div className="bg-[var(--chem-card-bg)] rounded-xl border border-[var(--chem-border)] p-4 sm:p-6 shadow-sm">
-          <div className="flex justify-end items-center border-b border-[var(--chem-border)] pb-2.5 mb-4 text-xs font-mono text-[var(--chem-text-muted)]">
-            <span className="font-semibold text-[var(--chem-accent)]">
-              [{practiceMode === 'guided' ? `Step ${activeStep + 1} of 6` : '2 marks'}]
-            </span>
-          </div>
+        <div className="applet-workbench">
+          {/* Left Column: Species Prompt, Live Constructed Equation & Hint */}
+          <div className="applet-workbench-sticky space-y-4">
+            <div className="bg-[var(--chem-card-bg)] rounded-2xl border border-[var(--chem-border)] p-4 sm:p-5 shadow-sm space-y-4">
+              <div className="flex flex-wrap justify-between items-start gap-2 border-b border-[var(--chem-border)] pb-2.5">
+                <div className="space-y-1 min-w-0">
+                  <h2 className="text-base sm:text-lg font-bold text-[var(--chem-primary)]">
+                    {currentProblem.name}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-[var(--chem-text-muted)] italic">
+                    {currentProblem.context}
+                  </p>
+                </div>
+                <span className="text-xs font-mono font-semibold text-[var(--chem-accent)] shrink-0">
+                  [{practiceMode === 'guided' ? `Step ${activeStep + 1} of 6` : '2 marks'}]
+                </span>
+              </div>
 
-          <div className="mb-6 space-y-1">
-            <h2 className="text-base sm:text-lg font-bold text-[var(--chem-primary)]">
-              {currentProblem.name}
-            </h2>
-            <p className="text-xs sm:text-sm text-[var(--chem-text-muted)] italic">
-              {currentProblem.context}
-            </p>
-          </div>
-
-          <div className="w-full overflow-x-auto my-4 py-4 px-3 bg-[var(--chem-bg-main)] rounded-lg border border-[var(--chem-border)] flex flex-col items-center justify-center gap-2">
-            <span className="text-[0.65rem] font-mono font-bold tracking-wider text-[var(--chem-text-muted)]">
-              Constructed Half-Equation
-            </span>
-            <div className="flex items-center gap-2 min-w-max text-sm sm:text-base font-bold">
-              <span className="inline-flex items-center gap-1">
-                {(practiceMode === 'exam' || completedSteps[1]) && (practiceMode === 'guided' ? guidedInputs.reactCoeff : examInputs.reactCoeff) !== '1' && (
-                  <span>{practiceMode === 'guided' ? guidedInputs.reactCoeff : examInputs.reactCoeff}</span>
-                )}
-                <span>{currentProblem.reactantName}</span>
-
-                {((practiceMode === 'guided' && completedSteps[4] && guidedInputs.hPlusSide === 'LHS' && parseInt(guidedInputs.hPlusQty || '0', 10) > 0) ||
-                  (practiceMode === 'exam' && parseInt(examInputs.hPlusQty || '0', 10) > 0 && examInputs.hPlusSide === 'LHS')) && (
-                  <span className="text-[var(--chem-primary)]">
-                    + {(practiceMode === 'guided' ? guidedInputs.hPlusQty : examInputs.hPlusQty)}H<sup>+</sup>
-                  </span>
-                )}
-
-                {((practiceMode === 'guided' && completedSteps[3] && guidedInputs.electronSide === 'LHS' && parseInt(guidedInputs.electronQty || '0', 10) > 0) ||
-                  (practiceMode === 'exam' && parseInt(examInputs.electronQty || '0', 10) > 0 && examInputs.electronSide === 'LHS')) && (
-                  <span className="text-[var(--chem-accent)]">
-                    + {(practiceMode === 'guided' ? guidedInputs.electronQty : examInputs.electronQty)}e<sup>-</sup>
-                  </span>
-                )}
-
-                {((practiceMode === 'guided' && completedSteps[5] && guidedInputs.waterSide === 'LHS' && parseInt(guidedInputs.waterQty || '0', 10) > 0) ||
-                  (practiceMode === 'exam' && parseInt(examInputs.waterQty || '0', 10) > 0 && examInputs.waterSide === 'LHS')) && (
-                  <span className="text-[var(--chem-primary)]">
-                    + {(practiceMode === 'guided' ? guidedInputs.waterQty : examInputs.waterQty)}H<sub>2</sub>O
-                  </span>
-                )}
-              </span>
-
-              <span className="font-bold text-[var(--chem-primary)] text-lg mx-1">&rarr;</span>
-
-              <span className="inline-flex items-center gap-1">
-                {(practiceMode === 'guided' ? completedSteps[1] : true) && (
-                  <>
-                    {(practiceMode === 'guided' ? guidedInputs.prodCoeff : examInputs.prodCoeff) !== '1' && (
-                      <span>{practiceMode === 'guided' ? guidedInputs.prodCoeff : examInputs.prodCoeff}</span>
+              <div className="w-full py-3.5 px-3 bg-[var(--chem-bg-main)] rounded-xl border border-[var(--chem-border)] flex flex-col items-center justify-center gap-2">
+                <span className="text-[0.65rem] font-mono font-bold tracking-wider text-[var(--chem-text-muted)]">
+                  Constructed Half-Equation
+                </span>
+                <div className="flex flex-wrap items-center justify-center gap-1.5 text-sm sm:text-base font-bold text-center">
+                  <span className="inline-flex flex-wrap items-center justify-center gap-1">
+                    {(practiceMode === 'exam' || completedSteps[1]) && (practiceMode === 'guided' ? guidedInputs.reactCoeff : examInputs.reactCoeff) !== '1' && (
+                      <span>{practiceMode === 'guided' ? guidedInputs.reactCoeff : examInputs.reactCoeff}</span>
                     )}
-                    <span>{currentProblem.productName}</span>
-                  </>
-                )}
+                    <span>{currentProblem.reactantName}</span>
 
-                {((practiceMode === 'guided' && completedSteps[5] && guidedInputs.waterSide === 'RHS' && parseInt(guidedInputs.waterQty || '0', 10) > 0) ||
-                  (practiceMode === 'exam' && parseInt(examInputs.waterQty || '0', 10) > 0 && examInputs.waterSide === 'RHS')) && (
-                  <span className="text-[var(--chem-primary)]">
-                    + {(practiceMode === 'guided' ? guidedInputs.waterQty : examInputs.waterQty)}H<sub>2</sub>O
-                  </span>
-                )}
+                    {((practiceMode === 'guided' && completedSteps[4] && guidedInputs.hPlusSide === 'LHS' && parseInt(guidedInputs.hPlusQty || '0', 10) > 0) ||
+                      (practiceMode === 'exam' && parseInt(examInputs.hPlusQty || '0', 10) > 0 && examInputs.hPlusSide === 'LHS')) && (
+                      <span className="text-[var(--chem-primary)]">
+                        + {(practiceMode === 'guided' ? guidedInputs.hPlusQty : examInputs.hPlusQty)}H<sup>+</sup>
+                      </span>
+                    )}
 
-                {((practiceMode === 'guided' && completedSteps[4] && guidedInputs.hPlusSide === 'RHS' && parseInt(guidedInputs.hPlusQty || '0', 10) > 0) ||
-                  (practiceMode === 'exam' && parseInt(examInputs.hPlusQty || '0', 10) > 0 && examInputs.hPlusSide === 'RHS')) && (
-                  <span className="text-[var(--chem-primary)]">
-                    + {(practiceMode === 'guided' ? guidedInputs.hPlusQty : examInputs.hPlusQty)}H<sup>+</sup>
-                  </span>
-                )}
+                    {((practiceMode === 'guided' && completedSteps[3] && guidedInputs.electronSide === 'LHS' && parseInt(guidedInputs.electronQty || '0', 10) > 0) ||
+                      (practiceMode === 'exam' && parseInt(examInputs.electronQty || '0', 10) > 0 && examInputs.electronSide === 'LHS')) && (
+                      <span className="text-[var(--chem-accent)]">
+                        + {(practiceMode === 'guided' ? guidedInputs.electronQty : examInputs.electronQty)}e<sup>-</sup>
+                      </span>
+                    )}
 
-                {((practiceMode === 'guided' && completedSteps[3] && guidedInputs.electronSide === 'RHS' && parseInt(guidedInputs.electronQty || '0', 10) > 0) ||
-                  (practiceMode === 'exam' && parseInt(examInputs.electronQty || '0', 10) > 0 && examInputs.electronSide === 'RHS')) && (
-                  <span className="text-[var(--chem-accent)]">
-                    + {(practiceMode === 'guided' ? guidedInputs.electronQty : examInputs.electronQty)}e<sup>-</sup>
+                    {((practiceMode === 'guided' && completedSteps[5] && guidedInputs.waterSide === 'LHS' && parseInt(guidedInputs.waterQty || '0', 10) > 0) ||
+                      (practiceMode === 'exam' && parseInt(examInputs.waterQty || '0', 10) > 0 && examInputs.waterSide === 'LHS')) && (
+                      <span className="text-[var(--chem-primary)]">
+                        + {(practiceMode === 'guided' ? guidedInputs.waterQty : examInputs.waterQty)}H<sub>2</sub>O
+                      </span>
+                    )}
                   </span>
+
+                  <span className="font-bold text-[var(--chem-primary)] text-lg mx-1">&rarr;</span>
+
+                  <span className="inline-flex flex-wrap items-center justify-center gap-1">
+                    {(practiceMode === 'guided' ? completedSteps[1] : true) && (
+                      <>
+                        {(practiceMode === 'guided' ? guidedInputs.prodCoeff : examInputs.prodCoeff) !== '1' && (
+                          <span>{practiceMode === 'guided' ? guidedInputs.prodCoeff : examInputs.prodCoeff}</span>
+                        )}
+                        <span>{currentProblem.productName}</span>
+                      </>
+                    )}
+
+                    {((practiceMode === 'guided' && completedSteps[5] && guidedInputs.waterSide === 'RHS' && parseInt(guidedInputs.waterQty || '0', 10) > 0) ||
+                      (practiceMode === 'exam' && parseInt(examInputs.waterQty || '0', 10) > 0 && examInputs.waterSide === 'RHS')) && (
+                      <span className="text-[var(--chem-primary)]">
+                        + {(practiceMode === 'guided' ? guidedInputs.waterQty : examInputs.waterQty)}H<sub>2</sub>O
+                      </span>
+                    )}
+
+                    {((practiceMode === 'guided' && completedSteps[4] && guidedInputs.hPlusSide === 'RHS' && parseInt(guidedInputs.hPlusQty || '0', 10) > 0) ||
+                      (practiceMode === 'exam' && parseInt(examInputs.hPlusQty || '0', 10) > 0 && examInputs.hPlusSide === 'RHS')) && (
+                      <span className="text-[var(--chem-primary)]">
+                        + {(practiceMode === 'guided' ? guidedInputs.hPlusQty : examInputs.hPlusQty)}H<sup>+</sup>
+                      </span>
+                    )}
+
+                    {((practiceMode === 'guided' && completedSteps[3] && guidedInputs.electronSide === 'RHS' && parseInt(guidedInputs.electronQty || '0', 10) > 0) ||
+                      (practiceMode === 'exam' && parseInt(examInputs.electronQty || '0', 10) > 0 && examInputs.electronSide === 'RHS')) && (
+                      <span className="text-[var(--chem-accent)]">
+                        + {(practiceMode === 'guided' ? guidedInputs.electronQty : examInputs.electronQty)}e<sup>-</sup>
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start">
+                <button
+                  type="button"
+                  onClick={() => setShowHint((prev) => !prev)}
+                  className={`min-h-[34px] px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+                    showHint
+                      ? 'bg-amber-100 text-amber-900 border-amber-300'
+                      : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'
+                  }`}
+                >
+                  💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+                </button>
+                {showHint && (
+                  <div className="mt-2.5 w-full bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 space-y-1.5">
+                    <p className="font-bold">Balancing Acidic Half-Equations (KOHES):</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li><strong>K</strong>ey atoms: balance every atom except O and H first.</li>
+                      <li><strong>O</strong>xygen: add 1 H<sub>2</sub>O for each missing oxygen atom.</li>
+                      <li><strong>H</strong>ydrogen: add 1 H<sup>+</sup> for each missing hydrogen atom.</li>
+                      <li><strong>E</strong>lectrons &amp; <strong>S</strong>tates: add e<sup>−</sup> to the more positive side so total charge balances across both sides.</li>
+                    </ul>
+                  </div>
                 )}
-              </span>
+              </div>
             </div>
           </div>
 
-          {practiceMode === 'guided' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1.5">
-                {stepsList.map((st, idx) => (
-                  <button
-                    key={st.num}
-                    type="button"
-                    onClick={() => setActiveStep(idx)}
-                    className={`p-2 rounded-lg border text-[0.7rem] font-semibold flex flex-col items-center justify-center transition-all text-center gap-0.5 ${
-                      activeStep === idx
-                        ? 'bg-[var(--chem-primary)] text-white border-[var(--chem-primary)]'
-                        : completedSteps[idx]
-                        ? 'bg-[var(--chem-bg-main)] border-[var(--chem-success)] text-[var(--chem-text)]'
-                        : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-muted)]'
-                    }`}
-                  >
-                    <span className="font-mono text-[0.65rem]">Step {st.num}</span>
-                    <span className="truncate w-full">{st.label} {completedSteps[idx] ? '✓' : ''}</span>
-                  </button>
-                ))}
-              </div>
+          {/* Right Column: Guided 6-step bar / Exam LHS-RHS inputs + Feedback + Mark Scheme */}
+          <div className="space-y-4">
+            {practiceMode === 'guided' && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {stepsList.map((st, idx) => (
+                    <button
+                      key={st.num}
+                      type="button"
+                      onClick={() => setActiveStep(idx)}
+                      className={`min-h-[44px] px-2.5 py-2 rounded-xl border text-[11px] font-semibold flex flex-col items-center justify-center transition-all text-center gap-0.5 cursor-pointer ${
+                        activeStep === idx
+                          ? 'bg-[var(--chem-primary)] text-white border-[var(--chem-primary)] shadow-2xs'
+                          : completedSteps[idx]
+                          ? 'bg-emerald-50 border-[var(--chem-success)] text-emerald-900'
+                          : 'bg-white border-[var(--chem-border)] text-[var(--chem-text-muted)] hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="font-mono text-[10px]">Step {st.num} {completedSteps[idx] ? '✓' : ''}</span>
+                      <span className="leading-tight break-words">{st.label}</span>
+                    </button>
+                  ))}
+                </div>
 
-              <form onSubmit={validateGuidedStep} className="space-y-5 bg-[var(--chem-bg-main)] p-4 rounded-xl border border-[var(--chem-border)]">
-                {activeStep === 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
-                      Step 1: Identify the element changing oxidation state
-                    </h3>
-                    <p className="text-xs sm:text-sm leading-relaxed">
-                      Examine <strong>{currentProblem.reactantName}</strong> &rarr; <strong>{currentProblem.productName}</strong>. Input the chemical symbol of the element undergoing redox transition:
-                    </p>
-                    <div className="flex items-center gap-2 text-xs sm:text-sm pt-1">
-                      <span className="font-semibold">Element Symbol:</span>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Mn, Cr, V"
-                        value={guidedInputs.elementSymbol}
-                        onChange={(e) => handleGuidedInputChange('elementSymbol', e.target.value)}
-                        className="w-28 h-8 text-center text-xs sm:text-sm font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)] focus:border-[var(--chem-primary)] focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {activeStep === 1 && (
-                  <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
-                      Step 2: Balance atoms of {currentProblem.elementSymbol}
-                    </h3>
-                    <p className="text-xs sm:text-sm leading-relaxed">
-                      Input the stoichiometric coefficients required to balance atoms of <strong>{currentProblem.elementSymbol}</strong>:
-                    </p>
-                    <div className="flex items-center gap-2 text-xs sm:text-sm font-bold pt-1">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        required
-                        value={guidedInputs.reactCoeff}
-                        onChange={(e) => handleGuidedInputChange('reactCoeff', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>{currentProblem.reactantName} &rarr;</span>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        required
-                        value={guidedInputs.prodCoeff}
-                        onChange={(e) => handleGuidedInputChange('prodCoeff', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>{currentProblem.productName}</span>
-                    </div>
-                  </div>
-                )}
-
-                {activeStep === 2 && (
-                  <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
-                      Step 3: Determine oxidation states before and after
-                    </h3>
-                    <p className="text-xs sm:text-sm leading-relaxed">
-                      Determine the oxidation state of {currentProblem.elementSymbol} in the reactant and product species:
-                    </p>
-                    <p className="text-[0.7rem] text-[var(--chem-text-muted)] italic">
-                      (Format: oxidation state per atom, e.g. +7, +2, -1, 0, or +2.5)
-                    </p>
-                    <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm pt-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-semibold">Initial OS:</span>
+                <form onSubmit={validateGuidedStep} className="space-y-5 bg-[var(--chem-card-bg)] p-4 sm:p-5 rounded-2xl border border-[var(--chem-border)] shadow-sm">
+                  {activeStep === 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
+                        Step 1: Identify the element changing oxidation state
+                      </h3>
+                      <p className="text-xs sm:text-sm leading-relaxed">
+                        Examine <strong>{currentProblem.reactantName}</strong> &rarr; <strong>{currentProblem.productName}</strong>. Input the chemical symbol of the element undergoing redox transition:
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
+                        <span className="font-semibold">Element Symbol:</span>
                         <input
                           type="text"
                           required
-                          placeholder="e.g. +7 or -1"
-                          value={guidedInputs.osBefore}
-                          onChange={(e) => handleGuidedInputChange('osBefore', e.target.value)}
-                          className="w-28 h-8 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)]"
+                          placeholder="e.g. Mn, Cr, V"
+                          value={guidedInputs.elementSymbol}
+                          onChange={(e) => handleGuidedInputChange('elementSymbol', e.target.value)}
+                          className="w-28 h-9 text-center text-xs sm:text-sm font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded-lg text-[var(--chem-text)] focus:border-[var(--chem-primary)] focus:outline-none"
                         />
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-semibold">Final OS:</span>
+                    </div>
+                  )}
+
+                  {activeStep === 1 && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
+                        Step 2: Balance atoms of {currentProblem.elementSymbol}
+                      </h3>
+                      <p className="text-xs sm:text-sm leading-relaxed">
+                        Input the stoichiometric coefficients required to balance atoms of <strong>{currentProblem.elementSymbol}</strong>:
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-bold pt-1">
                         <input
-                          type="text"
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
                           required
-                          placeholder="e.g. +2 or 0"
-                          value={guidedInputs.osAfter}
-                          onChange={(e) => handleGuidedInputChange('osAfter', e.target.value)}
-                          className="w-28 h-8 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)]"
+                          value={guidedInputs.reactCoeff}
+                          onChange={(e) => handleGuidedInputChange('reactCoeff', e.target.value)}
+                          className={noSpinnerInputClass}
                         />
+                        <span>{currentProblem.reactantName} &rarr;</span>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          required
+                          value={guidedInputs.prodCoeff}
+                          onChange={(e) => handleGuidedInputChange('prodCoeff', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>{currentProblem.productName}</span>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {activeStep === 3 && (
-                  <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
-                      Step 4: Add electrons (e⁻) to balance oxidation numbers
-                    </h3>
-                    <p className="text-xs sm:text-sm leading-relaxed">
-                      Add electrons (e⁻) to balance the change in oxidation number across the transformation:
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
-                      <span>Add</span>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="0"
-                        value={guidedInputs.electronQty}
-                        onChange={(e) => handleGuidedInputChange('electronQty', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>electron(s) (e⁻) to the</span>
-                      <select
-                        value={guidedInputs.electronSide}
-                        onChange={(e) => handleGuidedInputChange('electronSide', e.target.value)}
-                        className="h-8 px-2 text-xs font-semibold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)]"
-                      >
-                        <option value="LHS">LHS (Reactants)</option>
-                        <option value="RHS">RHS (Products)</option>
-                      </select>
+                  {activeStep === 2 && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
+                        Step 3: Determine oxidation states before and after
+                      </h3>
+                      <p className="text-xs sm:text-sm leading-relaxed">
+                        Determine the oxidation state of {currentProblem.elementSymbol} in the reactant and product species:
+                      </p>
+                      <p className="text-[0.7rem] text-[var(--chem-text-muted)] italic">
+                        (Format: oxidation state per atom, e.g. +7, +2, -1, 0, or +2.5)
+                      </p>
+                      <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm pt-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold">Initial OS:</span>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. +7 or -1"
+                            value={guidedInputs.osBefore}
+                            onChange={(e) => handleGuidedInputChange('osBefore', e.target.value)}
+                            className="w-28 h-9 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded-lg text-[var(--chem-text)]"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold">Final OS:</span>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. +2 or 0"
+                            value={guidedInputs.osAfter}
+                            onChange={(e) => handleGuidedInputChange('osAfter', e.target.value)}
+                            className="w-28 h-9 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded-lg text-[var(--chem-text)]"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {activeStep === 4 && (
-                  <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
-                      Step 5: Add H⁺ to balance overall ionic charge
-                    </h3>
-                    <p className="text-xs sm:text-sm leading-relaxed">
-                      Add <strong>H⁺ ions</strong> in acidic media to equalise total net charge on both sides:
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
-                      <span>Add</span>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="0"
-                        value={guidedInputs.hPlusQty}
-                        onChange={(e) => handleGuidedInputChange('hPlusQty', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>H⁺ ion(s) to the</span>
-                      <select
-                        value={guidedInputs.hPlusSide}
-                        onChange={(e) => handleGuidedInputChange('hPlusSide', e.target.value)}
-                        className="h-8 px-2 text-xs font-semibold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)]"
-                      >
-                        <option value="LHS">LHS (Reactants)</option>
-                        <option value="RHS">RHS (Products)</option>
-                        <option value="NONE">None Required</option>
-                      </select>
+                  {activeStep === 3 && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
+                        Step 4: Add electrons (e⁻) to balance oxidation numbers
+                      </h3>
+                      <p className="text-xs sm:text-sm leading-relaxed">
+                        Add electrons (e⁻) to balance the change in oxidation number across the transformation:
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
+                        <span>Add</span>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="0"
+                          value={guidedInputs.electronQty}
+                          onChange={(e) => handleGuidedInputChange('electronQty', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>electron(s) (e⁻) to the</span>
+                        <div className="flex flex-wrap gap-1.5 w-full sm:w-auto pt-1 sm:pt-0">
+                          {[
+                            { value: 'LHS', label: 'LHS (Reactants)' },
+                            { value: 'RHS', label: 'RHS (Products)' },
+                          ].map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => handleGuidedInputChange('electronSide', opt.value)}
+                              className={sidePillClass(guidedInputs.electronSide === opt.value)}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {activeStep === 5 && (
-                  <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
-                      Step 6: Add H₂O to balance hydrogen and oxygen atoms
-                    </h3>
-                    <p className="text-xs sm:text-sm leading-relaxed">
-                      Add <strong>H₂O molecules</strong> to complete mass balance for H and O atoms:
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
-                      <span>Add</span>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="0"
-                        value={guidedInputs.waterQty}
-                        onChange={(e) => handleGuidedInputChange('waterQty', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>H₂O molecule(s) to the</span>
-                      <select
-                        value={guidedInputs.waterSide}
-                        onChange={(e) => handleGuidedInputChange('waterSide', e.target.value)}
-                        className="h-8 px-2 text-xs font-semibold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)]"
-                      >
-                        <option value="RHS">RHS (Products)</option>
-                        <option value="LHS">LHS (Reactants)</option>
-                        <option value="NONE">None Required</option>
-                      </select>
+                  {activeStep === 4 && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
+                        Step 5: Add H⁺ to balance overall ionic charge
+                      </h3>
+                      <p className="text-xs sm:text-sm leading-relaxed">
+                        Add <strong>H⁺ ions</strong> in acidic media to equalise total net charge on both sides:
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
+                        <span>Add</span>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="0"
+                          value={guidedInputs.hPlusQty}
+                          onChange={(e) => handleGuidedInputChange('hPlusQty', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>H⁺ ion(s) to the</span>
+                        <div className="flex flex-wrap gap-1.5 w-full pt-1">
+                          {[
+                            { value: 'LHS', label: 'LHS (Reactants)' },
+                            { value: 'RHS', label: 'RHS (Products)' },
+                            { value: 'NONE', label: 'None Required' },
+                          ].map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => handleGuidedInputChange('hPlusSide', opt.value)}
+                              className={sidePillClass(guidedInputs.hPlusSide === opt.value)}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="flex justify-between items-center pt-2 border-t border-[var(--chem-border)]">
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-lg transition-colors"
-                  >
-                    Verify Step {activeStep + 1}
-                  </button>
+                  {activeStep === 5 && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs sm:text-sm font-bold text-[var(--chem-primary)]">
+                        Step 6: Add H₂O to balance hydrogen and oxygen atoms
+                      </h3>
+                      <p className="text-xs sm:text-sm leading-relaxed">
+                        Add <strong>H₂O molecules</strong> to complete mass balance for H and O atoms:
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
+                        <span>Add</span>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="0"
+                          value={guidedInputs.waterQty}
+                          onChange={(e) => handleGuidedInputChange('waterQty', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>H₂O molecule(s) to the</span>
+                        <div className="flex flex-wrap gap-1.5 w-full pt-1">
+                          {[
+                            { value: 'RHS', label: 'RHS (Products)' },
+                            { value: 'LHS', label: 'LHS (Reactants)' },
+                            { value: 'NONE', label: 'None Required' },
+                          ].map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => handleGuidedInputChange('waterSide', opt.value)}
+                              className={sidePillClass(guidedInputs.waterSide === opt.value)}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
-                  <div className="flex items-center gap-2">
-                    {activeStep < 5 && completedSteps[activeStep] && (
+                  <div className="flex flex-wrap justify-between items-center gap-2 pt-3 border-t border-[var(--chem-border)]">
+                    <button
+                      type="submit"
+                      className="min-h-[38px] px-5 py-2 bg-[var(--chem-primary)] hover:bg-[var(--chem-primary-hover)] text-white font-semibold text-xs sm:text-sm rounded-xl transition-colors cursor-pointer"
+                    >
+                      Verify Step {activeStep + 1}
+                    </button>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      {activeStep < 5 && completedSteps[activeStep] && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveStep((prev) => prev + 1);
+                            setFeedback(null);
+                          }}
+                          className="min-h-[38px] px-4 py-2 bg-[var(--chem-card-bg)] border border-[var(--chem-border)] text-xs font-semibold rounded-xl text-[var(--chem-text)] cursor-pointer"
+                        >
+                          Next Step &rarr;
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={() => {
-                          setActiveStep((prev) => prev + 1);
-                          setFeedback(null);
-                        }}
-                        className="px-4 py-2 bg-[var(--chem-card-bg)] border border-[var(--chem-border)] text-xs font-semibold rounded-lg text-[var(--chem-text)]"
+                        onClick={generateProblem}
+                        className="min-h-[38px] px-3.5 py-2 bg-[var(--chem-card-bg)] border border-[var(--chem-border)] text-xs font-semibold rounded-xl text-[var(--chem-text)] cursor-pointer"
                       >
-                        Next Step &rarr;
+                        New Half-Equation
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={generateProblem}
-                      className="px-3.5 py-2 bg-[var(--chem-card-bg)] border border-[var(--chem-border)] text-xs font-semibold rounded-lg text-[var(--chem-text)]"
-                    >
-                      New Half-Equation
-                    </button>
+                    </div>
                   </div>
+                </form>
+              </div>
+            )}
+
+            {practiceMode === 'exam' && (
+              <form onSubmit={handleExamSubmit} className="space-y-5 bg-[var(--chem-card-bg)] p-4 sm:p-5 rounded-2xl border border-[var(--chem-border)] shadow-sm">
+                <p className="text-xs sm:text-sm leading-relaxed">
+                  Construct the full, balanced ionic half-equation for the transformation of <strong>{currentProblem.reactantName}</strong> to <strong>{currentProblem.productName}</strong> in acidic media:
+                </p>
+
+                <div className="bg-[var(--chem-bg-main)] p-3.5 sm:p-4 rounded-xl border border-[var(--chem-border)] space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div className="p-3 bg-[var(--chem-card-bg)] rounded-lg border border-[var(--chem-border)] space-y-3">
+                      <span className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem] block">
+                        Left-Hand Side (Reactants)
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          value={examInputs.reactCoeff}
+                          onChange={(e) => handleExamInputChange('reactCoeff', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>{currentProblem.reactantName}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="0"
+                          value={examInputs.hPlusQty}
+                          onChange={(e) => handleExamInputChange('hPlusQty', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>H⁺ ions (if LHS)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="0"
+                          value={examInputs.electronSide === 'LHS' ? examInputs.electronQty : ''}
+                          onChange={(e) => {
+                            handleExamInputChange('electronQty', e.target.value);
+                            handleExamInputChange('electronSide', 'LHS');
+                          }}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>electrons e⁻ (if LHS)</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-[var(--chem-card-bg)] rounded-lg border border-[var(--chem-border)] space-y-3">
+                      <span className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem] block">
+                        Right-Hand Side (Products)
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          value={examInputs.prodCoeff}
+                          onChange={(e) => handleExamInputChange('prodCoeff', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>{currentProblem.productName}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="0"
+                          value={examInputs.waterQty}
+                          onChange={(e) => handleExamInputChange('waterQty', e.target.value)}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>H₂O molecules (if RHS)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="0"
+                          value={examInputs.electronSide === 'RHS' ? examInputs.electronQty : ''}
+                          onChange={(e) => {
+                            handleExamInputChange('electronQty', e.target.value);
+                            handleExamInputChange('electronSide', 'RHS');
+                          }}
+                          className={noSpinnerInputClass}
+                        />
+                        <span>electrons e⁻ (if RHS)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="button-group pt-1">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                  >
+                    Check Half-Equation
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowMarkScheme(!showMarkScheme)}
+                    className="btn btn-secondary"
+                  >
+                    {showMarkScheme ? 'Hide Mark Scheme' : 'View Mark Scheme'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={generateProblem}
+                    className="btn btn-secondary"
+                  >
+                    Next Question &rarr;
+                  </button>
                 </div>
               </form>
-            </div>
-          )}
+            )}
 
-          {practiceMode === 'exam' && (
-            <form onSubmit={handleExamSubmit} className="space-y-6">
-              <p className="text-sm sm:text-base leading-relaxed">
-                Construct the full, balanced ionic half-equation for the transformation of <strong>{currentProblem.reactantName}</strong> to <strong>{currentProblem.productName}</strong> in acidic media:
-              </p>
+            {feedback && (
+              <div
+                className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left text-xs sm:text-sm leading-relaxed ${
+                  feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
+                }`}
+              >
+                <div className="flex items-start gap-2">
+                  <span>{feedback.status === 'success' ? '✅' : '❌'}</span>
+                  <p className="font-semibold">{feedback.message}</p>
+                </div>
+                {feedback.status === 'success' && (practiceMode === 'exam' || activeStep === 5) && (
+                  <button
+                    type="button"
+                    onClick={generateProblem}
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                  >
+                    Next Half-Equation &rarr;
+                  </button>
+                )}
+              </div>
+            )}
 
-              <div className="bg-[var(--chem-bg-main)] p-4 rounded-xl border border-[var(--chem-border)] space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
-                  <div className="p-3 bg-[var(--chem-card-bg)] rounded-lg border border-[var(--chem-border)] space-y-3">
-                    <span className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem] block">
-                      Left-Hand Side (Reactants)
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        value={examInputs.reactCoeff}
-                        onChange={(e) => handleExamInputChange('reactCoeff', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>{currentProblem.reactantName}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="0"
-                        value={examInputs.hPlusQty}
-                        onChange={(e) => handleExamInputChange('hPlusQty', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>H⁺ ions (if LHS)</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="0"
-                        value={examInputs.electronQty}
-                        onChange={(e) => handleExamInputChange('electronQty', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>electrons e⁻ (if LHS)</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-[var(--chem-card-bg)] rounded-lg border border-[var(--chem-border)] space-y-3">
-                    <span className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem] block">
-                      Right-Hand Side (Products)
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        value={examInputs.prodCoeff}
-                        onChange={(e) => handleExamInputChange('prodCoeff', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>{currentProblem.productName}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="0"
-                        value={examInputs.waterQty}
-                        onChange={(e) => handleExamInputChange('waterQty', e.target.value)}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>H₂O molecules (if RHS)</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="0"
-                        value={examInputs.electronSide === 'RHS' ? examInputs.electronQty : ''}
-                        onChange={(e) => {
-                          handleExamInputChange('electronQty', e.target.value);
-                          handleExamInputChange('electronSide', 'RHS');
-                        }}
-                        className={noSpinnerInputClass}
-                      />
-                      <span>electrons e⁻ (if RHS)</span>
-                    </div>
-                  </div>
+            {showMarkScheme && (
+              <div className="p-4 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] rounded-xl space-y-2 text-xs sm:text-sm">
+                <h4 className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem]">
+                  WJEC Examiner Mark Scheme &amp; Guidance
+                </h4>
+                <ul className="list-disc pl-5 space-y-1 text-[var(--chem-text)]">
+                  <li>
+                    <strong>[1 mark]</strong> Correct key element stoichiometry and electron count ({currentProblem.electronCount}e⁻ on {currentProblem.electronSide}).
+                  </li>
+                  <li>
+                    <strong>[1 mark]</strong> Correct balancing of acidic media species ({currentProblem.hPlusCount > 0 ? `${currentProblem.hPlusCount}H⁺` : 'no H⁺'} &amp; {currentProblem.waterCount > 0 ? `${currentProblem.waterCount}H₂O` : 'no H₂O'}).
+                  </li>
+                </ul>
+                <div className="pt-2 border-t border-[var(--chem-border)] text-xs text-[var(--chem-text-muted)] font-mono break-words">
+                  Full Balanced Half-Equation: <span className="font-bold text-[var(--chem-primary)]">{currentProblem.fullEqJSX}</span>
                 </div>
               </div>
-
-              <div className="button-group pt-2">
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                >
-                  Check Half-Equation
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowMarkScheme(!showMarkScheme)}
-                  className="btn btn-secondary"
-                >
-                  {showMarkScheme ? 'Hide Mark Scheme' : 'View Mark Scheme'}
-                </button>
-                <button
-                  type="button"
-                  onClick={generateProblem}
-                  className="btn btn-secondary"
-                >
-                  Next Question &rarr;
-                </button>
-              </div>
-            </form>
-          )}
-
-          {feedback && (
-            <div
-              className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left text-xs sm:text-sm leading-relaxed ${
-                feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
-              }`}
-            >
-              <div className="flex items-start gap-2">
-                <span>{feedback.status === 'success' ? '✅' : '❌'}</span>
-                <p className="font-semibold">{feedback.message}</p>
-              </div>
-              {feedback.status === 'success' && (practiceMode === 'exam' || activeStep === 5) && (
-                <button
-                  type="button"
-                  onClick={generateProblem}
-                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-                >
-                  Next Half-Equation &rarr;
-                </button>
-              )}
-            </div>
-          )}
-
-          {showMarkScheme && (
-            <div className="mt-6 p-4 bg-[var(--chem-bg-main)] border border-[var(--chem-border)] rounded-lg space-y-2 text-xs sm:text-sm">
-              <h4 className="font-bold text-[var(--chem-primary)] tracking-wider text-[0.7rem]">
-                WJEC Examiner Mark Scheme & Guidance
-              </h4>
-              <ul className="list-disc pl-5 space-y-1 text-[var(--chem-text)]">
-                <li>
-                  <strong>[1 mark]</strong> Correct key element stoichiometry and electron count ({currentProblem.electronCount}e⁻ on {currentProblem.electronSide}).
-                </li>
-                <li>
-                  <strong>[1 mark]</strong> Correct balancing of acidic media species ({currentProblem.hPlusCount > 0 ? `${currentProblem.hPlusCount}H⁺` : 'no H⁺'} & {currentProblem.waterCount > 0 ? `${currentProblem.waterCount}H₂O` : 'no H₂O'}).
-                </li>
-              </ul>
-              <div className="pt-2 border-t border-[var(--chem-border)] text-xs text-[var(--chem-text-muted)] font-mono">
-                Full Balanced Half-Equation: <span className="font-bold text-[var(--chem-primary)]">{currentProblem.fullEqJSX}</span>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
     </div>

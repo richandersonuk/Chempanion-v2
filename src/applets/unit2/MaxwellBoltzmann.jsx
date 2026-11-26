@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 
 function shuffleArray(items) {
   const arr = [...items];
@@ -146,16 +147,16 @@ function MaxwellSvg({
       </text>
 
       {/* Legend */}
-      <g transform={`translate(${padL + plotW - 145}, ${padT + 8})`}>
-        <rect x="0" y="0" width="140" height={c2Pts ? 36 : 20} rx="6" fill="rgba(255,255,255,0.92)" stroke="#e2e8f0" />
-        <line x1="8" y1="10" x2="24" y2="10" stroke="#235478" strokeWidth="2.5" />
-        <text x="30" y="13" className="text-[9px] font-mono font-bold fill-slate-700">
+      <g transform={`translate(${padL + plotW - 154}, ${padT + 8})`}>
+        <rect x="0" y="0" width="150" height={c2Pts ? 38 : 22} rx="6" fill="rgba(255,255,255,0.92)" stroke="#e2e8f0" />
+        <line x1="8" y1="11" x2="24" y2="11" stroke="#235478" strokeWidth="2.5" />
+        <text x="30" y="14.5" className="text-[10.5px] font-mono font-bold fill-slate-700">
           {conc1 > 1 ? `T₁=${t1} K (${conc1}×)` : `T₁ = ${t1} K`}
         </text>
         {c2Pts && (
           <>
-            <line x1="8" y1="26" x2="24" y2="26" stroke="#e11d48" strokeWidth="2.5" strokeDasharray="4 2" />
-            <text x="30" y="29" className="text-[9px] font-mono font-bold fill-rose-700">
+            <line x1="8" y1="27" x2="24" y2="27" stroke="#e11d48" strokeWidth="2.5" strokeDasharray="4 2" />
+            <text x="30" y="30.5" className="text-[10.5px] font-mono font-bold fill-rose-700">
               {conc2 !== conc1 ? `T₂=${t2} K (${conc2}×)` : `T₂ = ${t2} K`}
             </text>
           </>
@@ -433,23 +434,12 @@ export default function MaxwellBoltzmann({ onComplete }) {
     <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
       <div className="applet-header !mb-0">Maxwell–Boltzmann Distribution &amp; Collision Theory</div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 max-w-xl mx-auto">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setActiveTab(t.id)}
-            className={`flex-1 min-w-[170px] px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-              activeTab === t.id
-                ? 'bg-white text-[#326fa0] shadow-sm border border-slate-200'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <AdaptivePicker
+        options={TABS.map((t) => ({ value: t.id, label: t.label }))}
+        value={activeTab}
+        onChange={(val) => setActiveTab(val)}
+        className="max-w-xl"
+      />
 
       {activeTab === 'trainer' && (
         <div className="applet-workbench">

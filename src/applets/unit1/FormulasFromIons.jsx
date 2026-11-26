@@ -158,89 +158,95 @@ export function FormulasFromIons({ onComplete }) {
   if (!cation || !anion) return <div className="text-center p-8 text-[var(--chem-text-muted)]">Loading workspace matrix...</div>;
 
   return (
-    <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
       <div className="applet-header !mb-0">Formulas from Ions</div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-4 text-center shadow-inner">
-          <span className="text-[10px] font-bold tracking-wider text-amber-600 block mb-1">Target Cation</span>
-          <div className="text-2xl font-bold text-[var(--chem-text-main)] font-mono">{cation.html}</div>
-          <div className="text-xs font-medium text-[var(--chem-text-muted)] mt-1">{cation.name} (Charge: +{cation.charge})</div>
-        </div>
-        <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-4 text-center shadow-inner">
-          <span className="text-[10px] font-bold tracking-wider text-indigo-600 block mb-1">Target Anion</span>
-          <div className="text-2xl font-bold text-[var(--chem-text-main)] font-mono">{anion.html}</div>
-          <div className="text-xs font-medium text-[var(--chem-text-muted)] mt-1">{anion.name} (Charge: -{anion.charge})</div>
-        </div>
-      </div>
-
-      <form onSubmit={handleVerify} className="bg-[var(--chem-bg-card)] border border-[var(--chem-border-subtle)] rounded-xl p-5 space-y-4 shadow-sm">
-        <div className="space-y-1.5">
-          <label className="text-sm font-bold text-[var(--chem-text-main)] block">
-            Deduce the Combined Neutral Formula:
-          </label>
-          <p className="text-xs text-[var(--chem-text-muted)] leading-relaxed">
-            Type standard continuous values. Use brackets for multiple polyatomic units. Press Enter to check, and press Enter again for the next ion pair.
-          </p>
+      <div className="applet-workbench">
+        <div className="applet-workbench-sticky space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-4 text-center shadow-inner">
+              <span className="text-[10px] font-bold tracking-wider text-amber-600 block mb-1">Target Cation</span>
+              <div className="text-2xl font-bold text-[var(--chem-text-main)] font-mono">{cation.html}</div>
+              <div className="text-xs font-medium text-[var(--chem-text-muted)] mt-1 break-words">{cation.name} (Charge: +{cation.charge})</div>
+            </div>
+            <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-4 text-center shadow-inner">
+              <span className="text-[10px] font-bold tracking-wider text-indigo-600 block mb-1">Target Anion</span>
+              <div className="text-2xl font-bold text-[var(--chem-text-main)] font-mono">{anion.html}</div>
+              <div className="text-xs font-medium text-[var(--chem-text-muted)] mt-1 break-words">{anion.name} (Charge: -{anion.charge})</div>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
-            <input
-              ref={inputRef}
-              type="text"
-              value={userFormula}
-              onChange={(e) => { setUserFormula(e.target.value); setFeedback(null); }}
-              placeholder="e.g. Al2(SO4)3"
-              className="flex-1 px-4 py-2.5 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-slate-800 font-mono font-bold tracking-wide shadow-inner placeholder-slate-400"
-              spellCheck="false"
-              autoComplete="off"
-            />
+          <form onSubmit={handleVerify} className="bg-[var(--chem-bg-card)] border border-[var(--chem-border-subtle)] rounded-xl p-4 sm:p-5 space-y-4 shadow-sm">
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-[var(--chem-text-main)] block">
+                Deduce the Combined Neutral Formula:
+              </label>
+              <p className="text-xs text-[var(--chem-text-muted)] leading-relaxed">
+                Type standard continuous values. Use brackets for multiple polyatomic units. Press Enter to check, and press Enter again for the next ion pair.
+              </p>
+            </div>
 
-            <div className="min-w-[140px] px-3.5 py-2 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5 h-10 select-none shrink-0 text-center shadow-sm">
-              <span className="text-[9px] font-black tracking-widest text-slate-400 border-r border-slate-200 pr-1.5 leading-none">Render:</span>
-              <div className="text-sm font-mono tracking-wide leading-none h-5 flex items-center overflow-hidden">
-                {renderLiveFormulaPreview(userFormula)}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={userFormula}
+                  onChange={(e) => { setUserFormula(e.target.value); setFeedback(null); }}
+                  placeholder="e.g. Al2(SO4)3"
+                  className="flex-1 min-w-0 px-4 py-2.5 text-sm bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--chem-primary)] text-slate-800 font-mono font-bold tracking-wide shadow-inner placeholder-slate-400"
+                  spellCheck="false"
+                  autoComplete="off"
+                />
+
+                <div className="min-w-[140px] px-3.5 py-1.5 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5 min-h-[2.75rem] h-auto select-none shrink-0 text-center shadow-sm">
+                  <span className="text-[9px] font-black tracking-widest text-slate-400 border-r border-slate-200 pr-1.5 leading-none">Render:</span>
+                  <div className="text-sm font-mono tracking-wide leading-normal min-h-[1.5rem] flex items-center flex-wrap justify-center">
+                    {renderLiveFormulaPreview(userFormula)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="button-group">
+                <button type="submit" className="btn btn-primary">
+                  Check Answer
+                </button>
+                <button type="button" onClick={generatePair} className="btn btn-secondary">
+                  Next Problem &rarr;
+                </button>
               </div>
             </div>
-          </div>
+          </form>
 
-          <div className="button-group">
-            <button type="submit" className="btn btn-primary">
-              Check Answer
-            </button>
-            <button type="button" onClick={generatePair} className="btn btn-secondary">
-              Next Problem &rarr;
-            </button>
-          </div>
-        </div>
-      </form>
-
-      {feedback && (
-        <div
-          ref={feedbackRef}
-          className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
-            feedback.isCorrect ? 'feedback-success' : 'feedback-error'
-          }`}
-        >
-          <div className="flex items-start gap-2.5">
-            <span className="text-lg">{feedback.isCorrect ? '✅' : '❌'}</span>
-            <div>
-              <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Empirical Balance Reached' : 'Stoichiometry Mismatch'}</h4>
-              <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
-            </div>
-          </div>
-          {feedback.isCorrect && (
-            <button
-              type="button"
-              onClick={generatePair}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+          {feedback && (
+            <div
+              ref={feedbackRef}
+              className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+                feedback.isCorrect ? 'feedback-success' : 'feedback-error'
+              }`}
             >
-              Next Problem &rarr;
-            </button>
+              <div className="flex items-start gap-2.5">
+                <span className="text-lg">{feedback.isCorrect ? '✅' : '❌'}</span>
+                <div>
+                  <h4 className="text-sm font-bold">{feedback.isCorrect ? 'Empirical Balance Reached' : 'Stoichiometry Mismatch'}</h4>
+                  <p className="text-xs font-medium mt-1 leading-relaxed opacity-90">{feedback.msg}</p>
+                </div>
+              </div>
+              {feedback.isCorrect && (
+                <button
+                  type="button"
+                  onClick={generatePair}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

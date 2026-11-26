@@ -5,6 +5,7 @@ import {
   PRACTICAL_TECHNIQUES,
 } from '../../data/questions/organicSynthesisData';
 import { useProgress } from '../../hooks/useProgress';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 
 const TABS = [
   { id: 'builder', label: '🧪 Multi-Step Synthesis Builder' },
@@ -225,7 +226,7 @@ export function OrganicSynthesis({ onComplete }) {
       </div>
 
       {/* Mode Switcher */}
-      <div className="flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -233,7 +234,7 @@ export function OrganicSynthesis({ onComplete }) {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 min-w-[200px] px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              className={`w-full min-h-[40px] px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
                 isActive
                   ? 'bg-white text-[#326fa0] shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white/60 border border-transparent'
@@ -248,9 +249,9 @@ export function OrganicSynthesis({ onComplete }) {
       {/* ==================== TAB 1: MULTI-STEP SYNTHESIS BUILDER ==================== */}
       {activeTab === 'builder' && (
         <div className="space-y-5">
-          {/* Category Filters & Route Chips */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
+          {/* Category Filters & Adaptive Route Picker */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4 space-y-3">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
               {CATEGORY_FILTERS.map((cat) => {
                 const isSelected = categoryFilter === cat.id;
                 return (
@@ -258,7 +259,7 @@ export function OrganicSynthesis({ onComplete }) {
                     key={cat.id}
                     type="button"
                     onClick={() => handleSelectCategory(cat.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-colors cursor-pointer ${
+                    className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-black border transition-colors cursor-pointer ${
                       isSelected
                         ? 'bg-[#326fa0] text-white border-[#326fa0]'
                         : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
@@ -268,53 +269,36 @@ export function OrganicSynthesis({ onComplete }) {
                   </button>
                 );
               })}
-              <button
-                type="button"
-                onClick={handleRandomRoute}
-                className="ml-auto px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
-              >
-                🎲 Random Route
-              </button>
             </div>
 
-            <div className="flex flex-wrap gap-1.5">
-              {filteredRoutes.map((rt) => {
-                const isCurrent = rt.id === currentRoute.id;
+            <AdaptivePicker
+              collapseBelow="lg"
+              value={currentRoute.id}
+              onChange={(val) => resetRouteForm(val)}
+              onRandom={handleRandomRoute}
+              randomLabel="🎲 Random Route"
+              options={filteredRoutes.map((rt) => {
                 const isDone = completedIds.includes(rt.id);
                 const routeNumber = SYNTHESIS_ROUTES.findIndex((r) => r.id === rt.id) + 1;
-                return (
-                  <button
-                    key={rt.id}
-                    type="button"
-                    onClick={() => resetRouteForm(rt.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
-                      isCurrent
-                        ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                        : isDone
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:border-[#326fa0]'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <span>
-                      #{routeNumber} {rt.start.formula} → {rt.target.formula}
-                    </span>
-                    {isDone && <span aria-label="Mastered">✓</span>}
-                  </button>
-                );
+                const label = `#${routeNumber} ${rt.start.formula} → ${rt.target.formula}`;
+                return {
+                  value: rt.id,
+                  label: isDone ? `${label} ✓` : label,
+                };
               })}
-            </div>
+            />
           </div>
 
           {/* Active Synthesis Form */}
           <form
             onSubmit={handleCheckRoute}
-            className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm grid grid-cols-1 xl:grid-cols-12 gap-5 items-start"
+            className="bg-white border border-slate-200 rounded-2xl p-3.5 sm:p-5 shadow-sm applet-workbench"
           >
             {/* Left Sticky Workbench Column: Prompt, Hint & Live 2-Step Pathway Strip */}
-            <div className="xl:col-span-5 xl:sticky xl:top-20 space-y-4">
+            <div className="applet-workbench-sticky space-y-4">
               {/* Header + Collapsible Hint Toggle */}
-              <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 border-b border-slate-100 pb-3">
+                <div className="text-left">
                   <span className="text-[11px] font-black tracking-wide text-[#326fa0]">
                     {currentRoute.unitRef} • Multi-Step Synthesis
                   </span>
@@ -326,27 +310,27 @@ export function OrganicSynthesis({ onComplete }) {
                 <button
                   type="button"
                   onClick={() => setShowHint((prev) => !prev)}
-                  className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer shrink-0"
+                  className="self-start px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer shrink-0"
                 >
                   💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
                 </button>
               </div>
 
               {/* Prompt & Optional Hidden Hint */}
-              <p className="text-sm font-semibold text-slate-800 leading-relaxed">
+              <p className="text-sm font-semibold text-slate-800 leading-relaxed text-left">
                 {currentRoute.prompt}
               </p>
 
               {showHint && (
-                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm font-medium text-amber-950">
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm font-medium text-amber-950 text-left">
                   <strong className="font-black text-amber-900">Hint: </strong>
                   {currentRoute.hint}
                 </div>
               )}
 
               {/* Live Visual 2-Step Pathway Strip */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-1 gap-2.5 items-center text-center">
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4">
+                <div className="grid grid-cols-1 gap-2.5 items-center text-center">
                   {/* Starting Material */}
                   <div className="bg-white border border-slate-200 rounded-xl p-2.5">
                     <div className="text-[10px] font-black text-slate-400">Starting Material</div>
@@ -406,7 +390,7 @@ export function OrganicSynthesis({ onComplete }) {
             </div>
 
             {/* Right Column: 3 Selection Sections, Submit & Feedback */}
-            <div className="xl:col-span-7 space-y-5">
+            <div className="space-y-5">
               {/* 3 Selection Sections */}
               <div className="space-y-4">
                 {/* Step 1 */}
@@ -434,9 +418,9 @@ export function OrganicSynthesis({ onComplete }) {
                               setStep1Choice(opt.id);
                               clearErrorBanner();
                             }}
-                            className="mt-0.5 accent-[#326fa0]"
+                            className="mt-0.5 accent-[#326fa0] shrink-0"
                           />
-                          <span>{opt.label}</span>
+                          <span className="min-w-0 break-words">{opt.label}</span>
                         </label>
                       );
                     })}
@@ -448,7 +432,7 @@ export function OrganicSynthesis({ onComplete }) {
                   <div className="text-xs font-black tracking-wide text-slate-700">
                     2. Identify Intermediate Compound
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                     {shuffledInter.map((opt) => {
                       const checked = interChoice === opt.id;
                       return (
@@ -468,9 +452,9 @@ export function OrganicSynthesis({ onComplete }) {
                               setInterChoice(opt.id);
                               clearErrorBanner();
                             }}
-                            className="mt-0.5 accent-[#326fa0]"
+                            className="mt-0.5 accent-[#326fa0] shrink-0"
                           />
-                          <span>{opt.label}</span>
+                          <span className="min-w-0 break-words">{opt.label}</span>
                         </label>
                       );
                     })}
@@ -516,7 +500,7 @@ export function OrganicSynthesis({ onComplete }) {
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black tracking-wide shadow-sm transition-colors cursor-pointer"
+                  className="min-h-[42px] px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black tracking-wide shadow-sm transition-colors cursor-pointer"
                 >
                   Check Synthesis Route
                 </button>
@@ -524,7 +508,7 @@ export function OrganicSynthesis({ onComplete }) {
                 <button
                   type="button"
                   onClick={goNextRoute}
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-colors cursor-pointer"
+                  className="min-h-[42px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-colors cursor-pointer"
                 >
                   Next Route &rarr;
                 </button>
@@ -604,7 +588,7 @@ export function OrganicSynthesis({ onComplete }) {
                       const first = PATHWAY_MAPS[d.id]?.[0]?.id || '';
                       setExpandedCardId(first);
                     }}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
+                    className={`min-h-[38px] px-3.5 py-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
                         : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'

@@ -1,4 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'standard', label: 'Standard Titration (Mixed Valencies & Weak Acids)', shortLabel: 'Standard' },
+  { value: 'back_titration', label: 'Back Titration (Aliquot Volumetric)', shortLabel: 'Back Titration' },
+  { value: 'double_titration', label: 'Double Titration (WJEC Mixture Assay)', shortLabel: 'Double Indicator' },
+  { value: 'table_practice', label: 'Burette Results Table & Concordance', shortLabel: 'Results Table' },
+  { value: 'read_burette', label: 'Burette Reading Scale Practice', shortLabel: 'Read Burette' },
+];
 
 const AcidBaseTitration = ({ onComplete }) => {
   const [mode, setMode] = useState('standard');
@@ -308,245 +317,253 @@ const AcidBaseTitration = ({ onComplete }) => {
   const meniscusY = 30 + valDiff * 130;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-2xl mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2" style={{ textTransform: 'none' }}>
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-            style={{ textTransform: 'none' }}
-          >
-            <option value="standard">Standard Titration (Mixed Valencies & Organic Weak Acids)</option>
-            <option value="back_titration">Back Titration (Aliquot Volumetric)</option>
-            <option value="double_titration">Double Titration (WJEC Mixture Assay)</option>
-            <option value="table_practice">Burette Results Table & Concordance Practice</option>
-            <option value="read_burette">Burette Reading Scale Practice</option>
-          </select>
-          <button
-            type="button"
-            onClick={() => { generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 ${
-              mode === 'random' ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0" style={{ textTransform: 'none' }}>{problem.title}</div>
 
-      <div className="applet-header !mb-3" style={{ textTransform: 'none' }}>{problem.title}</div>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        onChange={(val) => { setMode(val); generateProblem(val); }}
+        onRandom={() => generateProblem('random')}
+        isRandomActive={mode === 'random'}
+        collapseBelow="md"
+      />
 
-      <div className="flex flex-col items-center mb-4">
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-        {showHint && (
-          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-            <strong className="font-black text-amber-900">Titration Method: </strong>
-            {mode === 'read_burette'
-              ? 'Read burette graduations downwards from the top integer mark to the bottom of the curved meniscus, recording strictly to 2 d.p. ending in .00 or .05 cm³.'
-              : mode === 'table_practice'
-              ? 'Compute Net Titre = Final − Initial. Exclude the rough titre and average only concordant trials within 0.10 cm³, then calculate n = c × V(cm³) ÷ 1000.'
-              : mode === 'back_titration'
-              ? 'Find total excess HCl added initially, find leftover HCl in the 25.0 cm³ sample from NaOH, scale ×10 up to 250.0 cm³, subtract to get reacted HCl, and use the 1:2 CaCO₃:HCl ratio.'
-              : mode === 'double_titration'
-              ? 'The second titre V₂ (methyl orange stage) neutralises remaining NaHCO₃ → H₂O + CO₂, directly giving moles of Na₂CO₃. Subtract V₂ from V₁ (phenolphthalein stage) to isolate acid used by NaOH.'
-              : 'Use n = c × V(cm³) ÷ 1000 for the standard solution, apply the balanced mole ratio (note 2:1 for NaOH : H₂SO₄), then solve c = n ÷ V(dm³).'}
-          </div>
-        )}
-      </div>
-
-      <div className="question-text text-center px-2 leading-relaxed" style={{ textTransform: 'none' }}>{problem.text}</div>
-
-      {mode === 'read_burette' && (
-        <div className="w-full flex flex-col items-center my-6 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 max-w-xs mx-auto shadow-inner relative">
-          <svg viewBox="0 0 120 200" className="w-28 h-auto select-none overflow-visible">
-            <line x1="40" y1="10" x2="40" y2="190" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1="80" y1="10" x2="80" y2="190" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
-            {Array.from({ length: 11 }).map((_, i) => {
-              const yPos = 30 + i * 13;
-              const isMajor = i === 0 || i === 10;
-              const isMedium = i === 5;
-              return (
-                <g key={i}>
-                  <line
-                    x1="40"
-                    y1={yPos}
-                    x2={isMajor ? 62 : isMedium ? 54 : 47}
-                    y2={yPos}
-                    stroke="#1e293b"
-                    strokeWidth={isMajor ? "1.5" : "1"}
-                  />
-                  {isMajor && (
-                    <text x="71" y={yPos + 4} textAnchor="middle" className="text-[12px] font-mono font-black fill-slate-800">
-                      {(problem.startInt + (i === 10 ? 1 : 0)).toFixed(0)}
-                    </text>
-                  )}
-                  {!isMajor && !isMedium && (
-                    <line x1="40" y1={yPos} x2={44} y2={yPos} stroke="#475569" strokeWidth="0.7" />
-                  )}
-                </g>
-              );
-            })}
-
-            <rect x="41.5" y={meniscusY} width="37" height={190 - meniscusY} fill="#e0f2fe" opacity="0.6" />
-            <path
-              d={`M 41,${meniscusY - 4.5} Q 60,${meniscusY + 0.5} 79,${meniscusY - 4.5}`}
-              fill="none"
-              stroke="#0284c7"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-      )}
-
-      {mode === 'table_practice' && (
-        <div className="w-full max-w-4xl mx-auto my-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
-          <div className="w-full overflow-x-auto pb-1">
-            <table className="w-full min-w-[340px] sm:min-w-[480px] text-center text-xs font-bold border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] tracking-wider">
-                  <th className="p-2 sm:p-3 text-left">Burette Readings</th>
-                  <th className="p-2 sm:p-3 bg-slate-100/60 text-slate-400">Rough</th>
-                  <th className="p-2 sm:p-3">Titre 1</th>
-                  <th className="p-2 sm:p-3">Titre 2</th>
-                  {problem.tableData.hasT3 && <th className="p-2 sm:p-3 text-blue-800 bg-blue-50/30">Titre 3</th>}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                <tr>
-                  <td className="p-2 sm:p-3 text-left bg-slate-50/50">Final (cm³)</td>
-                  <td className="p-2 sm:p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.final}</td>
-                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t1.final}</td>
-                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t2.final}</td>
-                  {problem.tableData.hasT3 && <td className="p-2 sm:p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.final}</td>}
-                </tr>
-                <tr>
-                  <td className="p-2 sm:p-3 text-left bg-slate-50/50">Initial (cm³)</td>
-                  <td className="p-2 sm:p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.init}</td>
-                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t1.init}</td>
-                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t2.init}</td>
-                  {problem.tableData.hasT3 && <td className="p-2 sm:p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.init}</td>}
-                </tr>
-                <tr className="bg-blue-50/10">
-                  <td className="p-2 sm:p-3 text-left font-black text-slate-800 bg-slate-50/50">Net Titre (cm³)</td>
-                  <td className="p-2 sm:p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.correctNet.toFixed(2)}</td>
-                  <td className="p-1.5 sm:p-2">
-                    <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t1} onChange={(e) => setTableTitres({...tableTitres, t1: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
-                  </td>
-                  <td className="p-1.5 sm:p-2">
-                    {problem.tableData.gaps.includes('t2') ? (
-                      <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t2} onChange={(e) => setTableTitres({...tableTitres, t2: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
-                    ) : (
-                      <span className="font-mono text-slate-500">{problem.tableData.t2.correctNet.toFixed(2)}</span>
-                    )}
-                  </td>
-                  {problem.tableData.hasT3 && (
-                    <td className="p-1.5 sm:p-2 bg-blue-50/20">
-                      {problem.tableData.gaps.includes('t3') ? (
-                        <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t3} onChange={(e) => setTableTitres({...tableTitres, t3: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
-                      ) : (
-                        <span className="font-mono text-blue-900">{problem.tableData.t3.correctNet.toFixed(2)}</span>
-                      )}
-                    </td>
-                  )}
-                </tr>
-                <tr>
-                  <td className="p-2 sm:p-3 text-left bg-slate-50/50">Concordant?</td>
-                  <td className="p-1 sm:p-2 bg-slate-50/30">
-                    <label className="inline-flex items-center justify-center p-2 cursor-pointer">
-                      <input type="checkbox" aria-label="Mark rough titre concordant" checked={concordantSelections.rough} onChange={(e) => setConcordantSelections({...concordantSelections, rough: e.target.checked})} className="w-5 h-5 accent-amber-600 cursor-pointer" disabled={tableVerified} />
-                    </label>
-                  </td>
-                  <td className="p-1 sm:p-2">
-                    <label className="inline-flex items-center justify-center p-2 cursor-pointer">
-                      <input type="checkbox" aria-label="Mark Titre 1 concordant" checked={concordantSelections.t1} onChange={(e) => setConcordantSelections({...concordantSelections, t1: e.target.checked})} className="w-5 h-5 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
-                    </label>
-                  </td>
-                  <td className="p-1 sm:p-2">
-                    <label className="inline-flex items-center justify-center p-2 cursor-pointer">
-                      <input type="checkbox" aria-label="Mark Titre 2 concordant" checked={concordantSelections.t2} onChange={(e) => setConcordantSelections({...concordantSelections, t2: e.target.checked})} className="w-5 h-5 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
-                    </label>
-                  </td>
-                  {problem.tableData.hasT3 && (
-                    <td className="p-1 sm:p-2 bg-blue-50/10">
-                      <label className="inline-flex items-center justify-center p-2 cursor-pointer">
-                        <input type="checkbox" aria-label="Mark Titre 3 concordant" checked={concordantSelections.t3} onChange={(e) => setConcordantSelections({...concordantSelections, t3: e.target.checked})} className="w-5 h-5 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
-                      </label>
-                    </td>
-                  )}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-2 whitespace-nowrap">
-              <span className="text-xs font-black text-slate-700">Calculated Mean Titre (cm³):</span>
-              <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={studentMean} onChange={(e) => setStudentMean(e.target.value)} className="w-20 p-1.5 text-center border border-slate-300 rounded-lg font-mono font-bold text-sm bg-white" placeholder="0.00" disabled={tableVerified} />
+      <div className="applet-workbench">
+        {/* Left Column: Titration Scenario + Burette SVG or Results Table + Need a Hint? */}
+        <div className="applet-workbench-sticky space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+            <div className="text-sm sm:text-base text-slate-700 leading-relaxed" style={{ textTransform: 'none' }}>
+              {problem.text}
             </div>
-            <button type="button" onClick={handleVerifyTable} disabled={tableVerified} className="px-5 py-2 bg-[#326fa0] text-white font-black text-xs rounded-xl tracking-wider shadow-sm hover:bg-[#255580] disabled:bg-emerald-600 transition-colors">
-              {tableVerified ? "Table Verified ✓" : "Verify Table Data"}
-            </button>
+
+            {mode === 'read_burette' && (
+              <div className="w-full flex flex-col items-center bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 max-w-xs mx-auto shadow-inner">
+                <svg viewBox="0 0 120 200" className="w-28 h-auto select-none overflow-visible">
+                  <line x1="40" y1="10" x2="40" y2="190" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="80" y1="10" x2="80" y2="190" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
+                  {Array.from({ length: 11 }).map((_, i) => {
+                    const yPos = 30 + i * 13;
+                    const isMajor = i === 0 || i === 10;
+                    const isMedium = i === 5;
+                    return (
+                      <g key={i}>
+                        <line
+                          x1="40"
+                          y1={yPos}
+                          x2={isMajor ? 62 : isMedium ? 54 : 47}
+                          y2={yPos}
+                          stroke="#1e293b"
+                          strokeWidth={isMajor ? "1.5" : "1"}
+                        />
+                        {isMajor && (
+                          <text x="71" y={yPos + 4} textAnchor="middle" className="text-[12px] font-mono font-black fill-slate-800">
+                            {(problem.startInt + (i === 10 ? 1 : 0)).toFixed(0)}
+                          </text>
+                        )}
+                        {!isMajor && !isMedium && (
+                          <line x1="40" y1={yPos} x2={44} y2={yPos} stroke="#475569" strokeWidth="0.7" />
+                        )}
+                      </g>
+                    );
+                  })}
+
+                  <rect x="41.5" y={meniscusY} width="37" height={190 - meniscusY} fill="#e0f2fe" opacity="0.6" />
+                  <path
+                    d={`M 41,${meniscusY - 4.5} Q 60,${meniscusY + 0.5} 79,${meniscusY - 4.5}`}
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            )}
+
+            {mode === 'table_practice' && (
+              <div className="w-full bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
+                <div className="w-full overflow-x-auto">
+                  <table className="w-full text-center text-xs font-bold border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] tracking-wider">
+                        <th className="p-1.5 sm:p-2.5 text-left">Burette (cm³)</th>
+                        <th className="p-1.5 sm:p-2.5 bg-slate-100/60 text-slate-400">Rough</th>
+                        <th className="p-1.5 sm:p-2.5">T1</th>
+                        <th className="p-1.5 sm:p-2.5">T2</th>
+                        {problem.tableData.hasT3 && <th className="p-1.5 sm:p-2.5 text-blue-800 bg-blue-50/30">T3</th>}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      <tr>
+                        <td className="p-1.5 sm:p-2.5 text-left bg-slate-50/50">Final</td>
+                        <td className="p-1.5 sm:p-2.5 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.final}</td>
+                        <td className="p-1.5 sm:p-2.5 font-mono">{problem.tableData.t1.final}</td>
+                        <td className="p-1.5 sm:p-2.5 font-mono">{problem.tableData.t2.final}</td>
+                        {problem.tableData.hasT3 && <td className="p-1.5 sm:p-2.5 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.final}</td>}
+                      </tr>
+                      <tr>
+                        <td className="p-1.5 sm:p-2.5 text-left bg-slate-50/50">Initial</td>
+                        <td className="p-1.5 sm:p-2.5 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.init}</td>
+                        <td className="p-1.5 sm:p-2.5 font-mono">{problem.tableData.t1.init}</td>
+                        <td className="p-1.5 sm:p-2.5 font-mono">{problem.tableData.t2.init}</td>
+                        {problem.tableData.hasT3 && <td className="p-1.5 sm:p-2.5 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.init}</td>}
+                      </tr>
+                      <tr className="bg-blue-50/10">
+                        <td className="p-1.5 sm:p-2.5 text-left font-black text-slate-800 bg-slate-50/50">Net Titre</td>
+                        <td className="p-1.5 sm:p-2.5 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.correctNet.toFixed(2)}</td>
+                        <td className="p-1.5 sm:p-2.5">
+                          <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t1} onChange={(e) => setTableTitres({...tableTitres, t1: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-xs sm:text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
+                        </td>
+                        <td className="p-1.5 sm:p-2.5">
+                          {problem.tableData.gaps.includes('t2') ? (
+                            <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t2} onChange={(e) => setTableTitres({...tableTitres, t2: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-xs sm:text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
+                          ) : (
+                            <span className="font-mono text-slate-500">{problem.tableData.t2.correctNet.toFixed(2)}</span>
+                          )}
+                        </td>
+                        {problem.tableData.hasT3 && (
+                          <td className="p-1.5 sm:p-2.5 bg-blue-50/20">
+                            {problem.tableData.gaps.includes('t3') ? (
+                              <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t3} onChange={(e) => setTableTitres({...tableTitres, t3: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-xs sm:text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
+                            ) : (
+                              <span className="font-mono text-blue-900">{problem.tableData.t3.correctNet.toFixed(2)}</span>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col items-start pt-1">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[36px] px-3.5 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                  <strong className="font-black text-amber-900">Titration Method: </strong>
+                  {mode === 'read_burette'
+                    ? 'Read burette graduations downwards from the top integer mark to the bottom of the curved meniscus, recording strictly to 2 d.p. ending in .00 or .05 cm³.'
+                    : mode === 'table_practice'
+                    ? 'Compute Net Titre = Final − Initial. Exclude the rough titre and average only concordant trials within 0.10 cm³, then calculate n = c × V(cm³) ÷ 1000.'
+                    : mode === 'back_titration'
+                    ? 'Find total excess HCl added initially, find leftover HCl in the 25.0 cm³ sample from NaOH, scale ×10 up to 250.0 cm³, subtract to get reacted HCl, and use the 1:2 CaCO₃:HCl ratio.'
+                    : mode === 'double_titration'
+                    ? 'The second titre V₂ (methyl orange stage) neutralises remaining NaHCO₃ → H₂O + CO₂, directly giving moles of Na₂CO₃. Subtract V₂ from V₁ (phenolphthalein stage) to isolate acid used by NaOH.'
+                    : 'Use n = c × V(cm³) ÷ 1000 for the standard solution, apply the balanced mole ratio (note 2:1 for NaOH : H₂SO₄), then solve c = n ÷ V(dm³).'}
+                </div>
+              )}
+            </div>
           </div>
-          {tableFeedback.message && (
-            <div className={`text-center p-3 text-xs font-bold border-t leading-normal ${tableFeedback.status === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>{tableFeedback.message}</div>
+        </div>
+
+        {/* Right Column: Concordance/Mean Titre + Concentration Input + Buttons + Feedback */}
+        <div className="space-y-4">
+          {mode === 'table_practice' && (
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+              <div>
+                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
+                  Step 1: Concordance &amp; Mean Titre
+                </span>
+                <p className="text-xs font-bold text-slate-600 mt-1">
+                  Select which trials are concordant (within 0.10 cm³), then enter the mean titre.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <label className="flex items-center justify-center gap-2 min-h-[40px] px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-600 cursor-pointer">
+                  <input type="checkbox" aria-label="Mark rough titre concordant" checked={concordantSelections.rough} onChange={(e) => setConcordantSelections({...concordantSelections, rough: e.target.checked})} className="w-4 h-4 accent-amber-600 cursor-pointer" disabled={tableVerified} />
+                  <span>Rough</span>
+                </label>
+                <label className="flex items-center justify-center gap-2 min-h-[40px] px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 cursor-pointer">
+                  <input type="checkbox" aria-label="Mark Titre 1 concordant" checked={concordantSelections.t1} onChange={(e) => setConcordantSelections({...concordantSelections, t1: e.target.checked})} className="w-4 h-4 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
+                  <span>Titre 1</span>
+                </label>
+                <label className="flex items-center justify-center gap-2 min-h-[40px] px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 cursor-pointer">
+                  <input type="checkbox" aria-label="Mark Titre 2 concordant" checked={concordantSelections.t2} onChange={(e) => setConcordantSelections({...concordantSelections, t2: e.target.checked})} className="w-4 h-4 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
+                  <span>Titre 2</span>
+                </label>
+                {problem.tableData.hasT3 && (
+                  <label className="flex items-center justify-center gap-2 min-h-[40px] px-2.5 py-2 rounded-xl border border-blue-200 bg-blue-50/40 text-xs font-bold text-blue-900 cursor-pointer">
+                    <input type="checkbox" aria-label="Mark Titre 3 concordant" checked={concordantSelections.t3} onChange={(e) => setConcordantSelections({...concordantSelections, t3: e.target.checked})} className="w-4 h-4 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
+                    <span>Titre 3</span>
+                  </label>
+                )}
+              </div>
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-black text-slate-700">Calculated Mean Titre (cm³):</span>
+                  <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={studentMean} onChange={(e) => setStudentMean(e.target.value)} className="w-20 p-1.5 text-center border border-slate-300 rounded-lg font-mono font-bold text-sm bg-white" placeholder="0.00" disabled={tableVerified} />
+                </div>
+                <button type="button" onClick={handleVerifyTable} disabled={tableVerified} className="min-h-[38px] px-4 py-2 bg-[#326fa0] text-white font-black text-xs rounded-xl tracking-wider shadow-sm hover:bg-[#255580] disabled:bg-emerald-600 transition-colors cursor-pointer">
+                  {tableVerified ? "Table Verified ✓" : "Verify Table Data"}
+                </button>
+              </div>
+
+              {tableFeedback.message && (
+                <div className={`text-left p-3 rounded-xl text-xs font-bold border leading-normal ${tableFeedback.status === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                  {tableFeedback.message}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className={`bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 transition-opacity ${mode === 'table_practice' && !tableVerified ? 'opacity-60' : 'opacity-100'}`}>
+            <div className="font-bold text-sm text-slate-700 leading-relaxed" style={{ textTransform: 'none' }}>
+              {problem.question}
+            </div>
+
+            <div className="w-full flex items-center justify-center">
+              <div
+                className="w-full flex flex-row items-center justify-center flex-wrap gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
+                style={{ textTransform: 'none' }}
+              >
+                <label className="text-sm font-black text-slate-600 select-none" style={{ textTransform: 'none' }}>{problem.label}</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className={`chem-input ${feedback.status}`}
+                  value={studentAnswer}
+                  onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                  placeholder="0.00"
+                  disabled={mode === 'table_practice' && !tableVerified}
+                  onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+                  style={{ maxWidth: '10rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: '800', textTransform: 'none' }}
+                />
+                <span className="text-sm font-black text-slate-500 select-none" style={{ textTransform: 'none' }}>{problem.unit}</span>
+              </div>
+            </div>
+
+            <div className="button-group">
+              <button type="button" className="btn btn-primary" onClick={checkAnswer} disabled={mode === 'table_practice' && !tableVerified}>Check Answer</button>
+              <button type="button" className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
+            </div>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
+              <span className="text-xs sm:text-sm font-semibold">{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
-
-      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center', fontSize: '0.95rem', textTransform: 'none' }} className="px-2 text-slate-700">
-        {problem.question}
       </div>
-
-      <div className="w-full flex items-center justify-center my-6 overflow-x-auto" style={{ textTransform: 'none' }}>
-        <div
-          className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-2 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
-          style={{ textTransform: 'none' }}
-        >
-          <label className="text-sm font-black text-slate-600 select-none" style={{ textTransform: 'none' }}>{problem.label}</label>
-          <input
-            type="text"
-            inputMode="decimal"
-            className={`chem-input ${feedback.status}`}
-            value={studentAnswer}
-            onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-            placeholder="0.00"
-            disabled={mode === 'table_practice' && !tableVerified}
-            onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
-            style={{ maxWidth: '10rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: '800', textTransform: 'none' }}
-          />
-          <span className="text-sm font-black text-slate-500 select-none" style={{ textTransform: 'none' }}>{problem.unit}</span>
-        </div>
-      </div>
-
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer} disabled={mode === 'table_practice' && !tableVerified}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
-          )}
-        </div>
-      )}
     </div>
   );
 };

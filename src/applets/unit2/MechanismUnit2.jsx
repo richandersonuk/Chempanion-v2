@@ -650,7 +650,7 @@ const AS_MECHANISMS = [
         type: 'arrows',
         prompt: 'Step 2: Draw the curly arrows to show how the alkylammonium intermediate forms ethylamine.',
         hint: 'Draw 2 curly arrows: (1) from the second :NH₃ lone pair (••) to the leaving H, and (2) from the N—H bond midpoint onto N⁺.',
-        viewBox: '0 0 340 200',
+        viewBox: '0 0 352 200',
         staticBonds: [
           { x1: 80, y1: 95, x2: 126, y2: 95 },
           { x1: 140, y1: 81, x2: 140, y2: 45 },

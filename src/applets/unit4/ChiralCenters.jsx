@@ -62,7 +62,7 @@ const ChiralCenters = ({ onComplete }) => {
 
           <svg
             viewBox={`0 0 ${problem.svgWidth} ${problem.svgHeight}`}
-            className="w-full max-w-[320px] h-auto overflow-visible"
+            className="w-full max-w-[300px] sm:max-w-[380px] lg:max-w-[440px] h-auto overflow-visible"
           >
             {/* Render Delocalised Aromatic Benzene Rings if Active */}
             {problem.isBenzene && problem.ringCenter && (
@@ -160,7 +160,7 @@ const ChiralCenters = ({ onComplete }) => {
         {/* Right: Controls, Thumb-Friendly Carbon Toggle Pills, Hints & Feedback */}
         <div className="space-y-4">
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-col items-center md:items-start gap-2 text-center md:text-left">
               <p className="text-sm font-bold text-slate-800">
                 Identify any and all chiral carbon atoms in the molecule.
               </p>
@@ -220,7 +220,7 @@ const ChiralCenters = ({ onComplete }) => {
           </div>
 
           {/* Real-time selection bar */}
-          <div className="text-center lg:text-left text-xs font-bold text-slate-500 min-h-[1.5rem] px-1">
+          <div className="text-center md:text-left text-xs font-bold text-slate-500 min-h-[1.5rem] px-1">
             {selectedCarbons.length > 0 ? (
               <span>
                 Selected Asymmetric Nodes:{' '}

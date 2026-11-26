@@ -93,7 +93,8 @@ const ZoomablePeriodicTable = () => {
       </form>
 
       <div className="flex-1 overflow-auto border border-slate-200 rounded-lg bg-white" ref={scrollContainerRef}>
-        <div className="transition-transform duration-500 ease-out p-12 min-w-[1300px]" style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}>
+        <div style={{ width: `${Math.round(1340 * scale)}px`, height: `${Math.round(920 * scale)}px`, position: 'relative' }}>
+          <div className="transition-transform duration-300 ease-out p-6 sm:p-10 w-[1340px]" style={{ transform: `scale(${scale})`, transformOrigin: '0 0' }}>
           <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(18, minmax(0, 1fr))' }}>
             <div ref={keyRef} style={{ gridColumn: '4 / span 6', gridRow: '1 / span 3' }} className="border-2 border-slate-400 bg-slate-50 p-4 rounded-lg flex items-center justify-around my-2">
               <div className="flex flex-col items-center">
@@ -121,6 +122,7 @@ const ZoomablePeriodicTable = () => {
                 <span className="text-[10px] font-bold text-slate-500 leading-none">{el.z}</span>
               </div>
             ))}
+          </div>
           </div>
         </div>
       </div>
@@ -204,7 +206,8 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleMouseDown = (e) => {
+  const handlePointerDown = (e) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 640) return;
     if (e.target.closest('button, input, select')) return;
     setIsDragging(true);
     setDragOffset({
@@ -214,7 +217,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
   };
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handlePointerMove = (e) => {
       if (!isDragging) return;
       setPosition({
         x: Math.max(0, Math.min(window.innerWidth - 300, e.clientX - dragOffset.x)),
@@ -222,18 +225,18 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
       });
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
       setIsDragging(false);
     };
 
     if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('pointermove', handlePointerMove);
+      window.addEventListener('pointerup', handlePointerUp);
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
     };
   }, [isDragging, dragOffset]);
 
@@ -301,24 +304,26 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
 
   const currentActiveTabObj = tabs.find(t => t.id === activeTab) || tabs[0];
 
+  const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 640;
+
   return (
     <div 
       className="fixed z-50 pointer-events-none" 
       style={{ 
-        left: `${position.x}px`, 
-        top: `${position.y}px`,
+        left: isMobileViewport ? '2vw' : `${position.x}px`, 
+        top: isMobileViewport ? '6vh' : `${position.y}px`,
         textTransform: 'none'
       }}
     >
       <div 
-        className="pointer-events-auto bg-white w-[94vw] max-w-4xl h-[82vh] sm:h-[75vh] max-h-[750px] min-w-[300px] min-h-[340px] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-300 resize" 
+        className="pointer-events-auto bg-white w-[96vw] sm:w-[94vw] max-w-4xl h-[86vh] sm:h-[78vh] max-h-[780px] min-w-[290px] min-h-[340px] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-300 sm:resize" 
         style={{ textTransform: 'none' }}
       >
         
         {/* --- BRANDED DRAGGABLE HEADER --- */}
         <div 
-          onMouseDown={handleMouseDown}
-          className="flex justify-between items-center p-3 sm:p-4 border-b border-slate-200 bg-slate-50 cursor-move select-none shrink-0" 
+          onPointerDown={handlePointerDown}
+          className="flex justify-between items-center p-3 sm:p-4 border-b border-slate-200 bg-slate-50 sm:cursor-move select-none shrink-0" 
           style={{ textTransform: 'none' }}
         >
           <div className="flex items-center gap-2">
@@ -333,7 +338,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
               </span>
             )}
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-800 p-1.5 sm:p-2 rounded-md hover:bg-white transition-colors">
+          <button onClick={onClose} aria-label="Close Data Booklet" className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 rounded-lg hover:bg-white transition-colors cursor-pointer">
             <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -342,13 +347,13 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
 
         {/* --- INTERACTIVE NAVIGATION SECTOR --- */}
         <div className="border-b border-slate-200 bg-slate-50 shrink-0 px-2 relative" style={{ textTransform: 'none' }}>
-          {/* Desktop Tab Layout Bar */}
-          <div className="hidden lg:flex overflow-x-auto scrollbar-hide">
+          {/* Tablet & Desktop Tab Layout Bar */}
+          <div className="hidden md:flex overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button 
                 key={tab.id} 
                 onClick={() => setActiveTab(tab.id)} 
-                className={`px-4 py-3 font-semibold transition-all whitespace-nowrap text-xs xl:text-sm ${
+                className={`px-3.5 lg:px-4 py-3 font-semibold transition-all whitespace-nowrap text-xs lg:text-sm cursor-pointer ${
                   activeTab === tab.id 
                     ? 'border-b-4 border-[#326fa0] text-[#326fa0] bg-white' 
                     : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
@@ -360,7 +365,7 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
           </div>
 
           {/* --- MOBILE DROPDOWN SELECTION SECTOR --- */}
-          <div className="lg:hidden py-3 px-4 bg-white border-b border-slate-100 w-full relative">
+          <div className="md:hidden py-2.5 px-2 bg-white border-b border-slate-100 w-full relative">
             <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
               Select Data Section
             </span>
@@ -407,20 +412,20 @@ const DataBooklet = ({ isOpen, onClose, activeAppletId = 'dashboard' }) => {
 
           {activeTab === 'constants' && (
             <div className="max-w-4xl mx-auto rounded-lg border border-slate-200 overflow-hidden text-slate-900" style={{ textTransform: 'none' }}>
-              <table className="w-full text-left table-fixed">
+              <table className="w-full text-left border-collapse">
                 <thead className="bg-slate-50 border-b">
                   <tr>
-                    <th className="py-3 px-4 text-xs font-bold text-slate-700 w-auto">Constant</th>
-                    <th className="py-3 px-4 text-xs font-bold text-slate-700 w-16 text-center">Symbol</th>
-                    <th className="py-3 px-4 text-xs font-bold text-slate-700 w-36 md:w-56 text-right">Value</th>
+                    <th className="py-2.5 px-3 sm:px-4 text-xs font-bold text-slate-700">Constant</th>
+                    <th className="py-2.5 px-2 sm:px-4 text-xs font-bold text-slate-700 text-center">Symbol</th>
+                    <th className="py-2.5 px-3 sm:px-4 text-xs font-bold text-slate-700 text-right">Value</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {constants.map((c, i) => (
                     <tr key={i} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4 text-sm text-slate-600 leading-snug" style={{ textTransform: 'none' }}>{c.n}</td>
-                      <td className="py-3 px-4 text-sm font-mono font-bold text-slate-800 text-center">{c.s}</td>
-                      <td className="py-3 px-4 text-sm font-mono text-slate-800 text-right whitespace-nowrap">{c.v}</td>
+                      <td className="py-2.5 px-3 sm:px-4 text-xs sm:text-sm text-slate-600 leading-snug" style={{ textTransform: 'none' }}>{c.n}</td>
+                      <td className="py-2.5 px-2 sm:px-4 text-xs sm:text-sm font-mono font-bold text-slate-800 text-center whitespace-nowrap">{c.s}</td>
+                      <td className="py-2.5 px-3 sm:px-4 text-xs sm:text-sm font-mono text-slate-800 text-right break-words sm:whitespace-nowrap">{c.v}</td>
                     </tr>
                   ))}
                 </tbody>

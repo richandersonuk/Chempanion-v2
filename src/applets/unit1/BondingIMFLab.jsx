@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { AdaptivePicker, StyledSelect } from '../../components/shared/AdaptivePicker';
 import {
   BONDING_ELEMENTS,
   BONDING_ELEMENT_LIST,
@@ -505,58 +506,40 @@ export function BondingIMFLab({ onComplete }) {
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 min-w-[180px] px-3.5 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-white text-[#326fa0] shadow-sm border border-slate-200'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60 border border-transparent'
-              }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+      <AdaptivePicker
+        options={TABS.map((t) => ({ value: t.id, label: t.label }))}
+        value={activeTab}
+        onChange={(id) => setActiveTab(id)}
+        collapseBelow="md"
+      />
 
       {/* ==================== TAB 1: BONDING CONTINUUM & ENERGY WELL ==================== */}
       {activeTab === 'continuum' && (
         <div className="space-y-5">
           {/* Preset Strip */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-[10px] font-black tracking-widest text-slate-500">
                 Curated WJEC Bonding Presets
               </span>
               <span className="text-[11px] font-bold text-slate-500">
-                Click any system to load literature r₀ &amp; enthalpy
+                Select any system to load literature r₀ &amp; enthalpy
               </span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {CONTINUUM_PRESETS.map((preset) => {
-                const isCurrent = isExactPreset && selectedPresetId === preset.id;
-                return (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    onClick={() => handleLoadPreset(preset)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                      isCurrent
-                        ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
-                    }`}
-                  >
-                    {preset.name}
-                  </button>
-                );
-              })}
-            </div>
+            <AdaptivePicker
+              options={CONTINUUM_PRESETS.map((p) => ({
+                value: p.id,
+                label: `${p.name} (${p.unitRef})`,
+                shortLabel: p.name,
+              }))}
+              value={isExactPreset ? selectedPresetId : ''}
+              placeholder="Custom element pair (select preset...)"
+              onChange={(id) => {
+                const preset = CONTINUUM_PRESETS.find((p) => p.id === id);
+                if (preset) handleLoadPreset(preset);
+              }}
+              collapseBelow="md"
+            />
           </div>
 
           {/* Continuum Metrics & Spectrum Bar */}
@@ -611,7 +594,7 @@ export function BondingIMFLab({ onComplete }) {
           </div>
 
           {/* Visuals Side-by-Side: Electron Cloud SVG + Potential Energy Curve */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Electron Density & Bonding Visualiser */}
             <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm space-y-3">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -1154,18 +1137,17 @@ export function BondingIMFLab({ onComplete }) {
                   </div>
                 </div>
 
-                <select
+                <StyledSelect
+                  options={BONDING_ELEMENT_LIST.map((el) => ({
+                    value: el.symbol,
+                    label: `${el.symbol} — ${el.name} (Z=${el.atomicNumber}, ${
+                      el.paulingChi == null ? 'No χ' : `χ=${el.paulingChi.toFixed(2)}`
+                    })`,
+                  }))}
                   value={card.sym}
-                  onChange={(e) => card.onSelect(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none focus:border-[#326fa0]"
-                >
-                  {BONDING_ELEMENT_LIST.map((el) => (
-                    <option key={el.symbol} value={el.symbol}>
-                      {el.symbol} — {el.name} (Z={el.atomicNumber},{' '}
-                      {el.paulingChi == null ? 'No χ' : `χ=${el.paulingChi.toFixed(2)}`})
-                    </option>
-                  ))}
-                </select>
+                  onChange={card.onSelect}
+                  ariaLabel={`Select ${card.label}`}
+                />
 
                 {card.baseEl.category === 'noble_gas' ? (
                   <div className="text-xs font-bold text-slate-500 bg-white border border-slate-200 rounded-xl p-2.5">
@@ -1199,329 +1181,325 @@ export function BondingIMFLab({ onComplete }) {
       {/* ==================== TAB 2: IMF & BOILING POINT EXPLORER ==================== */}
       {activeTab === 'imf' && (
         <div className="space-y-5">
-          {/* Dataset Pills */}
-          <div className="flex flex-wrap gap-2">
-            {IMF_DATASETS.map((ds) => {
-              const isCurrent = ds.id === activeDataset.id;
-              return (
-                <button
-                  key={ds.id}
-                  type="button"
-                  onClick={() => handleSelectDataset(ds)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
-                    isCurrent
-                      ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
-                  }`}
-                >
-                  {ds.title}
-                </button>
-              );
-            })}
-          </div>
+          {/* Dataset Picker */}
+          <AdaptivePicker
+            options={IMF_DATASETS.map((ds) => ({ value: ds.id, label: ds.title }))}
+            value={activeDataset.id}
+            onChange={(id) => {
+              const ds = IMF_DATASETS.find((d) => d.id === id);
+              if (ds) handleSelectDataset(ds);
+            }}
+            collapseBelow="md"
+          />
 
-          {/* Live Temperature Slider Control */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
-                  {activeDataset.unitRef} • Interactive Temperature Control
-                </span>
-                <p className="text-xs font-bold text-slate-600 mt-0.5">{activeDataset.subtitle}</p>
-              </div>
-              <div className="bg-white border border-slate-300 rounded-xl px-3.5 py-1.5 font-mono text-sm font-black text-slate-900">
-                {tempC} °C <span className="text-slate-400">|</span> {tempC + 273} K
-              </div>
-            </div>
+          <div className="applet-workbench">
+            {/* Left Column: Chart + Temperature Slider */}
+            <div className="applet-workbench-sticky space-y-4">
+              {/* Clickable SVG Boiling/Melting Point Chart */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                  <h3 className="text-xs font-black tracking-wider text-slate-700">
+                    Melting Point &amp; Boiling Point Profile (°C)
+                  </h3>
+                  <span className="text-[11px] font-bold text-slate-500">
+                    Click any column to inspect
+                  </span>
+                </div>
 
-            <input
-              type="range"
-              min={activeDataset.tempRange[0]}
-              max={activeDataset.tempRange[1]}
-              step={1}
-              value={tempC}
-              onChange={(e) => setTempC(Number(e.target.value))}
-              className="w-full accent-rose-600 cursor-pointer"
-            />
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl overflow-hidden">
+                  <svg
+                    viewBox={`0 0 ${imfChartGeometry.svgW} ${imfChartGeometry.svgH}`}
+                    className="w-full h-auto block select-none"
+                  >
+                    {/* 0 °C baseline if inside range */}
+                    {imfChartGeometry.zeroY !== null && (
+                      <>
+                        <line
+                          x1={imfChartGeometry.pad.left}
+                          y1={imfChartGeometry.zeroY}
+                          x2={imfChartGeometry.svgW - imfChartGeometry.pad.right}
+                          y2={imfChartGeometry.zeroY}
+                          stroke="#94a3b8"
+                          strokeDasharray="3 3"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={imfChartGeometry.pad.left - 6}
+                          y={imfChartGeometry.zeroY + 4}
+                          textAnchor="end"
+                          fontSize="10"
+                          fontWeight="700"
+                          fill="#64748b"
+                        >
+                          0°C
+                        </text>
+                      </>
+                    )}
 
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-black text-slate-500 mr-1">Jump to:</span>
-              {activeDataset.quickTemps.map((qt) => (
-                <button
-                  key={qt.label}
-                  type="button"
-                  onClick={() => setTempC(qt.tempC)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
-                    tempC === qt.tempC
-                      ? 'bg-rose-600 text-white border-rose-600'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-rose-400'
-                  }`}
-                >
-                  {qt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Clickable SVG Boiling/Melting Point Chart */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <h3 className="text-xs font-black tracking-wider text-slate-700">
-                Melting Point &amp; Boiling Point Profile (°C)
-              </h3>
-              <span className="text-[11px] font-bold text-slate-500">
-                Click any column to inspect forces &amp; electron count
-              </span>
-            </div>
-
-            <div className="bg-slate-50 border border-slate-200/80 rounded-xl overflow-hidden">
-              <svg
-                viewBox={`0 0 ${imfChartGeometry.svgW} ${imfChartGeometry.svgH}`}
-                className="w-full h-auto block select-none"
-              >
-                {/* 0 °C baseline if inside range */}
-                {imfChartGeometry.zeroY !== null && (
-                  <>
-                    <line
-                      x1={imfChartGeometry.pad.left}
-                      y1={imfChartGeometry.zeroY}
-                      x2={imfChartGeometry.svgW - imfChartGeometry.pad.right}
-                      y2={imfChartGeometry.zeroY}
-                      stroke="#94a3b8"
-                      strokeDasharray="3 3"
-                      strokeWidth="1"
-                    />
+                    {/* Axes & Bounds Labels */}
                     <text
                       x={imfChartGeometry.pad.left - 6}
-                      y={imfChartGeometry.zeroY + 4}
+                      y={imfChartGeometry.pad.top + 8}
                       textAnchor="end"
-                      fontSize="10"
+                      fontSize="9.5"
                       fontWeight="700"
                       fill="#64748b"
                     >
-                      0°C
+                      {imfChartGeometry.yMax}°C
                     </text>
-                  </>
-                )}
-
-                {/* Axes & Bounds Labels */}
-                <text
-                  x={imfChartGeometry.pad.left - 6}
-                  y={imfChartGeometry.pad.top + 8}
-                  textAnchor="end"
-                  fontSize="9.5"
-                  fontWeight="700"
-                  fill="#64748b"
-                >
-                  {imfChartGeometry.yMax}°C
-                </text>
-                <text
-                  x={imfChartGeometry.pad.left - 6}
-                  y={imfChartGeometry.bottomY}
-                  textAnchor="end"
-                  fontSize="9.5"
-                  fontWeight="700"
-                  fill="#64748b"
-                >
-                  {imfChartGeometry.yMin}°C
-                </text>
-                <line
-                  x1={imfChartGeometry.pad.left}
-                  y1={imfChartGeometry.pad.top}
-                  x2={imfChartGeometry.pad.left}
-                  y2={imfChartGeometry.bottomY}
-                  stroke="#94a3b8"
-                  strokeWidth="1.5"
-                />
-                <line
-                  x1={imfChartGeometry.pad.left}
-                  y1={imfChartGeometry.bottomY}
-                  x2={imfChartGeometry.svgW - imfChartGeometry.pad.right}
-                  y2={imfChartGeometry.bottomY}
-                  stroke="#94a3b8"
-                  strokeWidth="1.5"
-                />
-
-                {/* Bars per item */}
-                {activeDataset.items.map((item, idx) => {
-                  const slotW = imfChartGeometry.plotW / activeDataset.items.length;
-                  const slotX = imfChartGeometry.pad.left + idx * slotW;
-                  const barW = Math.min(54, slotW * 0.56);
-                  const barX = slotX + (slotW - barW) / 2;
-                  const mpY = imfChartGeometry.toY(item.mpC);
-                  const bpY = imfChartGeometry.toY(item.bpC);
-                  const isSelected = selectedDatasetItem.formula === item.formula;
-
-                  return (
-                    <g
-                      key={item.formula}
-                      onClick={() => setSelectedItemFormula(item.formula)}
-                      className="cursor-pointer"
+                    <text
+                      x={imfChartGeometry.pad.left - 6}
+                      y={imfChartGeometry.bottomY}
+                      textAnchor="end"
+                      fontSize="9.5"
+                      fontWeight="700"
+                      fill="#64748b"
                     >
-                      <rect
-                        x={slotX}
-                        y={imfChartGeometry.pad.top}
-                        width={slotW}
-                        height={imfChartGeometry.plotH + 38}
-                        fill="transparent"
-                      />
-                      {/* Solid span from bottom up to melting point */}
-                      <rect
-                        x={barX}
-                        y={mpY}
-                        width={barW}
-                        height={Math.max(2, imfChartGeometry.bottomY - mpY)}
-                        rx="3"
-                        fill={item.highlight ? '#f59e0b' : '#94a3b8'}
-                        opacity="0.35"
-                      />
-                      {/* Liquid span from bp down to mp */}
-                      <rect
-                        x={barX}
-                        y={bpY}
-                        width={barW}
-                        height={Math.max(4, mpY - bpY)}
-                        rx="4"
-                        fill={item.highlight ? '#d97706' : '#326fa0'}
-                        stroke={isSelected ? '#0f172a' : 'none'}
-                        strokeWidth={isSelected ? '2.2' : '0'}
-                      />
-                      {/* Boiling point top label */}
-                      <text
-                        x={barX + barW / 2}
-                        y={Math.max(imfChartGeometry.pad.top - 4, bpY - 6)}
-                        textAnchor="middle"
-                        fontSize="10"
-                        fontWeight="900"
-                        fill={item.highlight ? '#b45309' : '#1e293b'}
-                      >
-                        bp {item.bpC}°C
-                      </text>
-                      {/* Melting point tick */}
-                      <line
-                        x1={barX - 4}
-                        y1={mpY}
-                        x2={barX + barW + 4}
-                        y2={mpY}
-                        stroke="#0f172a"
-                        strokeWidth="1.5"
-                      />
-                      {/* Formula Label */}
-                      <text
-                        x={barX + barW / 2}
-                        y={imfChartGeometry.bottomY + 18}
-                        textAnchor="middle"
-                        fontSize="12"
-                        fontWeight="900"
-                        fill={isSelected ? '#326fa0' : '#0f172a'}
-                      >
-                        {item.formula}
-                      </text>
-                      <text
-                        x={barX + barW / 2}
-                        y={imfChartGeometry.bottomY + 32}
-                        textAnchor="middle"
-                        fontSize="9.5"
-                        fontWeight="700"
-                        fill="#64748b"
-                      >
-                        ({item.electrons} e⁻)
-                      </text>
-                    </g>
+                      {imfChartGeometry.yMin}°C
+                    </text>
+                    <line
+                      x1={imfChartGeometry.pad.left}
+                      y1={imfChartGeometry.pad.top}
+                      x2={imfChartGeometry.pad.left}
+                      y2={imfChartGeometry.bottomY}
+                      stroke="#94a3b8"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1={imfChartGeometry.pad.left}
+                      y1={imfChartGeometry.bottomY}
+                      x2={imfChartGeometry.svgW - imfChartGeometry.pad.right}
+                      y2={imfChartGeometry.bottomY}
+                      stroke="#94a3b8"
+                      strokeWidth="1.5"
+                    />
+
+                    {/* Bars per item */}
+                    {activeDataset.items.map((item, idx) => {
+                      const slotW = imfChartGeometry.plotW / activeDataset.items.length;
+                      const slotX = imfChartGeometry.pad.left + idx * slotW;
+                      const barW = Math.min(54, slotW * 0.56);
+                      const barX = slotX + (slotW - barW) / 2;
+                      const mpY = imfChartGeometry.toY(item.mpC);
+                      const bpY = imfChartGeometry.toY(item.bpC);
+                      const isSelected = selectedDatasetItem.formula === item.formula;
+
+                      return (
+                        <g
+                          key={item.formula}
+                          onClick={() => setSelectedItemFormula(item.formula)}
+                          className="cursor-pointer"
+                        >
+                          <rect
+                            x={slotX}
+                            y={imfChartGeometry.pad.top}
+                            width={slotW}
+                            height={imfChartGeometry.plotH + 38}
+                            fill="transparent"
+                          />
+                          {/* Solid span from bottom up to melting point */}
+                          <rect
+                            x={barX}
+                            y={mpY}
+                            width={barW}
+                            height={Math.max(2, imfChartGeometry.bottomY - mpY)}
+                            rx="3"
+                            fill={item.highlight ? '#f59e0b' : '#94a3b8'}
+                            opacity="0.35"
+                          />
+                          {/* Liquid span from bp down to mp */}
+                          <rect
+                            x={barX}
+                            y={bpY}
+                            width={barW}
+                            height={Math.max(4, mpY - bpY)}
+                            rx="4"
+                            fill={item.highlight ? '#d97706' : '#326fa0'}
+                            stroke={isSelected ? '#0f172a' : 'none'}
+                            strokeWidth={isSelected ? '2.2' : '0'}
+                          />
+                          {/* Boiling point top label */}
+                          <text
+                            x={barX + barW / 2}
+                            y={Math.max(imfChartGeometry.pad.top - 4, bpY - 6)}
+                            textAnchor="middle"
+                            fontSize="10"
+                            fontWeight="900"
+                            fill={item.highlight ? '#b45309' : '#1e293b'}
+                          >
+                            bp {item.bpC}°C
+                          </text>
+                          {/* Melting point tick */}
+                          <line
+                            x1={barX - 4}
+                            y1={mpY}
+                            x2={barX + barW + 4}
+                            y2={mpY}
+                            stroke="#0f172a"
+                            strokeWidth="1.5"
+                          />
+                          {/* Formula Label */}
+                          <text
+                            x={barX + barW / 2}
+                            y={imfChartGeometry.bottomY + 18}
+                            textAnchor="middle"
+                            fontSize="12"
+                            fontWeight="900"
+                            fill={isSelected ? '#326fa0' : '#0f172a'}
+                          >
+                            {item.formula}
+                          </text>
+                          <text
+                            x={barX + barW / 2}
+                            y={imfChartGeometry.bottomY + 32}
+                            textAnchor="middle"
+                            fontSize="9.5"
+                            fontWeight="700"
+                            fill="#64748b"
+                          >
+                            ({item.electrons} e⁻)
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Live Current Temperature Dashed Line */}
+                    <line
+                      x1={imfChartGeometry.pad.left}
+                      y1={imfChartGeometry.tempLineY}
+                      x2={imfChartGeometry.svgW - imfChartGeometry.pad.right}
+                      y2={imfChartGeometry.tempLineY}
+                      stroke="#e11d48"
+                      strokeWidth="2"
+                      strokeDasharray="6 4"
+                    />
+                    <text
+                      x={imfChartGeometry.svgW - imfChartGeometry.pad.right - 4}
+                      y={Math.max(imfChartGeometry.pad.top + 10, imfChartGeometry.tempLineY - 5)}
+                      textAnchor="end"
+                      fontSize="10"
+                      fontWeight="900"
+                      fill="#be123c"
+                    >
+                      T = {tempC}°C
+                    </text>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Live Temperature Slider Control */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
+                      {activeDataset.unitRef} • Interactive Temperature Control
+                    </span>
+                    <p className="text-xs font-bold text-slate-600 mt-0.5">{activeDataset.subtitle}</p>
+                  </div>
+                  <div className="bg-white border border-slate-300 rounded-xl px-3.5 py-1.5 font-mono text-sm font-black text-slate-900">
+                    {tempC} °C <span className="text-slate-400">|</span> {tempC + 273} K
+                  </div>
+                </div>
+
+                <input
+                  type="range"
+                  min={activeDataset.tempRange[0]}
+                  max={activeDataset.tempRange[1]}
+                  step={1}
+                  value={tempC}
+                  onChange={(e) => setTempC(Number(e.target.value))}
+                  className="w-full accent-rose-600 cursor-pointer"
+                />
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-black text-slate-500 mr-1">Jump to:</span>
+                  {activeDataset.quickTemps.map((qt) => (
+                    <button
+                      key={qt.label}
+                      type="button"
+                      onClick={() => setTempC(qt.tempC)}
+                      className={`min-h-[32px] px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
+                        tempC === qt.tempC
+                          ? 'bg-rose-600 text-white border-rose-600'
+                          : 'bg-white text-slate-700 border-slate-200 hover:border-rose-400'
+                      }`}
+                    >
+                      {qt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Substance States + Explanations */}
+            <div className="space-y-4">
+              {/* Substance Cards showing live phase at tempC */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {activeDataset.items.map((item) => {
+                  const phase = getPhaseAtTemp(item, tempC);
+                  const isSelected = selectedDatasetItem.formula === item.formula;
+                  return (
+                    <button
+                      key={item.formula}
+                      type="button"
+                      onClick={() => setSelectedItemFormula(item.formula)}
+                      className={`text-left p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                        isSelected
+                          ? 'bg-blue-50/70 border-[#326fa0] ring-2 ring-[#326fa0]/20'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-base font-black text-slate-900">{item.formula}</span>
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${phase.badgeClass}`}>
+                          {phase.icon} {phase.state}
+                        </span>
+                      </div>
+                      <div className="text-[11px] font-bold text-slate-600">
+                        {item.name} • {item.electrons} e⁻
+                      </div>
+                      <div className="text-[11px] font-mono font-bold text-slate-700">
+                        mp {item.mpC} °C | bp {item.bpC} °C
+                      </div>
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {item.forces.map((f) => (
+                          <span
+                            key={f}
+                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                              f.includes('Hydrogen')
+                                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                : f.includes('Ionic') || f.includes('Metallic')
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : 'bg-slate-100 text-slate-700 border-slate-200'
+                            }`}
+                          >
+                            {f}
+                          </span>
+                        ))}
+                      </div>
+                    </button>
                   );
                 })}
-
-                {/* Live Current Temperature Dashed Line */}
-                <line
-                  x1={imfChartGeometry.pad.left}
-                  y1={imfChartGeometry.tempLineY}
-                  x2={imfChartGeometry.svgW - imfChartGeometry.pad.right}
-                  y2={imfChartGeometry.tempLineY}
-                  stroke="#e11d48"
-                  strokeWidth="2"
-                  strokeDasharray="6 4"
-                />
-                <text
-                  x={imfChartGeometry.svgW - imfChartGeometry.pad.right - 4}
-                  y={Math.max(imfChartGeometry.pad.top + 10, imfChartGeometry.tempLineY - 5)}
-                  textAnchor="end"
-                  fontSize="10"
-                  fontWeight="900"
-                  fill="#be123c"
-                >
-                  T = {tempC}°C
-                </text>
-              </svg>
-            </div>
-          </div>
-
-          {/* Substance Cards showing live phase at tempC */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {activeDataset.items.map((item) => {
-              const phase = getPhaseAtTemp(item, tempC);
-              const isSelected = selectedDatasetItem.formula === item.formula;
-              return (
-                <button
-                  key={item.formula}
-                  type="button"
-                  onClick={() => setSelectedItemFormula(item.formula)}
-                  className={`text-left p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2 ${
-                    isSelected
-                      ? 'bg-blue-50/70 border-[#326fa0] ring-2 ring-[#326fa0]/20'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-base font-black text-slate-900">{item.formula}</span>
-                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${phase.badgeClass}`}>
-                      {phase.icon} {phase.state}
-                    </span>
-                  </div>
-                  <div className="text-[11px] font-bold text-slate-600">
-                    {item.name} • {item.electrons} e⁻
-                  </div>
-                  <div className="text-[11px] font-mono font-bold text-slate-700">
-                    mp {item.mpC} °C | bp {item.bpC} °C
-                  </div>
-                  <div className="flex flex-wrap gap-1 pt-1">
-                    {item.forces.map((f) => (
-                      <span
-                        key={f}
-                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                          f.includes('Hydrogen')
-                            ? 'bg-amber-50 text-amber-800 border-amber-200'
-                            : f.includes('Ionic') || f.includes('Metallic')
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                            : 'bg-slate-100 text-slate-700 border-slate-200'
-                        }`}
-                      >
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Selected Substance Detail + Dataset Takeaway */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-1.5">
-              <div className="text-[10px] font-black tracking-widest text-[#326fa0]">
-                Selected Substance Explanation — {selectedDatasetItem.formula}
               </div>
-              <p className="text-xs sm:text-sm font-medium text-slate-700 leading-relaxed">
-                {selectedDatasetItem.note}
-              </p>
-            </div>
 
-            <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-1.5">
-              <div className="text-[10px] font-black tracking-widest text-amber-800">
-                Core WJEC Exam Takeaway
+              {/* Selected Substance Detail + Dataset Takeaway */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-1.5">
+                <div className="text-[10px] font-black tracking-widest text-[#326fa0]">
+                  Selected Substance Explanation — {selectedDatasetItem.formula}
+                </div>
+                <p className="text-xs sm:text-sm font-medium text-slate-700 leading-relaxed">
+                  {selectedDatasetItem.note}
+                </p>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-amber-950 leading-relaxed">
-                {activeDataset.wjecTakeaway}
-              </p>
+
+              <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-1.5">
+                <div className="text-[10px] font-black tracking-widest text-amber-800">
+                  Core WJEC Exam Takeaway
+                </div>
+                <p className="text-xs sm:text-sm font-semibold text-amber-950 leading-relaxed">
+                  {activeDataset.wjecTakeaway}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -1530,220 +1508,207 @@ export function BondingIMFLab({ onComplete }) {
       {/* ==================== TAB 3: GRADED WJEC EXAM CHALLENGES ==================== */}
       {activeTab === 'challenges' && (
         <div className="space-y-5">
-          {/* Challenge Selector Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            {BONDING_CHALLENGES.map((ch, idx) => {
-              const isCurrent = idx === challengeIdx;
+          {/* Challenge Selector */}
+          <AdaptivePicker
+            options={BONDING_CHALLENGES.map((ch, idx) => {
               const isDone = completedIds.includes(ch.id);
-              return (
-                <button
-                  key={ch.id}
-                  type="button"
-                  onClick={() => handleSelectChallenge(idx)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-all flex items-center gap-1.5 cursor-pointer ${
-                    isCurrent
-                      ? 'bg-[#326fa0] text-white border-[#326fa0] shadow-sm'
-                      : isDone
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:border-[#326fa0]'
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+              return {
+                value: idx,
+                label: `#${idx + 1} ${ch.title}${isDone ? ' ✓' : ''}`,
+                shortLabel: `#${idx + 1}${isDone ? ' ✓' : ''}`,
+              };
+            })}
+            value={challengeIdx}
+            onChange={(idx) => handleSelectChallenge(idx)}
+            onRandom={handleRandomChallenge}
+            randomLabel="🎲 Random Challenge"
+            collapseBelow="md"
+          />
+
+          {/* Challenge Workbench */}
+          <form onSubmit={handleCheckChallenge} className="applet-workbench">
+            {/* Left Column: Scenario + Part 1 */}
+            <div className="applet-workbench-sticky space-y-4">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
+                {/* Title + Spec Ref + Hint Button */}
+                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-black tracking-widest text-[#326fa0] block">
+                      {currentChallenge.unitRef}
+                    </span>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 break-words">
+                      {currentChallenge.title}
+                    </h3>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowHint((prev) => !prev)}
+                    className="min-h-[36px] px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer shrink-0"
+                  >
+                    💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+                  </button>
+                </div>
+
+                {/* Prompt & Data Pills */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-slate-800 leading-relaxed">
+                    {currentChallenge.prompt}
+                  </p>
+
+                  {currentChallenge.dataPills?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {currentChallenge.dataPills.map((pill) => (
+                        <span
+                          key={pill.label}
+                          className="text-xs font-mono font-bold bg-slate-100 border border-slate-200 text-slate-800 px-2.5 py-1 rounded-lg"
+                        >
+                          {pill.label}: <span className="text-[#326fa0]">{pill.value}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {showHint && (
+                    <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm font-medium text-amber-950">
+                      <strong className="font-black text-amber-900">Hint: </strong>
+                      {currentChallenge.hint}
+                    </div>
+                  )}
+                </div>
+
+                {/* Part 1: Single-Select Classification */}
+                <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <div className="text-xs font-black tracking-wider text-slate-600">
+                    Part 1 — {currentChallenge.part1.question}
+                  </div>
+                  <div className="space-y-2">
+                    {shuffledPart1.map((opt) => {
+                      const checked = selectedPart1 === opt.id;
+                      return (
+                        <label
+                          key={opt.id}
+                          className={`flex items-start gap-3 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                            checked
+                              ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
+                              : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`part1-${currentChallenge.id}`}
+                            checked={checked}
+                            onChange={() => {
+                              setSelectedPart1(opt.id);
+                              if (challengeFeedback && !challengeFeedback.isCorrect) {
+                                setChallengeFeedback(null);
+                              }
+                            }}
+                            className="mt-0.5 accent-[#326fa0]"
+                          />
+                          <span>{opt.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Part 2 + Submit + Feedback */}
+            <div className="space-y-4">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-5 shadow-sm">
+                {/* Part 2: Multi-Select Mark-Scheme Reasoning */}
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs font-black tracking-wider text-slate-600">
+                      Part 2 — {currentChallenge.part2.question}
+                    </span>
+                    <span className="text-[11px] font-bold text-slate-500">
+                      Selected: {selectedPart2.length} / {currentChallenge.part2.requiredCount}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {shuffledPart2.map((opt) => {
+                      const checked = selectedPart2.includes(opt.id);
+                      return (
+                        <label
+                          key={opt.id}
+                          className={`flex items-start gap-3 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                            checked
+                              ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
+                              : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => togglePart2Option(opt.id)}
+                            className="mt-0.5 accent-[#326fa0]"
+                          />
+                          <span>{opt.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Action & Navigation Row */}
+                <div className="button-group pt-2 border-t border-slate-100">
+                  <button type="submit" className="btn btn-primary">
+                    Check Answer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectChallenge((challengeIdx + 1) % BONDING_CHALLENGES.length)}
+                    className="btn btn-secondary"
+                  >
+                    Next Challenge &rarr;
+                  </button>
+                </div>
+              </div>
+
+              {/* Feedback Banner & Official Mark Scheme (unlocked ONLY on correct answer) */}
+              {challengeFeedback && (
+                <div
+                  className={`p-4 rounded-2xl border space-y-3 ${
+                    challengeFeedback.isCorrect
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
+                      : 'bg-rose-50 border-rose-200 text-rose-950'
                   }`}
                 >
-                  <span>#{idx + 1}</span>
-                  {isDone && <span aria-label="Completed">✓</span>}
-                </button>
-              );
-            })}
+                  <div className="font-black text-sm">{challengeFeedback.message}</div>
 
-            <button
-              type="button"
-              onClick={handleRandomChallenge}
-              className="ml-auto px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-            >
-              🎲 Random Challenge
-            </button>
-          </div>
+                  {!challengeFeedback.isCorrect && challengeFeedback.trapNotes?.length > 0 && (
+                    <ul className="space-y-1 text-xs font-semibold text-rose-900 list-disc list-inside">
+                      {challengeFeedback.trapNotes.map((note, idx) => (
+                        <li key={idx}>{note}</li>
+                      ))}
+                    </ul>
+                  )}
 
-          {/* Challenge Card */}
-          <form
-            onSubmit={handleCheckChallenge}
-            className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm"
-          >
-            {/* Title + Spec Ref + Hint Button */}
-            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
-              <div>
-                <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
-                  {currentChallenge.unitRef}
-                </span>
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
-                  {currentChallenge.title}
-                </h3>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowHint((prev) => !prev)}
-                className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer shrink-0"
-              >
-                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-              </button>
-            </div>
-
-            {/* Prompt & Data Pills */}
-            <div className="space-y-3">
-              <p className="text-sm font-semibold text-slate-800 leading-relaxed">
-                {currentChallenge.prompt}
-              </p>
-
-              {currentChallenge.dataPills?.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {currentChallenge.dataPills.map((pill) => (
-                    <span
-                      key={pill.label}
-                      className="text-xs font-mono font-bold bg-slate-100 border border-slate-200 text-slate-800 px-2.5 py-1 rounded-lg"
-                    >
-                      {pill.label}: <span className="text-[#326fa0]">{pill.value}</span>
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {showHint && (
-                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm font-medium text-amber-950">
-                  <strong className="font-black text-amber-900">Hint: </strong>
-                  {currentChallenge.hint}
-                </div>
-              )}
-            </div>
-
-            {/* Part 1: Single-Select Classification */}
-            <div className="space-y-2">
-              <div className="text-xs font-black tracking-wider text-slate-600">
-                Part 1 — {currentChallenge.part1.question}
-              </div>
-              <div className="space-y-2">
-                {shuffledPart1.map((opt) => {
-                  const checked = selectedPart1 === opt.id;
-                  return (
-                    <label
-                      key={opt.id}
-                      className={`flex items-start gap-3 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                        checked
-                          ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
-                          : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name={`part1-${currentChallenge.id}`}
-                        checked={checked}
-                        onChange={() => {
-                          setSelectedPart1(opt.id);
-                          if (challengeFeedback && !challengeFeedback.isCorrect) {
-                            setChallengeFeedback(null);
-                          }
-                        }}
-                        className="mt-0.5 accent-[#326fa0]"
-                      />
-                      <span>{opt.label}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Part 2: Multi-Select Mark-Scheme Reasoning */}
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-black tracking-wider text-slate-600">
-                  Part 2 — {currentChallenge.part2.question}
-                </span>
-                <span className="text-[11px] font-bold text-slate-500">
-                  Selected: {selectedPart2.length} / {currentChallenge.part2.requiredCount}
-                </span>
-              </div>
-              <div className="space-y-2">
-                {shuffledPart2.map((opt) => {
-                  const checked = selectedPart2.includes(opt.id);
-                  return (
-                    <label
-                      key={opt.id}
-                      className={`flex items-start gap-3 p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                        checked
-                          ? 'bg-blue-50/70 border-[#326fa0] text-slate-900'
-                          : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-white'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => togglePart2Option(opt.id)}
-                        className="mt-0.5 accent-[#326fa0]"
-                      />
-                      <span>{opt.label}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Action & Navigation Row */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
-              <button
-                type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[#326fa0] hover:bg-[#255580] text-white text-xs font-black tracking-wider shadow-sm transition-colors cursor-pointer"
-              >
-                Check Answer
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSelectChallenge((challengeIdx + 1) % BONDING_CHALLENGES.length)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-colors cursor-pointer"
-              >
-                Next Challenge &rarr;
-              </button>
-            </div>
-
-            {/* Feedback Banner & Official Mark Scheme (unlocked ONLY on correct answer) */}
-            {challengeFeedback && (
-              <div
-                className={`p-4 rounded-2xl border space-y-3 ${
-                  challengeFeedback.isCorrect
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
-                    : 'bg-rose-50 border-rose-200 text-rose-950'
-                }`}
-              >
-                <div className="font-black text-sm">{challengeFeedback.message}</div>
-
-                {!challengeFeedback.isCorrect && challengeFeedback.trapNotes?.length > 0 && (
-                  <ul className="space-y-1 text-xs font-semibold text-rose-900 list-disc list-inside">
-                    {challengeFeedback.trapNotes.map((note, idx) => (
-                      <li key={idx}>{note}</li>
-                    ))}
-                  </ul>
-                )}
-
-                {challengeFeedback.isCorrect && (
-                  <>
-                    <div className="bg-white/80 border border-emerald-200 rounded-xl p-3 space-y-1.5">
-                      <div className="text-[10px] font-black tracking-widest text-emerald-700">
-                        Official WJEC Mark-Scheme Points
+                  {challengeFeedback.isCorrect && (
+                    <>
+                      <div className="bg-white/80 border border-emerald-200 rounded-xl p-3 space-y-1.5">
+                        <div className="text-[10px] font-black tracking-widest text-emerald-700">
+                          Official WJEC Mark-Scheme Points
+                        </div>
+                        <ul className="list-disc list-inside space-y-1 text-xs font-bold text-slate-800">
+                          {currentChallenge.markScheme.map((pt, idx) => (
+                            <li key={idx}>{pt}</li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="list-disc list-inside space-y-1 text-xs font-bold text-slate-800">
-                        {currentChallenge.markScheme.map((pt, idx) => (
-                          <li key={idx}>{pt}</li>
-                        ))}
-                      </ul>
-                    </div>
 
-                    <div className="text-xs font-semibold text-amber-950 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                      <strong className="font-black text-rose-700">WJEC Examiner Pitfall: </strong>
-                      {currentChallenge.examinerPitfall}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
+                      <div className="text-xs font-semibold text-amber-950 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                        <strong className="font-black text-rose-700">WJEC Examiner Pitfall: </strong>
+                        {currentChallenge.examinerPitfall}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </form>
         </div>
       )}

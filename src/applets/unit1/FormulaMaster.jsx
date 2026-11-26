@@ -1,4 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'ions-from-formula-gcse', label: 'Ions from Formulas (GCSE)', shortLabel: 'Formulas (GCSE)' },
+  { value: 'ions-from-formula-advanced', label: 'Ions from Formulas (Advanced)', shortLabel: 'Formulas (Adv.)' },
+  { value: 'ions-from-name-gcse', label: 'Ions from Names (GCSE)', shortLabel: 'Names (GCSE)' },
+  { value: 'ions-from-name-advanced', label: 'Ions from Names (Advanced)', shortLabel: 'Names (Adv.)' },
+];
 
 const FormulaMaster = ({ onComplete }) => {
   const [activeMode, setActiveMode] = useState('ions-from-formula-gcse');
@@ -260,126 +268,121 @@ const FormulaMaster = ({ onComplete }) => {
   if (!currentProblem) return null;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="applet-header">Ion formulas from compounds</div>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">Ion formulas from compounds</div>
 
-      <div className="question-text text-center px-4 leading-relaxed !mb-3">
-        Give the formulas of the ions making up the following compound.
-      </div>
+      <AdaptivePicker
+        label="Practice Mode"
+        options={MODE_OPTIONS}
+        value={activeMode}
+        onChange={(val) => setActiveMode(val)}
+        onRandom={triggerRandomModeSwap}
+        randomLabel="🎲 Random"
+        collapseBelow="md"
+      />
 
-      <div className="flex flex-col items-center mb-4">
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-        {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-            <strong className="font-black text-amber-900">Ion Deduction Method: </strong>
-            Identify the cation and anion separately, then balance total ionic charge across the formula unit (e.g. M₂X₃ implies M³⁺ and X²⁻). Key polyatomic charges: OH⁻, NO₃⁻, HCO₃⁻, MnO₄⁻, SO₄²⁻, CO₃²⁻, Cr₂O₇²⁻, PO₄³⁻, NH₄⁺.
+      <div className="applet-workbench">
+        <div className="applet-workbench-sticky space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm text-center space-y-4">
+            <p className="text-sm font-semibold text-slate-600 leading-relaxed">
+              Give the formulas of the ions making up the following compound.
+            </p>
+
+            <div className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight font-mono px-4 sm:px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl inline-block w-full sm:w-auto sm:min-w-[220px] break-words">
+              {activeMode.includes('formula') ? formatChemicalTextHtml(currentProblem.qDisplay) : currentProblem.qDisplay}
+            </div>
+
+            <div className="flex flex-col items-center pt-1">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[36px] px-3.5 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                  <strong className="font-black text-amber-900">Ion Deduction Method: </strong>
+                  Identify the cation and anion separately, then balance total ionic charge across the formula unit (e.g. M₂X₃ implies M³⁺ and X²⁻). Key polyatomic charges: OH⁻, NO₃⁻, HCO₃⁻, MnO₄⁻, SO₄²⁻, CO₃²⁻, Cr₂O₇²⁻, PO₄³⁻, NH₄⁺.
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
-
-      <div className="w-full max-w-2xl mx-auto my-4 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex gap-3 items-end">
-        <div className="flex-1">
-          <label className="block text-[10px] font-black text-slate-400 tracking-wider mb-1">Practice Mode</label>
-          <select
-            value={activeMode}
-            onChange={(e) => setActiveMode(e.target.value)}
-            className="w-full px-3 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl outline-none shadow-sm focus:border-[#326fa0]"
-          >
-            <option value="ions-from-formula-gcse">Ions from Formulas (GCSE)</option>
-            <option value="ions-from-formula-advanced">Ions from Formulas (Advanced)</option>
-            <option value="ions-from-name-gcse">Ions from Names (GCSE)</option>
-            <option value="ions-from-name-advanced">Ions from Names (Advanced)</option>
-          </select>
-        </div>
-        <button
-          type="button"
-          onClick={triggerRandomModeSwap}
-          className="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition-colors h-[34px] tracking-wider shrink-0"
-        >
-          🎲 Random
-        </button>
-      </div>
-
-      <div className="w-full max-w-3xl mx-auto my-4 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-center">
-        <div className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight font-mono px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl inline-block min-w-[260px]">
-          {activeMode.includes('formula') ? formatChemicalTextHtml(currentProblem.qDisplay) : currentProblem.qDisplay}
         </div>
 
-        <div className="mt-6 border-t border-slate-100 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-5 text-left">
-          <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
-            <div>
-              <span className="block text-[10px] font-black tracking-wider text-slate-500 mb-2.5 text-center">Cation Formula</span>
-              <div className="flex gap-2.5 items-center w-full justify-center">
-                <input
-                  ref={catInputRef}
-                  type="text" value={catText} onChange={(e) => { setCatText(e.target.value); setFeedback({ message: null, status: '' }); }}
-                  onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
-                  placeholder="e.g., Na"
-                  className="w-32 sm:w-40 px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-sm sm:text-base outline-none focus:border-[#326fa0]"
-                />
-                <div className="flex flex-col items-center bg-white px-2 py-1 rounded-xl border border-slate-200 select-none">
-                  <button type="button" onClick={() => setCatChargeVal(p => Math.min(p + 1, 4))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Increase cation charge">▲</button>
-                  <span className="text-xs font-black text-blue-600 font-mono my-0.5">{getChargeString(catChargeVal, '+')}</span>
-                  <button type="button" onClick={() => setCatChargeVal(p => Math.max(p - 1, 1))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Decrease cation charge">▼</button>
+        <div className="space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <span className="block text-[10px] font-black tracking-wider text-slate-500 mb-2.5 text-center">Cation Formula</span>
+                  <div className="flex gap-2 items-center w-full">
+                    <input
+                      ref={catInputRef}
+                      type="text" value={catText} onChange={(e) => { setCatText(e.target.value); setFeedback({ message: null, status: '' }); }}
+                      onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
+                      placeholder="e.g., Na"
+                      className="flex-1 min-w-0 px-3 py-2.5 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-sm sm:text-base outline-none focus:border-[#326fa0]"
+                    />
+                    <div className="flex flex-col items-center bg-white px-1.5 py-1 rounded-xl border border-slate-200 select-none shrink-0">
+                      <button type="button" onClick={() => setCatChargeVal(p => Math.min(p + 1, 4))} className="min-w-[36px] min-h-[32px] flex items-center justify-center text-xs text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-50 cursor-pointer" aria-label="Increase cation charge">▲</button>
+                      <span className="text-xs font-black text-blue-600 font-mono my-0.5">{getChargeString(catChargeVal, '+')}</span>
+                      <button type="button" onClick={() => setCatChargeVal(p => Math.max(p - 1, 1))} className="min-w-[36px] min-h-[32px] flex items-center justify-center text-xs text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-50 cursor-pointer" aria-label="Decrease cation charge">▼</button>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 bg-white/80 border border-slate-100 text-center py-2 px-3 rounded-xl font-mono text-base sm:text-lg font-black text-slate-700 relative min-h-[42px] flex items-center justify-center">
+                  <span>{formatChemicalTextHtml(catText)}</span>
+                  {catText && <sup className="text-[0.75em] text-blue-600 font-black relative top-[-0.6em] left-[0.1em]">{getChargeString(catChargeVal, '+')}</sup>}
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <span className="block text-[10px] font-black tracking-wider text-slate-500 mb-2.5 text-center">Anion Formula</span>
+                  <div className="flex gap-2 items-center w-full">
+                    <input
+                      type="text" value={aniText} onChange={(e) => { setAniText(e.target.value); setFeedback({ message: null, status: '' }); }}
+                      onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
+                      placeholder="e.g., SO4"
+                      className="flex-1 min-w-0 px-3 py-2.5 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-sm sm:text-base outline-none focus:border-rose-500"
+                    />
+                    <div className="flex flex-col items-center bg-white px-1.5 py-1 rounded-xl border border-slate-200 select-none shrink-0">
+                      <button type="button" onClick={() => setAniChargeVal(p => Math.min(p + 1, 4))} className="min-w-[36px] min-h-[32px] flex items-center justify-center text-xs text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-50 cursor-pointer" aria-label="Increase anion charge">▲</button>
+                      <span className="text-xs font-black text-rose-600 font-mono my-0.5">{getChargeString(aniChargeVal, '-')}</span>
+                      <button type="button" onClick={() => setAniChargeVal(p => Math.max(p - 1, 1))} className="min-w-[36px] min-h-[32px] flex items-center justify-center text-xs text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-50 cursor-pointer" aria-label="Decrease anion charge">▼</button>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 bg-white/80 border border-slate-100 text-center py-2 px-3 rounded-xl font-mono text-base sm:text-lg font-black text-slate-700 relative min-h-[42px] flex items-center justify-center">
+                  <span>{formatChemicalTextHtml(aniText)}</span>
+                  {aniText && <sup className="text-[0.75em] text-rose-600 font-black relative top-[-0.6em] left-[0.1em]">{getChargeString(aniChargeVal, '-')}</sup>}
                 </div>
               </div>
             </div>
-            <div className="mt-3 bg-white/80 border border-slate-100 text-center py-2 px-3 rounded-xl font-mono text-base sm:text-lg font-black text-slate-700 relative min-h-[42px] flex items-center justify-center">
-              <span>{formatChemicalTextHtml(catText)}</span>
-              {catText && <sup className="text-[0.75em] text-blue-600 font-black relative top-[-0.6em] left-[0.1em]">{getChargeString(catChargeVal, '+')}</sup>}
+
+            <div className="button-group">
+              <button type="button" className="btn btn-primary" onClick={executeAnswerAudit}>Check Answer</button>
+              <button type="button" className="btn btn-secondary" onClick={() => generateProblemInstance(activeMode)}>Next Problem &rarr;</button>
             </div>
           </div>
 
-          <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
-            <div>
-              <span className="block text-[10px] font-black tracking-wider text-slate-500 mb-2.5 text-center">Anion Formula</span>
-              <div className="flex gap-2.5 items-center w-full justify-center">
-                <input
-                  type="text" value={aniText} onChange={(e) => { setAniText(e.target.value); setFeedback({ message: null, status: '' }); }}
-                  onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
-                  placeholder="e.g., SO4"
-                  className="w-32 sm:w-40 px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-sm sm:text-base outline-none focus:border-rose-500"
-                />
-                <div className="flex flex-col items-center bg-white px-2 py-1 rounded-xl border border-slate-200 select-none">
-                  <button type="button" onClick={() => setAniChargeVal(p => Math.min(p + 1, 4))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Increase anion charge">▲</button>
-                  <span className="text-xs font-black text-rose-600 font-mono my-0.5">{getChargeString(aniChargeVal, '-')}</span>
-                  <button type="button" onClick={() => setAniChargeVal(p => Math.max(p - 1, 1))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Decrease anion charge">▼</button>
-                </div>
-              </div>
+          {feedback.message && (
+            <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <div>{feedback.message}</div>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblemInstance(activeMode)}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
             </div>
-            <div className="mt-3 bg-white/80 border border-slate-100 text-center py-2 px-3 rounded-xl font-mono text-base sm:text-lg font-black text-slate-700 relative min-h-[42px] flex items-center justify-center">
-              <span>{formatChemicalTextHtml(aniText)}</span>
-              {aniText && <sup className="text-[0.75em] text-rose-600 font-black relative top-[-0.6em] left-[0.1em]">{getChargeString(aniChargeVal, '-')}</sup>}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="button-group mt-6">
-        <button type="button" className="btn btn-primary" onClick={executeAnswerAudit}>Check Answer</button>
-        <button type="button" className="btn btn-secondary" onClick={() => generateProblemInstance(activeMode)}>Next Problem &rarr;</button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <div>{feedback.message}</div>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblemInstance(activeMode)}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

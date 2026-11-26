@@ -74,7 +74,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           <button
             onClick={onClose}
             aria-label="Close guide"
-            className="w-8 h-8 shrink-0 flex items-center justify-center bg-black/15 hover:bg-black/25 rounded-full font-black text-base transition-colors cursor-pointer"
+            className="w-10 h-10 shrink-0 flex items-center justify-center bg-black/15 hover:bg-black/25 rounded-full font-black text-lg transition-colors cursor-pointer"
           >
             &times;
           </button>
@@ -89,7 +89,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-3 py-2 rounded-xl sm:rounded-b-none sm:rounded-t-xl text-xs font-extrabold whitespace-nowrap border sm:border-b-0 transition-all cursor-pointer text-center ${
+                className={`min-h-[38px] px-3 py-2 rounded-xl sm:rounded-b-none sm:rounded-t-xl text-xs font-extrabold whitespace-nowrap border sm:border-b-0 transition-all cursor-pointer text-center ${
                   isActive
                     ? 'bg-white text-slate-900 border-slate-200 shadow-xs sm:shadow-[0_1px_0_0_white]'
                     : 'bg-transparent text-slate-500 border-transparent hover:text-slate-800 hover:bg-slate-100/70'
@@ -358,34 +358,34 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       {/* Header Banner */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <button onClick={() => handleNav('dashboard')} className="hover:opacity-80 transition-opacity text-left cursor-pointer">
+        <div className="max-w-[82rem] mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+          <button onClick={() => handleNav('dashboard')} className="hover:opacity-80 transition-opacity text-left cursor-pointer min-w-0">
             <HeaderBrand />
           </button>
 
-          <nav className="hidden md:flex items-center gap-2">
+          <nav className="hidden md:flex items-center gap-1.5 lg:gap-2">
             <button 
               onClick={() => handleNav('dashboard')}
-              className={`px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${currentApplet === 'dashboard' ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`px-2.5 lg:px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${currentApplet === 'dashboard' ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'}`}
             >
               Home Dashboard
             </button>
-            <div ref={quickJumpRef} className="relative group">
+            <div ref={quickJumpRef} className="relative">
               <button
                 type="button"
                 aria-expanded={quickJumpOpen}
                 onClick={() => setQuickJumpOpen((prev) => !prev)}
-                className={`px-3 py-2 text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer transition-all ${
+                className={`px-2.5 lg:px-3 py-2 text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer transition-all whitespace-nowrap ${
                   quickJumpOpen ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'
                 }`}
               >
-                Quick Jump Menu <span className={`transition-transform duration-150 ${quickJumpOpen ? 'rotate-180' : ''}`}>▾</span>
+                Quick Jump <span className="hidden lg:inline">Menu</span> <span className={`transition-transform duration-150 ${quickJumpOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
               <div
-                className={`absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block ${
+                className={`absolute right-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 transition-all duration-100 ease-out z-50 space-y-1 ${
                   quickJumpOpen
                     ? 'opacity-100 scale-100 pointer-events-auto'
-                    : 'opacity-0 pointer-events-none scale-95 origin-top-right md:group-hover:opacity-100 md:group-hover:scale-100 md:group-hover:!pointer-events-auto'
+                    : 'opacity-0 pointer-events-none scale-95 origin-top-right'
                 }`}
               >
                 {MAIN_UNITS.map(unitRow => {
@@ -446,7 +446,7 @@ export default function App() {
             </div>
           </nav>
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {currentApplet !== 'dashboard' && (
               <>
                 <button
@@ -459,22 +459,25 @@ export default function App() {
                 </button>
                 <button 
                   onClick={() => setIsHowToGuideOpen(true)}
-                  className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-2.5 sm:px-3 md:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer"
+                  className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-2.5 lg:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer"
+                  aria-label="How-To Guide"
                 >
                   <span>💡</span>
-                  <span className="hidden sm:inline">How-To Guide</span>
+                  <span className="hidden lg:inline">How-To Guide</span>
                 </button>
               </>
             )}
 
             <button 
               onClick={() => setIsDataBookletOpen(true)}
-              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-3 sm:px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 sm:gap-2 text-xs cursor-pointer"
+              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-2.5 sm:px-3.5 lg:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 text-xs cursor-pointer"
+              aria-label="Data Booklet"
             >
               <span>📚</span>
-              <span className="hidden sm:inline">Data Booklet</span>
+              <span className="hidden lg:inline">Data Booklet</span>
+              <span className="hidden sm:inline lg:hidden">Data</span>
             </button>
-            <button className="md:hidden p-2 text-slate-600 focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Navigation Menu">
+            <button className="md:hidden min-w-[40px] min-h-[40px] flex items-center justify-center p-2 text-slate-600 focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Navigation Menu">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"} />
               </svg>
@@ -553,7 +556,7 @@ export default function App() {
       </header>
 
       {/* Main Workspace Frame */}
-      <main className="max-w-7xl mx-auto p-4 md:p-8 flex-grow w-full">
+      <main className="max-w-[84rem] mx-auto px-2.5 sm:px-4 md:px-6 py-2.5 sm:py-4 flex-grow w-full">
         {isPending && (
           <div className="fixed top-16 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-emerald-500 animate-[pulse_1s_infinite] z-50" />
         )}
@@ -581,7 +584,7 @@ export default function App() {
                   </button>
                   {mobileUpdatesOpen && (
                     <div className="mt-2 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 font-semibold leading-relaxed">
-                      Latest Updates: Added interactive <strong>Hess Cycle Builder</strong> &amp; subscript formatting in <strong>Hess’s Law Cycles</strong>, <strong>Synoptic &amp; Cross-Unit Labs</strong>, Unit 2 modules, and wider responsive desktop layouts.
+                      Latest Updates: Site-wide adaptive mobile, tablet &amp; HD desktop workbench layouts across all 30 applets, CSS-styled selectors, plus the interactive <strong>Hess Cycle Builder</strong> &amp; <strong>Synoptic Labs</strong>.
                     </div>
                   )}
                 </div>
@@ -593,7 +596,7 @@ export default function App() {
                     <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    Latest Updates: Added interactive <strong>Hess Cycle Builder</strong> &amp; subscript formatting in <strong>Hess’s Law Cycles</strong>, <strong>Synoptic &amp; Cross-Unit Labs</strong>, Unit 2 modules, and wider responsive desktop layouts.
+                    Latest Updates: Site-wide adaptive mobile, tablet &amp; HD desktop workbench layouts across all 30 applets, CSS-styled selectors, plus the interactive <strong>Hess Cycle Builder</strong> &amp; <strong>Synoptic Labs</strong>.
                   </p>
                 </div>
               </div>
@@ -638,7 +641,7 @@ export default function App() {
                                 href={app.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-5 bg-slate-700 border border-slate-600 rounded-2xl text-left hover:bg-slate-800 hover:border-slate-500 hover:shadow-lg transition-all group flex flex-col justify-between h-44 w-full"
+                                className="p-4 sm:p-5 bg-slate-700 border border-slate-600 rounded-2xl text-left hover:bg-slate-800 hover:border-slate-500 hover:shadow-lg transition-all group flex flex-col justify-between min-h-[8.75rem] sm:h-44 w-full"
                               >
                                 <div className="w-full">
                                   <div className="flex items-center justify-between mb-2">
@@ -674,7 +677,7 @@ export default function App() {
                             <button 
                               key={app.id}
                               onClick={() => handleNav(app.id)}
-                              className="p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between h-44 w-full cursor-pointer"
+                              className="p-4 sm:p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between min-h-[8.75rem] sm:h-44 w-full cursor-pointer"
                             >
                               <div className="w-full">
                                 <div className="flex items-center justify-between mb-2">
@@ -725,7 +728,7 @@ export default function App() {
         {/* Active view */}
         <div className="animate-fade-in">
           {currentApplet !== 'dashboard' && (
-            <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2 max-w-6xl xl:max-w-[72rem] mx-auto">
+            <div className="hidden md:flex mb-3 flex-wrap items-center gap-2 max-w-[82rem] mx-auto">
               <button onClick={() => handleNav('dashboard')} className="text-xs sm:text-sm font-bold text-[#326fa0] hover:underline flex items-center gap-1 cursor-pointer">
                 &larr; Back to Dashboard Menu
               </button>

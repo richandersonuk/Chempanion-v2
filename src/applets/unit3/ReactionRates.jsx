@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import ScientificInput from '../../components/shared/ScientificInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'calculate_k', label: 'Rate Constant (k)' },
+  { value: 'determine_order', label: 'Deduce Reaction Order' },
+  { value: 'arrhenius', label: 'Arrhenius Equation (Ea)' },
+];
 
 const ReactionRates = ({ onComplete }) => {
   const [mode, setMode] = useState('calculate_k');
+  const [isRandomMode, setIsRandomMode] = useState(false);
   const [problem, setProblem] = useState(null);
   const [studentAnswer, setStudentAnswer] = useState('');
   const [coeff, setCoeff] = useState('');
@@ -19,7 +27,7 @@ const ReactionRates = ({ onComplete }) => {
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['calculate_k', 'determine_order', 'arrhenius'];
-    const selection = forcedMode || mode;
+    const selection = forcedMode || (isRandomMode ? 'random' : mode);
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
     setMode(targetMode);
     let newProb = {};
@@ -71,13 +79,17 @@ const ReactionRates = ({ onComplete }) => {
       newProb = {
         title: "Calculating the Rate Constant (k)",
         text: (
-          <>
-            A reaction follows the rate equation: <b>{law.eq}</b>.<br />
-            At a specific temperature, an experiment yields the following data:<br />
-            [A] = <b>{concA} mol dm<sup>-3</sup></b><br />
-            {law.hasB && <>[B] = <b>{concB} mol dm<sup>-3</sup></b><br /></>}
-            Initial Rate = <b>{rate >= 0.001 ? rate.toFixed(5) : rate.toExponential(3)} mol dm<sup>-3</sup> s<sup>-1</sup></b>
-          </>
+          <div className="space-y-1.5">
+            <p>
+              A reaction follows the rate equation: <b>{law.eq}</b>.
+            </p>
+            <p>At a specific temperature, an experiment yields the following data:</p>
+            <ul className="space-y-1 font-mono text-xs sm:text-sm bg-white p-3 rounded-xl border border-slate-200">
+              <li>[A] = <b>{concA} mol dm<sup>-3</sup></b></li>
+              {law.hasB && <li>[B] = <b>{concB} mol dm<sup>-3</sup></b></li>}
+              <li>Initial Rate = <b>{rate >= 0.001 ? rate.toFixed(5) : rate.toExponential(3)} mol dm<sup>-3</sup> s<sup>-1</sup></b></li>
+            </ul>
+          </div>
         ),
         question: "Calculate the value of the rate constant (k) and select its correct units.",
         label: "k =",
@@ -102,32 +114,34 @@ const ReactionRates = ({ onComplete }) => {
       newProb = {
         title: "Deducing Reaction Order",
         text: (
-          <>
-            The table below shows initial rate data obtained for reactant <b>{species}</b>, at a constant temperature:<br /><br />
-            <div className="overflow-x-auto my-2">
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '0.5rem', border: '1px solid var(--chem-border)' }}>
+          <div className="space-y-3">
+            <p>
+              The table below shows initial rate data obtained for reactant <b>{species}</b>, at a constant temperature:
+            </p>
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+              <table className="w-full border-collapse text-[11px] sm:text-xs">
                 <thead>
-                  <tr style={{ backgroundColor: 'var(--chem-bg-box)' }}>
-                    <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Expt</th>
-                    <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Initial [{species}] / mol dm<sup>-3</sup></th>
-                    <th style={{ padding: '0.5rem', border: '1px solid var(--chem-border)' }}>Initial Rate / mol dm<sup>-3</sup> s<sup>-1</sup></th>
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="px-2 py-1.5 text-center font-bold text-slate-600 border-r border-slate-200">Expt</th>
+                    <th className="px-2 py-1.5 text-center font-bold text-slate-600 border-r border-slate-200">Initial [{species}] / mol dm<sup>-3</sup></th>
+                    <th className="px-2 py-1.5 text-center font-bold text-slate-600">Initial Rate / mol dm<sup>-3</sup> s<sup>-1</sup></th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100 font-mono">
                   <tr>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>1</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{conc1.toFixed(2)}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{baseRate.toFixed(4)}</td>
+                    <td className="px-2 py-1.5 text-center border-r border-slate-200">1</td>
+                    <td className="px-2 py-1.5 text-center border-r border-slate-200">{conc1.toFixed(2)}</td>
+                    <td className="px-2 py-1.5 text-center">{baseRate.toFixed(4)}</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>2</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{conc2.toFixed(2)}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid var(--chem-border)' }}>{rate2.toFixed(4)}</td>
+                    <td className="px-2 py-1.5 text-center border-r border-slate-200">2</td>
+                    <td className="px-2 py-1.5 text-center border-r border-slate-200">{conc2.toFixed(2)}</td>
+                    <td className="px-2 py-1.5 text-center">{rate2.toFixed(4)}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </>
+          </div>
         ),
         question: `Deduce the order of reaction with respect to reactant ${species}.`,
         label: "Order =",
@@ -157,11 +171,17 @@ const ReactionRates = ({ onComplete }) => {
       newProb = {
         title: "The Arrhenius Equation",
         text: (
-          <>
-            A reaction has a frequency factor (A) of <b>{selectedA.mantissa} &times; 10<sup>{selectedA.exp}</sup> s<sup>-1</sup></b>.<br />
-            At a temperature of <b>{tempCelsius} °C</b>, the rate constant (k) is determined to be <b>{k.toExponential(3)} s<sup>-1</sup></b>.<br />
-            <span className="text-xs text-slate-500">(Use WJEC Data Booklet constants: R = 8.31 J K⁻¹ mol⁻¹, T(K) = T(°C) + 273)</span>
-          </>
+          <div className="space-y-2">
+            <p>
+              A reaction has a frequency factor (A) of <b>{selectedA.mantissa} &times; 10<sup>{selectedA.exp}</sup> s<sup>-1</sup></b>.
+            </p>
+            <p>
+              At a temperature of <b>{tempCelsius} °C</b>, the rate constant (k) is determined to be <b>{k.toExponential(3)} s<sup>-1</sup></b>.
+            </p>
+            <p className="text-xs text-slate-500">
+              (Use WJEC Data Booklet constants: R = 8.31 J K⁻¹ mol⁻¹, T(K) = T(°C) + 273)
+            </p>
+          </div>
         ),
         question: "Calculate the activation energy (Eₐ) for this reaction in kJ mol⁻¹.",
         label: "Eₐ =",
@@ -270,227 +290,227 @@ const ReactionRates = ({ onComplete }) => {
   const isArrheniusLocked = mode === 'arrhenius' && gateEnabled && !gateVerified;
 
   return (
-    <div className="applet-container">
-      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm"
-          >
-            <option value="calculate_k">Rate Constant (k)</option>
-            <option value="determine_order">Deduce Reaction Order</option>
-            <option value="arrhenius">Arrhenius Equation (Ea)</option>
-          </select>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">{problem.title}</div>
 
-          <button
-            type="button"
-            onClick={() => { setMode('random'); generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        isRandomActive={isRandomMode}
+        onChange={(val) => {
+          setIsRandomMode(false);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setIsRandomMode(true);
+          generateProblem('random');
+        }}
+        collapseBelow="sm"
+      />
 
-      <div className="applet-header">{problem.title}</div>
-
-      <div className="flex flex-col items-center mb-4">
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-        {showHint && (
-          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-            <strong className="font-black text-amber-900">Kinetics Method: </strong>
-            {mode === 'arrhenius' || problem.title.includes('Arrhenius')
-              ? 'Take natural logs of k = A e^(−Eₐ/RT) to give ln(k/A) = −Eₐ/(RT). Multiply R (8.31) × T(K) × −ln(k/A), then divide by 1000 to convert J mol⁻¹ into kJ mol⁻¹.'
-              : problem.title.includes('Order')
-              ? 'Compare the factor change in concentration ([X]₂ ÷ [X]₁ = f) against the factor change in initial rate (Rate₂ ÷ Rate₁ = fⁿ), where n is the reaction order.'
-              : 'Rearrange Rate = k[A]^m[B]^n to make k the subject, and substitute (mol dm⁻³) into every concentration term to cancel units cleanly.'}
-          </div>
-        )}
-      </div>
-
-      <div className="question-text text-center">{problem.text}</div>
-
-      {/* WJEC Step 1 Unit Gate for Arrhenius Mode */}
-      {mode === 'arrhenius' && problem.arrheniusTargets && (
-        <div className="w-full max-w-3xl mx-auto my-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
-          <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
-            <div>
-              <span className="text-[10px] font-black tracking-widest text-slate-400">
-                WJEC Unit Trap Gate
-              </span>
-              <h4 className="text-xs font-black text-slate-800 mt-1">
-                Step 1: Convert T to Kelvin & Evaluate ln(k / A)
-              </h4>
+      <div className="applet-workbench">
+        {/* Left Column: Experimental / Initial-Rates Table or Arrhenius Data Card + Hint */}
+        <div className="applet-workbench-sticky space-y-3.5">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
+            <div className="question-text !mb-0 text-left text-sm sm:text-base leading-relaxed">
+              {problem.text}
             </div>
-            <button
-              type="button"
-              onClick={() => setGateEnabled(!gateEnabled)}
-              className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 shrink-0"
-            >
-              {gateEnabled ? 'Skip Gate' : 'Enable Gate'}
-            </button>
+
+            <div className="flex flex-col items-start">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[34px] px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                  <strong className="font-black text-amber-900">Kinetics Method: </strong>
+                  {mode === 'arrhenius' || problem.title.includes('Arrhenius')
+                    ? 'Take natural logs of k = A e^(−Eₐ/RT) to give ln(k/A) = −Eₐ/(RT). Multiply R (8.31) × T(K) × −ln(k/A), then divide by 1000 to convert J mol⁻¹ into kJ mol⁻¹.'
+                    : problem.title.includes('Order')
+                    ? 'Compare the factor change in concentration ([X]₂ ÷ [X]₁ = f) against the factor change in initial rate (Rate₂ ÷ Rate₁ = fⁿ), where n is the reaction order.'
+                    : 'Rearrange Rate = k[A]^m[B]^n to make k the subject, and substitute (mol dm⁻³) into every concentration term to cancel units cleanly.'}
+                </div>
+              )}
+            </div>
           </div>
+        </div>
 
-          {gateEnabled && (
-            <div className="mt-3 space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                    Temperature T in K (°C + 273):
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    inputMode="decimal"
-                    onWheel={(e) => e.currentTarget.blur()}
-                    disabled={gateVerified}
-                    value={gateInputs.tK}
-                    onChange={(e) => setGateInputs({ ...gateInputs, tK: e.target.value })}
-                    placeholder="e.g. 298"
-                    className="w-full px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                  />
+        {/* Right Column: Gate, Inputs, Unit Selector, Actions & Feedback */}
+        <div className="space-y-4">
+          {/* WJEC Step 1 Unit Gate for Arrhenius Mode */}
+          {mode === 'arrhenius' && problem.arrheniusTargets && (
+            <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                <div>
+                  <span className="text-[10px] font-black tracking-widest text-slate-400">
+                    WJEC Unit Trap Gate
+                  </span>
+                  <h4 className="text-xs font-black text-slate-800 mt-1">
+                    Step 1: Convert T to Kelvin &amp; Evaluate ln(k / A)
+                  </h4>
                 </div>
-
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                    ln(k / A) (to 1 d.p.):
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    inputMode="decimal"
-                    onWheel={(e) => e.currentTarget.blur()}
-                    disabled={gateVerified}
-                    value={gateInputs.lnRatio}
-                    onChange={(e) => setGateInputs({ ...gateInputs, lnRatio: e.target.value })}
-                    placeholder="e.g. -24.5"
-                    className="w-full px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] text-slate-500 font-medium">
-                  ln(k / A) = −Eₐ / (RT) ⇒ Eₐ (J mol⁻¹) = −R × T × ln(k / A)
-                </span>
                 <button
                   type="button"
-                  onClick={verifyArrheniusGate}
-                  disabled={gateVerified}
-                  className="px-4 py-1.5 bg-[#326fa0] text-white text-xs font-black rounded-xl hover:bg-[#255580] disabled:bg-emerald-600 transition-colors shrink-0"
+                  onClick={() => setGateEnabled(!gateEnabled)}
+                  className="min-h-[34px] text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 shrink-0 cursor-pointer"
                 >
-                  {gateVerified ? 'Verified ✓' : 'Verify Step 1'}
+                  {gateEnabled ? 'Skip Gate' : 'Enable Gate'}
                 </button>
               </div>
 
-              {gateFeedback.message && (
-                <div className={`p-2.5 rounded-xl text-xs font-bold ${
-                  gateFeedback.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                    : 'bg-rose-50 text-rose-800 border border-rose-200'
-                }`}>
-                  {gateFeedback.message}
+              {gateEnabled && (
+                <div className="mt-3 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                    <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                      <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                        Temperature T in K (°C + 273):
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        inputMode="decimal"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        disabled={gateVerified}
+                        value={gateInputs.tK}
+                        onChange={(e) => setGateInputs({ ...gateInputs, tK: e.target.value })}
+                        placeholder="e.g. 298"
+                        className="w-full min-h-[38px] px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                      />
+                    </div>
+
+                    <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                      <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                        ln(k / A) (to 1 d.p.):
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        inputMode="decimal"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        disabled={gateVerified}
+                        value={gateInputs.lnRatio}
+                        onChange={(e) => setGateInputs({ ...gateInputs, lnRatio: e.target.value })}
+                        placeholder="e.g. -24.5"
+                        className="w-full min-h-[38px] px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      ln(k / A) = −Eₐ / (RT) ⇒ Eₐ (J mol⁻¹) = −R × T × ln(k / A)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={verifyArrheniusGate}
+                      disabled={gateVerified}
+                      className="min-h-[36px] px-4 py-1.5 bg-[#326fa0] text-white text-xs font-black rounded-xl hover:bg-[#255580] disabled:bg-emerald-600 transition-colors shrink-0 cursor-pointer"
+                    >
+                      {gateVerified ? 'Verified ✓' : 'Verify Step 1'}
+                    </button>
+                  </div>
+
+                  {gateFeedback.message && (
+                    <div className={`p-2.5 rounded-xl text-xs font-bold ${
+                      gateFeedback.type === 'success'
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-800 border border-rose-200'
+                    }`}>
+                      {gateFeedback.message}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           )}
-        </div>
-      )}
 
-      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
-        {problem.question}
-      </div>
-
-      <div className={`flex flex-col items-center gap-4 w-full max-w-2xl mx-auto mb-4 transition-opacity ${isArrheniusLocked ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-        <div className="flex items-center justify-center w-full">
-          {problem.useSciInput ? (
-            <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
-              <ScientificInput
-                value={coeff}
-                exponent={exp}
-                onValueChange={setCoeff}
-                onExponentChange={setExp}
-                label={problem.label}
-                status={feedback.status}
-              />
-            </div>
-          ) : (
-            <>
-              <span style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>{problem.label}</span>
-              <input
-                type="number"
-                step="any"
-                inputMode="decimal"
-                onWheel={(e) => e.currentTarget.blur()}
-                className={`chem-input ${feedback.status}`}
-                value={studentAnswer}
-                onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-                onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
-                placeholder="0.00"
-                style={{ maxWidth: '12rem', textAlign: 'center' }}
-              />
-              {!problem.hasUnits && <span style={{ marginLeft: '0.5rem', fontWeight: 'bold' }}>{problem.unit}</span>}
-            </>
-          )}
-        </div>
-
-        {problem.hasUnits && (
-          <div className="chem-choice-section mt-2">
-            <span className="chem-choice-label">Select Units</span>
-            <div className="chem-choice-group">
-              {[
-                { id: 's⁻¹', display: <>s<sup>−1</sup></> },
-                { id: 'mol⁻¹ dm³ s⁻¹', display: <>mol<sup>−1</sup> dm<sup>3</sup> s<sup>−1</sup></> },
-                { id: 'mol⁻² dm⁶ s⁻¹', display: <>mol<sup>−2</sup> dm<sup>6</sup> s<sup>−1</sup></> },
-                { id: 'mol⁻³ dm⁹ s⁻¹', display: <>mol<sup>−3</sup> dm<sup>9</sup> s<sup>−1</sup></> }
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setStudentUnit(opt.id)}
-                  className={`chem-choice-btn ${studentUnit === opt.id ? 'active' : ''}`}
-                >
-                  {opt.display}
-                </button>
-              ))}
-            </div>
+          <div className="font-bold text-center md:text-left text-[0.95rem] px-1 text-[var(--chem-text-main)]">
+            {problem.question}
           </div>
-        )}
-      </div>
 
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer} disabled={isArrheniusLocked}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
-      </div>
+          <div className={`flex flex-col items-center gap-4 w-full transition-opacity ${isArrheniusLocked ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+            <div className="flex flex-wrap items-center justify-center gap-2 w-full">
+              {problem.useSciInput ? (
+                <div className="px-3 sm:px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm w-full sm:w-auto">
+                  <ScientificInput
+                    value={coeff}
+                    exponent={exp}
+                    onValueChange={setCoeff}
+                    onExponentChange={setExp}
+                    label={problem.label}
+                    status={feedback.status}
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center justify-center gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm w-full sm:w-auto">
+                  <span className="font-bold text-sm text-[var(--chem-text-main)]">{problem.label}</span>
+                  <input
+                    type="number"
+                    step="any"
+                    inputMode="decimal"
+                    onWheel={(e) => e.currentTarget.blur()}
+                    className={`chem-input min-h-[40px] bg-white !max-w-[10rem] ${feedback.status}`}
+                    value={studentAnswer}
+                    onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                    onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+                    placeholder="0.00"
+                  />
+                  {!problem.hasUnits && problem.unit && (
+                    <span className="font-bold text-sm text-[var(--chem-text-main)]">{problem.unit}</span>
+                  )}
+                </div>
+              )}
+            </div>
 
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
+            {problem.hasUnits && (
+              <div className="w-full text-center">
+                <span className="chem-choice-label">Select Units</span>
+                <div className="grid grid-cols-2 gap-2 w-full">
+                  {[
+                    { id: 's⁻¹', display: <>s<sup>−1</sup></> },
+                    { id: 'mol⁻¹ dm³ s⁻¹', display: <>mol<sup>−1</sup> dm<sup>3</sup> s<sup>−1</sup></> },
+                    { id: 'mol⁻² dm⁶ s⁻¹', display: <>mol<sup>−2</sup> dm<sup>6</sup> s<sup>−1</sup></> },
+                    { id: 'mol⁻³ dm⁹ s⁻¹', display: <>mol<sup>−3</sup> dm<sup>9</sup> s<sup>−1</sup></> }
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setStudentUnit(opt.id)}
+                      className={`chem-choice-btn min-h-[40px] ${studentUnit === opt.id ? 'active' : ''}`}
+                    >
+                      {opt.display}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={checkAnswer} disabled={isArrheniusLocked}>Check Answer</button>
+            <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span>{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

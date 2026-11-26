@@ -179,9 +179,9 @@ export const howToGuides = {
     unit: 'Unit 1.3',
     summary: 'Deduce simplest whole-number empirical ratios from mass/% data, scale to molecular formulas via Mᵣ, and find water of crystallisation.',
     appletSteps: [
-      <><strong>Choose Question Type:</strong> Switch between <em>% Composition</em>, <em>Mass Data</em>, <em>Molecular Formula (with Mᵣ)</em>, and <em>Hydrated Salt (·xH₂O)</em>, or click <em>Random 🎲</em>.</>,
+      <><strong>Choose Question Type:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch between <em>Percentages</em>, <em>Reacting Masses</em>, <em>Molecular Formula via Mᵣ</em>, and <em>Water of Crystallisation (x)</em>.</>,
       <><strong>Solve Ratio Table:</strong> Divide each mass or percentage by atomic mass Aᵣ (from the Data Booklet) and normalise against the smallest value.</>,
-      <><strong>Enter Answer:</strong> Type the final formula into the auto-subscripting input box (use a dot like <code>MgSO4.7H2O</code> for hydrated salts).</>,
+      <><strong>Enter Answer:</strong> Type formulas into the auto-subscripting input box (or enter the integer <code>x</code> directly for hydrated salt problems) and press <em>Check Answer</em>.</>,
     ],
     examMethod: {
       formulas: [
@@ -588,7 +588,7 @@ export const howToGuides = {
     summary: <>Construct ΔH<sub>f</sub>° and ΔH<sub>c</sub>° Hess cycles from scratch in Hess Cycle Builder, apply the zero-enthalpy rule for standard elements, and solve ΔH<sub>r</sub>° or unknown species enthalpies.</>,
     appletSteps: [
       <><strong>Pick Cycle Mode:</strong> Start in <em>Hess Cycle Builder</em> to assemble full cycles, or switch to <em>ΔH<sub>f</sub>° Cycles</em>, <em>ΔH<sub>c</sub>° Cycles</em>, or <em>Unknown ΔH° from ΔH<sub>r</sub>°</em> (or <em>Random 🎲</em>).</>,
-      <><strong>Construct &amp; Orient the Cycle:</strong> In Builder mode, choose the balanced intermediate box (elements or combustion oxides), orient both diagonal arrows, and assign stoichiometric multipliers (setting standard elements to <em>0</em> for ΔH<sub>f</sub>°).</>,
+      <><strong>Construct &amp; Orient the Cycle:</strong> In Builder mode, select the balanced intermediate box (elements or combustion oxides) from the dropdown directly on the cycle diagram, tap both diagonal legs on the diagram to orient the enthalpy arrows, and assign stoichiometric multipliers (setting standard elements to <em>0</em> for ΔH<sub>f</sub>°).</>,
       <><strong>Deduce Route Signs &amp; Solve:</strong> Follow the indirect path from Reactants → Intermediate → Products (+ with an arrow, − against an arrow) to verify the route equation and compute ΔH<sub>r</sub>° or the unknown compound’s enthalpy.</>,
     ],
     examMethod: {
@@ -987,8 +987,8 @@ export const howToGuides = {
     unit: 'Unit 3.8',
     summary: 'Build ICE tables, divide equilibrium moles by container volume V, solve Kc/missing concentrations, and determine composite units.',
     appletSteps: [
-      <><strong>Pick Kc Task:</strong> Switch across <em>ICE Table</em>, <em>Direct Kc</em>, <em>Find Missing Species</em>, and <em>Predict Units</em>, or click <em>Random 🎲</em>.</>,
-      <><strong>Predict Units Stepper:</strong> In <em>Predict Units</em> mode, use the <code>mol</code>, <code>dm</code>, and <code>s</code> power steppers to match the sorted equilibrium unit preview.</>,
+      <><strong>Pick Kc Task:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch across <em>Initial Moles + Volume → Kc</em>, <em>Equilibrium Concentrations → Kc</em>, <em>Kc + Rearrangement → Concentration</em>, and <em>Deduce Equilibrium Units</em>.</>,
+      <><strong>Predict Units Stepper:</strong> In <em>Deduce Equilibrium Units</em> mode, use the <code>mol</code>, <code>dm</code>, and <code>s</code> power steppers to match the sorted equilibrium unit preview.</>,
       <><strong>Enter Answer:</strong> Always convert moles to concentrations (÷ volume V in dm³) before inputting Kc into <em>ScientificInput</em>.</>,
     ],
     examMethod: {
@@ -1032,7 +1032,7 @@ export const howToGuides = {
     unit: 'Unit 3.8',
     summary: 'Track total gas moles, compute mole fractions (x_i) and partial pressures (p_i), and evaluate Kp including degree-of-dissociation α problems.',
     appletSteps: [
-      <><strong>Choose Kp Mode:</strong> Toggle between <em>Direct Kp</em>, <em>Mole Fractions</em>, and <em>Dissociation (α)</em>, or press <em>Random 🎲</em>.</>,
+      <><strong>Choose Kp Mode:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch between <em>Partial Pressures → Kp</em>, <em>Equilibrium Moles + P(total) → Kp</em>, and <em>Percentage Dissociation (%) → Kp</em>.</>,
       <><strong>Compute Partial Pressures:</strong> Sum ONLY gaseous equilibrium moles for n_total, compute x_i = n_i ÷ n_total, then multiply by total pressure P.</>,
       <><strong>Verify Kp:</strong> Enter Kp via <em>ScientificInput</em> (using <em>×10ˣ</em> for extreme constants).</>,
     ],
@@ -1078,9 +1078,9 @@ export const howToGuides = {
     unit: 'Unit 3.9',
     summary: 'Calculate pH for strong acids/bases, weak acids via Ka, pure water at varied temperatures via Kw, and convert smoothly between Ka and pKa.',
     appletSteps: [
-      <><strong>Generate Variant:</strong> Click <em>🎲 New Variant</em> or select modes covering <em>Strong Acid/Base</em>, <em>Weak Acid (Ka)</em>, <em>Buffer</em>, <em>Kw vs Temperature</em>, and <em>Ka ↔ pKa Conversions</em>.</>,
-      <><strong>Match Formula to Species:</strong> Identify whether the solute dissociates fully (strong) or partially (weak Ka) before finding [H⁺].</>,
-      <><strong>Input Precision:</strong> Report pH to 2 decimal places, and enter small Ka / [H⁺] values cleanly with <em>ScientificInput</em> (<em>×10ˣ</em>).</>,
+      <><strong>Choose Acid/Base Mode:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to practise <em>Strong Acids</em>, <em>Weak Acids (Kₐ)</em>, <em>Acidic Buffers</em>, <em>K_w &amp; Temperature</em>, or <em>Kₐ ↔ pKₐ Conversions</em>.</>,
+      <><strong>Match Formula &amp; Hints:</strong> Identify whether the solute dissociates fully (strong) or partially (weak Kₐ) before finding [H⁺], using the collapsible <em>Need a Hint?</em> drawer if needed.</>,
+      <><strong>Input Precision:</strong> Report pH to 2 decimal places, and enter small Kₐ / [H⁺] values cleanly with <em>ScientificInput</em> (<em>×10ˣ</em>).</>,
     ],
     examMethod: {
       formulas: [
@@ -1124,8 +1124,8 @@ export const howToGuides = {
     unit: 'Unit 3.9',
     summary: 'Compute buffer pH from acid/conjugate-salt mixtures, solid salt additions, and small strong-acid or strong-alkali perturbations.',
     appletSteps: [
-      <><strong>Choose Buffer Scenario:</strong> Switch between <em>Acid + Salt Mixture</em>, <em>Solid Salt Mass</em>, and <em>+NaOH / +HCl Perturbation</em>, or click <em>Random 🎲</em>.</>,
-      <><strong>Track Exact Moles:</strong> Work directly with moles of weak acid <em>n(HA)</em> and conjugate base <em>n(A⁻)</em> so mixing dilution cancels cleanly.</>,
+      <><strong>Choose Buffer Scenario:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch between <em>Standard Acidic Buffer pH</em>, <em>Buffer Salt Mass Additions</em>, and <em>Buffer Action (+NaOH / +HCl)</em>.</>,
+      <><strong>Track Exact Moles &amp; Hints:</strong> Work directly with moles of weak acid <em>n(HA)</em> and conjugate base <em>n(A⁻)</em> so mixing dilution cancels cleanly, opening the collapsible <em>Need a Hint?</em> drawer if stuck.</>,
       <><strong>Verify pH:</strong> Enter final pH to 2 decimal places and check the feedback ratio if needed.</>,
     ],
     examMethod: {
@@ -1299,9 +1299,9 @@ export const howToGuides = {
     unit: 'Unit 4.8',
     summary: 'Cross-reference Infrared, Mass Spec, ¹³C NMR, and ¹H NMR splitting spectra with the WJEC Data Booklet to deduce unknown structures.',
     appletSteps: [
-      <><strong>Pick Unknown Sample:</strong> Select any spectrum dataset and inspect all <strong>4 technique tabs</strong> (<em>1. IR</em>, <em>2. MS</em>, <em>3. ¹³C NMR</em>, <em>4. ¹H NMR</em>).</>,
+      <><strong>Pick Unknown Sample:</strong> Use the adaptive sample selector (or <em>Random Unknown</em>) to inspect all <strong>4 technique tabs</strong> (<em>1. IR</em>, <em>2. MS</em>, <em>3. ¹³C NMR</em>, <em>4. ¹H NMR</em>).</>,
       <><strong>Click Interactive Peaks:</strong> Select bars/signals on each spectrum plot to log exact wavenumbers (cm⁻¹), m/z fragments, chemical shifts (δ ppm), integration, and splitting patterns.</>,
-      <><strong>Submit 3-Step Deduction:</strong> Pick the deduced <em>Functional Group</em>, <em>Molecular Formula</em>, and exact <em>Compound Identity</em> and verify.</>,
+      <><strong>Submit 3-Step Deduction:</strong> Pick the deduced <em>Functional Group</em>, <em>¹³C Environment Count</em>, and exact <em>Compound Identity</em> and verify.</>,
     ],
     examMethod: {
       formulas: [

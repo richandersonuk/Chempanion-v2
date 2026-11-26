@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { SPECTRA_PROBLEMS, FUNCTIONAL_GROUP_OPTIONS } from '../../data/questions/spectraQuestions';
+import { AdaptivePicker, StyledSelect } from '../../components/shared/AdaptivePicker';
 
 function shuffleArray(items) {
   const arr = [...items];
@@ -88,10 +89,10 @@ export const SpectraInterpreter = ({ onComplete }) => {
   const renderIrSpectrumSvg = () => {
     const width = 560;
     const height = 200;
-    const padL = 42;
-    const padR = 20;
-    const padT = 18;
-    const padB = 34;
+    const padL = 44;
+    const padR = 22;
+    const padT = 20;
+    const padB = 40;
     const plotW = width - padL - padR;
     const plotH = height - padT - padB;
 
@@ -119,7 +120,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
           return (
             <g key={wn}>
               <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#e2e8f0" strokeDasharray="3 3" />
-              <text x={x} y={height - 10} textAnchor="middle" className="text-[9px] font-mono fill-slate-500 font-bold">
+              <text x={x} y={height - 18} textAnchor="middle" className="text-[10.5px] font-mono fill-slate-500 font-bold">
                 {wn}
               </text>
             </g>
@@ -128,10 +129,10 @@ export const SpectraInterpreter = ({ onComplete }) => {
         <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
         <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
 
-        <text x={14} y={padT + plotH / 2} textAnchor="middle" transform={`rotate(-90, 14, ${padT + plotH / 2})`} className="text-[9px] font-black fill-slate-500">
+        <text x={15} y={padT + plotH / 2} textAnchor="middle" transform={`rotate(-90, 15, ${padT + plotH / 2})`} className="text-[10.5px] font-black fill-slate-500">
           % Transmittance
         </text>
-        <text x={padL + plotW / 2} y={height - 1} textAnchor="middle" className="text-[8px] font-black fill-slate-400 tracking-wider">
+        <text x={padL + plotW / 2} y={height - 4} textAnchor="middle" className="text-[11px] font-black fill-slate-500 tracking-wider">
           Wavenumber (cm⁻¹)
         </text>
 
@@ -163,9 +164,9 @@ export const SpectraInterpreter = ({ onComplete }) => {
               />
               <text
                 x={cx}
-                y={Math.min(padT + plotH - 6, cy + 14)}
+                y={Math.min(padT + plotH - 6, cy + 15)}
                 textAnchor="middle"
-                className="text-[8px] font-mono font-black fill-slate-700"
+                className="text-[10.5px] font-mono font-black fill-slate-700"
               >
                 {pk.wavenumber}
               </text>
@@ -182,8 +183,8 @@ export const SpectraInterpreter = ({ onComplete }) => {
     const height = 200;
     const padL = 42;
     const padR = 24;
-    const padT = 22;
-    const padB = 34;
+    const padT = 24;
+    const padB = 38;
     const plotW = width - padL - padR;
     const plotH = height - padT - padB;
     const maxMz = Math.max(100, problem.mr + 15);
@@ -198,7 +199,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
           return (
             <g key={pct}>
               <line x1={padL} y1={y} x2={padL + plotW} y2={y} stroke="#f1f5f9" />
-              <text x={padL - 6} y={y + 3} textAnchor="end" className="text-[8px] font-mono fill-slate-400 font-bold">
+              <text x={padL - 6} y={y + 3.5} textAnchor="end" className="text-[10.5px] font-mono fill-slate-400 font-bold">
                 {pct}
               </text>
             </g>
@@ -207,7 +208,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
         <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
         <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
 
-        <text x={padL + plotW / 2} y={height - 4} textAnchor="middle" className="text-[9px] font-black fill-slate-500 tracking-wider">
+        <text x={padL + plotW / 2} y={height - 6} textAnchor="middle" className="text-[11px] font-black fill-slate-500 tracking-wider">
           m/z (Mass-to-Charge Ratio)
         </text>
 
@@ -219,7 +220,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
             <g key={idx} onClick={() => setSelectedPeakIdx(idx)} className="cursor-pointer">
               <line x1={x} y1={padT + plotH} x2={x} y2={y} stroke={isSelected ? '#d97706' : '#1e293b'} strokeWidth={isSelected ? '4' : '3'} />
               <circle cx={x} cy={y} r={18} fill="transparent" />
-              <text x={x} y={y - 6} textAnchor="middle" className={`text-[9px] font-mono font-black ${isSelected ? 'fill-amber-600' : 'fill-blue-700'}`}>
+              <text x={x} y={y - 7} textAnchor="middle" className={`text-[11px] font-mono font-black ${isSelected ? 'fill-amber-600' : 'fill-blue-700'}`}>
                 {frag.mz}
               </text>
             </g>
@@ -232,11 +233,11 @@ export const SpectraInterpreter = ({ onComplete }) => {
   // Build SVG for 13C NMR Spectrum (220 -> 0 ppm)
   const renderC13SpectrumSvg = () => {
     const width = 560;
-    const height = 190;
+    const height = 200;
     const padL = 30;
     const padR = 30;
-    const padT = 24;
-    const padB = 34;
+    const padT = 26;
+    const padB = 40;
     const plotW = width - padL - padR;
     const plotH = height - padT - padB;
 
@@ -249,20 +250,20 @@ export const SpectraInterpreter = ({ onComplete }) => {
           return (
             <g key={ppm}>
               <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#f1f5f9" />
-              <text x={x} y={height - 12} textAnchor="middle" className="text-[8px] font-mono fill-slate-500 font-bold">
+              <text x={x} y={height - 18} textAnchor="middle" className="text-[10.5px] font-mono fill-slate-500 font-bold">
                 {ppm}
               </text>
             </g>
           );
         })}
         <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} stroke="#64748b" strokeWidth="1.5" />
-        <text x={padL + plotW / 2} y={height - 1} textAnchor="middle" className="text-[9px] font-black fill-slate-500 tracking-wider">
+        <text x={padL + plotW / 2} y={height - 4} textAnchor="middle" className="text-[11px] font-black fill-slate-500 tracking-wider">
           Chemical Shift δ (ppm)
         </text>
 
         {/* TMS Reference at 0 ppm */}
         <line x1={ppmToX(0)} y1={padT + plotH} x2={ppmToX(0)} y2={padT + plotH - 35} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="2 2" />
-        <text x={ppmToX(0)} y={padT + plotH - 40} textAnchor="middle" className="text-[8px] font-mono fill-slate-400 font-bold">TMS</text>
+        <text x={ppmToX(0)} y={padT + plotH - 42} textAnchor="middle" className="text-[10.5px] font-mono fill-slate-400 font-bold">TMS</text>
 
         {problem.c13Peaks.map((pk, idx) => {
           const x = ppmToX(pk.ppm);
@@ -271,7 +272,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
             <g key={idx} onClick={() => setSelectedPeakIdx(idx)} className="cursor-pointer">
               <line x1={x} y1={padT + plotH} x2={x} y2={padT + 20} stroke={isSelected ? '#d97706' : '#7c3aed'} strokeWidth={isSelected ? '4' : '3'} />
               <circle cx={x} cy={padT + 20} r={18} fill="transparent" />
-              <text x={x} y={padT + 12} textAnchor="middle" className="text-[9px] font-mono font-black fill-purple-700">
+              <text x={x} y={padT + 12} textAnchor="middle" className="text-[11px] font-mono font-black fill-purple-700">
                 {pk.ppm} ppm
               </text>
             </g>
@@ -288,36 +289,24 @@ export const SpectraInterpreter = ({ onComplete }) => {
         Unknown Organic Compound #{problemIdx + 1}
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 flex-wrap">
-        {SPECTRA_PROBLEMS.map((p, idx) => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => loadProblem(idx)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-              idx === problemIdx
-                ? 'bg-[#326fa0] text-white shadow-sm'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Sample {idx + 1}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={handleRandomProblem}
-          className="px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
-        >
-          🎲 Random Unknown
-        </button>
-      </div>
+      <AdaptivePicker
+        collapseBelow="sm"
+        value={String(problemIdx)}
+        onChange={(val) => loadProblem(Number(val))}
+        onRandom={handleRandomProblem}
+        randomLabel="🎲 Random Unknown"
+        options={SPECTRA_PROBLEMS.map((p, idx) => ({
+          value: String(idx),
+          label: `Sample ${idx + 1}`,
+        }))}
+      />
 
-      {/* Responsive 2-Column Workbench on HD Desktop */}
+      {/* Responsive 2-Column Workbench */}
       <div className="applet-workbench">
         {/* Left Column: Spectrum Selector Tabs & Viewer */}
         <div className="applet-workbench-sticky space-y-3">
           {/* Spectrum Technique Selector Tabs */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
             {[
               { id: 'ir', label: '1. Infrared (IR)', badge: 'Wavenumber (cm⁻¹)' },
               { id: 'ms', label: '2. Mass Spec (MS)', badge: 'm/z Spectrum' },
@@ -328,7 +317,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
                 key={t.id}
                 type="button"
                 onClick={() => { setActiveTab(t.id); setSelectedPeakIdx(null); }}
-                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                   activeTab === t.id
                     ? 'bg-slate-800 text-white border-slate-800 shadow-sm'
                     : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
@@ -343,7 +332,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
           </div>
 
           {/* Interactive Spectrum Viewer Card */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 sm:p-4">
             {activeTab === 'ir' && (
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
@@ -459,23 +448,23 @@ export const SpectraInterpreter = ({ onComplete }) => {
                   </span>
                 </div>
                 <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl">
-                  <table className="w-full text-left border-collapse text-xs">
+                  <table className="w-full text-left border-collapse text-[11px] sm:text-xs">
                     <thead>
-                      <tr className="bg-slate-100 text-slate-600 font-black text-[10px]">
-                        <th className="p-3">Chemical Shift δ (ppm)</th>
-                        <th className="p-3">Integration</th>
-                        <th className="p-3">Splitting Pattern</th>
-                        {solved && <th className="p-3">WJEC n + 1 Assignment</th>}
+                      <tr className="bg-slate-100 text-slate-600 font-black text-[10px] sm:text-[11px]">
+                        <th className="p-2 sm:p-3">Chemical Shift δ (ppm)</th>
+                        <th className="p-2 sm:p-3">Integration</th>
+                        <th className="p-2 sm:p-3">Splitting Pattern</th>
+                        {solved && <th className="p-2 sm:p-3">WJEC n + 1 Assignment</th>}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                       {problem.h1Peaks.map((pk, idx) => (
                         <tr key={idx} className="hover:bg-slate-50">
-                          <td className="p-3 font-mono font-black text-blue-700">{pk.ppm.toFixed(1)} ppm</td>
-                          <td className="p-3 font-mono font-bold">{pk.integration}H</td>
-                          <td className="p-3 font-bold text-slate-800">{pk.splitting}</td>
+                          <td className="p-2 sm:p-3 font-mono font-black text-blue-700">{pk.ppm.toFixed(1)} ppm</td>
+                          <td className="p-2 sm:p-3 font-mono font-bold">{pk.integration}H</td>
+                          <td className="p-2 sm:p-3 font-bold text-slate-800">{pk.splitting}</td>
                           {solved && (
-                            <td className="p-3 text-slate-600">
+                            <td className="p-2 sm:p-3 text-slate-600">
                               {pk.nPlusOne}
                               <span className="block text-emerald-700 font-bold mt-0.5">({pk.env})</span>
                             </td>
@@ -491,7 +480,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
         </div>
 
         {/* Right Column: Hint & Structured 3-Step WJEC Deduction Panel */}
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-5 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="text-xs font-black tracking-wider text-slate-700">
               Structured Spectral Deduction
@@ -518,16 +507,13 @@ export const SpectraInterpreter = ({ onComplete }) => {
               <label className="block text-[10px] font-black tracking-wider text-slate-400 mb-1.5">
                 Step 1: Principal Functional Group
               </label>
-              <select
+              <StyledSelect
+                ariaLabel="Step 1: Principal Functional Group"
                 value={selectedFunctionalGroup}
-                onChange={(e) => setSelectedFunctionalGroup(e.target.value)}
-                className="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 bg-white"
-              >
-                <option value="">Select functional group...</option>
-                {FUNCTIONAL_GROUP_OPTIONS.map((fg) => (
-                  <option key={fg} value={fg}>{fg}</option>
-                ))}
-              </select>
+                onChange={(val) => setSelectedFunctionalGroup(val)}
+                placeholder="Select functional group..."
+                options={FUNCTIONAL_GROUP_OPTIONS.map((fg) => ({ value: fg, label: fg }))}
+              />
             </div>
 
             {/* Step 2 */}
@@ -542,7 +528,7 @@ export const SpectraInterpreter = ({ onComplete }) => {
                 value={enteredC13Count}
                 onChange={(e) => setEnteredC13Count(e.target.value)}
                 placeholder="e.g. 2, 3, or 4"
-                className="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 bg-white"
+                className="w-full min-h-[40px] px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white outline-none focus:border-[#326fa0]"
               />
             </div>
 
@@ -551,16 +537,13 @@ export const SpectraInterpreter = ({ onComplete }) => {
               <label className="block text-[10px] font-black tracking-wider text-slate-400 mb-1.5">
                 Step 3: Deduce Unknown Identity
               </label>
-              <select
+              <StyledSelect
+                ariaLabel="Step 3: Deduce Unknown Identity"
                 value={selectedCompound}
-                onChange={(e) => setSelectedCompound(e.target.value)}
-                className="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 bg-white"
-              >
-                <option value="">Select compound...</option>
-                {shuffledCompoundOptions.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+                onChange={(val) => setSelectedCompound(val)}
+                placeholder="Select compound..."
+                options={shuffledCompoundOptions.map((opt) => ({ value: opt, label: opt }))}
+              />
             </div>
           </div>
 

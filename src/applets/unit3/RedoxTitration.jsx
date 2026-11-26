@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 
 const formatSci = (num, sigFigs = 3) => {
   if (num === 0) return '0';
@@ -7,8 +8,17 @@ const formatSci = (num, sigFigs = 3) => {
   return <>{base} &times; 10<sup>{parseInt(exp, 10)}</sup></>;
 };
 
+const MODE_OPTIONS = [
+  { value: 'purity_iron', label: 'Percentage Purity of Iron', shortLabel: '% Purity (Fe)' },
+  { value: 'ethanedioate', label: 'Analysis of Ethanedioate Ions', shortLabel: 'Ethanedioate' },
+  { value: 'hydrogen_peroxide', label: 'Concentration of H₂O₂', shortLabel: '[H₂O₂]' },
+  { value: 'copper_thiosulfate', label: 'Iodometric Copper Analysis', shortLabel: 'Cu / Thiosulfate' },
+  { value: 'molar_mass', label: 'Molar Mass Calculation (Mᵣ)', shortLabel: 'Molar Mass (Mᵣ)' },
+];
+
 const RedoxTitration = ({ onComplete }) => {
   const [mode, setMode] = useState('purity_iron');
+  const [isRandomMode, setIsRandomMode] = useState(false);
   const [problem, setProblem] = useState(null);
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: null, status: '' });
@@ -17,7 +27,7 @@ const RedoxTitration = ({ onComplete }) => {
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['purity_iron', 'ethanedioate', 'molar_mass', 'hydrogen_peroxide', 'copper_thiosulfate'];
-    const selection = forcedMode || mode;
+    const selection = forcedMode || (isRandomMode ? 'random' : mode);
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
     setMode(targetMode);
@@ -176,135 +186,134 @@ const RedoxTitration = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex flex-col sm:flex-row items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 w-full min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm"
-          >
-            <option value="purity_iron">Percentage Purity of Iron</option>
-            <option value="ethanedioate">Analysis of Ethanedioate Ions</option>
-            <option value="hydrogen_peroxide">Concentration of H₂O₂</option>
-            <option value="copper_thiosulfate">Iodometric Copper Analysis</option>
-            <option value="molar_mass">Molar Mass Calculation (Mᵣ)</option>
-          </select>
-          <button
-            type="button"
-            onClick={() => { setMode('random'); generateProblem('random'); }}
-            className={`w-full sm:w-auto px-4 py-2.5 text-xs font-black rounded-xl transition-all border shrink-0 cursor-pointer ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">{problem.title}</div>
+
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        isRandomActive={isRandomMode}
+        onChange={(val) => {
+          setIsRandomMode(false);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setIsRandomMode(true);
+          generateProblem('random');
+        }}
+        collapseBelow="sm"
+      />
+
+      <div className="applet-workbench">
+        {/* Left Column: Titration Scenario Card & Hint */}
+        <div className="applet-workbench-sticky space-y-3.5">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
+            <div className="question-text !mb-0 text-center md:text-left leading-relaxed text-sm sm:text-base">
+              {problem.text}
+            </div>
+
+            <div className="flex flex-col items-center md:items-start">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[34px] px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                  <strong className="font-black text-amber-900">Redox Titration Ratios: </strong>
+                  Use n = c × V(cm³) ÷ 1000 for the burette reagent, apply the half-equation mole ratio (1 MnO₄⁻ : 5 Fe²⁺; 2 MnO₄⁻ : 5 C₂O₄²⁻; 2 MnO₄⁻ : 5 H₂O₂; overall 1 Cu²⁺ : 1 S₂O₃²⁻), and scale up (e.g. ×10) if a 25.0 cm³ portion came from a 250 cm³ volumetric flask.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="applet-header">{problem.title}</div>
-
-      <div className="flex flex-col items-center mb-4">
-        <button
-          type="button"
-          onClick={() => setShowHint((prev) => !prev)}
-          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
-        >
-          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
-        </button>
-        {showHint && (
-          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-            <strong className="font-black text-amber-900">Redox Titration Ratios: </strong>
-            Use n = c × V(cm³) ÷ 1000 for the burette reagent, apply the half-equation mole ratio (1 MnO₄⁻ : 5 Fe²⁺; 2 MnO₄⁻ : 5 C₂O₄²⁻; 2 MnO₄⁻ : 5 H₂O₂; overall 1 Cu²⁺ : 1 S₂O₃²⁻), and scale up (e.g. ×10) if a 25.0 cm³ portion came from a 250 cm³ volumetric flask.
+        {/* Right Column: Question, Input, Buttons, Feedback & Worked Solution */}
+        <div className="space-y-4">
+          <div className="font-bold text-center md:text-left text-[0.95rem] px-1 text-slate-700">
+            {problem.question}
           </div>
-        )}
-      </div>
 
-      <div className="question-text text-center px-2 leading-relaxed">
-        {problem.text}
-      </div>
-
-      <div className="font-bold mb-6 text-center text-[0.95rem] px-2 text-slate-700">
-        {problem.question}
-      </div>
-
-      <div className="input-group">
-        <label className="font-bold text-[var(--chem-text-main)]">{problem.label}</label>
-        <input
-          type="number"
-          step="any"
-          inputMode="decimal"
-          onWheel={(e) => e.currentTarget.blur()}
-          className={`chem-input ${feedback.status}`}
-          value={studentAnswer}
-          onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: null, status: '' }); }}
-          onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
-          placeholder="0.00"
-        />
-        <span className="font-bold text-[var(--chem-text-main)]">{problem.unit}</span>
-      </div>
-
-      <div className="button-group">
-        <button
-          className="btn btn-primary"
-          onClick={checkAnswer}
-        >
-          Check Answer
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={() => generateProblem()}
-        >
-          Next Problem &rarr;
-        </button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
-          feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
-        }`}>
-          <div>
-            {feedback.message}
-            {feedback.status === 'error' && !showSolution && (
-              <div className="mt-3">
-                <button
-                  onClick={() => setShowSolution(true)}
-                  className="text-xs px-3.5 py-1.5 bg-white border border-current rounded-lg font-bold hover:bg-rose-50 transition-colors cursor-pointer"
-                >
-                  Show Worked Solution
-                </button>
-              </div>
-            )}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs">
+            <div className="input-group !mb-0">
+              <label className="font-bold text-[var(--chem-text-main)]">{problem.label}</label>
+              <input
+                type="number"
+                step="any"
+                inputMode="decimal"
+                onWheel={(e) => e.currentTarget.blur()}
+                className={`chem-input min-h-[40px] bg-white ${feedback.status}`}
+                value={studentAnswer}
+                onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: null, status: '' }); }}
+                onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+                placeholder="0.00"
+              />
+              <span className="font-bold text-[var(--chem-text-main)]">{problem.unit}</span>
+            </div>
           </div>
-          {feedback.status === 'success' && (
+
+          <div className="button-group">
             <button
-              type="button"
+              className="btn btn-primary"
+              onClick={checkAnswer}
+            >
+              Check Answer
+            </button>
+            <button
+              className="btn btn-secondary"
               onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
             >
               Next Problem &rarr;
             </button>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+              feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
+            }`}>
+              <div className="min-w-0">
+                {feedback.message}
+                {feedback.status === 'error' && !showSolution && (
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowSolution(true)}
+                      className="min-h-[34px] text-xs px-3.5 py-1.5 bg-white border border-current rounded-lg font-bold hover:bg-rose-50 transition-colors cursor-pointer"
+                    >
+                      Show Worked Solution
+                    </button>
+                  </div>
+                )}
+              </div>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
+          )}
+
+          {showSolution && (
+            <div className="bg-white border border-[var(--chem-border)] rounded-2xl p-4 sm:p-5 shadow-inner">
+              <h4 className="font-bold text-[var(--chem-text-main)] mb-3">Worked Solution:</h4>
+              <div className="flex flex-col gap-2">
+                {problem.solutionSteps.map((step, index) => (
+                  <div key={index} className="text-[var(--chem-text-main)] text-xs sm:text-sm font-mono bg-gray-50 p-2.5 rounded-lg border border-gray-100 break-words">
+                    {step}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-      )}
-
-      {showSolution && (
-        <div className="bg-white border border-[var(--chem-border)] rounded-lg p-5 mt-4 shadow-inner">
-          <h4 className="font-bold text-[var(--chem-text-main)] mb-3">Worked Solution:</h4>
-          <div className="flex flex-col gap-2">
-            {problem.solutionSteps.map((step, index) => (
-              <div key={index} className="text-[var(--chem-text-main)] text-sm font-mono bg-gray-50 p-2 rounded border border-gray-100">
-                {step}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
+import { AdaptivePicker } from './AdaptivePicker';
 
 function shuffleArray(items) {
   const arr = [...items];
@@ -691,46 +692,34 @@ const MechanismTrainer = ({
         {headerTitle}
       </div>
 
-      {/* Mechanism Selector */}
-      <div className="w-full flex justify-center gap-1.5 mb-4 flex-wrap">
-        {problems.map((prob, idx) => {
-          const isCurrent = idx === problemIndex;
+      {/* Adaptive Mechanism Selector */}
+      <AdaptivePicker
+        className="mb-4"
+        collapseBelow="md"
+        value={String(problemIndex)}
+        onChange={(val) => selectProblem(Number(val))}
+        options={problems.map((prob, idx) => {
           const isSolved = solvedIds.has(prob.completionId);
-          return (
-            <button
-              key={prob.completionId}
-              type="button"
-              onClick={() => selectProblem(idx)}
-              className={`px-3 py-1.5 text-[11px] font-black rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
-                isCurrent
-                  ? 'bg-[#235478] border-[#235478] text-white shadow-sm'
-                  : isSolved
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100'
-                  : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <span>{prob.shortLabel || `${selectorPrefix} ${idx + 1}`}</span>
-              {isSolved && <span aria-label="Completed">✓</span>}
-            </button>
-          );
+          const base = prob.shortLabel || `${selectorPrefix} ${idx + 1}`;
+          return {
+            value: String(idx),
+            label: isSolved ? `${base} ✓` : base,
+          };
         })}
-        {problems.length > 1 && (
-          <button
-            type="button"
-            onClick={() => {
-              const others = problems.map((_, i) => i).filter((i) => i !== problemIndex);
-              const next = others[Math.floor(Math.random() * others.length)];
-              selectProblem(next);
-            }}
-            className="px-3 py-1.5 text-[11px] font-black rounded-lg border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
-          >
-            🎲 Random
-          </button>
-        )}
-      </div>
+        onRandom={
+          problems.length > 1
+            ? () => {
+                const others = problems.map((_, i) => i).filter((i) => i !== problemIndex);
+                const next = others[Math.floor(Math.random() * others.length)];
+                selectProblem(next);
+              }
+            : undefined
+        }
+        randomLabel="🎲 Random"
+      />
 
       {/* Title & Reagents Banner */}
-      <div className="w-full max-w-2xl mx-auto mb-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="w-full mb-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="text-left">
           <div className="text-xs sm:text-sm font-black text-slate-800">{currentProblem.title}</div>
           {currentProblem.subtitle && (
@@ -745,7 +734,7 @@ const MechanismTrainer = ({
       </div>
 
       {/* Stage Stepper */}
-      <div className="w-full max-w-2xl mx-auto mb-4 flex items-center justify-center gap-1.5 flex-wrap">
+      <div className="w-full mb-4 flex items-center justify-center gap-1.5 flex-wrap">
         {currentProblem.steps.map((step, idx) => {
           const isCompleted = mechanismDone || idx < stepIndex || (idx === stepIndex && stepPassed);
           const isActive = !mechanismDone && idx === stepIndex && !stepPassed;
@@ -767,27 +756,35 @@ const MechanismTrainer = ({
         })}
       </div>
 
-      {/* COMPLETION SUMMARY VIEW */}
+      {/* Persistent 2-Column Workbench Layout */}
       {mechanismDone ? (
-        <>
-          <div className="w-full max-w-2xl mx-auto mb-3 text-center px-2">
-            <p className="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed">
-              Mechanism Complete — WJEC Mark-Scheme Breakdown
+        <div className="applet-workbench mt-2">
+          <div className="applet-workbench-sticky bg-slate-50 border border-slate-200 rounded-3xl p-5 space-y-3 text-left">
+            <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
+              Mechanism Overview
+            </span>
+            <h4 className="text-sm sm:text-base font-black text-slate-800">
+              {currentProblem.title}
+            </h4>
+            {currentProblem.reagents && (
+              <div className="text-xs font-bold text-[#235478] bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 inline-block">
+                {currentProblem.reagents}
+              </div>
+            )}
+            <p className="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+              {currentProblem.summary}
             </p>
           </div>
-          <div className="w-full max-w-2xl mx-auto my-4 bg-emerald-50/60 border border-emerald-200 rounded-3xl p-5 sm:p-6 space-y-4">
+
+          <div className="bg-emerald-50/60 border border-emerald-200 rounded-3xl p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <span className="text-xs font-black tracking-wider text-emerald-700">
-                ★ Full Mark-Scheme Summary
+                ★ Mechanism Complete — Mark-Scheme Breakdown
               </span>
               <span className="text-[11px] font-bold bg-white text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full">
                 {currentProblem.steps.length} / {currentProblem.steps.length} Stages Passed
               </span>
             </div>
-
-            <p className="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed text-left">
-              {currentProblem.summary}
-            </p>
 
             {currentProblem.markScheme && (
               <div className="bg-white border border-emerald-200 rounded-2xl p-4 space-y-2 text-left">
@@ -822,15 +819,15 @@ const MechanismTrainer = ({
               </button>
             </div>
           </div>
-        </>
+        </div>
       ) : (
-        <div className={currentStep.elements ? 'applet-workbench mt-2' : 'space-y-4'}>
-          {/* LEFT WORKBENCH COLUMN: Tool Bars + Interactive SVG Canvas + Arrow Chips */}
-          {currentStep.elements && (
+        <div className="applet-workbench mt-2">
+          {/* LEFT WORKBENCH COLUMN: Canvas + Tool Bars OR Context Overview Card */}
+          {currentStep.elements ? (
             <div className="applet-workbench-sticky space-y-2.5">
               {/* DIPOLE PAINT BAR (Dipoles step only) */}
               {isDipolesStep && (
-                <div className="w-full flex items-center justify-center lg:justify-start gap-1.5 flex-wrap">
+                <div className="w-full flex items-center justify-center md:justify-start gap-1.5 flex-wrap">
                   <span className="text-[10px] font-black tracking-wider text-slate-400 mr-1">
                     Tool:
                   </span>
@@ -844,7 +841,7 @@ const MechanismTrainer = ({
                       key={tool.id}
                       type="button"
                       onClick={() => setPaintBrush(tool.id)}
-                      className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all cursor-pointer ${
+                      className={`min-h-[36px] px-3 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
                         paintBrush === tool.id
                           ? 'bg-[#235478] border-[#235478] text-white shadow-xs'
                           : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -882,7 +879,7 @@ const MechanismTrainer = ({
               )}
 
               {/* INTERACTIVE SVG MECHANISM CANVAS */}
-              <div className="w-full bg-white border border-slate-200 rounded-3xl p-3 sm:p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden h-[250px] sm:h-[290px] touch-none">
+              <div className="w-full bg-white border border-slate-200 rounded-3xl p-3 sm:p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden aspect-[17/10] min-h-[205px] sm:min-h-[260px] touch-none">
                 <div
                   onPointerDown={handleCanvasPointerDown}
                   onPointerMove={handleCanvasPointerMove}
@@ -1087,7 +1084,7 @@ const MechanismTrainer = ({
                               type="button"
                               onClick={() => flipArrowCurve(a.id)}
                               title="Flip curve direction"
-                              className="px-1.5 py-0.5 rounded bg-white/80 hover:bg-white border border-current/20 text-[10px] cursor-pointer"
+                              className="min-h-[32px] px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white border border-current/20 text-[11px] font-bold cursor-pointer"
                             >
                               ↺ Flip
                             </button>
@@ -1095,7 +1092,7 @@ const MechanismTrainer = ({
                               type="button"
                               onClick={() => removeArrow(a.id)}
                               title="Remove arrow"
-                              className="px-1.5 py-0.5 rounded bg-white/80 hover:bg-white border border-current/20 text-[10px] cursor-pointer"
+                              className="min-h-[32px] px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white border border-current/20 text-[11px] font-bold cursor-pointer"
                             >
                               &times;
                             </button>
@@ -1107,17 +1104,34 @@ const MechanismTrainer = ({
                 </div>
               )}
             </div>
+          ) : (
+            <div className="applet-workbench-sticky bg-slate-50 border border-slate-200 rounded-3xl p-5 space-y-3 text-left">
+              <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
+                Stage {stepIndex + 1} Context &amp; Checkpoint
+              </span>
+              <h4 className="text-sm sm:text-base font-black text-slate-800">
+                {currentStep.label}
+              </h4>
+              <p className="text-xs sm:text-sm font-medium text-slate-600 leading-relaxed">
+                {currentProblem.subtitle || currentProblem.title}
+              </p>
+              {currentProblem.reagents && (
+                <div className="text-xs font-bold text-[#235478] bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 inline-block">
+                  Reagents &amp; Conditions: {currentProblem.reagents}
+                </div>
+              )}
+            </div>
           )}
 
           {/* RIGHT WORKBENCH COLUMN: Prompt, Hint, Choice Options, Actions & Feedback */}
-          <div className={`space-y-4 ${!currentStep.elements ? 'w-full max-w-2xl mx-auto' : ''}`}>
-            <div className={`text-center ${currentStep.elements ? 'lg:text-left' : ''} px-1`}>
+          <div className="space-y-4">
+            <div className="text-center md:text-left px-1">
               <p className="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed">
                 {currentStep.prompt}
               </p>
 
               {currentStep.hint && (
-                <div className={`mt-2 flex flex-col ${currentStep.elements ? 'items-center lg:items-start' : 'items-center'}`}>
+                <div className="mt-2 flex flex-col items-center md:items-start">
                   <button
                     type="button"
                     onClick={() => setShowHint((v) => !v)}
