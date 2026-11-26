@@ -26,10 +26,10 @@ export const HeaderBrand = ({ className = "" }) => (
   <div className={`flex items-center gap-2 md:gap-3 shrink min-w-0 ${className}`}>
     <Icon className="h-6 sm:h-7 md:h-8 shrink-0" />
     <div className="flex items-baseline tracking-tight select-none font-sans truncate">
-      <span className="text-xl sm:text-2xl md:text-3xl" style={{ color: '#326fa0', fontWeight: '900', lineHeight: '1' }}>
+      <span className="text-lg sm:text-2xl md:text-3xl" style={{ color: '#326fa0', fontWeight: '900', lineHeight: '1' }}>
         CHEM
       </span>
-      <span className="text-xl sm:text-2xl md:text-3xl" style={{ color: '#80b5c6', fontWeight: '400', lineHeight: '1' }}>
+      <span className="text-lg sm:text-2xl md:text-3xl" style={{ color: '#80b5c6', fontWeight: '400', lineHeight: '1' }}>
         panion
       </span>
     </div>
