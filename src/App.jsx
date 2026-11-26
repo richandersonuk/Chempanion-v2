@@ -581,7 +581,7 @@ export default function App() {
                   </button>
                   {mobileUpdatesOpen && (
                     <div className="mt-2 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 font-semibold leading-relaxed">
-                      Latest Updates: Added <strong>Synoptic &amp; Cross-Unit Labs</strong> (<strong>Chemistry Diagrams Lab</strong> &amp; <strong>Mechanism Maestro</strong>), Unit 2 modules (<strong>Hess’s Law Cycles</strong>, <strong>Maxwell–Boltzmann</strong>, <strong>IUPAC &amp; E/Z</strong>), and wider responsive desktop layouts.
+                      Latest Updates: Added interactive <strong>Hess Cycle Builder</strong> &amp; subscript formatting in <strong>Hess’s Law Cycles</strong>, <strong>Synoptic &amp; Cross-Unit Labs</strong>, Unit 2 modules, and wider responsive desktop layouts.
                     </div>
                   )}
                 </div>
@@ -593,7 +593,7 @@ export default function App() {
                     <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    Latest Updates: Added <strong>Synoptic &amp; Cross-Unit Labs</strong> (<strong>Chemistry Diagrams Lab</strong> &amp; <strong>Mechanism Maestro</strong>), Unit 2 modules (<strong>Hess’s Law Cycles</strong>, <strong>Maxwell–Boltzmann</strong>, <strong>IUPAC &amp; E/Z</strong>), and wider responsive desktop layouts.
+                    Latest Updates: Added interactive <strong>Hess Cycle Builder</strong> &amp; subscript formatting in <strong>Hess’s Law Cycles</strong>, <strong>Synoptic &amp; Cross-Unit Labs</strong>, Unit 2 modules, and wider responsive desktop layouts.
                   </p>
                 </div>
               </div>

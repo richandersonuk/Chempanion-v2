@@ -503,10 +503,10 @@ export const howToGuides = {
     ],
     examMethod: {
       formulas: [
-        'q (J) = m_water × 4.18 × ΔT       |       ΔH_c = −q(kJ) ÷ n(fuel burned)',
+        <>q (J) = m<sub>water</sub> × 4.18 × ΔT &nbsp;&nbsp;|&nbsp;&nbsp; ΔH<sub>c</sub> = −q(kJ) ÷ n(fuel burned)</>,
         'Bond enthalpies: ΔH = ∑E(bonds broken) − ∑E(bonds formed)',
-        'Hess (ΔH°_f): ΔH_rxn = ∑ΔH°_f(products) − ∑ΔH°_f(reactants)',
-        'Hess (ΔH°_c): ΔH_rxn = ∑ΔH°_c(reactants) − ∑ΔH°_c(products)',
+        <>Hess (ΔH<sub>f</sub>°): ΔH<sub>rxn</sub> = ∑ΔH<sub>f</sub>°(products) − ∑ΔH<sub>f</sub>°(reactants)</>,
+        <>Hess (ΔH<sub>c</sub>°): ΔH<sub>rxn</sub> = ∑ΔH<sub>c</sub>°(reactants) − ∑ΔH<sub>c</sub>°(products)</>,
       ],
       steps: [
         'In calorimetry, ALWAYS insert mass of WATER heated into q = mcΔT, and use mass of FUEL burned strictly for n = m ÷ Mᵣ.',
@@ -516,12 +516,12 @@ export const howToGuides = {
       ],
     },
     workedExample: {
-      question: 'Burning 0.600 g of propan-1-ol (Mᵣ = 60.0) heats 150.0 g of water from 19.5 °C to 51.0 °C. Calculate the experimental enthalpy of combustion, ΔH_c.',
+      question: <>Burning 0.600 g of propan-1-ol (Mᵣ = 60.0) heats 150.0 g of water from 19.5 °C to 51.0 °C. Calculate the experimental enthalpy of combustion, ΔH<sub>c</sub>.</>,
       steps: [
         'ΔT = 51.0 − 19.5 = 31.5 °C.',
         'Heat absorbed by water: q = 150.0 × 4.18 × 31.5 = 19,750.5 J = 19.7505 kJ.',
         'Moles of propan-1-ol burned: n = 0.600 ÷ 60.0 = 0.0100 mol.',
-        'ΔH_c = −19.7505 ÷ 0.0100 = −1,975 kJ mol⁻¹ (−1.98 × 10³ kJ mol⁻¹).',
+        <>ΔH<sub>c</sub> = −19.7505 ÷ 0.0100 = −1,975 kJ mol⁻¹ (−1.98 × 10³ kJ mol⁻¹).</>,
       ],
       answer: '−1975 kJ mol⁻¹',
     },
@@ -532,7 +532,7 @@ export const howToGuides = {
         'Forgetting the negative sign on exothermic combustion reactions or forgetting to divide J by 1000.',
       ],
       checklist: [
-        'm_water used in q = mcΔT ; m_fuel used in n = m ÷ Mᵣ',
+        <>m<sub>water</sub> used in q = mcΔT ; m<sub>fuel</sub> used in n = m ÷ Mᵣ</>,
         'J converted cleanly to kJ (÷ 1000) before dividing by n',
         'Exothermic combustion ΔH carries an explicit minus (−) sign',
       ],
@@ -585,30 +585,30 @@ export const howToGuides = {
   'hess-cycles': {
     title: 'Hess’s Law Enthalpy Cycles',
     unit: 'Unit 2.1',
-    summary: 'Construct ΔH°_f and ΔH°_c Hess cycles, apply the zero enthalpy rule for standard elements, and solve both ΔH_r° and unknown species enthalpies.',
+    summary: <>Construct ΔH<sub>f</sub>° and ΔH<sub>c</sub>° Hess cycles from scratch in Hess Cycle Builder, apply the zero-enthalpy rule for standard elements, and solve ΔH<sub>r</sub>° or unknown species enthalpies.</>,
     appletSteps: [
-      <><strong>Pick Cycle Mode:</strong> Choose <em>Enthalpies of Formation (ΔH_f° Cycle)</em>, <em>Enthalpies of Combustion (ΔH_c° Cycle)</em>, or <em>Unknown Species ΔH° from ΔH_r</em> (or click <em>Random 🎲</em>).</>,
-      <><strong>Check Arrow Direction &amp; Standard Elements:</strong> Inspect the Hess triangle on the left workbench (arrows point UP for formation, DOWN for combustion) and note that elements in standard states have ΔH_f° = 0.</>,
-      <><strong>Clear Step 1 Route Gate &amp; Solve:</strong> Confirm the valid Hess equation and stoichiometric sums before solving ΔH_r° or the unknown species value.</>,
+      <><strong>Pick Cycle Mode:</strong> Start in <em>Hess Cycle Builder</em> to assemble full cycles, or switch to <em>ΔH<sub>f</sub>° Cycles</em>, <em>ΔH<sub>c</sub>° Cycles</em>, or <em>Unknown ΔH° from ΔH<sub>r</sub>°</em> (or <em>Random 🎲</em>).</>,
+      <><strong>Construct &amp; Orient the Cycle:</strong> In Builder mode, choose the balanced intermediate box (elements or combustion oxides), orient both diagonal arrows, and assign stoichiometric multipliers (setting standard elements to <em>0</em> for ΔH<sub>f</sub>°).</>,
+      <><strong>Deduce Route Signs &amp; Solve:</strong> Follow the indirect path from Reactants → Intermediate → Products (+ with an arrow, − against an arrow) to verify the route equation and compute ΔH<sub>r</sub>° or the unknown compound’s enthalpy.</>,
     ],
     examMethod: {
       formulas: [
-        'Formation Cycle (arrows UP from elements): ΔH°_r = ∑ΔH°_f(products) − ∑ΔH°_f(reactants)',
-        'Combustion Cycle (arrows DOWN to CO₂ + H₂O): ΔH°_r = ∑ΔH°_c(reactants) − ∑ΔH°_c(products)',
+        <>Formation Cycle (arrows UP from elements): ΔH<sub>r</sub>° = ∑ΔH<sub>f</sub>°(products) − ∑ΔH<sub>f</sub>°(reactants)</>,
+        <>Combustion Cycle (arrows DOWN to CO₂ + H₂O): ΔH<sub>r</sub>° = ∑ΔH<sub>c</sub>°(reactants) − ∑ΔH<sub>c</sub>°(products)</>,
       ],
       steps: [
-        'Identify whether provided data are ΔH°_f (formation) or ΔH°_c (combustion) — never mix the subtraction direction!',
+        <>Identify whether provided data are ΔH<sub>f</sub>° (formation) or ΔH<sub>c</sub>° (combustion) — never mix the arrow or subtraction direction!</>,
         'Multiply every tabulated enthalpy by its exact stoichiometric coefficient in the balanced chemical equation.',
-        'Treat any pure element in its standard state (e.g. O₂(g), H₂(g), Fe(s), C(s)) as ΔH°_f = 0 kJ mol⁻¹.',
+        <>Treat any pure element in its standard state (e.g. O₂(g), H₂(g), Fe(s), C(s)) as ΔH<sub>f</sub>° = 0 kJ mol⁻¹ (note: in combustion cycles elements still burn with ΔH<sub>c</sub>° ≠ 0 unless the element is O₂(g)).</>,
         'When solving for an unknown compound X whose coefficient is n > 1, divide the algebraic difference by n at the final step.',
       ],
     },
     workedExample: {
-      question: 'Use ΔH°_c data to calculate ΔH°_f(C₂H₆): C(s) = −394, H₂(g) = −286, C₂H₆(g) = −1560 kJ mol⁻¹.',
+      question: <>Use ΔH<sub>c</sub>° data to calculate ΔH<sub>f</sub>°(C₂H₆): C(s) = −394, H₂(g) = −286, C₂H₆(g) = −1560 kJ mol⁻¹.</>,
       steps: [
         'Balanced target equation: 2C(s) + 3H₂(g) → C₂H₆(g).',
-        'Combustion arrows point DOWN to 2CO₂ + 3H₂O: ∑ΔH°_c(reactants) = 2(−394) + 3(−286) = −1646 kJ mol⁻¹.',
-        'ΔH°_f = ∑ΔH°_c(reactants) − ∑ΔH°_c(products) = −1646 − (−1560) = −86 kJ mol⁻¹.',
+        <>Combustion arrows point DOWN to 2CO₂ + 3H₂O: ∑ΔH<sub>c</sub>°(reactants) = 2(−394) + 3(−286) = −1646 kJ mol⁻¹.</>,
+        <>ΔH<sub>f</sub>° = ∑ΔH<sub>c</sub>°(reactants) − ∑ΔH<sub>c</sub>°(products) = −1646 − (−1560) = −86 kJ mol⁻¹.</>,
       ],
       answer: '−86 kJ mol⁻¹',
     },
@@ -616,10 +616,10 @@ export const howToGuides = {
       pitfalls: [
         'Using (products − reactants) with combustion data instead of (reactants − products).',
         'Forgetting to multiply C(s) or H₂(g) combustion enthalpies by 2 or 3 when balancing hydrocarbon formation equations.',
-        'Assuming an element in a combustion cycle is zero (elements burn exothermically: ΔH°_c ≠ 0, even though ΔH°_f = 0).',
+        <>Assuming an element in a combustion cycle is zero (elements burn exothermically: ΔH<sub>c</sub>° ≠ 0, even though ΔH<sub>f</sub>° = 0).</>,
       ],
       checklist: [
-        'Correct arrow orientation checked (UP for ΔH°_f, DOWN for ΔH°_c)',
+        <>Correct arrow orientation checked (UP for ΔH<sub>f</sub>°, DOWN for ΔH<sub>c</sub>°)</>,
         'Every enthalpy multiplied by equation balancing coefficients',
         'Final answer divided by stoichiometric coefficient n if solving for 1 mole of an unknown compound',
       ],

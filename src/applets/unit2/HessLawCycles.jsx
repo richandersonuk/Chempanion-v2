@@ -1,5 +1,29 @@
 import React, { useState, useEffect } from 'react';
 
+const DeltaH = ({ sub, std = true }) => (
+  <span className="whitespace-nowrap">
+    ΔH{sub ? <sub>{sub}</sub> : null}{std ? '°' : ''}
+  </span>
+);
+
+const shuffleArray = (items) => {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+};
+
+const MULTIPLIER_OPTIONS = [
+  { val: '0', label: '0 (ΔH° = 0)' },
+  { val: '0.5', label: '×½' },
+  { val: '1', label: '×1' },
+  { val: '2', label: '×2' },
+  { val: '3', label: '×3' },
+  { val: '4', label: '×4' },
+];
+
 const HESS_REACTIONS = [
   {
     id: 'ethene_hyd',
@@ -7,6 +31,11 @@ const HESS_REACTIONS = [
     title: 'Hydration of Ethene',
     equation: 'C₂H₄(g) + H₂O(g) → C₂H₅OH(l)',
     bottomBox: '2C(s) + 3H₂(g) + ½O₂(g)',
+    builderDistractors: [
+      '2CO₂(g) + 3H₂O(l)',
+      'C(s) + H₂(g) + O₂(g)',
+      '2C(g) + 6H(g) + O(g)',
+    ],
     reactants: [
       { label: 'C₂H₄(g)', coeff: 1, baseVal: 52 },
       { label: 'H₂O(g)', coeff: 1, baseVal: -242 },
@@ -22,6 +51,11 @@ const HESS_REACTIONS = [
     title: 'Blast Furnace Reduction of Iron(III) Oxide',
     equation: 'Fe₂O₃(s) + 3CO(g) → 2Fe(s) + 3CO₂(g)',
     bottomBox: '2Fe(s) + 3C(s) + 3O₂(g)',
+    builderDistractors: [
+      'Fe₂O₃(s) + 3CO₂(g)',
+      'Fe(s) + C(s) + O₂(g)',
+      '2Fe(g) + 3C(g) + 6O(g)',
+    ],
     reactants: [
       { label: 'Fe₂O₃(s)', coeff: 1, baseVal: -824 },
       { label: 'CO(g)', coeff: 3, baseVal: -111 },
@@ -38,6 +72,11 @@ const HESS_REACTIONS = [
     title: 'Reduction of Copper(II) Oxide by Ammonia',
     equation: '2NH₃(g) + 3CuO(s) → N₂(g) + 3Cu(s) + 3H₂O(l)',
     bottomBox: 'N₂(g) + 3H₂(g) + 3Cu(s) + ³⁄₂O₂(g)',
+    builderDistractors: [
+      '2N(g) + 6H(g) + 3Cu(s) + 3O(g)',
+      'N₂(g) + H₂(g) + Cu(s) + O₂(g)',
+      '2NO₂(g) + 3CuO(s) + 3H₂O(l)',
+    ],
     reactants: [
       { label: 'NH₃(g)', coeff: 2, baseVal: -46 },
       { label: 'CuO(s)', coeff: 3, baseVal: -157 },
@@ -55,6 +94,11 @@ const HESS_REACTIONS = [
     title: 'Steam Reforming of Methane',
     equation: 'CH₄(g) + H₂O(g) → CO(g) + 3H₂(g)',
     bottomBox: 'C(s) + 3H₂(g) + ½O₂(g)',
+    builderDistractors: [
+      'CO₂(g) + 3H₂O(l)',
+      'C(s) + 2H₂(g) + O₂(g)',
+      'C(g) + 6H(g) + O(g)',
+    ],
     reactants: [
       { label: 'CH₄(g)', coeff: 1, baseVal: -75 },
       { label: 'H₂O(g)', coeff: 1, baseVal: -242 },
@@ -71,6 +115,11 @@ const HESS_REACTIONS = [
     title: 'Contact Process Oxidation of Sulfur Dioxide',
     equation: '2SO₂(g) + O₂(g) → 2SO₃(g)',
     bottomBox: '2S(s) + 3O₂(g)',
+    builderDistractors: [
+      'S(s) + O₂(g)',
+      '2S(g) + 6O(g)',
+      '2SO₂(g) + 2O₂(g)',
+    ],
     reactants: [
       { label: 'SO₂(g)', coeff: 2, baseVal: -297 },
       { label: 'O₂(g)', coeff: 1, baseVal: 0, isElement: true },
@@ -86,6 +135,11 @@ const HESS_REACTIONS = [
     title: 'Thermal Decomposition of Sodium Hydrogencarbonate',
     equation: '2NaHCO₃(s) → Na₂CO₃(s) + CO₂(g) + H₂O(l)',
     bottomBox: '2Na(s) + 2C(s) + H₂(g) + 3O₂(g)',
+    builderDistractors: [
+      'Na(s) + C(s) + ½H₂(g) + ³⁄₂O₂(g)',
+      'Na₂O(s) + 2CO₂(g) + H₂O(l)',
+      '2Na(g) + 2C(g) + 2H(g) + 6O(g)',
+    ],
     reactants: [
       { label: 'NaHCO₃(s)', coeff: 2, baseVal: -951 },
     ],
@@ -102,6 +156,11 @@ const HESS_REACTIONS = [
     title: 'Enthalpy of Formation of Ethane (via Combustion)',
     equation: '2C(s) + 3H₂(g) → C₂H₆(g)',
     bottomBox: '2CO₂(g) + 3H₂O(l)',
+    builderDistractors: [
+      'CO₂(g) + H₂O(l)',
+      '2C(s) + 3H₂(g)',
+      '2CO(g) + 3H₂O(g)',
+    ],
     reactants: [
       { label: 'C(s)', coeff: 2, baseVal: -394 },
       { label: 'H₂(g)', coeff: 3, baseVal: -286 },
@@ -117,6 +176,11 @@ const HESS_REACTIONS = [
     title: 'Enthalpy of Formation of Propane (via Combustion)',
     equation: '3C(s) + 4H₂(g) → C₃H₈(g)',
     bottomBox: '3CO₂(g) + 4H₂O(l)',
+    builderDistractors: [
+      'CO₂(g) + H₂O(l)',
+      '3C(s) + 4H₂(g)',
+      '3CO₂(g) + 8H₂O(l)',
+    ],
     reactants: [
       { label: 'C(s)', coeff: 3, baseVal: -394 },
       { label: 'H₂(g)', coeff: 4, baseVal: -286 },
@@ -132,6 +196,11 @@ const HESS_REACTIONS = [
     title: 'Enthalpy of Formation of Ethanol (via Combustion)',
     equation: '2C(s) + 3H₂(g) + ½O₂(g) → C₂H₅OH(l)',
     bottomBox: '2CO₂(g) + 3H₂O(l)',
+    builderDistractors: [
+      '2CO₂(g) + 2H₂O(l)',
+      '2C(s) + 3H₂(g) + ½O₂(g)',
+      'CO₂(g) + H₂O(l)',
+    ],
     reactants: [
       { label: 'C(s)', coeff: 2, baseVal: -394 },
       { label: 'H₂(g)', coeff: 3, baseVal: -286 },
@@ -148,6 +217,11 @@ const HESS_REACTIONS = [
     title: 'Hydrogenation of Ethene (via Combustion)',
     equation: 'C₂H₄(g) + H₂(g) → C₂H₆(g)',
     bottomBox: '2CO₂(g) + 3H₂O(l)',
+    builderDistractors: [
+      '2C(s) + 3H₂(g)',
+      '2CO₂(g) + 2H₂O(l)',
+      '4CO₂(g) + 6H₂O(l)',
+    ],
     reactants: [
       { label: 'C₂H₄(g)', coeff: 1, baseVal: -1411 },
       { label: 'H₂(g)', coeff: 1, baseVal: -286 },
@@ -163,6 +237,11 @@ const HESS_REACTIONS = [
     title: 'Enthalpy of Formation of Methanoic Acid',
     equation: 'C(s) + H₂(g) + O₂(g) → HCOOH(l)',
     bottomBox: 'CO₂(g) + H₂O(l)',
+    builderDistractors: [
+      'CO₂(g) + 2H₂O(l)',
+      'C(s) + H₂(g) + O₂(g)',
+      '2CO₂(g) + 2H₂O(l)',
+    ],
     reactants: [
       { label: 'C(s)', coeff: 1, baseVal: -394 },
       { label: 'H₂(g)', coeff: 1, baseVal: -286 },
@@ -179,6 +258,11 @@ const HESS_REACTIONS = [
     title: 'Enthalpy of Formation of Methane (via Combustion)',
     equation: 'C(s) + 2H₂(g) → CH₄(g)',
     bottomBox: 'CO₂(g) + 2H₂O(l)',
+    builderDistractors: [
+      'CO₂(g) + H₂O(l)',
+      'C(s) + 2H₂(g)',
+      'CO₂(g) + 4H₂O(l)',
+    ],
     reactants: [
       { label: 'C(s)', coeff: 1, baseVal: -394 },
       { label: 'H₂(g)', coeff: 2, baseVal: -286 },
@@ -191,11 +275,20 @@ const HESS_REACTIONS = [
 ];
 
 export default function HessLawCycles({ onComplete }) {
-  const [mode, setMode] = useState('formation_cycle');
+  const [mode, setMode] = useState('cycle_builder');
   const [problem, setProblem] = useState(null);
   const [showHint, setShowHint] = useState(false);
 
-  // Step 1 Route Gate
+  // Cycle Builder State
+  const [builderBottom, setBuilderBottom] = useState('');
+  const [builderLeftDir, setBuilderLeftDir] = useState('');
+  const [builderRightDir, setBuilderRightDir] = useState('');
+  const [builderMults, setBuilderMults] = useState({});
+  const [builderVerified, setBuilderVerified] = useState(false);
+  const [builderFeedback, setBuilderFeedback] = useState(null);
+  const [builderRouteEq, setBuilderRouteEq] = useState('');
+
+  // Step 1 Route Gate (calculation modes)
   const [gateEnabled, setGateEnabled] = useState(true);
   const [gateFormula, setGateFormula] = useState('');
   const [gateLeftSum, setGateLeftSum] = useState('');
@@ -203,12 +296,12 @@ export default function HessLawCycles({ onComplete }) {
   const [gateVerified, setGateVerified] = useState(false);
   const [gateFeedback, setGateFeedback] = useState(null);
 
-  // Step 2 Answer
+  // Step 2 Final Calculation Answer
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
 
   const generateProblem = (forcedMode = null) => {
-    const modes = ['formation_cycle', 'combustion_cycle', 'unknown_species'];
+    const modes = ['cycle_builder', 'formation_cycle', 'combustion_cycle', 'unknown_species'];
     const selection = forcedMode || mode;
     const subMode =
       selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
@@ -245,14 +338,14 @@ export default function HessLawCycles({ onComplete }) {
     const reactantSum = reactants.reduce((acc, s) => acc + s.coeff * s.val, 0);
     const productSum = products.reduce((acc, s) => acc + s.coeff * s.val, 0);
 
-    // ΔH_r calculation depends on cycle arrow direction
-    const deltaH_r =
+    // ΔHr calculation depends on cycle arrow direction
+    const deltaHr =
       picked.type === 'formation' ? productSum - reactantSum : reactantSum - productSum;
 
     let unknownMeta = null;
     let knownLeftSum = reactantSum;
     let knownRightSum = productSum;
-    let correctAnswer = deltaH_r;
+    let correctAnswer = deltaHr;
 
     if (subMode === 'unknown_species') {
       const sideList = picked.unknownTarget.side === 'product' ? products : reactants;
@@ -271,19 +364,36 @@ export default function HessLawCycles({ onComplete }) {
       };
     }
 
+    const [lhsText, rhsText] = picked.equation.split(' → ');
+    const bottomChoices = shuffleArray([picked.bottomBox, ...(picked.builderDistractors || [])]);
+
     setProblem({
       ...picked,
       subMode,
+      lhsText: lhsText || 'Reactants',
+      rhsText: rhsText || 'Products',
+      bottomChoices,
       reactants,
       products,
       reactantSum,
       productSum,
       knownLeftSum,
       knownRightSum,
-      deltaH_r,
+      deltaHr,
       unknownMeta,
       correctAnswer,
     });
+
+    // Reset builder state
+    setBuilderBottom('');
+    setBuilderLeftDir('');
+    setBuilderRightDir('');
+    setBuilderMults({});
+    setBuilderVerified(false);
+    setBuilderFeedback(null);
+    setBuilderRouteEq('');
+
+    // Reset gate & answer state
     setGateFormula('');
     setGateLeftSum('');
     setGateRightSum('');
@@ -295,12 +405,113 @@ export default function HessLawCycles({ onComplete }) {
   };
 
   useEffect(() => {
-    generateProblem('formation_cycle');
+    generateProblem('cycle_builder');
   }, []);
+
+  const cycleArrowDir = (side) => {
+    if (!problem || problem.subMode !== 'cycle_builder' || builderVerified) return;
+    setBuilderFeedback(null);
+    const nextDir = (cur) => (cur === '' ? 'up' : cur === 'up' ? 'down' : 'up');
+    if (side === 'left') {
+      setBuilderLeftDir((prev) => nextDir(prev));
+    } else {
+      setBuilderRightDir((prev) => nextDir(prev));
+    }
+  };
+
+  const handleSetMultiplier = (key, val) => {
+    if (builderVerified) return;
+    setBuilderFeedback(null);
+    setBuilderMults((prev) => ({ ...prev, [key]: val }));
+  };
+
+  const handleVerifyBuilder = () => {
+    if (!problem) return;
+    const isFormationCycle = problem.type === 'formation';
+    const subChar = isFormationCycle ? 'f' : 'c';
+    const expectedDir = isFormationCycle ? 'up' : 'down';
+    const messages = [];
+
+    if (builderBottom !== problem.bottomBox) {
+      messages.push(
+        isFormationCycle ? (
+          <span key="bottom">
+            Check the bottom intermediate box: with <DeltaH sub="f" /> data, the cycle is rooted in balanced{' '}
+            <strong>constituent elements in their standard states at 298 K</strong> matching the atom counts on either side of the equation.
+          </span>
+        ) : (
+          <span key="bottom">
+            Check the bottom intermediate box: with <DeltaH sub="c" /> data, the cycle goes to balanced{' '}
+            <strong>complete combustion products (CO₂(g) + H₂O(l))</strong> matching every C and H atom in the equation.
+          </span>
+        )
+      );
+    }
+
+    if (!builderLeftDir || !builderRightDir) {
+      messages.push(
+        <span key="dir-missing">
+          Select directions for <strong>both diagonal cycle arrows</strong> (tap the diagonal legs on the diagram or use the buttons below).
+        </span>
+      );
+    } else if (builderLeftDir !== builderRightDir) {
+      messages.push(
+        <span key="dir-mismatch">
+          Both diagonal arrows represent <DeltaH sub={subChar} /> definitions and must point the <strong>same vertical direction</strong> (rather than head-to-tail around the loop).
+        </span>
+      );
+    } else if (builderLeftDir !== expectedDir || builderRightDir !== expectedDir) {
+      messages.push(
+        isFormationCycle ? (
+          <span key="dir-wrong">
+            Reverse both arrows: <DeltaH sub="f" /> defines forming each compound <strong>from</strong> its elements, so both arrows point <strong>upwards</strong> from the intermediate box.
+          </span>
+        ) : (
+          <span key="dir-wrong">
+            Reverse both arrows: <DeltaH sub="c" /> defines burning reactants and products <strong>into</strong> oxides, so both arrows point <strong>downwards</strong> to CO₂(g) + H₂O(l).
+          </span>
+        )
+      );
+    }
+
+    const rMultWrong = problem.reactants.some(
+      (sp, idx) => builderMults[`r-${idx}`] !== (sp.isElement ? '0' : String(sp.coeff))
+    );
+    const pMultWrong = problem.products.some(
+      (sp, idx) => builderMults[`p-${idx}`] !== (sp.isElement ? '0' : String(sp.coeff))
+    );
+
+    if (rMultWrong || pMultWrong) {
+      messages.push(
+        <span key="mults">
+          Check stoichiometric multipliers: match each species to its balancing coefficient in the equation, and select{' '}
+          <strong>0 (ΔH° = 0)</strong> for any pure element in its standard state whose enthalpy change in this cycle is zero.
+        </span>
+      );
+    }
+
+    if (messages.length === 0) {
+      setBuilderVerified(true);
+      setBuilderFeedback({
+        isCorrect: true,
+        messages: [
+          <span key="ok">
+            ✅ Cycle diagram &amp; stoichiometry verified! Reactant leg ={' '}
+            <strong>{problem.reactantSum} kJ mol⁻¹</strong> and Product leg ={' '}
+            <strong>{problem.productSum} kJ mol⁻¹</strong>. Complete Step 2 to calculate <DeltaH sub="r" />.
+          </span>,
+        ],
+      });
+    } else {
+      setBuilderFeedback({ isCorrect: false, messages });
+    }
+  };
 
   const handleVerifyGate = () => {
     if (!problem) return;
-    const expectedFormula = problem.type === 'formation' ? 'prod_minus_react' : 'react_minus_prod';
+    const isFormationCycle = problem.type === 'formation';
+    const subChar = isFormationCycle ? 'f' : 'c';
+    const expectedFormula = isFormationCycle ? 'prod_minus_react' : 'react_minus_prod';
     const uLeft = parseFloat(gateLeftSum);
     const uRight = parseFloat(gateRightSum);
     const targetLeft = problem.subMode === 'unknown_species' ? problem.knownLeftSum : problem.reactantSum;
@@ -309,29 +520,44 @@ export default function HessLawCycles({ onComplete }) {
     const errs = [];
     if (gateFormula !== expectedFormula) {
       errs.push(
-        problem.type === 'formation'
-          ? 'In a Formation cycle, arrows point UP from elements → ΔH_r = ΣΔH_f°(products) − ΣΔH_f°(reactants).'
-          : 'In a Combustion cycle, arrows point DOWN to combustion oxides → ΔH_r = ΣΔH_c°(reactants) − ΣΔH_c°(products).'
+        isFormationCycle ? (
+          <span key="eq">
+            In a Formation cycle, arrows point <strong>up</strong> from elements →{' '}
+            <DeltaH sub="r" /> = Σ<DeltaH sub={subChar} />(products) − Σ<DeltaH sub={subChar} />(reactants).
+          </span>
+        ) : (
+          <span key="eq">
+            In a Combustion cycle, arrows point <strong>down</strong> to combustion oxides →{' '}
+            <DeltaH sub="r" /> = Σ<DeltaH sub={subChar} />(reactants) − Σ<DeltaH sub={subChar} />(products).
+          </span>
+        )
       );
     }
     if (isNaN(uLeft) || Math.abs(uLeft - targetLeft) > 1.5) {
-      errs.push('Re-check the Reactant route sum (multiply each ΔH° by its balancing coefficient; elements in standard states have ΔH_f° = 0).');
+      errs.push(
+        <span key="left">
+          Re-check the Reactant route sum (multiply each <DeltaH sub={subChar} /> by its balancing coefficient; elements in standard states have <DeltaH sub="f" /> = 0).
+        </span>
+      );
     }
     if (isNaN(uRight) || Math.abs(uRight - targetRight) > 1.5) {
-      errs.push('Re-check the Product route sum (multiply each ΔH° by its balancing coefficient; check for any ΔH° = 0 elements).');
+      errs.push(
+        <span key="right">
+          Re-check the Product route sum (multiply each <DeltaH sub={subChar} /> by its balancing coefficient; check for any ΔH° = 0 elements).
+        </span>
+      );
     }
 
     if (errs.length === 0) {
       setGateVerified(true);
       setGateFeedback({
         isCorrect: true,
-        msg: '✅ Hess Route & Stoichiometry Verified! Step 2 calculation is unlocked.',
+        messages: [
+          <span key="ok">✅ Hess Route &amp; Stoichiometry Verified! Step 2 calculation is unlocked.</span>,
+        ],
       });
     } else {
-      setGateFeedback({
-        isCorrect: false,
-        msg: `⚠️ ${errs.join(' ')}`,
-      });
+      setGateFeedback({ isCorrect: false, messages: errs });
     }
   };
 
@@ -343,6 +569,28 @@ export default function HessLawCycles({ onComplete }) {
       return;
     }
 
+    const isFormationCycle = problem.type === 'formation';
+    const subChar = isFormationCycle ? 'f' : 'c';
+    const expectedFormula = isFormationCycle ? 'prod_minus_react' : 'react_minus_prod';
+
+    if (problem.subMode === 'cycle_builder' && builderRouteEq !== expectedFormula) {
+      setFeedback({
+        isCorrect: false,
+        msg: isFormationCycle ? (
+          <>
+            Choose the correct indirect route from Reactants → Intermediate → Products: moving <strong>against</strong> the Reactants leg subtracts Σ(Reactants leg), and moving <strong>with</strong> the Products leg adds Σ(Products leg), giving{' '}
+            <DeltaH sub="r" /> = +Σ(Products leg) − Σ(Reactants leg).
+          </>
+        ) : (
+          <>
+            Choose the correct indirect route from Reactants → Intermediate → Products: moving <strong>with</strong> the Reactants leg adds Σ(Reactants leg), and moving <strong>against</strong> the Products leg subtracts Σ(Products leg), giving{' '}
+            <DeltaH sub="r" /> = +Σ(Reactants leg) − Σ(Products leg).
+          </>
+        ),
+      });
+      return;
+    }
+
     const val = parseFloat(userAnswer);
     if (isNaN(val)) return;
 
@@ -350,27 +598,42 @@ export default function HessLawCycles({ onComplete }) {
     const reversedSignGuess =
       problem.subMode !== 'unknown_species'
         ? -expected
-        : problem.type === 'formation'
+        : isFormationCycle
         ? problem.reactantSum - problem.productSum
         : problem.productSum - problem.reactantSum;
 
     if (Math.abs(val - expected) <= 1.5) {
-      const symbol =
-        problem.subMode === 'unknown_species'
-          ? `ΔH_${problem.type === 'formation' ? 'f' : 'c'}°(${problem.unknownMeta.label})`
-          : 'ΔH_r°';
       setFeedback({
         isCorrect: true,
-        msg: `Correct! ${symbol} = ${expected > 0 ? `+${expected}` : expected} kJ mol⁻¹.`,
+        msg: (
+          <>
+            Correct!{' '}
+            {problem.subMode === 'unknown_species' ? (
+              <>
+                <DeltaH sub={subChar} />({problem.unknownMeta.label})
+              </>
+            ) : (
+              <DeltaH sub="r" />
+            )}{' '}
+            = {expected > 0 ? `+${expected}` : expected} kJ mol⁻¹.
+          </>
+        ),
       });
       onComplete?.(`hess_${problem.id}_${problem.subMode}`);
     } else if (problem.subMode !== 'unknown_species' && Math.abs(val - reversedSignGuess) <= 1.5) {
       setFeedback({
         isCorrect: false,
-        msg:
-          problem.type === 'formation'
-            ? 'WJEC Route Reversal Trap! For ΔH_f° cycles, arrows point UP from elements: subtract reactants from products, ΔH_r = ΣΔH_f°(products) − ΣΔH_f°(reactants).'
-            : 'WJEC Route Reversal Trap! For ΔH_c° cycles, arrows point DOWN to oxides: subtract products from reactants, ΔH_r = ΣΔH_c°(reactants) − ΣΔH_c°(products).',
+        msg: isFormationCycle ? (
+          <>
+            WJEC Route Reversal Trap! For <DeltaH sub="f" /> cycles, arrows point <strong>up</strong> from elements: subtract reactants from products,{' '}
+            <DeltaH sub="r" /> = Σ<DeltaH sub="f" />(products) − Σ<DeltaH sub="f" />(reactants).
+          </>
+        ) : (
+          <>
+            WJEC Route Reversal Trap! For <DeltaH sub="c" /> cycles, arrows point <strong>down</strong> to oxides: subtract products from reactants,{' '}
+            <DeltaH sub="r" /> = Σ<DeltaH sub="c" />(reactants) − Σ<DeltaH sub="c" />(products).
+          </>
+        ),
       });
     } else if (
       problem.subMode === 'unknown_species' &&
@@ -379,48 +642,84 @@ export default function HessLawCycles({ onComplete }) {
     ) {
       setFeedback({
         isCorrect: false,
-        msg: `WJEC Stoichiometry Trap! The equation contains ${problem.unknownMeta.coeff} mol of ${problem.unknownMeta.label} — divide by ${problem.unknownMeta.coeff} to report the molar value per 1 mole.`,
+        msg: (
+          <>
+            WJEC Stoichiometry Trap! The equation contains {problem.unknownMeta.coeff} mol of{' '}
+            {problem.unknownMeta.label} — divide by {problem.unknownMeta.coeff} to report the molar value per 1 mole.
+          </>
+        ),
       });
     } else {
       setFeedback({
         isCorrect: false,
-        msg: 'Incorrect calculation. Follow the Hess cycle clockwise and anticlockwise paths between Reactants and Products, multiplying each data value by its equation coefficient.',
+        msg: (
+          <>
+            Incorrect calculation. Trace the indirect Hess route from Reactants to Products via the bottom box (adding values moved <strong>with</strong> an arrow and subtracting values moved <strong>against</strong> an arrow), multiplying each data value by its equation coefficient.
+          </>
+        ),
       });
     }
   };
 
   if (!problem) return null;
 
+  const isBuilder = problem.subMode === 'cycle_builder';
   const isFormation = problem.type === 'formation';
-  const sym = isFormation ? 'ΔH_f°' : 'ΔH_c°';
-  const isStep2Locked = gateEnabled && !gateVerified;
+  const subChar = isFormation ? 'f' : 'c';
+  const isStep2Locked = isBuilder ? !builderVerified : gateEnabled && !gateVerified;
+
+  const svgLeftDir = isBuilder ? builderLeftDir : isFormation ? 'up' : 'down';
+  const svgRightDir = isBuilder ? builderRightDir : isFormation ? 'up' : 'down';
+
+  const allReactMultsSet = problem.reactants.every((_, idx) => builderMults[`r-${idx}`] !== undefined);
+  const allProdMultsSet = problem.products.every((_, idx) => builderMults[`p-${idx}`] !== undefined);
+  const liveReactSum = problem.reactants.reduce(
+    (sum, sp, idx) => sum + (parseFloat(builderMults[`r-${idx}`] || '0') * sp.val),
+    0
+  );
+  const liveProdSum = problem.products.reduce(
+    (sum, sp, idx) => sum + (parseFloat(builderMults[`p-${idx}`] || '0') * sp.val),
+    0
+  );
+
+  const modeTabs = [
+    { id: 'cycle_builder', label: 'Hess Cycle Builder' },
+    { id: 'formation_cycle', label: <><DeltaH sub="f" /> Cycles</> },
+    { id: 'combustion_cycle', label: <><DeltaH sub="c" /> Cycles</> },
+    { id: 'unknown_species', label: <>Unknown ΔH° from <DeltaH sub="r" /></> },
+  ];
 
   return (
     <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-2xl mx-auto px-4">
-        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
+      <div className="w-full max-w-4xl mx-auto px-2">
+        <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-2 text-center">
           Choose Hess Cycle Mode
         </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => {
-              setMode(e.target.value);
-              generateProblem(e.target.value);
-            }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] shadow-sm cursor-pointer"
-          >
-            <option value="formation_cycle">Enthalpies of Formation (ΔH_f° Cycle)</option>
-            <option value="combustion_cycle">Enthalpies of Combustion (ΔH_c° Cycle)</option>
-            <option value="unknown_species">Unknown Species ΔH° from ΔH_r</option>
-          </select>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {modeTabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => {
+                setMode(tab.id);
+                generateProblem(tab.id);
+              }}
+              className={`px-3 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer text-center ${
+                mode === tab.id
+                  ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
+                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
           <button
             type="button"
             onClick={() => {
               setMode('random');
               generateProblem('random');
             }}
-            className={`px-4 py-2.5 text-xs font-black rounded-xl border transition-all shrink-0 cursor-pointer ${
+            className={`col-span-2 sm:col-span-1 px-3 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer text-center ${
               mode === 'random'
                 ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
                 : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -434,12 +733,17 @@ export default function HessLawCycles({ onComplete }) {
       <div className="applet-header !mb-0">{problem.title}</div>
 
       <div className="applet-workbench">
-        {/* Left Sticky Workbench Column: Hess Triangle SVG + Thermodynamic Data Table */}
+        {/* Left Sticky Workbench Column: Interactive Hess Triangle SVG + Thermodynamic Data Table */}
         <div className="applet-workbench-sticky space-y-4">
           <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
               <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
-                WJEC Unit 2.1 • {isFormation ? 'Formation Cycle (Arrows UP)' : 'Combustion Cycle (Arrows DOWN)'}
+                WJEC Unit 2.1 •{' '}
+                {isBuilder && !builderVerified
+                  ? 'Hess Cycle Builder'
+                  : isFormation
+                  ? 'Formation Cycle (Arrows Up)'
+                  : 'Combustion Cycle (Arrows Down)'}
               </span>
               <span className="text-[10px] font-mono font-bold text-slate-500">kJ mol⁻¹</span>
             </div>
@@ -448,8 +752,8 @@ export default function HessLawCycles({ onComplete }) {
               {problem.equation}
             </div>
 
-            {/* Hess Triangle SVG */}
-            <svg viewBox="0 0 360 195" className="w-full h-auto select-none bg-slate-50/50 rounded-xl border border-slate-100">
+            {/* Hess Triangle SVG (uses <tspan> for SVG subscripts — never HTML <sub>) */}
+            <svg viewBox="0 0 410 225" className="w-full h-auto select-none bg-slate-50/50 rounded-xl border border-slate-100">
               <defs>
                 <marker id="hess-arrow-blue" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
                   <polygon points="0 0, 6 3, 0 6" fill="#235478" />
@@ -460,62 +764,181 @@ export default function HessLawCycles({ onComplete }) {
               </defs>
 
               {/* Top boxes: Reactants & Products */}
-              <rect x="14" y="16" width="134" height="36" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
-              <text x="81" y="38" textAnchor="middle" className="text-[10px] font-mono font-black fill-slate-800">
+              <rect x="10" y="14" width="148" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+              <text x="84" y="28" textAnchor="middle" className="text-[8px] font-sans font-bold fill-slate-400">
                 Reactants
               </text>
-
-              <rect x="212" y="16" width="134" height="36" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
-              <text x="279" y="38" textAnchor="middle" className="text-[10px] font-mono font-black fill-slate-800">
-                Products
+              <text x="84" y="45" textAnchor="middle" className="text-[8.5px] font-mono font-black fill-slate-800">
+                {problem.lhsText}
               </text>
 
-              {/* Top horizontal arrow ΔH_r */}
-              <line x1="152" y1="34" x2="205" y2="34" stroke="#235478" strokeWidth="2.4" markerEnd="url(#hess-arrow-blue)" />
-              <text x="178" y="23" textAnchor="middle" className="text-[10px] font-mono font-black fill-[#235478]">
-                {problem.subMode === 'unknown_species'
-                  ? `ΔH_r = ${problem.deltaH_r > 0 ? '+' : ''}${problem.deltaH_r}`
-                  : 'ΔH_r = ?'}
+              <rect x="252" y="14" width="148" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+              <text x="326" y="28" textAnchor="middle" className="text-[8px] font-sans font-bold fill-slate-400">
+                Products
+              </text>
+              <text x="326" y="45" textAnchor="middle" className="text-[8.5px] font-mono font-black fill-slate-800">
+                {problem.rhsText}
+              </text>
+
+              {/* Top horizontal arrow ΔHr° */}
+              <line x1="162" y1="36" x2="245" y2="36" stroke="#235478" strokeWidth="2.4" markerEnd="url(#hess-arrow-blue)" />
+              <text x="204" y="23" textAnchor="middle" className="text-[10px] font-mono font-black fill-[#235478]">
+                ΔH
+                <tspan dy="2.5" fontSize="7.5">r</tspan>
+                <tspan dy="-2.5">
+                  ° = {problem.subMode === 'unknown_species'
+                    ? `${problem.deltaHr > 0 ? '+' : ''}${problem.deltaHr}`
+                    : '?'}
+                </tspan>
               </text>
 
               {/* Bottom Intermediate Box */}
-              <rect x="64" y="142" width="232" height="36" rx="8" fill="#eff6ff" stroke="#93c5fd" strokeWidth="1.5" />
-              <text x="180" y="157" textAnchor="middle" className="text-[8.5px] font-sans font-bold fill-slate-500">
-                {isFormation ? 'Elements in Standard States' : 'Combustion Oxides (CO₂ + H₂O)'}
-              </text>
-              <text x="180" y="170" textAnchor="middle" className="text-[9.5px] font-mono font-black fill-[#235478]">
-                {problem.bottomBox}
-              </text>
-
-              {/* Left diagonal arrow */}
-              {isFormation ? (
-                <line x1="128" y1="140" x2="88" y2="57" stroke="#d97706" strokeWidth="2.2" markerEnd="url(#hess-arrow-amber)" />
+              {isBuilder ? (
+                builderBottom ? (
+                  <>
+                    <rect
+                      x="65"
+                      y="162"
+                      width="280"
+                      height="46"
+                      rx="8"
+                      fill={builderVerified ? '#ecfdf5' : '#eff6ff'}
+                      stroke={builderVerified ? '#10b981' : '#3b82f6'}
+                      strokeWidth="1.8"
+                    />
+                    <text x="205" y="177" textAnchor="middle" className="text-[8.5px] font-sans font-bold fill-slate-500">
+                      {builderVerified
+                        ? isFormation
+                          ? 'Verified: Elements in Standard States'
+                          : 'Verified: Combustion Oxides (CO₂ + H₂O)'
+                        : 'Selected Intermediate'}
+                    </text>
+                    <text x="205" y="195" textAnchor="middle" className="text-[9.5px] font-mono font-black fill-[#235478]">
+                      {builderBottom}
+                    </text>
+                  </>
+                ) : (
+                  <>
+                    <rect
+                      x="65"
+                      y="162"
+                      width="280"
+                      height="46"
+                      rx="8"
+                      fill="#f8fafc"
+                      stroke="#94a3b8"
+                      strokeDasharray="4 3"
+                      strokeWidth="1.5"
+                    />
+                    <text x="205" y="188" textAnchor="middle" className="text-[9.5px] font-sans font-bold fill-slate-500">
+                      ① Select intermediate species on the right
+                    </text>
+                  </>
+                )
               ) : (
-                <line x1="85" y1="54" x2="125" y2="137" stroke="#d97706" strokeWidth="2.2" markerEnd="url(#hess-arrow-amber)" />
+                <>
+                  <rect x="65" y="162" width="280" height="46" rx="8" fill="#eff6ff" stroke="#93c5fd" strokeWidth="1.5" />
+                  <text x="205" y="177" textAnchor="middle" className="text-[8.5px] font-sans font-bold fill-slate-500">
+                    {isFormation ? 'Elements in Standard States' : 'Combustion Oxides (CO₂ + H₂O)'}
+                  </text>
+                  <text x="205" y="195" textAnchor="middle" className="text-[9.5px] font-mono font-black fill-[#235478]">
+                    {problem.bottomBox}
+                  </text>
+                </>
               )}
-              <text x="82" y="102" textAnchor="end" className="text-[9.5px] font-mono font-black fill-amber-700">
-                Σ{sym}(React)
-              </text>
 
-              {/* Right diagonal arrow */}
-              {isFormation ? (
-                <line x1="232" y1="140" x2="272" y2="57" stroke="#d97706" strokeWidth="2.2" markerEnd="url(#hess-arrow-amber)" />
-              ) : (
-                <line x1="275" y1="54" x2="235" y2="137" stroke="#d97706" strokeWidth="2.2" markerEnd="url(#hess-arrow-amber)" />
-              )}
-              <text x="278" y="102" textAnchor="start" className="text-[9.5px] font-mono font-black fill-amber-700">
-                Σ{sym}(Prod)
-              </text>
+              {/* Left diagonal leg (Reactants <-> Bottom Box) */}
+              <g
+                onClick={() => cycleArrowDir('left')}
+                className={isBuilder && !builderVerified ? 'cursor-pointer' : undefined}
+              >
+                {svgLeftDir === 'up' ? (
+                  <line x1="142" y1="158" x2="88" y2="63" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
+                ) : svgLeftDir === 'down' ? (
+                  <line x1="88" y1="62" x2="142" y2="156" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
+                ) : (
+                  <line x1="142" y1="158" x2="88" y2="63" stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="2" />
+                )}
+                {isBuilder && !builderVerified && (
+                  <line x1="142" y1="158" x2="88" y2="63" stroke="transparent" strokeWidth="24" />
+                )}
+                {!isBuilder || builderVerified ? (
+                  <text x="103" y="116" textAnchor="end" className="text-[9.5px] font-mono font-black fill-amber-700">
+                    ΣΔH
+                    <tspan dy="2.5" fontSize="7.5">{subChar}</tspan>
+                    <tspan dy="-2.5">°(React)</tspan>
+                  </text>
+                ) : (
+                  <>
+                    <rect
+                      x="20"
+                      y="97"
+                      width="78"
+                      height="24"
+                      rx="6"
+                      fill={builderLeftDir ? '#fffbeb' : '#ffffff'}
+                      stroke={builderLeftDir ? '#f59e0b' : '#cbd5e1'}
+                      strokeWidth="1.2"
+                    />
+                    <text x="59" y="113" textAnchor="middle" className={`text-[9px] font-sans font-bold ${builderLeftDir ? 'fill-amber-800' : 'fill-slate-500'}`}>
+                      {builderLeftDir === 'up' ? '▲ Up' : builderLeftDir === 'down' ? '▼ Down' : '② Tap arrow'}
+                    </text>
+                  </>
+                )}
+              </g>
+
+              {/* Right diagonal leg (Products <-> Bottom Box) */}
+              <g
+                onClick={() => cycleArrowDir('right')}
+                className={isBuilder && !builderVerified ? 'cursor-pointer' : undefined}
+              >
+                {svgRightDir === 'up' ? (
+                  <line x1="268" y1="158" x2="322" y2="63" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
+                ) : svgRightDir === 'down' ? (
+                  <line x1="322" y1="62" x2="268" y2="156" stroke="#d97706" strokeWidth="2.3" markerEnd="url(#hess-arrow-amber)" />
+                ) : (
+                  <line x1="268" y1="158" x2="322" y2="63" stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="2" />
+                )}
+                {isBuilder && !builderVerified && (
+                  <line x1="268" y1="158" x2="322" y2="63" stroke="transparent" strokeWidth="24" />
+                )}
+                {!isBuilder || builderVerified ? (
+                  <text x="307" y="116" textAnchor="start" className="text-[9.5px] font-mono font-black fill-amber-700">
+                    ΣΔH
+                    <tspan dy="2.5" fontSize="7.5">{subChar}</tspan>
+                    <tspan dy="-2.5">°(Prod)</tspan>
+                  </text>
+                ) : (
+                  <>
+                    <rect
+                      x="312"
+                      y="97"
+                      width="78"
+                      height="24"
+                      rx="6"
+                      fill={builderRightDir ? '#fffbeb' : '#ffffff'}
+                      stroke={builderRightDir ? '#f59e0b' : '#cbd5e1'}
+                      strokeWidth="1.2"
+                    />
+                    <text x="351" y="113" textAnchor="middle" className={`text-[9px] font-sans font-bold ${builderRightDir ? 'fill-amber-800' : 'fill-slate-500'}`}>
+                      {builderRightDir === 'up' ? '▲ Up' : builderRightDir === 'down' ? '▼ Down' : '② Tap arrow'}
+                    </text>
+                  </>
+                )}
+              </g>
             </svg>
 
-            {/* Thermodynamic Data Table */}
+            {/* Standard Enthalpy Data Table */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
               <div className="flex items-center justify-between text-[10px] font-black text-slate-500 tracking-wider">
-                <span>Standard Enthalpy Data ({sym})</span>
+                <span>Standard Enthalpy Data (<DeltaH sub={subChar} />)</span>
                 <span>{isFormation ? 'Elements in std. states = 0' : 'kJ mol⁻¹'}</span>
               </div>
               <div className="bg-white rounded-lg border border-slate-200 divide-y divide-slate-100 text-xs">
-                {[...problem.reactants.map((r, i) => ({ ...r, side: 'reactant', idx: i })), ...problem.products.map((p, i) => ({ ...p, side: 'product', idx: i }))]
+                {[
+                  ...problem.reactants.map((r, i) => ({ ...r, side: 'reactant', idx: i })),
+                  ...problem.products.map((p, i) => ({ ...p, side: 'product', idx: i })),
+                ]
                   .filter((sp) => !sp.isElement)
                   .map((sp) => {
                     const isMasked =
@@ -524,7 +947,9 @@ export default function HessLawCycles({ onComplete }) {
                       problem.unknownMeta.index === sp.idx;
                     return (
                       <div key={`${sp.side}-${sp.label}`} className="flex items-center justify-between px-3 py-2 font-mono">
-                        <span className="font-bold text-slate-800">{sym}({sp.label})</span>
+                        <span className="font-bold text-slate-800">
+                          <DeltaH sub={subChar} />({sp.label})
+                        </span>
                         <span className={`font-black ${isMasked ? 'text-rose-600' : 'text-[#326fa0]'}`}>
                           {isMasked ? '?' : `${sp.val > 0 ? '+' : ''}${sp.val} kJ mol⁻¹`}
                         </span>
@@ -536,13 +961,17 @@ export default function HessLawCycles({ onComplete }) {
           </div>
         </div>
 
-        {/* Right Workbench Column: Hint + Step 1 Route Gate + Step 2 Answer */}
+        {/* Right Workbench Column */}
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs font-black text-slate-700">
-              {problem.subMode === 'unknown_species'
-                ? `Calculate ${sym}(${problem.unknownMeta.label}) in kJ mol⁻¹.`
-                : 'Calculate the overall enthalpy change (ΔH_r°) in kJ mol⁻¹.'}
+              {isBuilder ? (
+                <>Build the Hess cycle from the enthalpy data, then calculate <DeltaH sub="r" /> in kJ mol⁻¹.</>
+              ) : problem.subMode === 'unknown_species' ? (
+                <>Calculate <DeltaH sub={subChar} />({problem.unknownMeta.label}) in kJ mol⁻¹.</>
+              ) : (
+                <>Calculate the overall enthalpy change (<DeltaH sub="r" />) in kJ mol⁻¹.</>
+              )}
             </span>
             <button
               type="button"
@@ -555,164 +984,495 @@ export default function HessLawCycles({ onComplete }) {
 
           {showHint && (
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
-              <strong className="font-black text-amber-900">Hess’s Law Cycle Rule: </strong>
-              {isFormation
-                ? 'Formation arrows point UP from elements to compounds, so ΔH_r° = ΣΔH_f°(products) − ΣΔH_f°(reactants). Unlisted elements in their standard states (e.g. Fe(s), O₂(g), H₂(g), N₂(g)) always have ΔH_f° = 0.'
-                : 'Combustion arrows point DOWN from reactants and products to CO₂/H₂O, so ΔH_r° = ΣΔH_c°(reactants) − ΣΔH_c°(products). Always multiply each molar enthalpy by its stoichiometric coefficient.'}
+              <strong className="font-black text-amber-900">Hess’s Law Method: </strong>
+              {isBuilder ? (
+                <>
+                  Check the subscript in the Standard Enthalpy Data table first: <DeltaH sub="f" /> values define forming compounds from balanced <strong>elements in their standard states</strong> (arrows point <strong>up</strong>, and standard-state elements have <DeltaH sub="f" /> = 0). <DeltaH sub="c" /> values define burning species completely into <strong>CO₂(g) + H₂O(l)</strong> (arrows point <strong>down</strong>). Along any indirect path, add values moved <strong>with</strong> an arrow and subtract values moved <strong>against</strong> an arrow.
+                </>
+              ) : isFormation ? (
+                <>
+                  Formation arrows point <strong>up</strong> from elements to compounds, so{' '}
+                  <DeltaH sub="r" /> = Σ<DeltaH sub="f" />(products) − Σ<DeltaH sub="f" />(reactants). Unlisted elements in their standard states (e.g. Fe(s), O₂(g), H₂(g), N₂(g)) always have <DeltaH sub="f" /> = 0.
+                </>
+              ) : (
+                <>
+                  Combustion arrows point <strong>down</strong> from reactants and products to CO₂/H₂O, so{' '}
+                  <DeltaH sub="r" /> = Σ<DeltaH sub="c" />(reactants) − Σ<DeltaH sub="c" />(products). Always multiply each molar enthalpy by its stoichiometric coefficient.
+                </>
+              )}
             </div>
           )}
 
-          {/* Step 1 Route & Sign Gate */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
-            <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-200">
-              <div>
-                <span className="text-[10px] font-black tracking-widest text-slate-400">
-                  Step 1: Cycle Direction &amp; Stoichiometry Gate
-                </span>
-                <h4 className="text-xs font-black text-slate-800 mt-0.5">
-                  Confirm Hess Formula &amp; Route Totals
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setGateEnabled(!gateEnabled)}
-                className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 shrink-0 cursor-pointer"
-              >
-                {gateEnabled ? 'Skip Gate' : 'Enable Gate'}
-              </button>
-            </div>
-
-            {gateEnabled && (
-              <div className="space-y-3">
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                    Select valid Hess equation for this cycle:
-                  </label>
-                  <select
-                    value={gateFormula}
-                    disabled={gateVerified}
-                    onChange={(e) => setGateFormula(e.target.value)}
-                    className="w-full px-2.5 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg"
-                  >
-                    <option value="">-- Choose Hess Route Equation --</option>
-                    <option value="prod_minus_react">ΔH_r° = Σ(Products) − Σ(Reactants)</option>
-                    <option value="react_minus_prod">ΔH_r° = Σ(Reactants) − Σ(Products)</option>
-                  </select>
+          {isBuilder ? (
+            <>
+              {/* Builder Step 1 Card */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-4 shadow-sm">
+                <div className="border-b border-slate-200 pb-2">
+                  <span className="text-[10px] font-black tracking-widest text-slate-400">
+                    Step 1: Construct the Hess Cycle Diagram
+                  </span>
+                  <h4 className="text-xs font-black text-slate-800 mt-0.5">
+                    Select Intermediate Box, Arrow Directions &amp; Multipliers
+                  </h4>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                    <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                      {problem.subMode === 'unknown_species' && problem.unknownMeta.side === 'reactant'
-                        ? `Known Reactant Sum (excl. ${problem.unknownMeta.label}):`
-                        : 'Σ(Reactant Route) in kJ mol⁻¹:'}
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      inputMode="decimal"
-                      onWheel={(e) => e.currentTarget.blur()}
-                      disabled={gateVerified}
-                      value={gateLeftSum}
-                      onChange={(e) => setGateLeftSum(e.target.value)}
-                      placeholder="e.g. -190"
-                      className="w-full px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                    />
+                {/* ① Bottom Box */}
+                <div className="space-y-2">
+                  <div className="text-[11px] font-black text-slate-700">
+                    ① Choose the balanced intermediate species for the bottom box:
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {problem.bottomChoices.map((choice) => {
+                      const active = builderBottom === choice;
+                      return (
+                        <button
+                          key={choice}
+                          type="button"
+                          disabled={builderVerified}
+                          onClick={() => {
+                            setBuilderBottom(choice);
+                            setBuilderFeedback(null);
+                          }}
+                          className={`px-3 py-2.5 rounded-xl border font-mono font-bold text-xs text-left transition-all cursor-pointer disabled:cursor-default ${
+                            active
+                              ? 'bg-blue-50 border-[#326fa0] text-[#235478] shadow-xs ring-1 ring-[#326fa0]'
+                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100/70'
+                          }`}
+                        >
+                          {choice}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                  <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                    <label className="block text-[10px] font-bold text-slate-500 mb-1">
-                      {problem.subMode === 'unknown_species' && problem.unknownMeta.side === 'product'
-                        ? `Known Product Sum (excl. ${problem.unknownMeta.label}):`
-                        : 'Σ(Product Route) in kJ mol⁻¹:'}
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      inputMode="decimal"
-                      onWheel={(e) => e.currentTarget.blur()}
-                      disabled={gateVerified}
-                      value={gateRightSum}
-                      onChange={(e) => setGateRightSum(e.target.value)}
-                      placeholder="e.g. -278"
-                      className="w-full px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
-                    />
+                {/* ② Diagonal Arrow Directions */}
+                <div className="space-y-2">
+                  <div className="text-[11px] font-black text-slate-700">
+                    ② Orient both enthalpy-definition arrows (or tap the legs on the diagram):
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-white border border-slate-200 rounded-xl p-2.5 space-y-1.5">
+                      <span className="block text-[10px] font-black text-slate-500">
+                        Left Leg (Reactants ↔ Intermediate)
+                      </span>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {[
+                          { id: 'up', label: '⬆ Up to Reactants' },
+                          { id: 'down', label: '⬇ Down to Bottom' },
+                        ].map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            disabled={builderVerified}
+                            onClick={() => {
+                              setBuilderLeftDir(opt.id);
+                              setBuilderFeedback(null);
+                            }}
+                            className={`px-2 py-1.5 rounded-lg border text-[11px] font-bold transition-all cursor-pointer disabled:cursor-default ${
+                              builderLeftDir === opt.id
+                                ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-xs'
+                                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-xl p-2.5 space-y-1.5">
+                      <span className="block text-[10px] font-black text-slate-500">
+                        Right Leg (Products ↔ Intermediate)
+                      </span>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {[
+                          { id: 'up', label: '⬆ Up to Products' },
+                          { id: 'down', label: '⬇ Down to Bottom' },
+                        ].map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            disabled={builderVerified}
+                            onClick={() => {
+                              setBuilderRightDir(opt.id);
+                              setBuilderFeedback(null);
+                            }}
+                            className={`px-2 py-1.5 rounded-lg border text-[11px] font-bold transition-all cursor-pointer disabled:cursor-default ${
+                              builderRightDir === opt.id
+                                ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-xs'
+                                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ③ Stoichiometric Multipliers */}
+                <div className="space-y-2">
+                  <div className="text-[11px] font-black text-slate-700">
+                    ③ Set the stoichiometric multiplier for each species:
+                  </div>
+                  <div className="space-y-2.5">
+                    {[
+                      { heading: 'Reactant Leg', prefix: 'r', list: problem.reactants, allSet: allReactMultsSet, liveSum: liveReactSum },
+                      { heading: 'Product Leg', prefix: 'p', list: problem.products, allSet: allProdMultsSet, liveSum: liveProdSum },
+                    ].map((group) => (
+                      <div key={group.prefix} className="bg-white border border-slate-200 rounded-xl p-3 space-y-2">
+                        <div className="flex items-center justify-between text-[10px] font-black text-slate-500">
+                          <span>{group.heading}</span>
+                          {group.allSet && (
+                            <span className="font-mono text-[#326fa0]">
+                              Selected sum = {group.liveSum} kJ mol⁻¹
+                            </span>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          {group.list.map((sp, idx) => {
+                            const key = `${group.prefix}-${idx}`;
+                            return (
+                              <div key={key} className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 first:border-t-0 first:pt-0">
+                                <span className="font-mono font-black text-xs text-slate-800">{sp.label}</span>
+                                <div className="flex flex-wrap gap-1">
+                                  {MULTIPLIER_OPTIONS.map((opt) => (
+                                    <button
+                                      key={opt.val}
+                                      type="button"
+                                      disabled={builderVerified}
+                                      onClick={() => handleSetMultiplier(key, opt.val)}
+                                      className={`px-2 py-1 rounded-lg border text-[11px] font-bold transition-all cursor-pointer disabled:cursor-default ${
+                                        builderMults[key] === opt.val
+                                          ? 'bg-blue-50 border-[#326fa0] text-[#235478]'
+                                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                                      }`}
+                                    >
+                                      {opt.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  onClick={handleVerifyGate}
-                  disabled={gateVerified}
-                  className="w-full py-2 bg-[#326fa0] hover:bg-[#255580] disabled:bg-emerald-600 text-white text-xs font-black rounded-xl transition-colors cursor-pointer"
+                  onClick={handleVerifyBuilder}
+                  disabled={builderVerified}
+                  className="w-full py-2.5 bg-[#326fa0] hover:bg-[#255580] disabled:bg-emerald-600 text-white text-xs font-black rounded-xl transition-colors cursor-pointer"
                 >
-                  {gateVerified ? 'Step 1 Verified ✓' : 'Verify Hess Route & Sums'}
+                  {builderVerified ? 'Step 1 Cycle Verified ✓' : 'Verify Constructed Hess Cycle'}
                 </button>
 
-                {gateFeedback && (
-                  <div className={`p-2.5 rounded-xl text-xs font-bold ${
-                    gateFeedback.isCorrect
-                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                      : 'bg-rose-50 text-rose-800 border border-rose-200'
-                  }`}>
-                    {gateFeedback.msg}
+                {builderFeedback && (
+                  <div
+                    className={`p-3 rounded-xl text-xs font-bold space-y-1.5 ${
+                      builderFeedback.isCorrect
+                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-900 border border-rose-200'
+                    }`}
+                  >
+                    {builderFeedback.messages.map((msg, i) => (
+                      <div key={i} className="leading-relaxed">
+                        {!builderFeedback.isCorrect ? '⚠️ ' : null}
+                        {msg}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            )}
-          </div>
 
-          {/* Step 2 Calculation */}
-          <form
-            onSubmit={handleCheckAnswer}
-            className={`bg-white border border-slate-200 rounded-2xl p-4 space-y-4 transition-opacity ${
-              isStep2Locked ? 'opacity-50 pointer-events-none' : 'opacity-100'
-            }`}
-          >
-            <div>
-              <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
-                Step 2: Final Enthalpy Value
-              </span>
-              <h4 className="text-sm font-black text-slate-800 mt-0.5">
-                {problem.subMode === 'unknown_species'
-                  ? `Solve for 1 mole of ${problem.unknownMeta.label}`
-                  : 'Solve for ΔH_r°'}
-              </h4>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-black text-sm text-slate-700">
-                {problem.subMode === 'unknown_species' ? `${sym} =` : 'ΔH_r° ='}
-              </span>
-              <input
-                type="number"
-                step="any"
-                inputMode="decimal"
-                onWheel={(e) => e.currentTarget.blur()}
-                value={userAnswer}
-                onChange={(e) => {
-                  setUserAnswer(e.target.value);
-                  setFeedback(null);
-                }}
-                placeholder="e.g. -88"
-                className="flex-1 px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-sm focus:outline-none focus:border-[#326fa0]"
-              />
-              <span className="font-mono font-bold text-xs text-slate-500">kJ mol⁻¹</span>
-            </div>
-
-            <div className="button-group">
-              <button type="submit" className="btn btn-primary" disabled={isStep2Locked}>
-                Check Answer
-              </button>
-              <button
-                type="button"
-                onClick={() => generateProblem(mode)}
-                className="btn btn-secondary"
+              {/* Builder Step 2 Card */}
+              <form
+                onSubmit={handleCheckAnswer}
+                className={`bg-white border border-slate-200 rounded-2xl p-4 space-y-4 transition-opacity ${
+                  isStep2Locked ? 'opacity-50 pointer-events-none' : 'opacity-100'
+                }`}
               >
-                Next Cycle &rarr;
-              </button>
-            </div>
-          </form>
+                <div>
+                  <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
+                    Step 2: Apply Indirect Route &amp; Calculate <DeltaH sub="r" />
+                  </span>
+                  <h4 className="text-sm font-black text-slate-800 mt-0.5">
+                    Deduce Route Equation &amp; Final Enthalpy Change
+                  </h4>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="block text-[11px] font-bold text-slate-600">
+                    Going indirectly from Reactants → Intermediate → Products (+ with arrow, − against arrow):
+                  </span>
+                  <div className="grid grid-cols-1 gap-2">
+                    {[
+                      {
+                        id: 'prod_minus_react',
+                        label: (
+                          <>
+                            <DeltaH sub="r" /> = +Σ(Products leg) − Σ(Reactants leg)
+                          </>
+                        ),
+                      },
+                      {
+                        id: 'react_minus_prod',
+                        label: (
+                          <>
+                            <DeltaH sub="r" /> = +Σ(Reactants leg) − Σ(Products leg)
+                          </>
+                        ),
+                      },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        disabled={isStep2Locked || feedback?.isCorrect}
+                        onClick={() => {
+                          setBuilderRouteEq(opt.id);
+                          setFeedback(null);
+                        }}
+                        className={`w-full px-3 py-2 rounded-xl border text-xs font-mono font-bold text-left transition-all cursor-pointer ${
+                          builderRouteEq === opt.id
+                            ? 'bg-blue-50 border-[#326fa0] text-[#235478] ring-1 ring-[#326fa0]'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-black text-sm text-slate-700">
+                    <DeltaH sub="r" /> =
+                  </span>
+                  <input
+                    type="number"
+                    step="any"
+                    inputMode="decimal"
+                    onWheel={(e) => e.currentTarget.blur()}
+                    value={userAnswer}
+                    onChange={(e) => {
+                      setUserAnswer(e.target.value);
+                      setFeedback(null);
+                    }}
+                    placeholder="e.g. -88"
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-sm focus:outline-none focus:border-[#326fa0]"
+                  />
+                  <span className="font-mono font-bold text-xs text-slate-500">kJ mol⁻¹</span>
+                </div>
+
+                <div className="button-group">
+                  <button type="submit" className="btn btn-primary" disabled={isStep2Locked}>
+                    Check Answer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => generateProblem(mode)}
+                    className="btn btn-secondary"
+                  >
+                    Next Cycle &rarr;
+                  </button>
+                </div>
+              </form>
+            </>
+          ) : (
+            <>
+              {/* Calculation Modes: Step 1 Route & Sign Gate */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
+                <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-200">
+                  <div>
+                    <span className="text-[10px] font-black tracking-widest text-slate-400">
+                      Step 1: Cycle Direction &amp; Stoichiometry Gate
+                    </span>
+                    <h4 className="text-xs font-black text-slate-800 mt-0.5">
+                      Confirm Hess Formula &amp; Route Totals
+                    </h4>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setGateEnabled(!gateEnabled)}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 shrink-0 cursor-pointer"
+                  >
+                    {gateEnabled ? 'Skip Gate' : 'Enable Gate'}
+                  </button>
+                </div>
+
+                {gateEnabled && (
+                  <div className="space-y-3">
+                    <div className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1.5">
+                      <span className="block text-[10px] font-bold text-slate-500">
+                        Select valid Hess equation for this cycle:
+                      </span>
+                      <div className="grid grid-cols-1 gap-1.5">
+                        {[
+                          {
+                            id: 'prod_minus_react',
+                            label: (
+                              <>
+                                <DeltaH sub="r" /> = Σ<DeltaH sub={subChar} />(products) − Σ<DeltaH sub={subChar} />(reactants)
+                              </>
+                            ),
+                          },
+                          {
+                            id: 'react_minus_prod',
+                            label: (
+                              <>
+                                <DeltaH sub="r" /> = Σ<DeltaH sub={subChar} />(reactants) − Σ<DeltaH sub={subChar} />(products)
+                              </>
+                            ),
+                          },
+                        ].map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            disabled={gateVerified}
+                            onClick={() => setGateFormula(opt.id)}
+                            className={`w-full px-3 py-2 rounded-lg border text-xs font-mono font-bold text-left transition-all cursor-pointer disabled:cursor-default ${
+                              gateFormula === opt.id
+                                ? 'bg-blue-50 border-[#326fa0] text-[#235478] ring-1 ring-[#326fa0]'
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                          {problem.subMode === 'unknown_species' && problem.unknownMeta.side === 'reactant'
+                            ? `Known Reactant Sum (excl. ${problem.unknownMeta.label}):`
+                            : 'Σ(Reactant Route) in kJ mol⁻¹:'}
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          disabled={gateVerified}
+                          value={gateLeftSum}
+                          onChange={(e) => setGateLeftSum(e.target.value)}
+                          placeholder="e.g. -190"
+                          className="w-full px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                        />
+                      </div>
+
+                      <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                          {problem.subMode === 'unknown_species' && problem.unknownMeta.side === 'product'
+                            ? `Known Product Sum (excl. ${problem.unknownMeta.label}):`
+                            : 'Σ(Product Route) in kJ mol⁻¹:'}
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          inputMode="decimal"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          disabled={gateVerified}
+                          value={gateRightSum}
+                          onChange={(e) => setGateRightSum(e.target.value)}
+                          placeholder="e.g. -278"
+                          className="w-full px-2.5 py-1.5 text-xs font-mono font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-[#326fa0]"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleVerifyGate}
+                      disabled={gateVerified}
+                      className="w-full py-2 bg-[#326fa0] hover:bg-[#255580] disabled:bg-emerald-600 text-white text-xs font-black rounded-xl transition-colors cursor-pointer"
+                    >
+                      {gateVerified ? 'Step 1 Verified ✓' : 'Verify Hess Route & Sums'}
+                    </button>
+
+                    {gateFeedback && (
+                      <div className={`p-2.5 rounded-xl text-xs font-bold space-y-1 ${
+                        gateFeedback.isCorrect
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-800 border border-rose-200'
+                      }`}>
+                        {gateFeedback.messages.map((msg, i) => (
+                          <div key={i}>
+                            {!gateFeedback.isCorrect ? '⚠️ ' : null}
+                            {msg}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Calculation Modes: Step 2 Final Value */}
+              <form
+                onSubmit={handleCheckAnswer}
+                className={`bg-white border border-slate-200 rounded-2xl p-4 space-y-4 transition-opacity ${
+                  isStep2Locked ? 'opacity-50 pointer-events-none' : 'opacity-100'
+                }`}
+              >
+                <div>
+                  <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
+                    Step 2: Final Enthalpy Value
+                  </span>
+                  <h4 className="text-sm font-black text-slate-800 mt-0.5">
+                    {problem.subMode === 'unknown_species' ? (
+                      <>Solve for 1 mole of {problem.unknownMeta.label}</>
+                    ) : (
+                      <>Solve for <DeltaH sub="r" /></>
+                    )}
+                  </h4>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-black text-sm text-slate-700">
+                    {problem.subMode === 'unknown_species' ? (
+                      <><DeltaH sub={subChar} /> =</>
+                    ) : (
+                      <><DeltaH sub="r" /> =</>
+                    )}
+                  </span>
+                  <input
+                    type="number"
+                    step="any"
+                    inputMode="decimal"
+                    onWheel={(e) => e.currentTarget.blur()}
+                    value={userAnswer}
+                    onChange={(e) => {
+                      setUserAnswer(e.target.value);
+                      setFeedback(null);
+                    }}
+                    placeholder="e.g. -88"
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-sm focus:outline-none focus:border-[#326fa0]"
+                  />
+                  <span className="font-mono font-bold text-xs text-slate-500">kJ mol⁻¹</span>
+                </div>
+
+                <div className="button-group">
+                  <button type="submit" className="btn btn-primary" disabled={isStep2Locked}>
+                    Check Answer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => generateProblem(mode)}
+                    className="btn btn-secondary"
+                  >
+                    Next Cycle &rarr;
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
 
           {feedback && (
             <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
