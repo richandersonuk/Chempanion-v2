@@ -359,9 +359,9 @@ export const howToGuides = {
     unit: 'Unit 1.6',
     summary: 'Use the virtual test-tube rack to run sequential cation, anion, and flame tests and write balanced ionic precipitation equations.',
     appletSteps: [
-      <><strong>Load Unknown Sample:</strong> Select a mystery salt from the dropdown or click <em>Random 🎲</em>.</>,
-      <><strong>Run Virtual Reagents:</strong> Click reagent buttons (<em>Flame Test</em>, <em>NaOH(aq)</em>, <em>SO₄²⁻</em>, <em>H⁺</em>, <em>Ba²⁺</em>, <em>Ag⁺ + HNO₃</em>, <em>dilute NH₃</em>, <em>conc NH₃</em>) to inspect test-tube observations.</>,
-      <><strong>Deduce Salt &amp; Equation:</strong> Select the matching cation and anion from the identification menus, then verify the ionic precipitation equation.</>,
+      <><strong>Load Unknown Sample:</strong> Practise with freshly generated samples from the <strong>33-salt procedural generator</strong> (via <em>Random Unknown Salt</em>) or choose any classic preset <em>A–H</em> from the dropdown.</>,
+      <><strong>Run Virtual Reagents:</strong> Click reagent buttons (<em>Flame Test</em>, <em>NaOH(aq) &amp; Warm</em>, <em>Dilute HCl + Limewater</em>, <em>Acidified BaCl₂</em>, <em>Acidified AgNO₃ + NH₃</em>) to inspect test-tube observations.</>,
+      <><strong>Deduce Salt &amp; Equation:</strong> Select the matching cation and anion from the identification menus, then verify the balanced ionic precipitation equations.</>,
     ],
     examMethod: {
       formulas: [
@@ -451,9 +451,9 @@ export const howToGuides = {
     unit: 'Unit 2.1',
     summary: 'Use the magnified lens on heating/cooling graphs to extrapolate ΔT_max and equivalence volume, then calculate ΔH_neut.',
     appletSteps: [
-      <><strong>Choose Mode:</strong> Toggle between <em>Read Graph &amp; Extrapolate</em> and <em>Calculate Enthalpy</em>.</>,
-      <><strong>Use Magnified Lens:</strong> Hover across the SVG temperature curve to inspect 0.1 cm³ grid ticks and pinpoint where the rising and cooling lines intersect.</>,
-      <><strong>Read &amp; Solve:</strong> Enter the extrapolated equivalence volume V_eq and ΔT_max (corrected for heat loss), or calculate ΔH using total solution mass.</>,
+      <><strong>Choose Mode:</strong> Toggle between <em>Identify Endpoint from Extrapolated Graph</em> and <em>Calculate Enthalpy of Neutralisation (ΔH)</em>.</>,
+      <><strong>Use Magnified Lens &amp; Steppers:</strong> Drag on the chart or tap the fine <code>−0.1</code> / <code>+0.1 cm³</code> steppers beneath the magnified tracking lens to align the crosshair on the extrapolated intersection vertex, then tap <em>Use Reading</em>.</>,
+      <><strong>Calculate ΔH:</strong> Combine total solution volume (<code>V_acid + V_NaOH</code>) in <code>q = mcΔT</code>, convert J to kJ, and divide by limiting moles with an explicit negative sign.</>,
     ],
     examMethod: {
       formulas: [
@@ -497,9 +497,9 @@ export const howToGuides = {
     unit: 'Unit 2.1',
     summary: 'Simulate spirit-burner calorimetry experiments, pass the kJ/mol Unit Trap Gate, and apply Hess cycles and bond enthalpies accurately.',
     appletSteps: [
-      <><strong>Run Burner Simulation:</strong> Click <em>Run Simulation 🧪</em> to heat the copper calorimeter and harvest experimental readings (<em>Mass of Fuel Burned</em> and <em>ΔT</em>).</>,
-      <><strong>Unlock Unit Trap Gate:</strong> Convert thermal energy <em>Q</em> into <strong>kJ</strong> (not Joules) and calculate fuel moles <em>n</em> to unlock Step 2.</>,
-      <><strong>Enter ΔH_c:</strong> Submit final enthalpy of combustion in kJ mol⁻¹ (including its negative sign!) via <em>ScientificInput</em>.</>,
+      <><strong>Choose Practice Mode:</strong> Switch between <em>Experimental Calorimetry (q = mcΔT)</em>, <em>Mean Bond Enthalpies (Calculate ΔH)</em>, and <em>Unknown Bond Enthalpy from ΔH</em> (or click <em>Random 🎲</em>).</>,
+      <><strong>Run Burner or Count Bonds:</strong> Ignite the calorimeter simulation or inspect the displayed reaction equation and Mean Bond Enthalpies table on the left workbench.</>,
+      <><strong>Pass Step 1 Gate &amp; Solve:</strong> Confirm Q (kJ) and fuel moles (or known ΣE(broken) and ΣE(formed)), then calculate ΔH or the missing mean bond enthalpy via <em>ScientificInput</em>.</>,
     ],
     examMethod: {
       formulas: [
@@ -578,6 +578,137 @@ export const howToGuides = {
         'Dipoles δ⁺ and δ⁻ labelled accurately on polarised/induced bonds',
         'Curly arrows originate strictly on lone pairs or π/σ bond lines',
         'Major carbocation intermediate reflects +I alkyl stabilisation (3° > 2° > 1°)',
+      ],
+    },
+  },
+
+  'hess-cycles': {
+    title: 'Hess’s Law Enthalpy Cycles',
+    unit: 'Unit 2.1',
+    summary: 'Construct ΔH°_f and ΔH°_c Hess cycles, apply the zero enthalpy rule for standard elements, and solve both ΔH_r° and unknown species enthalpies.',
+    appletSteps: [
+      <><strong>Pick Cycle Mode:</strong> Choose <em>Enthalpies of Formation (ΔH_f° Cycle)</em>, <em>Enthalpies of Combustion (ΔH_c° Cycle)</em>, or <em>Unknown Species ΔH° from ΔH_r</em> (or click <em>Random 🎲</em>).</>,
+      <><strong>Check Arrow Direction &amp; Standard Elements:</strong> Inspect the Hess triangle on the left workbench (arrows point UP for formation, DOWN for combustion) and note that elements in standard states have ΔH_f° = 0.</>,
+      <><strong>Clear Step 1 Route Gate &amp; Solve:</strong> Confirm the valid Hess equation and stoichiometric sums before solving ΔH_r° or the unknown species value.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Formation Cycle (arrows UP from elements): ΔH°_r = ∑ΔH°_f(products) − ∑ΔH°_f(reactants)',
+        'Combustion Cycle (arrows DOWN to CO₂ + H₂O): ΔH°_r = ∑ΔH°_c(reactants) − ∑ΔH°_c(products)',
+      ],
+      steps: [
+        'Identify whether provided data are ΔH°_f (formation) or ΔH°_c (combustion) — never mix the subtraction direction!',
+        'Multiply every tabulated enthalpy by its exact stoichiometric coefficient in the balanced chemical equation.',
+        'Treat any pure element in its standard state (e.g. O₂(g), H₂(g), Fe(s), C(s)) as ΔH°_f = 0 kJ mol⁻¹.',
+        'When solving for an unknown compound X whose coefficient is n > 1, divide the algebraic difference by n at the final step.',
+      ],
+    },
+    workedExample: {
+      question: 'Use ΔH°_c data to calculate ΔH°_f(C₂H₆): C(s) = −394, H₂(g) = −286, C₂H₆(g) = −1560 kJ mol⁻¹.',
+      steps: [
+        'Balanced target equation: 2C(s) + 3H₂(g) → C₂H₆(g).',
+        'Combustion arrows point DOWN to 2CO₂ + 3H₂O: ∑ΔH°_c(reactants) = 2(−394) + 3(−286) = −1646 kJ mol⁻¹.',
+        'ΔH°_f = ∑ΔH°_c(reactants) − ∑ΔH°_c(products) = −1646 − (−1560) = −86 kJ mol⁻¹.',
+      ],
+      answer: '−86 kJ mol⁻¹',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Using (products − reactants) with combustion data instead of (reactants − products).',
+        'Forgetting to multiply C(s) or H₂(g) combustion enthalpies by 2 or 3 when balancing hydrocarbon formation equations.',
+        'Assuming an element in a combustion cycle is zero (elements burn exothermically: ΔH°_c ≠ 0, even though ΔH°_f = 0).',
+      ],
+      checklist: [
+        'Correct arrow orientation checked (UP for ΔH°_f, DOWN for ΔH°_c)',
+        'Every enthalpy multiplied by equation balancing coefficients',
+        'Final answer divided by stoichiometric coefficient n if solving for 1 mole of an unknown compound',
+      ],
+    },
+  },
+
+  'maxwell-boltzmann': {
+    title: 'Maxwell–Boltzmann & Collision Theory',
+    unit: 'Unit 2.2',
+    summary: 'Analyse temperature shifts, catalysts, and concentration changes on kinetic energy distribution curves and master WJEC collision-theory mark schemes.',
+    appletSteps: [
+      <><strong>Examine the Distribution Curve:</strong> In <em>Exam Question Trainer</em>, inspect how peak E_mp, total curve area, and the shaded E ≥ Eₐ tail respond to T, catalysts, or concentration.</>,
+      <><strong>Answer Two-Part Exam Prompts:</strong> Select the matching curve behaviour and WJEC collision-theory explanation, using <em>Need a Hint?</em> whenever needed.</>,
+      <><strong>Simulate Variables Live:</strong> Switch to the <em>Interactive Curve Explorer</em> tab to adjust temperature, Eₐ, catalyst threshold, and 2× concentration sliders in real time.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Peak height corresponds to Most Probable Energy (E_mp)  |  Mean Energy Ē > E_mp',
+        'Total area under curve = Total number of molecules in the sample',
+      ],
+      steps: [
+        'Always verify boundary conditions when sketching: starts at (0,0), peaks smoothly at E_mp, and approaches the x-axis asymptotically without ever touching zero.',
+        'On raising temperature: E_mp shifts right and peak drops lower (constant area), leaving a far larger shaded area with E ≥ Eₐ.',
+        'On adding a catalyst: the Maxwell–Boltzmann curve itself stays completely unchanged; only Eₐ moves left to E_cat via an alternative reaction pathway.',
+        'Always conclude rate explanations using WJEC phrasing: "greater proportion/fraction of molecules have E ≥ Eₐ, so more collisions are successful per unit time".',
+      ],
+    },
+    workedExample: {
+      question: 'Explain why increasing temperature by 10 °C causes a large increase in reaction rate, even though collision frequency rises only slightly.',
+      steps: [
+        'At higher temperature, the peak shifts right and lowers while total area stays unchanged.',
+        'Far more molecules possess kinetic energy greater than or equal to the activation energy (E ≥ Eₐ).',
+        'Consequently, the frequency of successful collisions increases dramatically.',
+      ],
+      answer: 'Many more molecules have E ≥ Eₐ → much higher proportion of successful collisions',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Writing that a catalyst "gives molecules more kinetic energy" or shifts the curve to the right (it only lowers Eₐ).',
+        'Claiming higher temperature "lowers the activation energy Eₐ" (Eₐ is unchanged unless a catalyst is added).',
+        'Letting a sketched distribution curve touch the x-axis at high energy or failing to pass through (0,0).',
+      ],
+      checklist: [
+        'Curve starts strictly at (0,0) and never touches the x-axis on the right',
+        'Total area stays identical when only temperature or a catalyst changes',
+        'Explanation contrasts E ≥ Eₐ frequency rather than total collision speed alone',
+      ],
+    },
+  },
+
+  'iupac-isomerism': {
+    title: 'IUPAC Naming & E/Z Isomerism',
+    unit: 'Unit 2.4',
+    summary: 'Practise systematic IUPAC nomenclature, chain/position/functional-group isomer classification, and Cahn–Ingold–Prelog E/Z stereochemistry.',
+    appletSteps: [
+      <><strong>Choose Practice Mode:</strong> Switch between <em>E/Z Stereoisomerism &amp; CIP Priority</em>, <em>Systematic IUPAC Naming</em>, and <em>Structural Isomer Classification</em> (or click <em>Random 🎲</em>).</>,
+      <><strong>Inspect Displayed Structures:</strong> Note that E/Z ligands shuffle vertically on each load so you must inspect priority relative to C=C directly rather than memorising names.</>,
+      <><strong>Apply Naming &amp; Priority Rules:</strong> Select the longest carbon chain or higher-atomic-number CIP groups, then check your classification or systematic name.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Z (zusammen) = higher-priority groups on SAME side of C=C  |  E (entgegen) = OPPOSITE sides',
+        'Structural isomer types: Chain (branching) | Position (locant) | Functional group (family)',
+      ],
+      steps: [
+        'For E/Z isomerism: check that BOTH carbons of the C=C bond have two different attached groups (if either carbon has two identical groups, no E/Z stereoisomerism exists).',
+        'Assign Cahn–Ingold–Prelog (CIP) priority on each carbon separately using atomic number Z (Br 35 > Cl 17 > O 8 > N 7 > C 6 > H 1; break carbon ties by moving outward).',
+        'For IUPAC naming: pick the longest carbon chain containing the principal functional group, number for the lowest locant of the principal group, and list substituent prefixes alphabetically with commas between numbers and hyphens before letters.',
+      ],
+    },
+    workedExample: {
+      question: 'Why does 1-bromo-1-chloroprop-1-ene show E/Z stereoisomerism while propene does not, and how is priority assigned?',
+      steps: [
+        'Propene (CH₃CH=CH₂) has two identical —H atoms on C1, so swapping them produces the same structure (no E/Z isomers).',
+        'In CBrCl=CHCH₃, C1 carries Br and Cl (different) and C2 carries H and CH₃ (different), and restricted rotation about the C=C π-bond locks them in place.',
+        'By CIP atomic number: on C1, Br (Z=35) > Cl (Z=17); on C2, C (Z=6) > H (Z=1).',
+      ],
+      answer: 'Z when Br & CH₃ are on the same side; E when Br & CH₃ are on opposite sides',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Calling cis/trans or E/Z on alkenes with two identical groups on one carbon (e.g. CH₃CH=CH₂ or (CH₃)₂C=CH₂).',
+        'Claiming E/Z isomerism arises from a chiral carbon instead of restricted rotation about the C=C π-bond.',
+        'Ordering prefixes numerically instead of alphabetically (e.g. writing 3-methyl-2-bromobutane instead of 2-bromo-3-methylbutane).',
+      ],
+      checklist: [
+        'Both C=C carbons verified to carry two different groups',
+        'CIP priority based on atomic number Z applied independently on C1 and C2',
+        'IUPAC numbers separated by commas, hyphens placed strictly between numbers and letters',
       ],
     },
   },

@@ -5,6 +5,7 @@ const ChiralCenters = ({ onComplete }) => {
   const [problem, setProblem] = useState(null);
   const [selectedCarbons, setSelectedCarbons] = useState([]);
   const [feedback, setFeedback] = useState({ message: '', status: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const generateProblem = () => {
     let nextProb = CHIRAL_MOLECULES_POOL[Math.floor(Math.random() * CHIRAL_MOLECULES_POOL.length)];
@@ -14,6 +15,7 @@ const ChiralCenters = ({ onComplete }) => {
     setProblem(nextProb);
     setSelectedCarbons([]);
     setFeedback({ message: '', status: '' });
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -46,151 +48,212 @@ const ChiralCenters = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="applet-header" style={{ textTransform: 'none' }}>
-        Chiral Center Identification
-      </div>
-      
-      <div className="question-text text-center px-4 leading-relaxed" style={{ textTransform: 'none' }}>
-        Identify any and all chiral carbon atoms in the molecule below.
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0" style={{ textTransform: 'none' }}>
+        Chiral Centre Identification
       </div>
 
-      {/* --- INTERACTIVE STRUCTURAL MODEL CANVAS --- */}
-      <div className="w-full max-w-md mx-auto my-6 flex flex-col items-center select-none bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative">
-        <span className="text-[9px] font-black tracking-widest text-slate-400 mb-4 block">
-          Interactive Model: {problem.name}
-        </span>
-        
-        <svg 
-          viewBox={`0 0 ${problem.svgWidth} ${problem.svgHeight}`} 
-          className="w-full max-w-[300px] h-auto overflow-visible"
-        >
-          {/* Render Delocalised Aromatic Benzene Rings if Active */}
-          {problem.isBenzene && problem.ringCenter && (
-            <circle 
-              cx={problem.ringCenter.cx} 
-              cy={problem.ringCenter.cy} 
-              r={problem.ringCenter.r} 
-              fill="none" 
-              stroke="#94a3b8" 
-              strokeWidth="2" 
-              strokeDasharray="4 3" 
-            />
-          )}
+      <div className="applet-workbench">
+        {/* Left: Interactive Structural Model SVG */}
+        <div className="applet-workbench-sticky w-full flex flex-col items-center select-none bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative">
+          <span className="text-[10px] font-black tracking-widest text-slate-400 mb-3 block">
+            Interactive Model: {problem.name}
+          </span>
 
-          {/* Render Backbone Bonds */}
-          {problem.lines.map((line, idx) => (
-            <line 
-              key={idx} 
-              x1={line.x1} 
-              y1={line.y1} 
-              x2={line.x2} 
-              y2={line.y2} 
-              stroke="#475569" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-            />
-          ))}
+          <svg
+            viewBox={`0 0 ${problem.svgWidth} ${problem.svgHeight}`}
+            className="w-full max-w-[320px] h-auto overflow-visible"
+          >
+            {/* Render Delocalised Aromatic Benzene Rings if Active */}
+            {problem.isBenzene && problem.ringCenter && (
+              <circle
+                cx={problem.ringCenter.cx}
+                cy={problem.ringCenter.cy}
+                r={problem.ringCenter.r}
+                fill="none"
+                stroke="#94a3b8"
+                strokeWidth="2"
+                strokeDasharray="4 3"
+              />
+            )}
 
-          {/* Render Heteroatom Text Labels with Central Midpoint Alignment */}
-          {problem.labels.map((lbl, idx) => (
-            <text 
-              key={idx} 
-              x={lbl.x} 
-              y={lbl.y} 
-              textAnchor="middle" 
-              dominantBaseline="central" 
-              className={lbl.className}
-            >
-              {lbl.text}
-            </text>
-          ))}
+            {/* Render Backbone Bonds */}
+            {problem.lines.map((line, idx) => (
+              <line
+                key={idx}
+                x1={line.x1}
+                y1={line.y1}
+                x2={line.x2}
+                y2={line.y2}
+                stroke="#475569"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+            ))}
 
-          {/* Render Interactive Carbon Nodes */}
-          {problem.atoms.map((atom) => {
-            const isSelected = selectedCarbons.includes(atom.id);
-            return (
-              <g 
-                key={atom.id} 
-                onClick={() => handleNodeClick(atom.id)}
-                className="cursor-pointer group"
+            {/* Render Heteroatom Text Labels with Central Midpoint Alignment */}
+            {problem.labels.map((lbl, idx) => (
+              <text
+                key={idx}
+                x={lbl.x}
+                y={lbl.y}
+                textAnchor="middle"
+                dominantBaseline="central"
+                className={lbl.className}
               >
-                {/* Static interactive hitbox bounds */}
-                <circle cx={atom.cx} cy={atom.cy} r="15" fill="transparent" />
-                
-                {/* Visual Node Core */}
-                <circle 
-                  cx={atom.cx} 
-                  cy={atom.cy} 
-                  r={isSelected ? 9 : 8} 
-                  className={
-                    isSelected 
-                      ? 'fill-amber-500 stroke-amber-600 stroke-2' 
-                      : 'fill-slate-100 stroke-slate-400 stroke-2 group-hover:fill-slate-200'
-                  } 
-                />
-                
-                {/* Text centered completely inside the coordinates */}
-                <text 
-                  x={atom.cx} 
-                  y={atom.cy} 
-                  textAnchor="middle" 
-                  dominantBaseline="central"
-                  className={`text-[8px] font-mono font-black select-none pointer-events-none ${
-                    isSelected ? 'fill-white' : 'fill-slate-700'
-                  }`}
+                {lbl.text}
+              </text>
+            ))}
+
+            {/* Render Interactive Carbon Nodes */}
+            {problem.atoms.map((atom) => {
+              const isSelected = selectedCarbons.includes(atom.id);
+              return (
+                <g
+                  key={atom.id}
+                  onClick={() => handleNodeClick(atom.id)}
+                  className="cursor-pointer group"
                 >
-                  {atom.label}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
+                  {/* Generous touch hitbox bounds */}
+                  <circle cx={atom.cx} cy={atom.cy} r="20" fill="transparent" />
 
-        {/* --- IUPAC CONVENTION EXAM NOTE --- */}
-        <div className="mt-4 pt-2 border-t border-slate-100 w-full text-center">
-          <span className="inline-block text-[8px] font-black tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
-            IUPAC Nomenclature Note
-          </span>
-          <p className="text-[10px] text-slate-400 font-semibold mt-1">
-            Carbons are strictly numbered according to priority rules (lowest locants assigned to principal functional groups).
-          </p>
-        </div>
-      </div>
+                  {/* Visual Node Core */}
+                  <circle
+                    cx={atom.cx}
+                    cy={atom.cy}
+                    r={isSelected ? 9 : 8}
+                    className={
+                      isSelected
+                        ? 'fill-amber-500 stroke-amber-600 stroke-2'
+                        : 'fill-slate-100 stroke-slate-400 stroke-2 group-hover:fill-slate-200'
+                    }
+                  />
 
-      {/* --- REAL-TIME SELECTION FEEDBACK BAR --- */}
-      <div className="text-center text-xs font-bold text-slate-400 min-h-[1.5rem] mb-6">
-        {selectedCarbons.length > 0 ? (
-          <span>
-            Highlighted Asymmetric Nodes:{" "}
-            <span className="font-mono text-amber-600 bg-amber-50 px-2.5 py-0.5 border border-amber-200 rounded-md font-black">
-              {selectedCarbons.map(id => `C${id}`).join(', ')}
+                  {/* Text centered completely inside the coordinates */}
+                  <text
+                    x={atom.cx}
+                    y={atom.cy}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className={`text-[8px] font-mono font-black select-none pointer-events-none ${
+                      isSelected ? 'fill-white' : 'fill-slate-700'
+                    }`}
+                  >
+                    {atom.label}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+
+          {/* IUPAC CONVENTION EXAM NOTE */}
+          <div className="mt-4 pt-2 border-t border-slate-100 w-full text-center">
+            <span className="inline-block text-[9px] font-black tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
+              IUPAC Nomenclature Note
             </span>
-          </span>
-        ) : (
-          <span className="italic">No carbons selected (Predicting symmetrical or achiral structure)</span>
-        )}
-      </div>
+            <p className="text-[11px] text-slate-400 font-semibold mt-1">
+              Carbons are numbered according to priority rules (lowest locants assigned to principal functional groups).
+            </p>
+          </div>
+        </div>
 
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Verify Configuration</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Molecule &rarr;</button>
-      </div>
+        {/* Right: Controls, Thumb-Friendly Carbon Toggle Pills, Hints & Feedback */}
+        <div className="space-y-4">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-bold text-slate-800">
+                Identify any and all chiral carbon atoms in the molecule.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer shrink-0"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+            </div>
 
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Molecule &rarr;
-            </button>
+            {showHint && (
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+                <strong className="font-black text-amber-900">Chiral Centre Checklist: </strong>
+                A carbon is chiral only if it forms <strong>4 single bonds</strong> (rule out C=O, C=C, and benzene carbons) to <strong>four different full groups</strong> (trace each chain to its end — remember CH₂/CH₃ have duplicate H atoms, and check both ring paths for substituted rings).
+              </div>
+            )}
+
+            {/* Thumb-friendly C1-Cn toggle buttons */}
+            <div className="pt-1 space-y-2">
+              <span className="block text-[10px] font-black tracking-wider text-slate-500">
+                Tap Carbon Nodes on Diagram or Toggle Below:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {problem.atoms.map((atom) => {
+                  const isSelected = selectedCarbons.includes(atom.id);
+                  return (
+                    <button
+                      key={atom.id}
+                      type="button"
+                      onClick={() => handleNodeClick(atom.id)}
+                      className={`min-h-[40px] px-3.5 py-2 rounded-xl font-mono text-xs font-black border transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                          : 'bg-white text-slate-700 border-slate-200 hover:border-[#326fa0]'
+                      }`}
+                    >
+                      {atom.label}
+                    </button>
+                  );
+                })}
+                {selectedCarbons.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCarbons([]);
+                      setFeedback({ message: '', status: '' });
+                    }}
+                    className="min-h-[40px] px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 cursor-pointer"
+                  >
+                    Clear (Achiral)
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Real-time selection bar */}
+          <div className="text-center lg:text-left text-xs font-bold text-slate-500 min-h-[1.5rem] px-1">
+            {selectedCarbons.length > 0 ? (
+              <span>
+                Selected Asymmetric Nodes:{' '}
+                <span className="font-mono text-amber-700 bg-amber-50 px-2.5 py-0.5 border border-amber-200 rounded-md font-black">
+                  {selectedCarbons.map(id => `C${id}`).join(', ')}
+                </span>
+              </span>
+            ) : (
+              <span className="italic">No carbons selected (Predicting symmetrical or achiral structure)</span>
+            )}
+          </div>
+
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={checkAnswer}>Verify Configuration</button>
+            <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Molecule &rarr;</button>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
+              <span>{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Molecule &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

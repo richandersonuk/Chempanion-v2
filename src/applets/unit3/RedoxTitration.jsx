@@ -13,6 +13,7 @@ const RedoxTitration = ({ onComplete }) => {
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: null, status: '' });
   const [showSolution, setShowSolution] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['purity_iron', 'ethanedioate', 'molar_mass', 'hydrogen_peroxide', 'copper_thiosulfate'];
@@ -99,7 +100,7 @@ const RedoxTitration = ({ onComplete }) => {
 
       newProblem = {
         title: 'Iodometric Analysis of Copper Alloy',
-        text: <>A <b>{massAlloy} g</b> sample of a brass alloy is reacted with concentrated nitric acid to form Cu<sup>2+</sup><sub>(aq)</sub>. The solution is neutralized and an excess of potassium iodide is added. The liberated iodine requires <b>{titre} cm<sup>3</sup></b> of <b>{concThio.toFixed(4)} mol dm<sup>-3</sup></b> sodium thiosulfate solution to reach the starch endpoint. <br/><br/><span className="text-[var(--chem-text-muted)] text-sm">(Refer to the Data Booklet for relative atomic masses.)</span></>,
+        text: <>A <b>{massAlloy} g</b> sample of a brass alloy is reacted with concentrated nitric acid to form Cu<sup>2+</sup><sub>(aq)</sub>. The solution is neutralised and an excess of potassium iodide is added. The liberated iodine requires <b>{titre} cm<sup>3</sup></b> of <b>{concThio.toFixed(4)} mol dm<sup>-3</sup></b> sodium thiosulfate solution to reach the starch endpoint. <br/><br/><span className="text-[var(--chem-text-muted)] text-sm">(Refer to the Data Booklet for relative atomic masses.)</span></>,
         question: "Calculate the percentage by mass of copper in the brass alloy.",
         label: "% Cu =",
         correctAnswer: percentageCu.toFixed(1),
@@ -140,6 +141,7 @@ const RedoxTitration = ({ onComplete }) => {
     setStudentAnswer('');
     setFeedback({ message: null, status: '' });
     setShowSolution(false);
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -206,6 +208,22 @@ const RedoxTitration = ({ onComplete }) => {
       </div>
 
       <div className="applet-header">{problem.title}</div>
+
+      <div className="flex flex-col items-center mb-4">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Redox Titration Ratios: </strong>
+            Use n = c × V(cm³) ÷ 1000 for the burette reagent, apply the half-equation mole ratio (1 MnO₄⁻ : 5 Fe²⁺; 2 MnO₄⁻ : 5 C₂O₄²⁻; 2 MnO₄⁻ : 5 H₂O₂; overall 1 Cu²⁺ : 1 S₂O₃²⁻), and scale up (e.g. ×10) if a 25.0 cm³ portion came from a 250 cm³ volumetric flask.
+          </div>
+        )}
+      </div>
 
       <div className="question-text text-center px-2 leading-relaxed">
         {problem.text}

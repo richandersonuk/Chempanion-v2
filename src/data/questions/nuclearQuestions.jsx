@@ -113,7 +113,7 @@ export const PROPERTY_QUESTIONS = [
     q: 'Comparing equal energy beams, state which radiation poses the greatest internal ionising risk if ingested or inhaled into living tissue.',
     answer: 'alpha',
     options: ['alpha', 'beta', 'gamma'],
-    explanation: 'Internally, alpha particles deposit their large kinetic energy over extremely short distances due to high mass and charge, causing severe localized cell/DNA ionisation.'
+    explanation: 'Internally, alpha particles deposit their large kinetic energy over extremely short distances due to high mass and charge, causing severe localised cell/DNA ionisation.'
   },
   {
     q: 'State which radiation exhibits moderate penetrating power and can be stopped by a 5 mm thick sheet of aluminium.',

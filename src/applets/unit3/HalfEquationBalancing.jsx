@@ -35,6 +35,7 @@ export default function HalfEquationBalancing({ onComplete }) {
 
   const [feedback, setFeedback] = useState(null);
   const [showMarkScheme, setShowMarkScheme] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const noSpinnerInputClass =
     "w-12 h-8 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:border-[var(--chem-primary)] focus:outline-none";
@@ -42,11 +43,16 @@ export default function HalfEquationBalancing({ onComplete }) {
   const generateProblem = () => {
     setFeedback(null);
     setShowMarkScheme(false);
+    setShowHint(false);
     setActiveStep(0);
     setCompletedSteps([false, false, false, false, false, false]);
 
-    const randomIndex = Math.floor(Math.random() * HALF_EQUATIONS_DATA.length);
-    const prob = HALF_EQUATIONS_DATA[randomIndex];
+    const nextPool =
+      currentProblem && HALF_EQUATIONS_DATA.length > 1
+        ? HALF_EQUATIONS_DATA.filter((item) => item.id !== currentProblem.id)
+        : HALF_EQUATIONS_DATA;
+    const randomIndex = Math.floor(Math.random() * nextPool.length);
+    const prob = nextPool[randomIndex];
     setCurrentProblem(prob);
 
     setGuidedInputs({
@@ -89,16 +95,27 @@ export default function HalfEquationBalancing({ onComplete }) {
     if (feedback) setFeedback(null);
   };
 
+  const parseOSNumber = (raw, allowPrefix = false) => {
+    const cleaned = raw.trim().replace(/\s+/g, '').replace(/−/g, '-');
+    if (!cleaned) return NaN;
+    if (allowPrefix && cleaned.includes('@')) {
+      const parts = cleaned.split('@');
+      return Number(parts[parts.length - 1].replace(/^\+/, ''));
+    }
+    if (cleaned.includes('@')) return NaN;
+    return Number(cleaned.replace(/^\+/, ''));
+  };
+
   const checkOSMatch = (inputVal, targetVal) => {
     if (!inputVal) return false;
-    const cleanInput = inputVal.trim().replace(/\s+/g, '').toLowerCase();
+    const cleanInput = inputVal.trim().replace(/\s+/g, '').replace(/−/g, '-').toLowerCase();
     const cleanTarget = targetVal.trim().replace(/\s+/g, '').toLowerCase();
 
     if (cleanInput === cleanTarget) return true;
 
-    const targetDigits = cleanTarget.replace(/[^0-9.]/g, '');
-    const inputDigits = cleanInput.replace(/[^0-9.]/g, '');
-    return inputDigits.length > 0 && inputDigits === targetDigits;
+    const targetNum = parseOSNumber(cleanTarget, true);
+    const inputNum = parseOSNumber(cleanInput, false);
+    return !Number.isNaN(targetNum) && !Number.isNaN(inputNum) && inputNum === targetNum;
   };
 
   const validateGuidedStep = (e) => {
@@ -129,7 +146,7 @@ export default function HalfEquationBalancing({ onComplete }) {
 
       hint = isCorrect
         ? `Correct! Oxidation state changes from ${p.osBefore} to ${p.osAfter}.`
-        : `Incorrect. Calculate the oxidation number per atom of ${p.elementSymbol} (e.g. ${p.osBefore} → ${p.osAfter}).`;
+        : `Incorrect. Assign −2 for each O atom and +1 for each H atom, sum to the overall ion charge, and solve for the oxidation state per atom of ${p.elementSymbol}.`;
     } else if (activeStep === 3) {
       const eQty = parseInt(guidedInputs.electronQty || '0', 10);
       const eSide = guidedInputs.electronSide;
@@ -251,7 +268,7 @@ export default function HalfEquationBalancing({ onComplete }) {
     <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
       <div className="applet-header !mb-0">Redox Half-Equations</div>
 
-      <div className="flex justify-center">
+      <div className="flex flex-wrap items-center justify-center gap-2">
         <div className="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             type="button"
@@ -276,7 +293,30 @@ export default function HalfEquationBalancing({ onComplete }) {
             Exam Practice
           </button>
         </div>
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+            showHint
+              ? 'bg-amber-100 text-amber-900 border-amber-300'
+              : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'
+          }`}
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
       </div>
+
+      {showHint && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs sm:text-sm text-amber-900 space-y-1.5 shadow-sm">
+          <p className="font-bold">Balancing Acidic Half-Equations (KOHES):</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>K</strong>ey atoms: balance every atom except O and H first.</li>
+            <li><strong>O</strong>xygen: add 1 H<sub>2</sub>O for each missing oxygen atom.</li>
+            <li><strong>H</strong>ydrogen: add 1 H<sup>+</sup> for each missing hydrogen atom.</li>
+            <li><strong>E</strong>lectrons &amp; <strong>S</strong>tates: add e<sup>−</sup> to the more positive side so total charge balances across both sides.</li>
+          </ul>
+        </div>
+      )}
 
       {currentProblem && (
         <div className="bg-[var(--chem-card-bg)] rounded-xl border border-[var(--chem-border)] p-4 sm:p-6 shadow-sm">
@@ -451,7 +491,7 @@ export default function HalfEquationBalancing({ onComplete }) {
                       Determine the oxidation state of {currentProblem.elementSymbol} in the reactant and product species:
                     </p>
                     <p className="text-[0.7rem] text-[var(--chem-text-muted)] italic">
-                      (Format: e.g. +7 and +2, or 2@+6 for species with multiple atoms like dichromate)
+                      (Format: oxidation state per atom, e.g. +7, +2, -1, 0, or +2.5)
                     </p>
                     <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm pt-1">
                       <div className="flex items-center gap-1.5">
@@ -459,7 +499,7 @@ export default function HalfEquationBalancing({ onComplete }) {
                         <input
                           type="text"
                           required
-                          placeholder="e.g. +7 or 2@+6"
+                          placeholder="e.g. +7 or -1"
                           value={guidedInputs.osBefore}
                           onChange={(e) => handleGuidedInputChange('osBefore', e.target.value)}
                           className="w-28 h-8 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)]"
@@ -470,7 +510,7 @@ export default function HalfEquationBalancing({ onComplete }) {
                         <input
                           type="text"
                           required
-                          placeholder="e.g. +2 or 2@+3"
+                          placeholder="e.g. +2 or 0"
                           value={guidedInputs.osAfter}
                           onChange={(e) => handleGuidedInputChange('osAfter', e.target.value)}
                           className="w-28 h-8 text-center text-xs font-mono font-bold bg-[var(--chem-input-bg)] border border-[var(--chem-input-border)] rounded text-[var(--chem-text)]"
@@ -518,7 +558,7 @@ export default function HalfEquationBalancing({ onComplete }) {
                       Step 5: Add H⁺ to balance overall ionic charge
                     </h3>
                     <p className="text-xs sm:text-sm leading-relaxed">
-                      Add <strong>H⁺ ions</strong> in acidic media to equalize total net charge on both sides:
+                      Add <strong>H⁺ ions</strong> in acidic media to equalise total net charge on both sides:
                     </p>
                     <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pt-1">
                       <span>Add</span>

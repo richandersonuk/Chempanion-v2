@@ -10,6 +10,7 @@ const FormulaMaster = ({ onComplete }) => {
 
   const [aniText, setAniText] = useState('');
   const [aniChargeVal, setAniChargeVal] = useState(1);
+  const [showHint, setShowHint] = useState(false);
   const catInputRef = useRef(null);
 
   const ionicUniverse = {
@@ -157,6 +158,7 @@ const FormulaMaster = ({ onComplete }) => {
     setAniText('');
     setAniChargeVal(1);
     setFeedback({ message: null, status: '' });
+    setShowHint(false);
     setTimeout(() => catInputRef.current?.focus(), 0);
   };
 
@@ -243,8 +245,8 @@ const FormulaMaster = ({ onComplete }) => {
                 Ensure correct chemical capitalisation (e.g. Na, Cl, SO4, OH).
               </p>
             ) : null}
-            <p className="text-slate-500 font-medium text-[11px]">
-              Expected ions: <strong className="font-mono text-slate-700">{currentProblem.targetCat}<sup>{getChargeString(currentProblem.targetCatVal, '+')}</sup></strong> and <strong className="font-mono text-slate-700">{currentProblem.targetAni}<sup>{getChargeString(currentProblem.targetAniVal, '-')}</sup></strong>
+            <p className="text-slate-600 font-medium text-[11px]">
+              Re-check the cation and anion formulas and balance total positive and negative charges so the overall compound is neutral.
             </p>
           </div>
         )
@@ -258,8 +260,24 @@ const FormulaMaster = ({ onComplete }) => {
     <div className="applet-container" style={{ textTransform: 'none' }}>
       <div className="applet-header">Ion formulas from compounds</div>
 
-      <div className="question-text text-center px-4 leading-relaxed">
+      <div className="question-text text-center px-4 leading-relaxed !mb-3">
         Give the formulas of the ions making up the following compound.
+      </div>
+
+      <div className="flex flex-col items-center mb-4">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Ion Deduction Method: </strong>
+            Identify the cation and anion separately, then balance total ionic charge across the formula unit (e.g. M₂X₃ implies M³⁺ and X²⁻). Key polyatomic charges: OH⁻, NO₃⁻, HCO₃⁻, MnO₄⁻, SO₄²⁻, CO₃²⁻, Cr₂O₇²⁻, PO₄³⁻, NH₄⁺.
+          </div>
+        )}
       </div>
 
       <div className="w-full max-w-md mx-auto my-4 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex gap-2 items-end">

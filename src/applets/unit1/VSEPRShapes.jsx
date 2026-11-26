@@ -6,6 +6,15 @@ import {
 } from '../../data/questions/vseprQuestions';
 import { useProgress } from '../../hooks/useProgress';
 
+function shuffleArray(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 const TABS = [
   { id: 'trainer', label: '🎯 VSEPR Trainer' },
   { id: 'explorer', label: '🧭 3D Geometry Explorer' },
@@ -406,6 +415,7 @@ export function VSEPRShapes({ onComplete }) {
   const [activeTab, setActiveTab] = useState('trainer');
   const [tierFilter, setTierFilter] = useState('all');
   const [selectedId, setSelectedId] = useState('becl2');
+  const [shuffleSeed, setShuffleSeed] = useState(0);
 
   // Stepper & Trainer Form State
   const [bpInput, setBpInput] = useState(0);
@@ -453,8 +463,14 @@ export function VSEPRShapes({ onComplete }) {
     [expMoleculeId]
   );
 
+  const shuffledIonOptions = useMemo(
+    () => (currentMolecule.isIon && currentMolecule.ionQuestion?.options ? shuffleArray(currentMolecule.ionQuestion.options) : []),
+    [currentMolecule, shuffleSeed]
+  );
+
   const resetFormForSpecies = (nextId) => {
     setSelectedId(nextId);
+    setShuffleSeed((s) => s + 1);
     setBpInput(0);
     setLpInput(0);
     setShapeInput('');
@@ -463,6 +479,14 @@ export function VSEPRShapes({ onComplete }) {
     setIonOptInput(null);
     setShowHint(false);
     setFeedback(null);
+  };
+
+  const handleRandomSpecies = () => {
+    const pool = filteredMolecules.length > 1
+      ? filteredMolecules.filter((m) => m.id !== currentMolecule.id)
+      : filteredMolecules;
+    const next = pool[Math.floor(Math.random() * pool.length)] || currentMolecule;
+    resetFormForSpecies(next.id);
   };
 
   const handleSelectTier = (tierId) => {
@@ -611,6 +635,13 @@ export function VSEPRShapes({ onComplete }) {
                   </button>
                 );
               })}
+              <button
+                type="button"
+                onClick={handleRandomSpecies}
+                className="ml-auto px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
+              >
+                🎲 Random Species
+              </button>
             </div>
 
             <div className="flex flex-wrap gap-1.5">
@@ -635,6 +666,13 @@ export function VSEPRShapes({ onComplete }) {
                   </button>
                 );
               })}
+              <button
+                type="button"
+                onClick={handleRandomSpecies}
+                className="ml-auto px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
+              >
+                🎲 Random Species
+              </button>
             </div>
           </div>
 
@@ -844,7 +882,7 @@ export function VSEPRShapes({ onComplete }) {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {currentMolecule.ionQuestion.options.map((opt) => {
+                  {shuffledIonOptions.map((opt) => {
                     const checked = ionOptInput === opt.id;
                     return (
                       <label
@@ -975,6 +1013,13 @@ export function VSEPRShapes({ onComplete }) {
                   </button>
                 );
               })}
+              <button
+                type="button"
+                onClick={handleRandomSpecies}
+                className="ml-auto px-3 py-1.5 rounded-xl text-xs font-bold border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
+              >
+                🎲 Random Species
+              </button>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect, useTransition, Suspense } from 'react';
+import React, { useState, useEffect, useTransition, useRef, Suspense } from 'react';
 import { Logo, HeaderBrand } from './components/shared/Branding';
 import DataBooklet from './components/shared/DataBooklet';
 import ErrorBoundary from './components/shared/ErrorBoundary';
@@ -276,6 +276,9 @@ export default function App() {
   const [isDataBookletOpen, setIsDataBookletOpen] = useState(false);
   const [isHowToGuideOpen, setIsHowToGuideOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [quickJumpOpen, setQuickJumpOpen] = useState(false);
+  const [mobileUpdatesOpen, setMobileUpdatesOpen] = useState(false);
+  const quickJumpRef = useRef(null);
   const [isPending, startTransition] = useTransition();
   const { progress, recordSuccess } = useProgress();
 
@@ -307,6 +310,24 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!quickJumpOpen) return undefined;
+    const handlePointerDown = (e) => {
+      if (quickJumpRef.current && !quickJumpRef.current.contains(e.target)) {
+        setQuickJumpOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setQuickJumpOpen(false);
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [quickJumpOpen]);
+
   const toggleCategory = (unitName) => {
     setCategoryStates(prev => ({ ...prev, [unitName]: !prev[unitName] }));
   };
@@ -324,6 +345,7 @@ export default function App() {
     startTransition(() => {
       setCurrentApplet(id);
       setMobileMenuOpen(false);
+      setQuickJumpOpen(false);
     });
     window.scrollTo(0, 0);
   };
@@ -347,11 +369,24 @@ export default function App() {
             >
               Home Dashboard
             </button>
-            <div className="relative group">
-              <button className="px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100 flex items-center gap-1 cursor-pointer">
-                Quick Jump Menu ▾
+            <div ref={quickJumpRef} className="relative group">
+              <button
+                type="button"
+                aria-expanded={quickJumpOpen}
+                onClick={() => setQuickJumpOpen((prev) => !prev)}
+                className={`px-3 py-2 text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer transition-all ${
+                  quickJumpOpen ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'
+                }`}
+              >
+                Quick Jump Menu <span className={`transition-transform duration-150 ${quickJumpOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
-              <div className="absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 opacity-0 pointer-events-none scale-95 origin-top-right group-hover:opacity-100 group-hover:scale-100 group-hover:!pointer-events-auto transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block">
+              <div
+                className={`absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block ${
+                  quickJumpOpen
+                    ? 'opacity-100 scale-100 pointer-events-auto'
+                    : 'opacity-0 pointer-events-none scale-95 origin-top-right md:group-hover:opacity-100 md:group-hover:scale-100 md:group-hover:!pointer-events-auto'
+                }`}
+              >
                 {MAIN_UNITS.map(unitRow => {
                   const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
                   if (unitApplets.length === 0) return null;
@@ -533,6 +568,22 @@ export default function App() {
                 <p className="md:hidden text-slate-500 font-semibold text-xs mt-2">
                   WJEC A-Level Chemistry Interactive Practice &amp; Data Suite
                 </p>
+                <div className="md:hidden mt-3 w-full text-left">
+                  <button
+                    type="button"
+                    aria-expanded={mobileUpdatesOpen}
+                    onClick={() => setMobileUpdatesOpen((prev) => !prev)}
+                    className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-black text-slate-700 cursor-pointer"
+                  >
+                    <span>✨ Platform Updates &amp; Status</span>
+                    <span className="text-[11px] text-[#326fa0]">{mobileUpdatesOpen ? 'Hide ▴' : 'Show ▾'}</span>
+                  </button>
+                  {mobileUpdatesOpen && (
+                    <div className="mt-2 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 font-semibold leading-relaxed">
+                      Latest Updates: Added <strong>Hess’s Law Cycles</strong> (Unit 2.1), <strong>Maxwell–Boltzmann &amp; Collision Theory</strong> (Unit 2.2), and <strong>IUPAC Naming &amp; E/Z Isomerism</strong> (Unit 2.4), plus randomised lab generators, non-spoiler <strong>Need a Hint?</strong> drawers, and responsive 2-column desktop/mobile layouts.
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="hidden md:flex col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex-col justify-between">
                 <div>
@@ -541,8 +592,7 @@ export default function App() {
                     <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    Latest Updates: Added <strong>Organic Synthesis Pathways</strong> (Unit 4.7), <strong>VSEPR Shapes &amp; Polarity</strong> (Unit 1.4), <strong>Bonding Continuum &amp; IMFs</strong> (Unit 1.4 / 1.5).
-                   
+                    Latest Updates: Added <strong>Hess’s Law Cycles</strong> (Unit 2.1), <strong>Maxwell–Boltzmann &amp; Collision Theory</strong> (Unit 2.2), and <strong>IUPAC Naming &amp; E/Z Isomerism</strong> (Unit 2.4), plus randomised lab generators, non-spoiler <strong>Need a Hint?</strong> drawers, and responsive 2-column desktop/mobile layouts.
                   </p>
                 </div>
               </div>
@@ -674,7 +724,7 @@ export default function App() {
         {/* Active view */}
         <div className="animate-fade-in">
           {currentApplet !== 'dashboard' && (
-            <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2 max-w-5xl mx-auto">
+            <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2 max-w-6xl xl:max-w-[72rem] mx-auto">
               <button onClick={() => handleNav('dashboard')} className="text-xs sm:text-sm font-bold text-[#326fa0] hover:underline flex items-center gap-1 cursor-pointer">
                 &larr; Back to Dashboard Menu
               </button>

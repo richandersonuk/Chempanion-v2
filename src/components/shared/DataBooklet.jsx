@@ -136,10 +136,15 @@ const APPLET_TAB_MAP = {
   'nuclear-decay': 'periodic',
   'empirical-formula': 'periodic',
   'idealgas': 'units',
+  'vsepr-shapes': 'periodic',
+  'bonding-imf-lab': 'periodic',
   'titration': 'units',
   'inorganic-tests': 'periodic',
   'thermometric': 'constants',
   'enthalpy': 'constants',
+  'hess-cycles': 'constants',
+  'maxwell-boltzmann': 'constants',
+  'iupac-isomerism': 'periodic',
   'born-haber': 'constants',
   'entropy-gibbs': 'units',
   'rates': 'constants',
@@ -153,7 +158,8 @@ const APPLET_TAB_MAP = {
   'spectra-interpreter': 'IR',
   'chiral-centers': '13C',
   'mechanisms-unit2': 'periodic',
-  'mechanisms-masterclass': 'IR'
+  'mechanisms-masterclass': 'IR',
+  'organic-synthesis': 'IR'
 };
 
 const getCenteredModalPosition = () => {

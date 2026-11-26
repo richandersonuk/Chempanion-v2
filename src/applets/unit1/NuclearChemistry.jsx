@@ -39,10 +39,12 @@ export default function NuclearChemistry({ onComplete }) {
   const [userInputs, setUserInputs] = useState({});
   const [feedback, setFeedback] = useState(null);
   const [showMarkScheme, setShowMarkScheme] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const generateProblem = () => {
     setFeedback(null);
     setShowMarkScheme(false);
+    setShowHint(false);
     setUserInputs({});
 
     if (questionType === 'equation') {
@@ -155,7 +157,7 @@ export default function NuclearChemistry({ onComplete }) {
 
         setFeedback({
           status: 'error',
-          message: `Incorrect. Check your ${errors.join(', ')}. ${explanation}`
+          message: `Incorrect. Check your ${errors.join(', ')}. Remember: total mass numbers (A) and total atomic numbers (Z) on LHS must equal RHS, and Z uniquely determines the element symbol.`
         });
       }
     } else if (currentProblem.type === 'halfLife') {
@@ -197,7 +199,7 @@ export default function NuclearChemistry({ onComplete }) {
         status: isCorrect ? 'success' : 'error',
         message: isCorrect
           ? <>Correct! {currentProblem.explanation}</>
-          : <>Incorrect. {currentProblem.explanation}</>
+          : 'Incorrect. Review the mass, electric charge (+2, −1, or 0), and ionising/penetrating properties of alpha, beta, and gamma emissions.'
       });
       if (isCorrect) {
         onComplete?.(`prop_${currentProblem.answer}`);
@@ -233,7 +235,36 @@ export default function NuclearChemistry({ onComplete }) {
             {tab.label}
           </button>
         ))}
+
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
       </div>
+
+      {showHint && (
+        <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 leading-relaxed">
+          {questionType === 'equation' ? (
+            <>
+              <strong className="font-black text-amber-900">Balancing Rules: </strong>
+              Balance top mass numbers (A) and bottom atomic charges (Z) across the arrow. Use the Data Booklet periodic table to look up the element symbol matching Z (α = ⁴₂He; β⁻ = ⁰₋₁e; β⁺ = ⁰₊₁e; n = ¹₀n).
+            </>
+          ) : questionType === 'halfLife' ? (
+            <>
+              <strong className="font-black text-amber-900">Half-Life Formula: </strong>
+              Find the number of half-lives n = total time ÷ t₁/₂, then divide initial mass by 2ⁿ (or find how many times mass halves to get n, and multiply n × t₁/₂).
+            </>
+          ) : (
+            <>
+              <strong className="font-black text-amber-900">Particle Properties: </strong>
+              Compare mass and charge: α (+2, heavy, paper-stopped), β⁻ (−1, light electron, few mm Al), and γ (0 charge, EM wave, thick lead). Opposites attract in electric fields.
+            </>
+          )}
+        </div>
+      )}
 
       {currentProblem && (
         <div className="bg-[var(--chem-card-bg)] rounded-xl border border-[var(--chem-border)] p-4 sm:p-6 shadow-sm">

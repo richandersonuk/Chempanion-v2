@@ -1,10 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BORN_HABER_SYSTEMS } from '../../data/questions/bornHaberQuestions';
+
+const TARGET_OPTIONS = [
+  { id: 'dH_latt', label: 'Lattice Enthalpy (ΔH_latt)', promptSym: 'ΔH_latt' },
+  { id: 'dH_f', label: 'Enthalpy of Formation (ΔH_f)', promptSym: 'ΔH_f' },
+  { id: 'dH_at_metal', label: 'Metal Atomisation (ΔH_at M)', promptSym: 'ΔH_at(M)' },
+  { id: 'dH_at_nonmetal', label: 'Non-Metal Atomisation (ΔH_at X)', promptSym: 'ΔH_at(X)' },
+  { id: 'ie1_metal', label: 'First Ionisation Energy (IE₁)', promptSym: 'IE₁' },
+  { id: 'ea1_nonmetal', label: 'First Electron Affinity (EA₁)', promptSym: 'EA₁' }
+];
+
+function createJitterProfile() {
+  const randDelta = (n) => Math.floor(Math.random() * (n * 2 + 1)) - n;
+  return {
+    atM: randDelta(4),
+    ie1: randDelta(5),
+    latt: randDelta(5),
+    hydC: randDelta(4)
+  };
+}
 
 export default function BornHaberCycle({ onComplete }) {
   const [mode, setMode] = useState('born_haber'); // 'born_haber' | 'enthalpy_solution'
   const [sysIdx, setSysIdx] = useState(0);
-  const [targetType, setTargetType] = useState('dH_latt'); // 'dH_latt' | 'dH_f'
+  const [targetType, setTargetType] = useState('dH_latt');
+  const [jitter, setJitter] = useState(() => createJitterProfile());
 
   // Step 1 Stoichiometry & Sign Gate
   const [gateAtomMult, setGateAtomMult] = useState('1');
@@ -16,13 +36,38 @@ export default function BornHaberCycle({ onComplete }) {
   // Step 2 Calculation
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
+  const [showHint, setShowHint] = useState(false);
 
-  const system = BORN_HABER_SYSTEMS[sysIdx];
+  const system = useMemo(() => {
+    const base = BORN_HABER_SYSTEMS[sysIdx];
+    const dH_at_metal = base.dH_at_metal + jitter.atM;
+    const ie1_metal = base.ie1_metal + jitter.ie1;
+    const dH_latt = base.dH_latt + jitter.latt;
+    const dH_hyd_cation = base.dH_hyd_cation + jitter.hydC;
+    const sumGaseous =
+      dH_at_metal +
+      ie1_metal +
+      base.ie2_metal +
+      base.anionCount * base.dH_at_nonmetal +
+      base.anionCount * (base.ea1_nonmetal + base.ea2_nonmetal);
+    const dH_f = sumGaseous + dH_latt;
+    const dH_sol = -dH_latt + dH_hyd_cation + base.anionCount * base.dH_hyd_anion;
+    return {
+      ...base,
+      dH_at_metal,
+      ie1_metal,
+      dH_latt,
+      dH_hyd_cation,
+      dH_f,
+      dH_sol
+    };
+  }, [sysIdx, jitter]);
 
-  const resetProblem = (nextIdx = sysIdx, nextMode = mode, nextTarget = targetType) => {
+  const resetProblem = (nextIdx = sysIdx, nextMode = mode, nextTarget = targetType, withNewJitter = true) => {
     setSysIdx(nextIdx);
     setMode(nextMode);
     setTargetType(nextTarget);
+    if (withNewJitter) setJitter(createJitterProfile());
     setGateAtomMult('1');
     setGateEAMult('1');
     setGateLattSign('negative');
@@ -30,15 +75,30 @@ export default function BornHaberCycle({ onComplete }) {
     setGateFeedback(null);
     setUserAnswer('');
     setFeedback(null);
+    setShowHint(false);
   };
 
-  // Calculate total gaseous ion enthalpy relative to elements in standard states
-  const sumToGaseousIons =
-    system.dH_at_metal +
-    system.ie1_metal +
-    system.ie2_metal +
-    system.anionCount * system.dH_at_nonmetal +
-    system.anionCount * (system.ea1_nonmetal + system.ea2_nonmetal);
+  const handleRandomUnknown = () => {
+    const nextIdx = Math.floor(Math.random() * BORN_HABER_SYSTEMS.length);
+    const nextTarget =
+      mode === 'born_haber'
+        ? TARGET_OPTIONS[Math.floor(Math.random() * TARGET_OPTIONS.length)].id
+        : targetType;
+    resetProblem(nextIdx, mode, nextTarget, true);
+  };
+
+  const getExpectedBornHaberValue = (tType = targetType) => {
+    switch (tType) {
+      case 'dH_f': return system.dH_f;
+      case 'dH_at_metal': return system.dH_at_metal;
+      case 'dH_at_nonmetal': return system.dH_at_nonmetal;
+      case 'ie1_metal': return system.ie1_metal;
+      case 'ea1_nonmetal': return system.ea1_nonmetal;
+      case 'dH_latt':
+      default:
+        return system.dH_latt;
+    }
+  };
 
   const handleVerifyGate = () => {
     const expectedMult = String(system.anionCount);
@@ -77,29 +137,39 @@ export default function BornHaberCycle({ onComplete }) {
   const handleCheckAnswer = (e) => {
     e.preventDefault();
     if (feedback?.isCorrect) {
-      resetProblem((sysIdx + 1) % BORN_HABER_SYSTEMS.length, mode, targetType);
+      resetProblem((sysIdx + 1) % BORN_HABER_SYSTEMS.length, mode, targetType, true);
       return;
     }
     const val = parseFloat(userAnswer);
     if (isNaN(val)) return;
 
     if (mode === 'born_haber') {
-      const expected = targetType === 'dH_latt' ? system.dH_latt : system.dH_f;
+      const expected = getExpectedBornHaberValue(targetType);
       const diff = Math.abs(val - expected);
+      const targetMeta = TARGET_OPTIONS.find((t) => t.id === targetType) || TARGET_OPTIONS[0];
 
       if (diff <= 2) {
         setFeedback({
           isCorrect: true,
-          msg: `Correct! ${targetType === 'dH_latt' ? 'ΔH_latt' : 'ΔH_f'} = ${expected} kJ mol⁻¹. ${system.examinerTrap}`
+          msg: `Correct! ${targetMeta.promptSym} = ${expected} kJ mol⁻¹. ${system.examinerTrap}`
         });
         onComplete?.(`bh_${system.id}_${targetType}`);
       } else if (Math.abs(val + expected) <= 2) {
         setFeedback({
           isCorrect: false,
-          msg: `WJEC Sign Reversal Trap! Your magnitude (${Math.abs(expected)} kJ mol⁻¹) is right, but the sign is reversed. Check whether the arrow goes UP (endothermic, +) or DOWN (exothermic, −).`
+          msg: `WJEC Sign Reversal Trap! Your magnitude is right, but the sign is reversed. Check whether the target arrow goes up (endothermic, +) or down (exothermic, −).`
+        });
+      } else if (
+        system.anionCount === 2 &&
+        (targetType === 'dH_at_nonmetal' || targetType === 'ea1_nonmetal') &&
+        Math.abs(val - expected * 2) <= 4
+      ) {
+        setFeedback({
+          isCorrect: false,
+          msg: `WJEC Multiplier Trap! The cycle includes 2 × ${targetMeta.promptSym} for ${system.formula} — divide by 2 to give the molar value per 1 mol of ${system.nonMetalSymbol}.`
         });
       } else {
-        // Check if student forgot x2 for Group 2 halide
+        // Check if student forgot x2 for Group 2 halide when solving dH_latt or dH_f
         const unscaledSum =
           system.dH_at_metal +
           system.ie1_metal +
@@ -108,15 +178,15 @@ export default function BornHaberCycle({ onComplete }) {
           system.ea1_nonmetal +
           system.ea2_nonmetal;
         const unscaledLatt = system.dH_f - unscaledSum;
-        if (system.anionCount === 2 && Math.abs(val - unscaledLatt) <= 5) {
+        if (system.anionCount === 2 && (targetType === 'dH_latt' || targetType === 'dH_f') && Math.abs(val - unscaledLatt) <= 5) {
           setFeedback({
             isCorrect: false,
-            msg: `WJEC Multiplier Trap! You forgot to multiply ΔH_at(${system.nonMetalSymbol}) (+${system.dH_at_nonmetal}) and EA₁(${system.nonMetalSymbol}) (${system.ea1_nonmetal}) by 2 for ${system.formula}!`
+            msg: `WJEC Multiplier Trap! Check your stoichiometry: 1 mol of ${system.formula} requires ×2 for both ΔH_at(${system.nonMetalSymbol}) and EA₁(${system.nonMetalSymbol}).`
           });
         } else {
           setFeedback({
             isCorrect: false,
-            msg: `Incorrect. Using Hess's Law: ΔH_f (${system.dH_f}) = [Sum of atomisation + ionisation + electron affinities (${sumToGaseousIons})] + ΔH_latt (${system.dH_latt}).`
+            msg: `Incorrect. Apply Hess's Law carefully: sum all upward atomisation/ionisation steps + electron affinities + lattice enthalpy = ΔH_f, keeping any ×2 stoichiometry multipliers.`
           });
         }
       }
@@ -132,11 +202,13 @@ export default function BornHaberCycle({ onComplete }) {
       } else {
         setFeedback({
           isCorrect: false,
-          msg: `Incorrect. Remember: ΔH_sol = −ΔH_latt(formation) + ΔH_hyd(cation) + ${system.anionCount} × ΔH_hyd(anion) = +${Math.abs(system.dH_latt)} + (${system.dH_hyd_cation}) + ${system.anionCount}×(${system.dH_hyd_anion}) = ${expected} kJ mol⁻¹.`
+          msg: `Incorrect. Check the sign of lattice dissociation (−ΔH_latt becomes positive) and remember to multiply ΔH_hyd(anion) by the anion stoichiometry in ${system.formula}.`
         });
       }
     }
   };
+
+  const currentTargetMeta = TARGET_OPTIONS.find((t) => t.id === targetType) || TARGET_OPTIONS[0];
 
   return (
     <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
@@ -145,7 +217,7 @@ export default function BornHaberCycle({ onComplete }) {
         Born-Haber &amp; Solution Enthalpy Cycle Builder
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex flex-wrap items-center justify-center gap-2">
         <div className="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             type="button"
@@ -170,7 +242,31 @@ export default function BornHaberCycle({ onComplete }) {
             Enthalpy of Solution (ΔH_sol)
           </button>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
       </div>
+
+      {showHint && (
+        <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 leading-relaxed">
+          {mode === 'born_haber' ? (
+            <>
+              <strong className="font-black text-amber-900">Cycle Method: </strong>
+              Follow the alternative Hess&apos;s Law path from elements to lattice: ΔH_f = ΔH_at(metal) + IE₁(+IE₂ if Group 2) + n·ΔH_at(non-metal) + n·EA₁(+EA₂ if O²⁻) + ΔH_latt. Check the stoichiometry multiplier <em>n</em> matches {system.formula}.
+            </>
+          ) : (
+            <>
+              <strong className="font-black text-amber-900">Solution Cycle Method: </strong>
+              ΔH_sol = (−ΔH_latt of formation) + ΔH_hyd(cation) + n·ΔH_hyd(anion). Reverse the exothermic lattice formation sign first (making lattice dissociation positive), then add the hydration enthalpies scaled by ion stoichiometry.
+            </>
+          )}
+        </div>
+      )}
 
       {/* Crystal System Selector */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-4">
@@ -193,16 +289,26 @@ export default function BornHaberCycle({ onComplete }) {
         </div>
 
         {mode === 'born_haber' && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-black text-slate-400">Solve for:</span>
-            <select
-              value={targetType}
-              onChange={(e) => resetProblem(sysIdx, mode, e.target.value)}
-              className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-700"
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black text-slate-400">Solve for:</span>
+              <select
+                value={targetType}
+                onChange={(e) => resetProblem(sysIdx, mode, e.target.value, false)}
+                className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-700"
+              >
+                {TARGET_OPTIONS.map((t) => (
+                  <option key={t.id} value={t.id}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={handleRandomUnknown}
+              className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
             >
-              <option value="dH_latt">Lattice Enthalpy (ΔH_latt)</option>
-              <option value="dH_f">Enthalpy of Formation (ΔH_f)</option>
-            </select>
+              🎲 Random Unknown
+            </button>
           </div>
         )}
       </div>
@@ -277,19 +383,15 @@ export default function BornHaberCycle({ onComplete }) {
                 Provided Thermodynamic Data (kJ mol⁻¹)
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[11px]">
-                {targetType !== 'dH_f' && (
-                  <div>ΔH_f({system.formula}) = <strong>{system.dH_f}</strong></div>
-                )}
-                {targetType !== 'dH_latt' && (
-                  <div>ΔH_latt({system.formula}) = <strong>{system.dH_latt}</strong></div>
-                )}
-                <div>ΔH_at({system.metalSymbol}) = <strong>+{system.dH_at_metal}</strong></div>
-                <div>ΔH_at({system.nonMetalSymbol}) = <strong>+{system.dH_at_nonmetal}</strong></div>
-                <div>IE₁({system.metalSymbol}) = <strong>+{system.ie1_metal}</strong></div>
+                <div>ΔH_f({system.formula}) = <strong className={targetType === 'dH_f' ? 'text-rose-600' : ''}>{targetType === 'dH_f' ? '?' : system.dH_f}</strong></div>
+                <div>ΔH_latt({system.formula}) = <strong className={targetType === 'dH_latt' ? 'text-rose-600' : ''}>{targetType === 'dH_latt' ? '?' : system.dH_latt}</strong></div>
+                <div>ΔH_at({system.metalSymbol}) = <strong className={targetType === 'dH_at_metal' ? 'text-rose-600' : ''}>{targetType === 'dH_at_metal' ? '?' : `+${system.dH_at_metal}`}</strong></div>
+                <div>ΔH_at({system.nonMetalSymbol}) = <strong className={targetType === 'dH_at_nonmetal' ? 'text-rose-600' : ''}>{targetType === 'dH_at_nonmetal' ? '?' : `+${system.dH_at_nonmetal}`}</strong></div>
+                <div>IE₁({system.metalSymbol}) = <strong className={targetType === 'ie1_metal' ? 'text-rose-600' : ''}>{targetType === 'ie1_metal' ? '?' : `+${system.ie1_metal}`}</strong></div>
                 {system.ie2_metal > 0 && (
                   <div>IE₂({system.metalSymbol}) = <strong>+{system.ie2_metal}</strong></div>
                 )}
-                <div>EA₁({system.nonMetalSymbol}) = <strong>{system.ea1_nonmetal}</strong></div>
+                <div>EA₁({system.nonMetalSymbol}) = <strong className={targetType === 'ea1_nonmetal' ? 'text-rose-600' : ''}>{targetType === 'ea1_nonmetal' ? '?' : system.ea1_nonmetal}</strong></div>
                 {system.ea2_nonmetal !== 0 && (
                   <div>EA₂({system.nonMetalSymbol}) = <strong>+{system.ea2_nonmetal}</strong></div>
                 )}
@@ -389,13 +491,13 @@ export default function BornHaberCycle({ onComplete }) {
                   Step 2: Apply Hess&apos;s Law
                 </span>
                 <h3 className="text-sm font-black text-slate-800 mt-0.5">
-                  Calculate {targetType === 'dH_latt' ? `the Lattice Enthalpy (ΔH_latt) of ${system.formula}` : `the Enthalpy of Formation (ΔH_f) of ${system.formula}`}
+                  Calculate {currentTargetMeta.label} for {system.formula}
                 </h3>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="font-mono font-black text-sm text-slate-700">
-                  {targetType === 'dH_latt' ? 'ΔH_latt =' : 'ΔH_f ='}
+                  {currentTargetMeta.promptSym} =
                 </span>
                 <input
                   type="number"

@@ -33,6 +33,7 @@ const CellPotentials = ({ onComplete }) => {
   const [studentAnswer, setStudentAnswer] = useState('');
   const [selectedCard, setSelectedCard] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', status: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const halfCells = [
     { id: 'al', sys: <>Al<sup>3+</sup>(aq) + 3e<sup>&minus;</sup> &#x21CC; Al(s)</>, e0: -1.66, solid: true, electrons: 3, name: 'aluminium' },
@@ -53,6 +54,7 @@ const CellPotentials = ({ onComplete }) => {
     setStudentAnswer('');
     setSelectedCard(null);
     setFeedback({ message: '', status: '' });
+    setShowHint(false);
 
     let cellA = halfCells[Math.floor(Math.random() * halfCells.length)];
     let cellB = halfCells[Math.floor(Math.random() * halfCells.length)];
@@ -124,22 +126,45 @@ const CellPotentials = ({ onComplete }) => {
       };
     } else if (selection === 'feasibility_shifts') {
       const conditionOptions = [
-        { desc: `increasing the concentration of the reactant ions in the cathode compartment`, effect: 'increase', hint: 'This shifts the cathode equilibrium to the right, making its electrode potential more positive.' },
-        { desc: `increasing the concentration of the product ions generated in the anode compartment`, effect: 'decrease', hint: 'This shifts the anode equilibrium to the left, making its electrode potential more positive, which narrows the EMF gap.' },
-        { desc: `using larger metal electrode sheets with double the surface area under standard concentration boundaries`, effect: 'unchanged', hint: 'Electrode surface area scales current capacity but leaves intensive potential voltages completely unchanged.' }
+        {
+          key: 'cathode_reactant',
+          desc: `increasing the concentration of the oxidised (left-hand) species in the ${cathode.name} cathode half-cell`,
+          effect: 'increase',
+          hint: `Increasing reactant concentration in the ${cathode.name} reduction equilibrium shifts it to the right, making E(cathode) more positive and widening E°cell.`
+        },
+        {
+          key: 'cathode_dilute',
+          desc: `diluting the aqueous reactant ions in the ${cathode.name} cathode compartment with distilled water`,
+          effect: 'decrease',
+          hint: `Decreasing reactant ion concentration in the ${cathode.name} cathode shifts its reduction equilibrium left, lowering E(cathode) and narrowing E°cell.`
+        },
+        {
+          key: 'anode_product',
+          desc: `increasing the concentration of the oxidised (left-hand) species in the ${anode.name} anode half-cell`,
+          effect: 'decrease',
+          hint: `Increasing left-hand ion concentration in the ${anode.name} anode equilibrium shifts it right, making E(anode) less negative and shrinking E(cathode) − E(anode).`
+        },
+        {
+          key: 'electrode_area',
+          desc: `doubling the physical surface area of the solid electrode strips in a cell built with ${anode.name} and ${cathode.name}`,
+          effect: 'unchanged',
+          hint: 'Electrode surface area affects reaction rate / maximum current, NOT the thermodynamic equilibrium position or intensive electrode potential.'
+        }
       ];
       const activeCondition = conditionOptions[Math.floor(Math.random() * conditionOptions.length)];
 
       newProb = {
         title: "Non-Standard Equilibrium Conditions",
-        text: <>A functional cell is setup under standard guidelines. A lab technician modifies the parameters by <b>{activeCondition.desc}</b>.</>,
-        question: "Predict how the measured operational cell potential (Ecell) responds compared to the standard E°cell baseline value.",
+        text: <>A functional cell combining <b>{anode.name}</b> (anode) and <b>{cathode.name}</b> (cathode) is set up under standard conditions. A technician modifies the system by <b>{activeCondition.desc}</b>.</>,
+        question: "Predict how the measured cell potential (Ecell) responds compared to the standard E°cell baseline.",
         choices: [
-          { text: "Cell potential increases (+Ecell expands)", id: 'increase' },
+          { text: "Cell potential increases (Ecell becomes more positive)", id: 'increase' },
           { text: "Cell potential decreases (EMF gap narrows)", id: 'decrease' },
           { text: "Cell potential remains completely unchanged", id: 'unchanged' }
         ],
         correctId: activeCondition.effect,
+        condKey: activeCondition.key,
+        meta: { anode, cathode },
         hint: activeCondition.hint,
         isCards: true
       };
@@ -218,9 +243,9 @@ const CellPotentials = ({ onComplete }) => {
       const selected = problem.choices[selectedCard];
       if (selected.id === problem.correctId) {
         setFeedback({ message: `Correct! ${problem.hint}`, status: 'success' });
-        onComplete?.(`shift_${problem.correctId}`);
+        onComplete?.(`shift_${problem.meta.anode.id}_${problem.meta.cathode.id}_${problem.condKey}`);
       } else {
-        setFeedback({ message: `Incorrect. Consider Le Chatelier's equilibrium effects: ${problem.hint}`, status: 'error' });
+        setFeedback({ message: "Incorrect. Apply Le Chatelier's principle to the half-cell reduction equilibrium and check how E(cathode) − E(anode) responds.", status: 'error' });
       }
     }
   };
@@ -247,6 +272,27 @@ const CellPotentials = ({ onComplete }) => {
       </div>
 
       <div className="applet-header">{problem.title}</div>
+
+      <div className="flex flex-col items-center mb-4">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Electrochemistry Method: </strong>
+            {mode === 'calc_emf'
+              ? 'Identify the more positive (or less negative) E° as the cathode (reduction) and compute E°cell = E°(cathode) − E°(anode) to 2 d.p. with an explicit + or − sign. Never multiply E° values by reaction stoichiometry!'
+              : mode === 'cell_notation'
+              ? 'Place the oxidation half-cell (more negative E°) on the left and the reduction half-cell on the right separated by a salt bridge (||). Include Pt(s) whenever a half-cell has no solid metal electrode.'
+              : 'Half-cell equations are written as reductions (oxidised + ne⁻ ⇌ reduced). Shifting a half-cell right raises its electrode potential E; shifting left lowers E.'}
+          </div>
+        )}
+      </div>
+
       <div className="question-text text-center px-4 leading-relaxed">{problem.text}</div>
 
       {mode === 'calc_emf' && problem.requiresDiagram && (

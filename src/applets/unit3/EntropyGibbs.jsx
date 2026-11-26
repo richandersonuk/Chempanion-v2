@@ -12,6 +12,8 @@ export default function EntropyGibbs({ onComplete }) {
     : ENTROPY_QUESTION_BANK;
 
   const currentQ = activePool[qIndex % activePool.length] || activePool[0];
+  const [activeTempC, setActiveTempC] = useState(() => ENTROPY_QUESTION_BANK[0].tempC);
+  const [showHint, setShowHint] = useState(false);
 
   const [inputT_K, setInputT_K] = useState('');
   const [inputDS_kJ, setInputDS_kJ] = useState('');
@@ -23,7 +25,7 @@ export default function EntropyGibbs({ onComplete }) {
   const [submittedStep2, setSubmittedStep2] = useState(false);
   const [submittedStep3, setSubmittedStep3] = useState(false);
 
-  const correctT_K = currentQ.tempC + 273;
+  const correctT_K = activeTempC + 273;
   const correctDS_kJ = currentQ.dS / 1000;
   const correctDG = currentQ.dH - (correctT_K * correctDS_kJ);
   const isActuallyFeasible = correctDG < 0;
@@ -39,12 +41,20 @@ export default function EntropyGibbs({ onComplete }) {
     boundaryType = currentQ.dH > 0 ? 'above' : 'below';
   }
 
+  const pickTempForQuestion = (qObj) => {
+    const offsets = [-120, -60, 0, 80, 180, 300];
+    const offset = offsets[Math.floor(Math.random() * offsets.length)];
+    return Math.max(-50, qObj.tempC + offset);
+  };
+
   const handleNextQuestion = () => {
     let nextIdx = Math.floor(Math.random() * activePool.length);
-    if (nextIdx === qIndex % activePool.length) {
+    if (activePool.length > 1 && nextIdx === qIndex % activePool.length) {
       nextIdx = (nextIdx + 1) % activePool.length;
     }
+    const nextQ = activePool[nextIdx] || activePool[0];
     setQIndex(nextIdx);
+    setActiveTempC(pickTempForQuestion(nextQ));
     resetTrainerForm();
   };
 
@@ -57,6 +67,7 @@ export default function EntropyGibbs({ onComplete }) {
     setSubmittedStep1(false);
     setSubmittedStep2(false);
     setSubmittedStep3(false);
+    setShowHint(false);
   };
 
   const isStep1Correct =
@@ -79,14 +90,14 @@ export default function EntropyGibbs({ onComplete }) {
       userFeasible === isActuallyFeasible &&
       (boundaryType === 'always' || boundaryType === 'never')
     ) {
-      onComplete?.(currentQ.id);
+      onComplete?.(`eg_${currentQ.id}_${activeTempC}`);
     }
   };
 
   const handleValidateStep3 = () => {
     setSubmittedStep3(true);
     if (Math.abs(parseFloat(inputTMin) - correctTBoundary) <= 5) {
-      onComplete?.(currentQ.id);
+      onComplete?.(`eg_${currentQ.id}_${activeTempC}`);
     }
   };
 
@@ -146,8 +157,10 @@ export default function EntropyGibbs({ onComplete }) {
                 <div className="flex items-center bg-white border border-blue-200 rounded-md p-0.5 text-xs font-mono">
                   <button
                     onClick={() => {
+                      const nextPool = ENTROPY_QUESTION_BANK.filter((q) => q.isPastPaper);
                       setFilterPastPaperOnly(true);
                       setQIndex(0);
+                      setActiveTempC(nextPool[0]?.tempC ?? 25);
                       resetTrainerForm();
                     }}
                     className={`px-2 py-0.5 rounded transition ${
@@ -162,6 +175,7 @@ export default function EntropyGibbs({ onComplete }) {
                     onClick={() => {
                       setFilterPastPaperOnly(false);
                       setQIndex(0);
+                      setActiveTempC(ENTROPY_QUESTION_BANK[0]?.tempC ?? 25);
                       resetTrainerForm();
                     }}
                     className={`px-2 py-0.5 rounded transition ${
@@ -175,13 +189,30 @@ export default function EntropyGibbs({ onComplete }) {
                 </div>
               </div>
 
-              <button
-                onClick={handleNextQuestion}
-                className="px-3 py-1 bg-white hover:bg-blue-50 text-blue-700 text-xs font-bold rounded-md border border-blue-200 shadow-sm transition"
-              >
-                Next Reaction ↻
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowHint((prev) => !prev)}
+                  className="px-3 py-1 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition"
+                >
+                  💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextQuestion}
+                  className="px-3 py-1 bg-white hover:bg-blue-50 text-blue-700 text-xs font-bold rounded-md border border-blue-200 shadow-sm transition"
+                >
+                  🎲 Random Reaction
+                </button>
+              </div>
             </div>
+
+            {showHint && (
+              <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 leading-relaxed">
+                <strong className="font-black text-amber-900">Gibbs Method: </strong>
+                Convert T to Kelvin (°C + 273) and ΔS to kJ K⁻¹ mol⁻¹ (÷ 1000). Then compute ΔG = ΔH − TΔS; reactions are feasible when ΔG &lt; 0, and switch feasibility at ΔG = 0 where T = ΔH ÷ ΔS(kJ).
+              </div>
+            )}
 
             <div className="flex flex-wrap items-baseline justify-between gap-2 mt-2">
               <h2 className="text-lg font-bold text-slate-900">{currentQ.title}</h2>
@@ -213,7 +244,7 @@ export default function EntropyGibbs({ onComplete }) {
               <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
                 <span className="text-xs text-slate-500 block font-mono">Temperature (T)</span>
                 <span className="text-base font-bold font-mono text-blue-900">
-                  {currentQ.tempC} °C
+                  {activeTempC} °C
                 </span>
               </div>
             </div>
@@ -299,7 +330,7 @@ export default function EntropyGibbs({ onComplete }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-mono text-slate-600 mb-1">
-                    Calculate ΔG at {currentQ.tempC} °C (kJ mol⁻¹):
+                    Calculate ΔG at {activeTempC} °C (kJ mol⁻¹):
                   </label>
                   <input
                     type="number"
@@ -315,7 +346,7 @@ export default function EntropyGibbs({ onComplete }) {
 
                 <div>
                   <label className="block text-xs font-mono text-slate-600 mb-1">
-                    Is reaction feasible at {currentQ.tempC} °C?
+                    Is reaction feasible at {activeTempC} °C?
                   </label>
                   <div className="flex gap-2">
                     <button
@@ -357,7 +388,7 @@ export default function EntropyGibbs({ onComplete }) {
                     </p>
                   ) : (
                     <p className="text-rose-600 font-medium">
-                      ✗ Check: ΔG = ({currentQ.dH}) − [({correctT_K}) × ({correctDS_kJ.toFixed(4)})] = {correctDG.toFixed(1)} kJ mol⁻¹.
+                      ✗ Recheck your signs and calculation: ΔG = ΔH − (T_K × ΔS_kJ), and a process is feasible only when ΔG &lt; 0.
                     </p>
                   )}
                 </div>
@@ -421,7 +452,7 @@ export default function EntropyGibbs({ onComplete }) {
                         </p>
                       ) : (
                         <p className="text-rose-600 font-medium">
-                          ✗ Target: T = ΔH ÷ ΔS = {currentQ.dH} ÷ {correctDS_kJ.toFixed(4)} = {correctTBoundary} K.
+                          ✗ Recheck T = ΔH (kJ mol⁻¹) ÷ ΔS (kJ K⁻¹ mol⁻¹) — remember to use ΔS in kJ K⁻¹ mol⁻¹ so the answer is in Kelvin.
                         </p>
                       )}
                     </div>

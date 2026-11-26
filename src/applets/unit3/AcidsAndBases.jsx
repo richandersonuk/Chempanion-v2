@@ -7,6 +7,7 @@ export function AcidsAndBases({ onComplete }) {
   const [sciCoeff, setSciCoeff] = useState('');
   const [sciExp, setSciExp] = useState('');
   const [feedback, setFeedback] = useState(null);
+  const [showHint, setShowHint] = useState(false);
   const feedbackRef = useRef(null);
 
   const generateProblem = () => {
@@ -14,6 +15,7 @@ export function AcidsAndBases({ onComplete }) {
     setSciCoeff('');
     setSciExp('');
     setFeedback(null);
+    setShowHint(false);
 
     const modes = ['pH_strong_acid', 'pH_weak_acid', 'pH_buffer', 'kw_temp', 'ka_pka_conv'];
     const mode = modes[Math.floor(Math.random() * modes.length)];
@@ -228,6 +230,30 @@ export function AcidsAndBases({ onComplete }) {
   return (
     <div className="applet-container space-y-6" style={{ textTransform: 'none' }}>
       <div className="applet-header !mb-0">{prob.title}</div>
+
+      <div className="flex flex-col items-center">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Equilibrium Method: </strong>
+            {prob.mode === 'pH_strong_acid'
+              ? 'Strong acids dissociate completely: find [H⁺] directly from acid concentration (×2 for dibasic H₂SO₄), then compute pH = −log₁₀[H⁺].'
+              : prob.mode === 'pH_weak_acid'
+              ? 'Apply the weak-acid approximation Kₐ = [H⁺]² ÷ [HA], solve [H⁺] = √(Kₐ × [HA]), then evaluate pH = −log₁₀[H⁺].'
+              : prob.mode === 'pH_buffer'
+              ? 'Rearrange Kₐ = [H⁺][A⁻] ÷ [HA] to find [H⁺] = Kₐ × ([acid] ÷ [salt]), then calculate pH = −log₁₀[H⁺].'
+              : prob.mode === 'kw_temp'
+              ? 'In pure water [H⁺] = [OH⁻], so [H⁺] = √Kw. In a strong base, first find [OH⁻], then calculate [H⁺] = Kw ÷ [OH⁻] before pH = −log₁₀[H⁺].'
+              : 'Use the logarithmic definitions: pKₐ = −log₁₀(Kₐ) and Kₐ = 10^(−pKₐ).'}
+          </div>
+        )}
+      </div>
 
       <div className="bg-[var(--chem-bg-main)] border border-[var(--chem-border-subtle)] rounded-xl p-5 shadow-inner">
         <p className="text-sm text-[var(--chem-text-main)] leading-relaxed font-medium">

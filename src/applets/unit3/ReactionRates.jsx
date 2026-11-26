@@ -15,6 +15,7 @@ const ReactionRates = ({ onComplete }) => {
   const [gateVerified, setGateVerified] = useState(false);
   const [gateInputs, setGateInputs] = useState({ tK: '', lnRatio: '' });
   const [gateFeedback, setGateFeedback] = useState({ type: '', message: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['calculate_k', 'determine_order', 'arrhenius'];
@@ -27,35 +28,35 @@ const ReactionRates = ({ onComplete }) => {
       const rateLaws = [
         {
           eq: <>Rate = k[A]</>,
-          unit: 's-1',
+          unit: 's⁻¹',
           hasB: false,
           calcRate: (k, a) => k * a,
           rearrangeHint: 'k = Rate / [A]'
         },
         {
           eq: <>Rate = k[A][B]</>,
-          unit: 'mol-1 dm3 s-1',
+          unit: 'mol⁻¹ dm³ s⁻¹',
           hasB: true,
           calcRate: (k, a, b) => k * a * b,
           rearrangeHint: 'k = Rate / ([A][B])'
         },
         {
           eq: <>Rate = k[A]<sup>2</sup></>,
-          unit: 'mol-1 dm3 s-1',
+          unit: 'mol⁻¹ dm³ s⁻¹',
           hasB: false,
           calcRate: (k, a) => k * a * a,
           rearrangeHint: 'k = Rate / [A]²'
         },
         {
           eq: <>Rate = k[A][B]<sup>2</sup></>,
-          unit: 'mol-2 dm6 s-1',
+          unit: 'mol⁻² dm⁶ s⁻¹',
           hasB: true,
           calcRate: (k, a, b) => k * a * b * b,
           rearrangeHint: 'k = Rate / ([A][B]²)'
         },
         {
           eq: <>Rate = k[A]<sup>2</sup>[B]<sup>2</sup></>,
-          unit: 'mol-3 dm9 s-1',
+          unit: 'mol⁻³ dm⁹ s⁻¹',
           hasB: true,
           calcRate: (k, a, b) => k * a * a * b * b,
           rearrangeHint: 'k = Rate / ([A]²[B]²)'
@@ -187,6 +188,7 @@ const ReactionRates = ({ onComplete }) => {
     setGateVerified(false);
     setGateInputs({ tK: '', lnRatio: '' });
     setGateFeedback({ type: '', message: '' });
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -195,16 +197,16 @@ const ReactionRates = ({ onComplete }) => {
 
   const verifyArrheniusGate = () => {
     if (!problem?.arrheniusTargets) return;
-    const { tempCelsius, tempK, lnRatio } = problem.arrheniusTargets;
+    const { tempK, lnRatio } = problem.arrheniusTargets;
     const uT = parseFloat(gateInputs.tK);
     const uLn = parseFloat(gateInputs.lnRatio);
     const errors = [];
 
     if (isNaN(uT) || Math.abs(uT - tempK) > 0.5) {
-      errors.push(`Temperature T in K (${tempCelsius} + 273 = ${tempK} K)`);
+      errors.push('Convert °C to Kelvin by adding 273');
     }
     if (isNaN(uLn) || Math.abs(uLn - lnRatio) > 0.25) {
-      errors.push(`ln(k / A) = ${lnRatio.toFixed(2)} (note the negative sign!)`);
+      errors.push('Check ln(k / A): use the natural logarithm (ln, not log₁₀) and keep the negative sign');
     }
 
     if (errors.length === 0) {
@@ -299,6 +301,27 @@ const ReactionRates = ({ onComplete }) => {
       </div>
 
       <div className="applet-header">{problem.title}</div>
+
+      <div className="flex flex-col items-center mb-4">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Kinetics Method: </strong>
+            {mode === 'arrhenius' || problem.title.includes('Arrhenius')
+              ? 'Take natural logs of k = A e^(−Eₐ/RT) to give ln(k/A) = −Eₐ/(RT). Multiply R (8.31) × T(K) × −ln(k/A), then divide by 1000 to convert J mol⁻¹ into kJ mol⁻¹.'
+              : problem.title.includes('Order')
+              ? 'Compare the factor change in concentration ([X]₂ ÷ [X]₁ = f) against the factor change in initial rate (Rate₂ ÷ Rate₁ = fⁿ), where n is the reaction order.'
+              : 'Rearrange Rate = k[A]^m[B]^n to make k the subject, and substitute (mol dm⁻³) into every concentration term to cancel units cleanly.'}
+          </div>
+        )}
+      </div>
+
       <div className="question-text text-center">{problem.text}</div>
 
       {/* WJEC Step 1 Unit Gate for Arrhenius Mode */}
@@ -430,10 +453,10 @@ const ReactionRates = ({ onComplete }) => {
             <span className="chem-choice-label">Select Units</span>
             <div className="chem-choice-group">
               {[
-                { id: 's-1', display: <>s<sup>-1</sup></> },
-                { id: 'mol-1 dm3 s-1', display: <>mol<sup>-1</sup> dm<sup>3</sup> s<sup>-1</sup></> },
-                { id: 'mol-2 dm6 s-1', display: <>mol<sup>-2</sup> dm<sup>6</sup> s<sup>-1</sup></> },
-                { id: 'mol-3 dm9 s-1', display: <>mol<sup>-3</sup> dm<sup>9</sup> s<sup>-1</sup></> }
+                { id: 's⁻¹', display: <>s<sup>−1</sup></> },
+                { id: 'mol⁻¹ dm³ s⁻¹', display: <>mol<sup>−1</sup> dm<sup>3</sup> s<sup>−1</sup></> },
+                { id: 'mol⁻² dm⁶ s⁻¹', display: <>mol<sup>−2</sup> dm<sup>6</sup> s<sup>−1</sup></> },
+                { id: 'mol⁻³ dm⁹ s⁻¹', display: <>mol<sup>−3</sup> dm<sup>9</sup> s<sup>−1</sup></> }
               ].map((opt) => (
                 <button
                   key={opt.id}

@@ -59,6 +59,30 @@
   }
 }
 
+@media (min-width: 1280px) {
+  .applet-container {
+    max-width: 72rem;
+    padding: 2rem 2.5rem;
+  }
+}
+
+.applet-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .applet-workbench {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
+  .applet-workbench-sticky {
+    position: sticky;
+    top: 5.25rem;
+  }
+}
+
 .applet-header {
   font-size: clamp(1.25rem, 2.5vw, 1.5rem);
   font-weight: 700;

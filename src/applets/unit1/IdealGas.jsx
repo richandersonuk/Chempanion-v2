@@ -13,6 +13,7 @@ const IdealGas = ({ onComplete }) => {
   const [gateVerified, setGateVerified] = useState(false);
   const [gateInputs, setGateInputs] = useState({ pPa: '', vM3: '', tK: '', nMol: '' });
   const [gateFeedback, setGateFeedback] = useState({ type: '', message: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const targetGases = [
     { name: 'carbon dioxide', formula: 'CO₂', mr: 44.0 },
@@ -125,6 +126,7 @@ const IdealGas = ({ onComplete }) => {
     setGateVerified(false);
     setGateInputs({ pPa: '', vM3: '', tK: '', nMol: '' });
     setGateFeedback({ type: '', message: '' });
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -139,25 +141,25 @@ const IdealGas = ({ onComplete }) => {
     if (targetMode !== 'calculate_P') {
       const uP = parseFloat(gateInputs.pPa);
       if (isNaN(uP) || Math.abs(uP - siTargets.pPa) / siTargets.pPa > 0.02) {
-        errors.push(`Pressure p in Pa (convert ${siTargets.pressDisplay} → ${Math.round(siTargets.pPa)} Pa)`);
+        errors.push(`Pressure p in Pa (1 kPa = 1000 Pa; 1 atm = 1.01 × 10⁵ Pa)`);
       }
     }
     if (targetMode !== 'calculate_V') {
       const uV = parseFloat(gateInputs.vM3);
       if (isNaN(uV) || Math.abs(uV - siTargets.vM3) / siTargets.vM3 > 0.02) {
-        errors.push(`Volume V in m³ (convert ${siTargets.volDisplay} → ${siTargets.vM3.toExponential(2)} m³)`);
+        errors.push(`Volume V in m³ (1 dm³ = 10⁻³ m³; 1 cm³ = 10⁻⁶ m³)`);
       }
     }
     if (targetMode !== 'calculate_T') {
       const uT = parseFloat(gateInputs.tK);
       if (isNaN(uT) || Math.abs(uT - siTargets.tK) > 1) {
-        errors.push(`Temperature T in K (${siTargets.tempDisplay} + 273 = ${siTargets.tK} K)`);
+        errors.push(`Temperature T in K (add 273 to °C)`);
       }
     }
     if (targetMode !== 'calculate_n') {
       const uN = parseFloat(gateInputs.nMol);
       if (isNaN(uN) || Math.abs(uN - siTargets.nMol) / siTargets.nMol > 0.02) {
-        errors.push(`Moles n = m / Mr (${siTargets.nMol.toFixed(4)} mol)`);
+        errors.push(`Moles n = mass (g) ÷ Mᵣ`);
       }
     }
 
@@ -239,6 +241,22 @@ const IdealGas = ({ onComplete }) => {
 
       <div className="question-text text-center px-2 leading-relaxed">
         {problem.questionText}
+      </div>
+
+      <div className="flex flex-col items-center mb-4">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">pV = nRT Method: </strong>
+            Always convert all quantities to strict SI units before substituting into pV = nRT (R = 8.31 J K⁻¹ mol⁻¹): p in Pa, V in m³ (÷ 10⁶ from cm³ or ÷ 10³ from dm³), T in K (°C + 273), and n = mass (g) ÷ Mᵣ.
+          </div>
+        )}
       </div>
 
       {/* WJEC Step 1 SI Unit-Conversion Gate */}

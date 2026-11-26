@@ -1,5 +1,14 @@
 import React, { useState, useRef, useMemo } from 'react';
 
+function shuffleArray(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 /**
  * Compute a smooth perpendicular quadratic Bézier midpoint so drawn curly
  * arrows always have an authentic curved profile by default.
@@ -124,6 +133,7 @@ const MechanismTrainer = ({
   onComplete,
 }) => {
   const [problemIndex, setProblemIndex] = useState(0);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [stepPassed, setStepPassed] = useState(false);
   const [mechanismDone, setMechanismDone] = useState(false);
@@ -162,7 +172,13 @@ const MechanismTrainer = ({
     return map;
   }, [currentStep]);
 
+  const shuffledChoiceOptions = useMemo(
+    () => (currentStep?.options ? shuffleArray(currentStep.options) : []),
+    [currentStep, shuffleSeed]
+  );
+
   const resetStepState = () => {
+    setShuffleSeed((s) => s + 1);
     setStepPassed(false);
     setDipoleStates({});
     setPaintBrush('cycle');
@@ -698,6 +714,19 @@ const MechanismTrainer = ({
             </button>
           );
         })}
+        {problems.length > 1 && (
+          <button
+            type="button"
+            onClick={() => {
+              const others = problems.map((_, i) => i).filter((i) => i !== problemIndex);
+              const next = others[Math.floor(Math.random() * others.length)];
+              selectProblem(next);
+            }}
+            className="px-3 py-1.5 text-[11px] font-black rounded-lg border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
+          >
+            🎲 Random
+          </button>
+        )}
       </div>
 
       {/* Title & Reagents Banner */}
@@ -738,458 +767,470 @@ const MechanismTrainer = ({
         })}
       </div>
 
-      {/* Prompt & Hint Bar */}
-      <div className="w-full max-w-2xl mx-auto mb-3 text-center px-2">
-        <p className="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed">
-          {mechanismDone ? 'Mechanism Complete — WJEC Mark-Scheme Breakdown' : currentStep.prompt}
-        </p>
-
-        {!mechanismDone && currentStep.hint && (
-          <div className="mt-2 flex flex-col items-center">
-            <button
-              type="button"
-              onClick={() => setShowHint((v) => !v)}
-              className="text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1 rounded-full transition-colors cursor-pointer"
-            >
-              {showHint ? 'Hide Hint ▲' : '💡 Need a Hint?'}
-            </button>
-            {showHint && (
-              <div className="mt-2 max-w-xl bg-amber-50/80 border border-amber-200 text-amber-950 text-xs font-medium rounded-xl px-3.5 py-2 leading-snug">
-                {currentStep.hint}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* COMPLETION SUMMARY VIEW */}
       {mechanismDone ? (
-        <div className="w-full max-w-2xl mx-auto my-4 bg-emerald-50/60 border border-emerald-200 rounded-3xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <span className="text-xs font-black tracking-wider text-emerald-700">
-              ★ Full Mark-Scheme Summary
-            </span>
-            <span className="text-[11px] font-bold bg-white text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-              {currentProblem.steps.length} / {currentProblem.steps.length} Stages Passed
-            </span>
-          </div>
-
-          <p className="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed text-left">
-            {currentProblem.summary}
-          </p>
-
-          {currentProblem.markScheme && (
-            <div className="bg-white border border-emerald-200 rounded-2xl p-4 space-y-2 text-left">
-              <div className="text-[10px] font-black tracking-widest text-emerald-700">
-                WJEC Examiner Mark Points
-              </div>
-              <ul className="space-y-1.5">
-                {currentProblem.markScheme.map((point, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-xs text-slate-700 font-medium">
-                    <span className="text-emerald-600 font-black shrink-0">✓</span>
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className="button-group pt-1">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => selectProblem((problemIndex + 1) % problems.length)}
-            >
-              Next Mechanism &rarr;
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => selectProblem(problemIndex)}
-            >
-              Practise Again ↺
-            </button>
-          </div>
-        </div>
-      ) : (
         <>
-          {/* DIPOLE PAINT BAR (Dipoles step only) */}
-          {isDipolesStep && (
-            <div className="w-full max-w-xl mx-auto mb-3 flex items-center justify-center gap-1.5 flex-wrap">
-              <span className="text-[10px] font-black tracking-wider text-slate-400 mr-1">
-                Tool:
+          <div className="w-full max-w-2xl mx-auto mb-3 text-center px-2">
+            <p className="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed">
+              Mechanism Complete — WJEC Mark-Scheme Breakdown
+            </p>
+          </div>
+          <div className="w-full max-w-2xl mx-auto my-4 bg-emerald-50/60 border border-emerald-200 rounded-3xl p-5 sm:p-6 space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <span className="text-xs font-black tracking-wider text-emerald-700">
+                ★ Full Mark-Scheme Summary
               </span>
-              {[
-                { id: 'cycle', label: 'Tap to Cycle' },
-                { id: 'plus', label: currentStep.chargeStyle === 'formal_plus_only' ? 'Paint +' : 'Paint δ⁺' },
-                ...(currentStep.chargeStyle === 'formal_plus_only' ? [] : [{ id: 'minus', label: 'Paint δ⁻' }]),
-                { id: 'erase', label: 'Eraser' },
-              ].map((tool) => (
-                <button
-                  key={tool.id}
-                  type="button"
-                  onClick={() => setPaintBrush(tool.id)}
-                  className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all cursor-pointer ${
-                    paintBrush === tool.id
-                      ? 'bg-[#235478] border-[#235478] text-white shadow-xs'
-                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  {tool.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* ARROW INTERACTION STATUS BAR (Arrows step only) */}
-          {isArrowsStep && (
-            <div className="w-full max-w-xl mx-auto mb-2.5 flex items-center justify-between gap-2 flex-wrap px-2">
-              <div className="text-[11px] font-bold text-slate-600">
-                {activeTailForHint ? (
-                  <span className="text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg inline-block">
-                    Tail locked: <strong>{activeTailForHint.label}</strong> — tap target or release drag
-                  </span>
-                ) : hoveredEl ? (
-                  <span className="text-[#235478] bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg inline-block">
-                    Target: <strong>{hoveredEl.label}</strong>
-                  </span>
-                ) : (
-                  <span className="text-slate-500">
-                    Drag from source &rarr; target, or tap source then tap target
-                  </span>
-                )}
-              </div>
-
-              <span className="text-[11px] font-black bg-slate-100 border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg">
-                Arrows drawn: {arrows.length}
+              <span className="text-[11px] font-bold bg-white text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                {currentProblem.steps.length} / {currentProblem.steps.length} Stages Passed
               </span>
             </div>
-          )}
 
-          {/* INTERACTIVE SVG MECHANISM CANVAS */}
-          {currentStep.elements && (
-            <div className="w-full max-w-xl mx-auto my-2 bg-white border border-slate-200 rounded-3xl p-3 sm:p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden h-[250px] sm:h-[290px] touch-none">
-              <div
-                onPointerDown={handleCanvasPointerDown}
-                onPointerMove={handleCanvasPointerMove}
-                onPointerUp={handleCanvasPointerUp}
-                onPointerLeave={() => setHoveredNodeId(null)}
-                className="w-full h-full relative overflow-visible touch-none cursor-crosshair"
-              >
-                <svg
-                  ref={svgRef}
-                  width="100%"
-                  height="100%"
-                  viewBox={currentStep.viewBox || '0 0 340 200'}
-                  className="overflow-visible select-none pointer-events-auto"
-                >
-                  <defs>
-                    <marker id="mech-arrowhead-amber" markerWidth="5" markerHeight="5" refX="3.5" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#d97706" />
-                    </marker>
-                    <marker id="mech-arrowhead-green" markerWidth="5" markerHeight="5" refX="3.5" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#059669" />
-                    </marker>
-                    <marker id="mech-arrowhead-red" markerWidth="5" markerHeight="5" refX="3.5" refY="2.5" orient="auto">
-                      <polygon points="0 0, 5 2.5, 0 5" fill="#dc2626" />
-                    </marker>
-                  </defs>
+            <p className="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed text-left">
+              {currentProblem.summary}
+            </p>
 
-                  {/* Static bonds */}
-                  {(currentStep.staticBonds || []).map((bond, idx) => (
-                    <StaticBond key={idx} bond={bond} />
+            {currentProblem.markScheme && (
+              <div className="bg-white border border-emerald-200 rounded-2xl p-4 space-y-2 text-left">
+                <div className="text-[10px] font-black tracking-widest text-emerald-700">
+                  WJEC Examiner Mark Points
+                </div>
+                <ul className="space-y-1.5">
+                  {currentProblem.markScheme.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-xs text-slate-700 font-medium">
+                      <span className="text-emerald-600 font-black shrink-0">✓</span>
+                      <span>{point}</span>
+                    </li>
                   ))}
+                </ul>
+              </div>
+            )}
 
-                  {/* Custom static SVG decorators (aromatic rings, Wheland horseshoes, group labels, charges) */}
-                  {currentStep.staticDecorators ? currentStep.staticDecorators() : null}
+            <div className="button-group pt-1">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => selectProblem((problemIndex + 1) % problems.length)}
+              >
+                Next Mechanism &rarr;
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => selectProblem(problemIndex)}
+              >
+                Practise Again ↺
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className={currentStep.elements ? 'applet-workbench mt-2' : 'space-y-4'}>
+          {/* LEFT WORKBENCH COLUMN: Tool Bars + Interactive SVG Canvas + Arrow Chips */}
+          {currentStep.elements && (
+            <div className="applet-workbench-sticky space-y-2.5">
+              {/* DIPOLE PAINT BAR (Dipoles step only) */}
+              {isDipolesStep && (
+                <div className="w-full flex items-center justify-center lg:justify-start gap-1.5 flex-wrap">
+                  <span className="text-[10px] font-black tracking-wider text-slate-400 mr-1">
+                    Tool:
+                  </span>
+                  {[
+                    { id: 'cycle', label: 'Tap to Cycle' },
+                    { id: 'plus', label: currentStep.chargeStyle === 'formal_plus_only' ? 'Paint +' : 'Paint δ⁺' },
+                    ...(currentStep.chargeStyle === 'formal_plus_only' ? [] : [{ id: 'minus', label: 'Paint δ⁻' }]),
+                    { id: 'erase', label: 'Eraser' },
+                  ].map((tool) => (
+                    <button
+                      key={tool.id}
+                      type="button"
+                      onClick={() => setPaintBrush(tool.id)}
+                      className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all cursor-pointer ${
+                        paintBrush === tool.id
+                          ? 'bg-[#235478] border-[#235478] text-white shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      {tool.label}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-                  {/* Interactive hotspot rings */}
-                  {currentStep.elements.map((el) => {
-                    const isDipoleCandidate = isDipolesStep && el.dipoleCandidate;
-                    const isArrowHotspot = isArrowsStep && !el.disabled;
-                    const isHovered = hoveredNodeId === el.id;
-                    const isPendingTail = pendingTail?.id === el.id;
-                    const isSnapEnd = dragState?.mode === 'new' && dragState.snappedEndNode?.id === el.id;
-                    const dipoleVal = displayedDipoles[el.id];
+              {/* ARROW INTERACTION STATUS BAR (Arrows step only) */}
+              {isArrowsStep && (
+                <div className="w-full flex items-center justify-between gap-2 flex-wrap px-1">
+                  <div className="text-[11px] font-bold text-slate-600">
+                    {activeTailForHint ? (
+                      <span className="text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg inline-block">
+                        Tail locked: <strong>{activeTailForHint.label}</strong> — tap target or release drag
+                      </span>
+                    ) : hoveredEl ? (
+                      <span className="text-[#235478] bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg inline-block">
+                        Target: <strong>{hoveredEl.label}</strong>
+                      </span>
+                    ) : (
+                      <span className="text-slate-500">
+                        Drag source &rarr; target, or tap source then target
+                      </span>
+                    )}
+                  </div>
 
-                    return (
-                      <g key={el.id}>
-                        {/* Invisible generous hit circle */}
-                        <circle cx={el.cx} cy={el.cy} r={el.r || 20} fill="transparent" />
+                  <span className="text-[11px] font-black bg-slate-100 border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg">
+                    Arrows: {arrows.length}
+                  </span>
+                </div>
+              )}
 
-                        {/* Visual hotspot affordance */}
-                        {(isDipoleCandidate || isArrowHotspot) && (
-                          <circle
-                            cx={el.cx}
-                            cy={el.cy}
-                            r={el.kind === 'bond' || el.kind === 'ring' ? 12 : el.kind === 'lone_pair' ? 11 : 14}
-                            fill={
-                              isPendingTail || isSnapEnd
-                                ? 'rgba(245, 158, 11, 0.22)'
-                                : isHovered
-                                ? 'rgba(35, 84, 120, 0.12)'
-                                : el.kind === 'lone_pair'
-                                ? 'rgba(254, 243, 199, 0.5)'
-                                : 'transparent'
-                            }
-                            stroke={
-                              isPendingTail || isSnapEnd
-                                ? '#d97706'
-                                : isHovered
-                                ? '#235478'
-                                : isDipoleCandidate
-                                ? '#94a3b8'
-                                : el.kind === 'bond' || el.kind === 'ring'
-                                ? 'rgba(100, 116, 139, 0.45)'
-                                : 'rgba(148, 163, 184, 0.35)'
-                            }
-                            strokeWidth={isPendingTail || isSnapEnd || isHovered ? 2 : 1.4}
-                            strokeDasharray={isPendingTail || isSnapEnd ? undefined : '3 3'}
-                            className="pointer-events-none transition-all"
-                          />
-                        )}
+              {/* INTERACTIVE SVG MECHANISM CANVAS */}
+              <div className="w-full bg-white border border-slate-200 rounded-3xl p-3 sm:p-4 shadow-sm relative flex flex-col items-center select-none overflow-hidden h-[250px] sm:h-[290px] touch-none">
+                <div
+                  onPointerDown={handleCanvasPointerDown}
+                  onPointerMove={handleCanvasPointerMove}
+                  onPointerUp={handleCanvasPointerUp}
+                  onPointerLeave={() => setHoveredNodeId(null)}
+                  className="w-full h-full relative overflow-visible touch-none cursor-crosshair"
+                >
+                  <svg
+                    ref={svgRef}
+                    width="100%"
+                    height="100%"
+                    viewBox={currentStep.viewBox || '0 0 340 200'}
+                    className="overflow-visible select-none pointer-events-auto"
+                  >
+                    <defs>
+                      <marker id="mech-arrowhead-amber" markerWidth="5" markerHeight="5" refX="3.5" refY="2.5" orient="auto">
+                        <polygon points="0 0, 5 2.5, 0 5" fill="#d97706" />
+                      </marker>
+                      <marker id="mech-arrowhead-green" markerWidth="5" markerHeight="5" refX="3.5" refY="2.5" orient="auto">
+                        <polygon points="0 0, 5 2.5, 0 5" fill="#059669" />
+                      </marker>
+                      <marker id="mech-arrowhead-red" markerWidth="5" markerHeight="5" refX="3.5" refY="2.5" orient="auto">
+                        <polygon points="0 0, 5 2.5, 0 5" fill="#dc2626" />
+                      </marker>
+                    </defs>
 
-                        {/* Element symbol or lone pair display */}
-                        {el.display && (
-                          <text
-                            x={el.cx}
-                            y={el.cy}
-                            textAnchor="middle"
-                            dominantBaseline="central"
-                            className={`${el.style || 'fill-slate-800 font-sans text-sm font-black'} select-none pointer-events-none`}
-                          >
-                            {el.display}
-                          </text>
-                        )}
+                    {/* Static bonds */}
+                    {(currentStep.staticBonds || []).map((bond, idx) => (
+                      <StaticBond key={idx} bond={bond} />
+                    ))}
 
-                        {/* Dipole / Charge Badge */}
-                        {dipoleVal && (
-                          <g
-                            transform={`translate(${el.badgeOffset?.dx ?? 14}, ${el.badgeOffset?.dy ?? -14})`}
-                            className="pointer-events-none"
-                          >
+                    {/* Custom static SVG decorators (aromatic rings, Wheland horseshoes, group labels, charges) */}
+                    {currentStep.staticDecorators ? currentStep.staticDecorators() : null}
+
+                    {/* Interactive hotspot rings */}
+                    {currentStep.elements.map((el) => {
+                      const isDipoleCandidate = isDipolesStep && el.dipoleCandidate;
+                      const isArrowHotspot = isArrowsStep && !el.disabled;
+                      const isHovered = hoveredNodeId === el.id;
+                      const isPendingTail = pendingTail?.id === el.id;
+                      const isSnapEnd = dragState?.mode === 'new' && dragState.snappedEndNode?.id === el.id;
+                      const dipoleVal = displayedDipoles[el.id];
+
+                      return (
+                        <g key={el.id}>
+                          {/* Invisible generous hit circle */}
+                          <circle cx={el.cx} cy={el.cy} r={el.r || 20} fill="transparent" />
+
+                          {/* Visual hotspot affordance */}
+                          {(isDipoleCandidate || isArrowHotspot) && (
                             <circle
                               cx={el.cx}
                               cy={el.cy}
-                              r="9.5"
-                              fill="white"
-                              stroke={dipoleVal === 'plus' ? '#2563eb' : '#e11d48'}
-                              strokeWidth="2"
+                              r={el.kind === 'bond' || el.kind === 'ring' ? 12 : el.kind === 'lone_pair' ? 11 : 14}
+                              fill={
+                                isPendingTail || isSnapEnd
+                                  ? 'rgba(245, 158, 11, 0.22)'
+                                  : isHovered
+                                  ? 'rgba(35, 84, 120, 0.12)'
+                                  : el.kind === 'lone_pair'
+                                  ? 'rgba(254, 243, 199, 0.5)'
+                                  : 'transparent'
+                              }
+                              stroke={
+                                isPendingTail || isSnapEnd
+                                  ? '#d97706'
+                                  : isHovered
+                                  ? '#235478'
+                                  : isDipoleCandidate
+                                  ? '#94a3b8'
+                                  : el.kind === 'bond' || el.kind === 'ring'
+                                  ? 'rgba(100, 116, 139, 0.45)'
+                                  : 'rgba(148, 163, 184, 0.35)'
+                              }
+                              strokeWidth={isPendingTail || isSnapEnd || isHovered ? 2 : 1.4}
+                              strokeDasharray={isPendingTail || isSnapEnd ? undefined : '3 3'}
+                              className="pointer-events-none transition-all"
                             />
+                          )}
+
+                          {/* Element symbol or lone pair display */}
+                          {el.display && (
                             <text
                               x={el.cx}
                               y={el.cy}
                               textAnchor="middle"
                               dominantBaseline="central"
-                              className={`text-[9.5px] font-sans font-black ${
-                                dipoleVal === 'plus' ? 'fill-blue-600' : 'fill-rose-600'
-                              }`}
+                              className={`${el.style || 'fill-slate-800 font-sans text-sm font-black'} select-none pointer-events-none`}
                             >
-                              {currentStep.chargeStyle === 'formal_plus_only'
-                                ? '+'
-                                : dipoleVal === 'plus'
-                                ? 'δ⁺'
-                                : 'δ⁻'}
+                              {el.display}
                             </text>
-                          </g>
-                        )}
-                      </g>
-                    );
-                  })}
+                          )}
 
-                  {/* Placed Curly Arrows */}
-                  {isArrowsStep &&
-                    arrows.map((arrow) => {
-                      const { visStart, visEnd } = getTrimmedArrowEndpoints(arrow, elementsMap);
-                      const color = arrowStrokeColor(arrow.status);
-                      const isSelected = selectedArrowId === arrow.id;
-                      return (
-                        <g key={arrow.id}>
-                          <path
-                            d={`M ${visStart.x} ${visStart.y} Q ${arrow.mid.x} ${arrow.mid.y} ${visEnd.x} ${visEnd.y}`}
-                            fill="none"
-                            stroke={color}
-                            strokeWidth={isSelected ? 3.8 : 3.2}
-                            strokeLinecap="round"
-                            markerEnd={arrowMarkerUrl(arrow.status)}
-                          />
-                          {!stepPassed && (
-                            <g className="cursor-grab">
+                          {/* Dipole / Charge Badge */}
+                          {dipoleVal && (
+                            <g
+                              transform={`translate(${el.badgeOffset?.dx ?? 14}, ${el.badgeOffset?.dy ?? -14})`}
+                              className="pointer-events-none"
+                            >
                               <circle
-                                cx={arrow.mid.x}
-                                cy={arrow.mid.y}
-                                r={isSelected ? 6.5 : 5.5}
-                                fill="#ffffff"
-                                stroke={color}
-                                strokeWidth="2.2"
+                                cx={el.cx}
+                                cy={el.cy}
+                                r="9.5"
+                                fill="white"
+                                stroke={dipoleVal === 'plus' ? '#2563eb' : '#e11d48'}
+                                strokeWidth="2"
                               />
-                              <circle cx={arrow.mid.x} cy={arrow.mid.y} r="2.2" fill={color} />
+                              <text
+                                x={el.cx}
+                                y={el.cy}
+                                textAnchor="middle"
+                                dominantBaseline="central"
+                                className={`text-[9.5px] font-sans font-black ${
+                                  dipoleVal === 'plus' ? 'fill-blue-600' : 'fill-rose-600'
+                                }`}
+                              >
+                                {currentStep.chargeStyle === 'formal_plus_only'
+                                  ? '+'
+                                  : dipoleVal === 'plus'
+                                  ? 'δ⁺'
+                                  : 'δ⁻'}
+                              </text>
                             </g>
                           )}
                         </g>
                       );
                     })}
 
-                  {/* Live Drag Preview Arrow */}
-                  {isArrowsStep && dragState?.mode === 'new' && Math.hypot(dragState.end.x - dragState.start.x, dragState.end.y - dragState.start.y) > 8 && (
-                    <path
-                      d={`M ${dragState.start.x} ${dragState.start.y} Q ${dragState.mid.x} ${dragState.mid.y} ${dragState.end.x} ${dragState.end.y}`}
-                      fill="none"
-                      stroke="#d97706"
-                      strokeWidth="3.2"
-                      strokeDasharray="5 3"
-                      strokeLinecap="round"
-                      markerEnd="url(#mech-arrowhead-amber)"
-                      className="pointer-events-none"
-                    />
-                  )}
-                </svg>
+                    {/* Placed Curly Arrows */}
+                    {isArrowsStep &&
+                      arrows.map((arrow) => {
+                        const { visStart, visEnd } = getTrimmedArrowEndpoints(arrow, elementsMap);
+                        const color = arrowStrokeColor(arrow.status);
+                        const isSelected = selectedArrowId === arrow.id;
+                        return (
+                          <g key={arrow.id}>
+                            <path
+                              d={`M ${visStart.x} ${visStart.y} Q ${arrow.mid.x} ${arrow.mid.y} ${visEnd.x} ${visEnd.y}`}
+                              fill="none"
+                              stroke={color}
+                              strokeWidth={isSelected ? 3.8 : 3.2}
+                              strokeLinecap="round"
+                              markerEnd={arrowMarkerUrl(arrow.status)}
+                            />
+                            {!stepPassed && (
+                              <g className="cursor-grab">
+                                <circle
+                                  cx={arrow.mid.x}
+                                  cy={arrow.mid.y}
+                                  r={isSelected ? 6.5 : 5.5}
+                                  fill="#ffffff"
+                                  stroke={color}
+                                  strokeWidth="2.2"
+                                />
+                                <circle cx={arrow.mid.x} cy={arrow.mid.y} r="2.2" fill={color} />
+                              </g>
+                            )}
+                          </g>
+                        );
+                      })}
+
+                    {/* Live Drag Preview Arrow */}
+                    {isArrowsStep && dragState?.mode === 'new' && Math.hypot(dragState.end.x - dragState.start.x, dragState.end.y - dragState.start.y) > 8 && (
+                      <path
+                        d={`M ${dragState.start.x} ${dragState.start.y} Q ${dragState.mid.x} ${dragState.mid.y} ${dragState.end.x} ${dragState.end.y}`}
+                        fill="none"
+                        stroke="#d97706"
+                        strokeWidth="3.2"
+                        strokeDasharray="5 3"
+                        strokeLinecap="round"
+                        markerEnd="url(#mech-arrowhead-amber)"
+                        className="pointer-events-none"
+                      />
+                    )}
+                  </svg>
+                </div>
               </div>
-            </div>
-          )}
 
-          {/* PLACED ARROW CHIPS (for quick curve flipping / deletion without re-drawing) */}
-          {isArrowsStep && arrows.length > 0 && (
-            <div className="w-full max-w-xl mx-auto my-2 flex items-center justify-center gap-2 flex-wrap">
-              {arrows.map((a, idx) => {
-                const fromLabel = elementsMap[a.fromId]?.label || a.fromId;
-                const toLabel = elementsMap[a.toId]?.label || a.toId;
-                return (
-                  <div
-                    key={a.id}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold ${
-                      a.status === 'correct'
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                        : a.status === 'error'
-                        ? 'bg-rose-50 border-rose-200 text-rose-800'
-                        : 'bg-amber-50 border-amber-200 text-amber-900'
-                    }`}
-                  >
-                    <span>
-                      {idx + 1}. {fromLabel} &rarr; {toLabel}
-                    </span>
-                    {!stepPassed && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => flipArrowCurve(a.id)}
-                          title="Flip curve direction"
-                          className="px-1.5 py-0.5 rounded bg-white/80 hover:bg-white border border-current/20 text-[10px] cursor-pointer"
-                        >
-                          ↺ Flip
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeArrow(a.id)}
-                          title="Remove arrow"
-                          className="px-1.5 py-0.5 rounded bg-white/80 hover:bg-white border border-current/20 text-[10px] cursor-pointer"
-                        >
-                          &times;
-                        </button>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* CHOICE OPTIONS (Choice step only) */}
-          {isChoiceStep && (
-            <div className="w-full max-w-xl mx-auto my-3 space-y-2">
-              {(currentStep.options || []).map((opt) => {
-                const isSelected = selectedChoice === opt.id;
-                const showCorrectStyle = stepPassed && opt.isCorrect;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    disabled={stepPassed}
-                    onClick={() => {
-                      setSelectedChoice(opt.id);
-                      setFeedback({ message: '', status: '' });
-                    }}
-                    className={`w-full text-left px-4 py-3 rounded-xl border transition-all cursor-pointer ${
-                      showCorrectStyle
-                        ? 'bg-emerald-50 border-emerald-400 text-emerald-950 shadow-xs'
-                        : isSelected
-                        ? 'bg-blue-50 border-[#235478] text-[#235478] shadow-xs'
-                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div className="text-xs sm:text-sm font-bold">{opt.label}</div>
-                    {opt.detail && (
-                      <div className="text-[11px] font-medium opacity-80 mt-0.5">{opt.detail}</div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* ACTION BUTTONS */}
-          <div className="button-group mt-4">
-            {!stepPassed && isDipolesStep && (
-              <button type="button" className="btn btn-primary" onClick={verifyDipoles}>
-                Verify Dipoles
-              </button>
-            )}
-            {!stepPassed && isArrowsStep && (
-              <button type="button" className="btn btn-primary" onClick={verifyArrows}>
-                Check Mechanism Step
-              </button>
-            )}
-            {!stepPassed && isChoiceStep && (
-              <button type="button" className="btn btn-primary" onClick={verifyChoice}>
-                Check Answer
-              </button>
-            )}
-            {stepPassed && (
-              <button type="button" className="btn btn-primary" onClick={advanceStep}>
-                {stepIndex + 1 < currentProblem.steps.length
-                  ? `Continue to Step ${stepIndex + 2} →`
-                  : 'Complete Mechanism ✓'}
-              </button>
-            )}
-
-            {!stepPassed && (isDipolesStep || isArrowsStep) && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => {
-                  setDipoleStates({});
-                  setArrows([]);
-                  setPendingTail(null);
-                  setFeedback({ message: '', status: '' });
-                }}
-              >
-                Clear Step
-              </button>
-            )}
-          </div>
-
-          {/* FEEDBACK BOX */}
-          {feedback.message && (
-            <div
-              className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
-                feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
-              }`}
-            >
-              <span className="text-xs sm:text-sm leading-relaxed">{feedback.message}</span>
-              {stepPassed && (
-                <button
-                  type="button"
-                  onClick={advanceStep}
-                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-                >
-                  {stepIndex + 1 < currentProblem.steps.length
-                    ? `Step ${stepIndex + 2} →`
-                    : 'Finish ✓'}
-                </button>
+              {/* PLACED ARROW CHIPS */}
+              {isArrowsStep && arrows.length > 0 && (
+                <div className="w-full flex items-center justify-center lg:justify-start gap-2 flex-wrap">
+                  {arrows.map((a, idx) => {
+                    const fromLabel = elementsMap[a.fromId]?.label || a.fromId;
+                    const toLabel = elementsMap[a.toId]?.label || a.toId;
+                    return (
+                      <div
+                        key={a.id}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold ${
+                          a.status === 'correct'
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                            : a.status === 'error'
+                            ? 'bg-rose-50 border-rose-200 text-rose-800'
+                            : 'bg-amber-50 border-amber-200 text-amber-900'
+                        }`}
+                      >
+                        <span>
+                          {idx + 1}. {fromLabel} &rarr; {toLabel}
+                        </span>
+                        {!stepPassed && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => flipArrowCurve(a.id)}
+                              title="Flip curve direction"
+                              className="px-1.5 py-0.5 rounded bg-white/80 hover:bg-white border border-current/20 text-[10px] cursor-pointer"
+                            >
+                              ↺ Flip
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeArrow(a.id)}
+                              title="Remove arrow"
+                              className="px-1.5 py-0.5 rounded bg-white/80 hover:bg-white border border-current/20 text-[10px] cursor-pointer"
+                            >
+                              &times;
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           )}
-        </>
+
+          {/* RIGHT WORKBENCH COLUMN: Prompt, Hint, Choice Options, Actions & Feedback */}
+          <div className={`space-y-4 ${!currentStep.elements ? 'w-full max-w-2xl mx-auto' : ''}`}>
+            <div className={`text-center ${currentStep.elements ? 'lg:text-left' : ''} px-1`}>
+              <p className="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed">
+                {currentStep.prompt}
+              </p>
+
+              {currentStep.hint && (
+                <div className={`mt-2 flex flex-col ${currentStep.elements ? 'items-center lg:items-start' : 'items-center'}`}>
+                  <button
+                    type="button"
+                    onClick={() => setShowHint((v) => !v)}
+                    className="text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1 rounded-full transition-colors cursor-pointer"
+                  >
+                    {showHint ? 'Hide Hint ▲' : '💡 Need a Hint?'}
+                  </button>
+                  {showHint && (
+                    <div className="mt-2 w-full bg-amber-50/80 border border-amber-200 text-amber-950 text-xs font-medium rounded-xl px-3.5 py-2 leading-snug text-left">
+                      {currentStep.hint}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* CHOICE OPTIONS (Choice step only, shuffled) */}
+            {isChoiceStep && (
+              <div className="w-full space-y-2">
+                {shuffledChoiceOptions.map((opt) => {
+                  const isSelected = selectedChoice === opt.id;
+                  const showCorrectStyle = stepPassed && opt.isCorrect;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      disabled={stepPassed}
+                      onClick={() => {
+                        setSelectedChoice(opt.id);
+                        setFeedback({ message: '', status: '' });
+                      }}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all cursor-pointer ${
+                        showCorrectStyle
+                          ? 'bg-emerald-50 border-emerald-400 text-emerald-950 shadow-xs'
+                          : isSelected
+                          ? 'bg-blue-50 border-[#235478] text-[#235478] shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="text-xs sm:text-sm font-bold">{opt.label}</div>
+                      {opt.detail && (
+                        <div className="text-[11px] font-medium opacity-80 mt-0.5">{opt.detail}</div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* ACTION BUTTONS */}
+            <div className="button-group">
+              {!stepPassed && isDipolesStep && (
+                <button type="button" className="btn btn-primary" onClick={verifyDipoles}>
+                  Verify Dipoles
+                </button>
+              )}
+              {!stepPassed && isArrowsStep && (
+                <button type="button" className="btn btn-primary" onClick={verifyArrows}>
+                  Check Mechanism Step
+                </button>
+              )}
+              {!stepPassed && isChoiceStep && (
+                <button type="button" className="btn btn-primary" onClick={verifyChoice}>
+                  Check Answer
+                </button>
+              )}
+              {stepPassed && (
+                <button type="button" className="btn btn-primary" onClick={advanceStep}>
+                  {stepIndex + 1 < currentProblem.steps.length
+                    ? `Continue to Step ${stepIndex + 2} →`
+                    : 'Complete Mechanism ✓'}
+                </button>
+              )}
+
+              {!stepPassed && (isDipolesStep || isArrowsStep) && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setDipoleStates({});
+                    setArrows([]);
+                    setPendingTail(null);
+                    setFeedback({ message: '', status: '' });
+                  }}
+                >
+                  Clear Step
+                </button>
+              )}
+            </div>
+
+            {/* FEEDBACK BOX */}
+            {feedback.message && (
+              <div
+                className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${
+                  feedback.status === 'success' ? 'feedback-success' : 'feedback-error'
+                }`}
+              >
+                <span className="text-xs sm:text-sm leading-relaxed">{feedback.message}</span>
+                {stepPassed && (
+                  <button
+                    type="button"
+                    onClick={advanceStep}
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                  >
+                    {stepIndex + 1 < currentProblem.steps.length
+                      ? `Step ${stepIndex + 2} →`
+                      : 'Finish ✓'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

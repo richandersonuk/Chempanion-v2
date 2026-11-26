@@ -71,6 +71,15 @@ function getPhaseAtTemp(item, tempC) {
   };
 }
 
+function shuffleArray(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export function BondingIMFLab({ onComplete }) {
   const { progress } = useProgress();
 
@@ -93,6 +102,7 @@ export function BondingIMFLab({ onComplete }) {
 
   // --- TAB 3: WJEC EXAM CHALLENGES STATE ---
   const [challengeIdx, setChallengeIdx] = useState(0);
+  const [challengeSeed, setChallengeSeed] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [selectedPart1, setSelectedPart1] = useState(null);
   const [selectedPart2, setSelectedPart2] = useState([]);
@@ -331,12 +341,31 @@ export function BondingIMFLab({ onComplete }) {
   // --- DERIVED DATA FOR TAB 3 ---
   const currentChallenge = BONDING_CHALLENGES[challengeIdx] || BONDING_CHALLENGES[0];
 
+  const shuffledPart1 = useMemo(
+    () => shuffleArray(currentChallenge.part1.options),
+    [currentChallenge, challengeSeed]
+  );
+
+  const shuffledPart2 = useMemo(
+    () => shuffleArray(currentChallenge.part2.options),
+    [currentChallenge, challengeSeed]
+  );
+
   const handleSelectChallenge = (idx) => {
     setChallengeIdx(idx);
+    setChallengeSeed((s) => s + 1);
     setShowHint(false);
     setSelectedPart1(null);
     setSelectedPart2([]);
     setChallengeFeedback(null);
+  };
+
+  const handleRandomChallenge = () => {
+    let nextIdx = Math.floor(Math.random() * BONDING_CHALLENGES.length);
+    if (BONDING_CHALLENGES.length > 1 && nextIdx === challengeIdx) {
+      nextIdx = (nextIdx + 1) % BONDING_CHALLENGES.length;
+    }
+    handleSelectChallenge(nextIdx);
   };
 
   const togglePart2Option = (optId) => {
@@ -1524,6 +1553,14 @@ export function BondingIMFLab({ onComplete }) {
                 </button>
               );
             })}
+
+            <button
+              type="button"
+              onClick={handleRandomChallenge}
+              className="ml-auto px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+            >
+              🎲 Random Challenge
+            </button>
           </div>
 
           {/* Challenge Card */}
@@ -1584,7 +1621,7 @@ export function BondingIMFLab({ onComplete }) {
                 Part 1 — {currentChallenge.part1.question}
               </div>
               <div className="space-y-2">
-                {currentChallenge.part1.options.map((opt) => {
+                {shuffledPart1.map((opt) => {
                   const checked = selectedPart1 === opt.id;
                   return (
                     <label
@@ -1625,7 +1662,7 @@ export function BondingIMFLab({ onComplete }) {
                 </span>
               </div>
               <div className="space-y-2">
-                {currentChallenge.part2.options.map((opt) => {
+                {shuffledPart2.map((opt) => {
                   const checked = selectedPart2.includes(opt.id);
                   return (
                     <label

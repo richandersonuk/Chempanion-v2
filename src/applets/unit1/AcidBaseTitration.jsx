@@ -11,6 +11,7 @@ const AcidBaseTitration = ({ onComplete }) => {
   const [studentMean, setStudentMean] = useState('');
   const [tableVerified, setTableVerified] = useState(false);
   const [tableFeedback, setTableFeedback] = useState({ message: '', status: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const roundTo05 = (val) => Math.round(val * 20) / 20;
 
@@ -117,7 +118,7 @@ const AcidBaseTitration = ({ onComplete }) => {
         question: askForCarbonate
           ? "Calculate the concentration of sodium carbonate (Na₂CO₃) in the mixture solution in mol dm⁻³."
           : "Calculate the concentration of sodium hydroxide (NaOH) in the mixture solution in mol dm⁻³.",
-        label: askForCarbonate ? "[Na2CO3] =" : "[NaOH] =",
+        label: askForCarbonate ? "[Na₂CO₃] =" : "[NaOH] =",
         unit: "mol dm⁻³",
         correct: askForCarbonate ? concNa2CO3.toFixed(3) : concNaOH.toFixed(3)
       };
@@ -209,6 +210,7 @@ const AcidBaseTitration = ({ onComplete }) => {
     setProblem(newProb);
     setStudentAnswer('');
     setFeedback({ message: '', status: '' });
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -336,7 +338,32 @@ const AcidBaseTitration = ({ onComplete }) => {
         </div>
       </div>
 
-      <div className="applet-header" style={{ textTransform: 'none' }}>{problem.title}</div>
+      <div className="applet-header !mb-3" style={{ textTransform: 'none' }}>{problem.title}</div>
+
+      <div className="flex flex-col items-center mb-4">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Titration Method: </strong>
+            {mode === 'read_burette'
+              ? 'Read burette graduations downwards from the top integer mark to the bottom of the curved meniscus, recording strictly to 2 d.p. ending in .00 or .05 cm³.'
+              : mode === 'table_practice'
+              ? 'Compute Net Titre = Final − Initial. Exclude the rough titre and average only concordant trials within 0.10 cm³, then calculate n = c × V(cm³) ÷ 1000.'
+              : mode === 'back_titration'
+              ? 'Find total excess HCl added initially, find leftover HCl in the 25.0 cm³ sample from NaOH, scale ×10 up to 250.0 cm³, subtract to get reacted HCl, and use the 1:2 CaCO₃:HCl ratio.'
+              : mode === 'double_titration'
+              ? 'The second titre V₂ (methyl orange stage) neutralises remaining NaHCO₃ → H₂O + CO₂, directly giving moles of Na₂CO₃. Subtract V₂ from V₁ (phenolphthalein stage) to isolate acid used by NaOH.'
+              : 'Use n = c × V(cm³) ÷ 1000 for the standard solution, apply the balanced mole ratio (note 2:1 for NaOH : H₂SO₄), then solve c = n ÷ V(dm³).'}
+          </div>
+        )}
+      </div>
+
       <div className="question-text text-center px-2 leading-relaxed" style={{ textTransform: 'none' }}>{problem.text}</div>
 
       {mode === 'read_burette' && (
@@ -385,48 +412,48 @@ const AcidBaseTitration = ({ onComplete }) => {
       {mode === 'table_practice' && (
         <div className="w-full max-w-2xl mx-auto my-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
           <div className="w-full overflow-x-auto pb-1">
-            <table className="w-full min-w-[520px] text-center text-xs font-bold border-collapse">
+            <table className="w-full min-w-[340px] sm:min-w-[480px] text-center text-xs font-bold border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] tracking-wider">
-                  <th className="p-3 text-left">Burette Readings</th>
-                  <th className="p-3 bg-slate-100/60 text-slate-400">Rough</th>
-                  <th className="p-3">Titre 1</th>
-                  <th className="p-3">Titre 2</th>
-                  {problem.tableData.hasT3 && <th className="p-3 text-blue-800 bg-blue-50/30">Titre 3</th>}
+                  <th className="p-2 sm:p-3 text-left">Burette Readings</th>
+                  <th className="p-2 sm:p-3 bg-slate-100/60 text-slate-400">Rough</th>
+                  <th className="p-2 sm:p-3">Titre 1</th>
+                  <th className="p-2 sm:p-3">Titre 2</th>
+                  {problem.tableData.hasT3 && <th className="p-2 sm:p-3 text-blue-800 bg-blue-50/30">Titre 3</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 <tr>
-                  <td className="p-3 text-left bg-slate-50/50">Final Volume (cm³)</td>
-                  <td className="p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.final}</td>
-                  <td className="p-3 font-mono">{problem.tableData.t1.final}</td>
-                  <td className="p-3 font-mono">{problem.tableData.t2.final}</td>
-                  {problem.tableData.hasT3 && <td className="p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.final}</td>}
+                  <td className="p-2 sm:p-3 text-left bg-slate-50/50">Final (cm³)</td>
+                  <td className="p-2 sm:p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.final}</td>
+                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t1.final}</td>
+                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t2.final}</td>
+                  {problem.tableData.hasT3 && <td className="p-2 sm:p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.final}</td>}
                 </tr>
                 <tr>
-                  <td className="p-3 text-left bg-slate-50/50">Initial Volume (cm³)</td>
-                  <td className="p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.init}</td>
-                  <td className="p-3 font-mono">{problem.tableData.t1.init}</td>
-                  <td className="p-3 font-mono">{problem.tableData.t2.init}</td>
-                  {problem.tableData.hasT3 && <td className="p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.init}</td>}
+                  <td className="p-2 sm:p-3 text-left bg-slate-50/50">Initial (cm³)</td>
+                  <td className="p-2 sm:p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.init}</td>
+                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t1.init}</td>
+                  <td className="p-2 sm:p-3 font-mono">{problem.tableData.t2.init}</td>
+                  {problem.tableData.hasT3 && <td className="p-2 sm:p-3 font-mono bg-blue-50/10 text-blue-900">{problem.tableData.t3.init}</td>}
                 </tr>
                 <tr className="bg-blue-50/10">
-                  <td className="p-3 text-left font-black text-slate-800 bg-slate-50/50">Net Titre (cm³)</td>
-                  <td className="p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.correctNet.toFixed(2)}</td>
-                  <td className="p-2">
-                    <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t1} onChange={(e) => setTableTitres({...tableTitres, t1: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
+                  <td className="p-2 sm:p-3 text-left font-black text-slate-800 bg-slate-50/50">Net Titre (cm³)</td>
+                  <td className="p-2 sm:p-3 font-mono bg-slate-50/30 text-slate-400">{problem.tableData.rough.correctNet.toFixed(2)}</td>
+                  <td className="p-1.5 sm:p-2">
+                    <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t1} onChange={(e) => setTableTitres({...tableTitres, t1: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
                   </td>
-                  <td className="p-2">
+                  <td className="p-1.5 sm:p-2">
                     {problem.tableData.gaps.includes('t2') ? (
-                      <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t2} onChange={(e) => setTableTitres({...tableTitres, t2: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
+                      <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t2} onChange={(e) => setTableTitres({...tableTitres, t2: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
                     ) : (
                       <span className="font-mono text-slate-500">{problem.tableData.t2.correctNet.toFixed(2)}</span>
                     )}
                   </td>
                   {problem.tableData.hasT3 && (
-                    <td className="p-2 bg-blue-50/20">
+                    <td className="p-1.5 sm:p-2 bg-blue-50/20">
                       {problem.tableData.gaps.includes('t3') ? (
-                        <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t3} onChange={(e) => setTableTitres({...tableTitres, t3: e.target.value})} className="w-16 p-1 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
+                        <input type="number" step="any" inputMode="decimal" onWheel={(e) => e.currentTarget.blur()} value={tableTitres.t3} onChange={(e) => setTableTitres({...tableTitres, t3: e.target.value})} className="w-14 sm:w-16 p-1.5 text-center border border-slate-300 rounded font-mono text-sm bg-white shadow-sm focus:border-[#326fa0]" placeholder="0.00" disabled={tableVerified} />
                       ) : (
                         <span className="font-mono text-blue-900">{problem.tableData.t3.correctNet.toFixed(2)}</span>
                       )}
@@ -434,19 +461,27 @@ const AcidBaseTitration = ({ onComplete }) => {
                   )}
                 </tr>
                 <tr>
-                  <td className="p-3 text-left bg-slate-50/50">Concordant? (Tick)</td>
-                  <td className="p-3 bg-slate-50/30">
-                    <input type="checkbox" checked={concordantSelections.rough} onChange={(e) => setConcordantSelections({...concordantSelections, rough: e.target.checked})} className="w-4 h-4 accent-amber-600" disabled={tableVerified} />
+                  <td className="p-2 sm:p-3 text-left bg-slate-50/50">Concordant?</td>
+                  <td className="p-1 sm:p-2 bg-slate-50/30">
+                    <label className="inline-flex items-center justify-center p-2 cursor-pointer">
+                      <input type="checkbox" aria-label="Mark rough titre concordant" checked={concordantSelections.rough} onChange={(e) => setConcordantSelections({...concordantSelections, rough: e.target.checked})} className="w-5 h-5 accent-amber-600 cursor-pointer" disabled={tableVerified} />
+                    </label>
                   </td>
-                  <td className="p-3">
-                    <input type="checkbox" checked={concordantSelections.t1} onChange={(e) => setConcordantSelections({...concordantSelections, t1: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
+                  <td className="p-1 sm:p-2">
+                    <label className="inline-flex items-center justify-center p-2 cursor-pointer">
+                      <input type="checkbox" aria-label="Mark Titre 1 concordant" checked={concordantSelections.t1} onChange={(e) => setConcordantSelections({...concordantSelections, t1: e.target.checked})} className="w-5 h-5 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
+                    </label>
                   </td>
-                  <td className="p-3">
-                    <input type="checkbox" checked={concordantSelections.t2} onChange={(e) => setConcordantSelections({...concordantSelections, t2: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
+                  <td className="p-1 sm:p-2">
+                    <label className="inline-flex items-center justify-center p-2 cursor-pointer">
+                      <input type="checkbox" aria-label="Mark Titre 2 concordant" checked={concordantSelections.t2} onChange={(e) => setConcordantSelections({...concordantSelections, t2: e.target.checked})} className="w-5 h-5 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
+                    </label>
                   </td>
                   {problem.tableData.hasT3 && (
-                    <td className="p-3 bg-blue-50/10">
-                      <input type="checkbox" checked={concordantSelections.t3} onChange={(e) => setConcordantSelections({...concordantSelections, t3: e.target.checked})} className="w-4 h-4 accent-[#326fa0]" disabled={tableVerified} />
+                    <td className="p-1 sm:p-2 bg-blue-50/10">
+                      <label className="inline-flex items-center justify-center p-2 cursor-pointer">
+                        <input type="checkbox" aria-label="Mark Titre 3 concordant" checked={concordantSelections.t3} onChange={(e) => setConcordantSelections({...concordantSelections, t3: e.target.checked})} className="w-5 h-5 accent-[#326fa0] cursor-pointer" disabled={tableVerified} />
+                      </label>
                     </td>
                   )}
                 </tr>

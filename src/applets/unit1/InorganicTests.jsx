@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
   INORGANIC_SALTS,
   CATION_OPTIONS,
-  ANION_OPTIONS
+  ANION_OPTIONS,
+  generateRandomInorganicSalt
 } from '../../data/questions/inorganicTestQuestions';
 
 const TEST_STATIONS = [
@@ -15,21 +16,38 @@ const TEST_STATIONS = [
 
 export default function InorganicTests({ onComplete }) {
   const [saltIdx, setSaltIdx] = useState(0);
+  const [activeSalt, setActiveSalt] = useState(() => generateRandomInorganicSalt());
+  const [isProcedural, setIsProcedural] = useState(true);
   const [revealedTests, setRevealedTests] = useState({});
   const [activeStation, setActiveStation] = useState('flame');
   const [selectedCation, setSelectedCation] = useState('');
   const [selectedAnion, setSelectedAnion] = useState('');
   const [feedback, setFeedback] = useState(null);
+  const [showHint, setShowHint] = useState(false);
 
-  const currentSalt = INORGANIC_SALTS[saltIdx];
+  const currentSalt = activeSalt;
 
-  const loadSalt = (idx) => {
-    setSaltIdx(idx);
+  const resetTestBench = () => {
     setRevealedTests({});
     setActiveStation('flame');
     setSelectedCation('');
     setSelectedAnion('');
     setFeedback(null);
+    setShowHint(false);
+  };
+
+  const loadSalt = (idx) => {
+    setSaltIdx(idx);
+    setIsProcedural(false);
+    setActiveSalt(INORGANIC_SALTS[idx]);
+    resetTestBench();
+  };
+
+  const loadRandomSalt = () => {
+    const nextSalt = generateRandomInorganicSalt(activeSalt?.id);
+    setIsProcedural(true);
+    setActiveSalt(nextSalt);
+    resetTestBench();
   };
 
   const runTest = (stationId) => {
@@ -87,24 +105,45 @@ export default function InorganicTests({ onComplete }) {
 
       <div className="flex flex-wrap items-center justify-center gap-2">
         <select
-          value={saltIdx}
-          onChange={(e) => loadSalt(Number(e.target.value))}
+          value={isProcedural ? 'procedural' : saltIdx}
+          onChange={(e) => {
+            if (e.target.value === 'procedural') loadRandomSalt();
+            else loadSalt(Number(e.target.value));
+          }}
           className="bg-white border border-slate-200 text-slate-700 py-2 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] shadow-sm cursor-pointer"
         >
+          <option value="procedural">Procedural Unknown {isProcedural ? currentSalt.code : '(33-Salt Pool)'}</option>
           {INORGANIC_SALTS.map((salt, idx) => (
             <option key={salt.id} value={idx}>
-              Unknown {salt.code} ({idx + 1}/{INORGANIC_SALTS.length})
+              Preset Unknown {salt.code} ({idx + 1}/{INORGANIC_SALTS.length})
             </option>
           ))}
         </select>
         <button
           type="button"
-          onClick={() => loadSalt((saltIdx + 1) % INORGANIC_SALTS.length)}
-          className="px-3 py-2 text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
+          onClick={loadRandomSalt}
+          className="px-3.5 py-2 text-xs font-black bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl transition-colors cursor-pointer"
         >
-          Next Sample &rarr;
+          🎲 Random Unknown Salt
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
       </div>
+
+      {showHint && (
+        <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 leading-relaxed space-y-1">
+          <p><strong className="font-black text-amber-900">WJEC Deduction Sequence:</strong></p>
+          <ul className="list-disc pl-5 space-y-0.5">
+            <li><strong>Cations:</strong> Na⁺ yellow-orange, K⁺ lilac, Ca²⁺ brick-red, Sr²⁺ crimson-red, Ba²⁺ apple-green flame; Mg²⁺ gives white Mg(OH)₂(s) ppt with no flame colour; NH₄⁺ evolves alkaline NH₃(g) on warming with NaOH(aq).</li>
+            <li><strong>Anions:</strong> Dilute HCl(aq) gives CO₂ effervescence for CO₃²⁻; acidified BaCl₂(aq) gives white BaSO₄(s) for SO₄²⁻; acidified AgNO₃(aq) gives Cl⁻ (white, sol. dil. NH₃), Br⁻ (cream, sol. conc. NH₃), I⁻ (yellow, insol.).</li>
+          </ul>
+        </div>
+      )}
 
       {/* Virtual Test-Tube Bench */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -338,10 +377,10 @@ export default function InorganicTests({ onComplete }) {
           </button>
           <button
             type="button"
-            onClick={() => loadSalt((saltIdx + 1) % INORGANIC_SALTS.length)}
+            onClick={loadRandomSalt}
             className="btn btn-secondary"
           >
-            Next Sample &rarr;
+            Random Unknown &rarr;
           </button>
         </div>
       </form>
@@ -363,10 +402,10 @@ export default function InorganicTests({ onComplete }) {
                 {feedback.isCorrect && (
                   <button
                     type="button"
-                    onClick={() => loadSalt((saltIdx + 1) % INORGANIC_SALTS.length)}
+                    onClick={loadRandomSalt}
                     className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
                   >
-                    Next Sample &rarr;
+                    Next Unknown &rarr;
                   </button>
                 )}
               </div>

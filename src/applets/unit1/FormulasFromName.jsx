@@ -7,6 +7,7 @@ const FormulasFromName = ({ onComplete }) => {
   const [problem, setProblem] = useState(null);
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const normalize = (str) => {
     const reverseMap = {
@@ -24,11 +25,15 @@ const FormulasFromName = ({ onComplete }) => {
     setMode(targetMode);
 
     const filtered = NOMENCLATURE_DATABASE.filter((item) => item.type === targetMode);
-    const picked = filtered[Math.floor(Math.random() * filtered.length)];
+    const nonRepeating = problem && filtered.length > 1
+      ? filtered.filter((item) => item.formula !== problem.formula)
+      : filtered;
+    const picked = nonRepeating[Math.floor(Math.random() * nonRepeating.length)];
 
     setProblem(picked);
     setStudentAnswer('');
     setFeedback({ message: '', status: '' });
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -46,7 +51,7 @@ const FormulasFromName = ({ onComplete }) => {
       setFeedback({ message: 'Casing mismatch detected. Elements must use standard uppercase starts (e.g. NaCl, not nacl).', status: 'error' });
     } else {
       setFeedback({
-        message: `Incorrect. The balanced systematic formula is ${problem.formula}`,
+        message: 'Incorrect formula. Check the Group charges or Roman numeral oxidation state, and use brackets around polyatomic ions when more than one is needed.',
         status: 'error',
       });
     }
@@ -86,6 +91,22 @@ const FormulasFromName = ({ onComplete }) => {
       </div>
 
       <div className="applet-header">Formulas from Names</div>
+
+      <div className="flex flex-col items-center mb-4">
+        <button
+          type="button"
+          onClick={() => setShowHint((prev) => !prev)}
+          className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+        >
+          💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+        </button>
+        {showHint && (
+          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+            <strong className="font-black text-amber-900">Formula Method: </strong>
+            Balance total positive and negative ion charges to zero. A Roman numeral (e.g. Iron(III)) gives the metal cation charge directly (3+). Common polyatomic ions: OH⁻, NO₃⁻, CO₃²⁻, SO₄²⁻, NH₄⁺ — enclose polyatomic ions in brackets whenever subscript &ge; 2 (e.g. Ca(NO₃)₂).
+          </div>
+        )}
+      </div>
 
       <div className="question-text text-center">
         Deduce the balanced chemical formula for:
