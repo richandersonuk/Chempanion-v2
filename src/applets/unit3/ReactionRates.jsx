@@ -271,7 +271,7 @@ const ReactionRates = ({ onComplete }) => {
 
   return (
     <div className="applet-container">
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -311,7 +311,7 @@ const ReactionRates = ({ onComplete }) => {
           💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
         {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
             <strong className="font-black text-amber-900">Kinetics Method: </strong>
             {mode === 'arrhenius' || problem.title.includes('Arrhenius')
               ? 'Take natural logs of k = A e^(−Eₐ/RT) to give ln(k/A) = −Eₐ/(RT). Multiply R (8.31) × T(K) × −ln(k/A), then divide by 1000 to convert J mol⁻¹ into kJ mol⁻¹.'
@@ -326,7 +326,7 @@ const ReactionRates = ({ onComplete }) => {
 
       {/* WJEC Step 1 Unit Gate for Arrhenius Mode */}
       {mode === 'arrhenius' && problem.arrheniusTargets && (
-        <div className="w-full max-w-lg mx-auto my-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
+        <div className="w-full max-w-3xl mx-auto my-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
           <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
             <div>
               <span className="text-[10px] font-black tracking-widest text-slate-400">
@@ -415,7 +415,7 @@ const ReactionRates = ({ onComplete }) => {
         {problem.question}
       </div>
 
-      <div className={`flex flex-col items-center gap-4 w-full max-w-md mx-auto mb-4 transition-opacity ${isArrheniusLocked ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+      <div className={`flex flex-col items-center gap-4 w-full max-w-2xl mx-auto mb-4 transition-opacity ${isArrheniusLocked ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
         <div className="flex items-center justify-center w-full">
           {problem.useSciInput ? (
             <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">

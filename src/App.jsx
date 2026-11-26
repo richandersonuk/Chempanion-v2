@@ -4,7 +4,7 @@ import { Logo, HeaderBrand } from './components/shared/Branding';
 import DataBooklet from './components/shared/DataBooklet';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { howToGuides } from './data/howToGuides';
-import { SORTED_APPLETS, MAIN_UNITS, WJEC_UNIT_TITLES } from './data/appletRegistry';
+import { SORTED_APPLETS, MAIN_UNITS, WJEC_UNIT_TITLES, belongsToUnitSection } from './data/appletRegistry';
 import { useProgress } from './hooks/useProgress';
 
 // Resolve initial applet ID from URL (?applet=<id> or #<id>)
@@ -81,7 +81,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
         </div>
 
         {/* Tab Strip */}
-        <div className="bg-slate-50 border-b border-slate-200 px-3 sm:px-5 pt-2.5 flex items-center gap-1.5 overflow-x-auto shrink-0">
+        <div className="bg-slate-50 border-b border-slate-200 px-3 sm:px-5 pt-2.5 pb-2 sm:pb-0 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 shrink-0">
           {GUIDE_TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -89,9 +89,9 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-3.5 py-2 rounded-t-xl text-xs font-extrabold whitespace-nowrap border border-b-0 transition-all cursor-pointer ${
+                className={`px-3 py-2 rounded-xl sm:rounded-b-none sm:rounded-t-xl text-xs font-extrabold whitespace-nowrap border sm:border-b-0 transition-all cursor-pointer text-center ${
                   isActive
-                    ? 'bg-white text-slate-900 border-slate-200 shadow-xs -mb-px'
+                    ? 'bg-white text-slate-900 border-slate-200 shadow-xs sm:shadow-[0_1px_0_0_white]'
                     : 'bg-transparent text-slate-500 border-transparent hover:text-slate-800 hover:bg-slate-100/70'
                 }`}
               >
@@ -283,11 +283,12 @@ export default function App() {
   const { progress, recordSuccess } = useProgress();
 
   const [categoryStates, setCategoryStates] = useState(() => {
+    const defaults = { 'Unit 1': true, 'Unit 2': true, 'Unit 3': true, 'Unit 4': true, 'Synoptic': true };
     const saved = localStorage.getItem('wjec_companion_collapsed_units');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { return { ...defaults, ...JSON.parse(saved) }; } catch (e) { console.error(e); }
     }
-    return { 'Unit 1': true, 'Unit 2': true, 'Unit 3': true, 'Unit 4': true };
+    return defaults;
   });
 
   useEffect(() => {
@@ -388,9 +389,9 @@ export default function App() {
                 }`}
               >
                 {MAIN_UNITS.map(unitRow => {
-                  const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
+                  const unitApplets = SORTED_APPLETS.filter(a => belongsToUnitSection(a, unitRow));
                   if (unitApplets.length === 0) return null;
-                  const isCatOpen = categoryStates[unitRow];
+                  const isCatOpen = categoryStates[unitRow] ?? true;
                   return (
                     <div key={unitRow} className="border border-slate-100/80 rounded-lg bg-slate-50/50 overflow-hidden">
                       <button
@@ -398,7 +399,7 @@ export default function App() {
                         onClick={(e) => { e.stopPropagation(); toggleCategory(unitRow); }}
                         className="w-full flex items-center justify-between px-2.5 py-1.5 bg-slate-100/50 hover:bg-slate-100 text-[10px] font-black text-slate-500 tracking-wide transition-colors cursor-pointer"
                       >
-                        <span>{unitRow}</span>
+                        <span>{unitRow === 'Synoptic' ? 'Synoptic & Cross-Unit Labs' : unitRow}</span>
                         <span className="text-[9px] text-slate-400 font-bold">{isCatOpen ? 'Hide' : 'Show'}</span>
                       </button>
                       {isCatOpen && (
@@ -491,9 +492,9 @@ export default function App() {
               🏠 Go to Home Dashboard
             </button>
             {MAIN_UNITS.map(unitRow => {
-              const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
+              const unitApplets = SORTED_APPLETS.filter(a => belongsToUnitSection(a, unitRow));
               if (unitApplets.length === 0) return null;
-              const isCatOpen = categoryStates[unitRow];
+              const isCatOpen = categoryStates[unitRow] ?? true;
               return (
                 <div key={unitRow} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
                   <button
@@ -501,7 +502,7 @@ export default function App() {
                     onClick={() => toggleCategory(unitRow)}
                     className="w-full flex items-center justify-between p-3 bg-slate-100 text-xs font-black text-slate-600"
                   >
-                    <span>{unitRow} Assignments</span>
+                    <span>{unitRow === 'Synoptic' ? 'Synoptic & Cross-Unit Labs' : `${unitRow} Assignments`}</span>
                     <span className="text-[10px] text-slate-400 font-bold">{isCatOpen ? 'Collapse ▴' : 'Expand ▾'}</span>
                   </button>
                   {isCatOpen && (
@@ -580,7 +581,7 @@ export default function App() {
                   </button>
                   {mobileUpdatesOpen && (
                     <div className="mt-2 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 font-semibold leading-relaxed">
-                      Latest Updates: Added <strong>Hess’s Law Cycles</strong> (Unit 2.1), <strong>Maxwell–Boltzmann &amp; Collision Theory</strong> (Unit 2.2), and <strong>IUPAC Naming &amp; E/Z Isomerism</strong> (Unit 2.4), plus randomised lab generators, non-spoiler <strong>Need a Hint?</strong> drawers, and responsive 2-column desktop/mobile layouts.
+                      Latest Updates: Added <strong>Synoptic &amp; Cross-Unit Labs</strong> (<strong>Chemistry Diagrams Lab</strong> &amp; <strong>Mechanism Maestro</strong>), Unit 2 modules (<strong>Hess’s Law Cycles</strong>, <strong>Maxwell–Boltzmann</strong>, <strong>IUPAC &amp; E/Z</strong>), and wider responsive desktop layouts.
                     </div>
                   )}
                 </div>
@@ -592,7 +593,7 @@ export default function App() {
                     <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    Latest Updates: Added <strong>Hess’s Law Cycles</strong> (Unit 2.1), <strong>Maxwell–Boltzmann &amp; Collision Theory</strong> (Unit 2.2), and <strong>IUPAC Naming &amp; E/Z Isomerism</strong> (Unit 2.4), plus randomised lab generators, non-spoiler <strong>Need a Hint?</strong> drawers, and responsive 2-column desktop/mobile layouts.
+                    Latest Updates: Added <strong>Synoptic &amp; Cross-Unit Labs</strong> (<strong>Chemistry Diagrams Lab</strong> &amp; <strong>Mechanism Maestro</strong>), Unit 2 modules (<strong>Hess’s Law Cycles</strong>, <strong>Maxwell–Boltzmann</strong>, <strong>IUPAC &amp; E/Z</strong>), and wider responsive desktop layouts.
                   </p>
                 </div>
               </div>
@@ -601,9 +602,9 @@ export default function App() {
             {/* Matrix layout */}
             <div className="w-full max-w-7xl mx-auto text-left space-y-10">
               {MAIN_UNITS.map(unitRow => {
-                const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
+                const unitApplets = SORTED_APPLETS.filter(a => belongsToUnitSection(a, unitRow));
                 if (unitApplets.length === 0) return null;
-                const isUnitOpen = categoryStates[unitRow];
+                const isUnitOpen = categoryStates[unitRow] ?? true;
 
                 return (
                   <div key={unitRow} className="animate-fade-in">
@@ -623,7 +624,7 @@ export default function App() {
                           isUnitOpen ? 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-sm'
                         }`}
                       >
-                        {isUnitOpen ? 'Hide Unit' : 'Expand Unit'}
+                        {isUnitOpen ? (unitRow === 'Synoptic' ? 'Hide Section' : 'Hide Unit') : (unitRow === 'Synoptic' ? 'Expand Section' : 'Expand Unit')}
                       </button>
                     </div>
 

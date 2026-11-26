@@ -61,7 +61,7 @@ const FormulasFromName = ({ onComplete }) => {
 
   return (
     <div className="applet-container">
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -101,7 +101,7 @@ const FormulasFromName = ({ onComplete }) => {
           💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
         {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
             <strong className="font-black text-amber-900">Formula Method: </strong>
             Balance total positive and negative ion charges to zero. A Roman numeral (e.g. Iron(III)) gives the metal cation charge directly (3+). Common polyatomic ions: OH⁻, NO₃⁻, CO₃²⁻, SO₄²⁻, NH₄⁺ — enclose polyatomic ions in brackets whenever subscript &ge; 2 (e.g. Ca(NO₃)₂).
           </div>

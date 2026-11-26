@@ -59,10 +59,21 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .applet-container {
+    max-width: 60rem;
+    padding: 2.25rem 2.75rem;
+  }
+  .applet-container:has(.applet-workbench),
+  .applet-container:has(.lg\:grid-cols-12),
+  .applet-container:has(.xl\:grid-cols-12) {
+    max-width: 74rem;
+  }
+}
+
 @media (min-width: 1280px) {
   .applet-container {
-    max-width: 72rem;
-    padding: 2rem 2.5rem;
+    padding: 2.5rem 3rem;
   }
 }
 
@@ -293,7 +304,7 @@
 /* --- HOUSESTYLE: EXPLICIT INTERACTIVE CHOICE SECTORS --- */
 .chem-choice-section {
   width: 100%;
-  max-width: 24rem; /* FIXED: Changed max-w to standard CSS max-width */
+  max-width: 40rem;
   margin: 0.75rem auto;
   text-align: center;
 }
@@ -310,9 +321,17 @@
 .chem-choice-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.625rem;
   width: 100%;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .chem-choice-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0;
+  }
 }
 
 .chem-choice-btn {

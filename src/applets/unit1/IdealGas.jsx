@@ -207,7 +207,7 @@ const IdealGas = ({ onComplete }) => {
 
   return (
     <div className="applet-container">
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -252,7 +252,7 @@ const IdealGas = ({ onComplete }) => {
           💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
         {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
             <strong className="font-black text-amber-900">pV = nRT Method: </strong>
             Always convert all quantities to strict SI units before substituting into pV = nRT (R = 8.31 J K⁻¹ mol⁻¹): p in Pa, V in m³ (÷ 10⁶ from cm³ or ÷ 10³ from dm³), T in K (°C + 273), and n = mass (g) ÷ Mᵣ.
           </div>
@@ -260,7 +260,7 @@ const IdealGas = ({ onComplete }) => {
       </div>
 
       {/* WJEC Step 1 SI Unit-Conversion Gate */}
-      <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
+      <div className="w-full max-w-3xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm" style={{ textTransform: 'none' }}>
         <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
           <div>
             <span className="text-[10px] font-black tracking-widest text-slate-400">

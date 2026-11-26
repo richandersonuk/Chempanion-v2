@@ -438,7 +438,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
 
   return (
     <div className="applet-container">
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -478,7 +478,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
           💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
         {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
             {problem.problemType === 'calorimetry' ? (
               <>
                 <strong className="font-black text-amber-900">Calorimetry Method: </strong>
@@ -510,7 +510,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
               </p>
             </div>
 
-            <div className="w-full max-w-sm mx-auto bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 flex flex-col items-center shadow-inner relative overflow-hidden">
+            <div className="w-full max-w-md mx-auto bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 flex flex-col items-center shadow-inner relative overflow-hidden">
               <svg viewBox="0 0 200 180" className="w-48 h-auto select-none">
                 <style>{`
                   @keyframes chemicalFlameFlicker {
@@ -582,7 +582,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
               </button>
             </div>
 
-            <div className="w-full max-w-md mx-auto grid grid-cols-2 gap-3 bg-slate-100 border border-slate-200 p-3 rounded-2xl">
+            <div className="w-full max-w-xl mx-auto grid grid-cols-2 gap-3 bg-slate-100 border border-slate-200 p-3 rounded-2xl">
               <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm text-center">
                 <span className="block text-[9px] font-black tracking-wider text-slate-400 mb-0.5">Mass of Fuel Burned</span>
                 {simCompleted ? (
@@ -717,7 +717,7 @@ const EnthalpyCombustion = ({ onComplete }) => {
               </div>
             ) : (
               <div className="w-full flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
-                <div className="w-full max-w-sm text-center p-4 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold rounded-xl shadow-sm">
+                <div className="w-full max-w-md text-center p-4 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold rounded-xl shadow-sm">
                   🔒 Laboratory measurements locked. Ignite the burner on the left panel to acquire mass burned and ΔT.
                 </div>
                 <button

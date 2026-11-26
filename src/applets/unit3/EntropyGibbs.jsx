@@ -146,8 +146,9 @@ export default function EntropyGibbs({ onComplete }) {
       </div>
 
       {activeTab === 'trainer' && (
-        <div className="mt-5 space-y-5">
-          <div className="p-5 bg-blue-50/50 border border-blue-100 rounded-xl">
+        <div className="mt-5 applet-workbench">
+          <div className="applet-workbench-sticky">
+            <div className="p-5 bg-blue-50/50 border border-blue-100 rounded-xl">
             <div className="flex flex-wrap items-center justify-center gap-2">
               <div className="flex items-center gap-2">
                 <p className="text-xs font-semibold text-blue-600 tracking-widest">
@@ -249,7 +250,9 @@ export default function EntropyGibbs({ onComplete }) {
               </div>
             </div>
           </div>
+          </div>
 
+          <div className="space-y-5">
           <div className={`p-5 rounded-xl border transition-all ${
             submittedStep1 && isStep1Correct
               ? 'bg-emerald-50/40 border-emerald-300'
@@ -479,6 +482,7 @@ export default function EntropyGibbs({ onComplete }) {
               </button>
             </div>
           )}
+          </div>
         </div>
       )}
 

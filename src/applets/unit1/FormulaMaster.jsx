@@ -12,6 +12,8 @@ const FormulaMaster = ({ onComplete }) => {
   const [aniChargeVal, setAniChargeVal] = useState(1);
   const [showHint, setShowHint] = useState(false);
   const catInputRef = useRef(null);
+  const hasGeneratedFirstRef = useRef(false);
+  const lastFormulaRef = useRef(null);
 
   const ionicUniverse = {
     gcse: {
@@ -60,11 +62,13 @@ const FormulaMaster = ({ onComplete }) => {
         { formula: "CH3COO", charge: 1, name: "ethanoate", isPoly: true }
       ]
     },
-    specialMolecules: [
-      { formula: "H2O", name: "Water", catFormula: "H", catCharge: 1, aniFormula: "OH", aniCharge: 1, altCatFormula: "H", altCatCharge: 1, isCovalent: true },
-      { formula: "NH3", name: "Ammonia", catFormula: "NH4", catCharge: 1, aniFormula: "OH", aniCharge: 1, isCovalent: true },
-      { formula: "CH4", name: "Methane", isCovalent: true, neutralOnly: true },
-      { formula: "CO2", name: "Carbon dioxide", isCovalent: true, neutralOnly: true }
+    ionisableCompounds: [
+      { formula: "H2O", name: "Water", catFormula: "H", catCharge: 1, aniFormula: "OH", aniCharge: 1 },
+      { formula: "HCl", name: "Hydrochloric acid", catFormula: "H", catCharge: 1, aniFormula: "Cl", aniCharge: 1 },
+      { formula: "HBr", name: "Hydrobromic acid", catFormula: "H", catCharge: 1, aniFormula: "Br", aniCharge: 1 },
+      { formula: "HNO3", name: "Nitric acid", catFormula: "H", catCharge: 1, aniFormula: "NO3", aniCharge: 1 },
+      { formula: "H2SO4", name: "Sulfuric acid", catFormula: "H", catCharge: 1, aniFormula: "SO4", aniCharge: 2 },
+      { formula: "CH3COOH", name: "Ethanoic acid", catFormula: "H", catCharge: 1, aniFormula: "CH3COO", aniCharge: 1, advancedOnly: true }
     ]
   };
 
@@ -110,22 +114,28 @@ const FormulaMaster = ({ onComplete }) => {
     const isAdvanced = modeKey.includes('advanced');
     const isFromFormula = modeKey.includes('formula');
 
-    const includeSpecial = Math.random() < 0.15;
+    // Start the session on an ionic salt; occasionally mix in common ionisable acids/water afterwards
+    const includeSpecial = hasGeneratedFirstRef.current && Math.random() < 0.12;
+    hasGeneratedFirstRef.current = true;
 
+    let nextProblem = null;
     if (includeSpecial) {
-      const mol = ionicUniverse.specialMolecules[Math.floor(Math.random() * ionicUniverse.specialMolecules.length)];
+      const ionisablePool = isAdvanced
+        ? ionicUniverse.ionisableCompounds
+        : ionicUniverse.ionisableCompounds.filter((c) => !c.advancedOnly);
+      const filteredPool = ionisablePool.filter((c) => c.formula !== lastFormulaRef.current);
+      const pool = filteredPool.length > 0 ? filteredPool : ionisablePool;
+      const mol = pool[Math.floor(Math.random() * pool.length)];
 
-      setCurrentProblem({
+      nextProblem = {
         qDisplay: isFromFormula ? mol.formula : mol.name,
-        targetCat: mol.catFormula || 'None',
-        targetCatVal: mol.catCharge || 0,
-        targetAni: mol.aniFormula || 'None',
-        targetAniVal: mol.aniCharge || 0,
+        targetCat: mol.catFormula,
+        targetCatVal: mol.catCharge,
+        targetAni: mol.aniFormula,
+        targetAniVal: mol.aniCharge,
         rawFormula: mol.formula,
-        rawName: mol.name,
-        isCovalent: true,
-        neutralOnly: mol.neutralOnly || false
-      });
+        rawName: mol.name
+      };
     } else {
       const catPool = isAdvanced
         ? [...ionicUniverse.gcse.cations, ...ionicUniverse.advanced.cations]
@@ -135,23 +145,32 @@ const FormulaMaster = ({ onComplete }) => {
         ? [...ionicUniverse.gcse.anions, ...ionicUniverse.advanced.anions]
         : ionicUniverse.gcse.anions;
 
-      const selectedCation = catPool[Math.floor(Math.random() * catPool.length)];
-      const selectedAnion = aniPool[Math.floor(Math.random() * aniPool.length)];
+      let selectedCation;
+      let selectedAnion;
+      let calculatedFormula;
+      let attempts = 0;
+      do {
+        selectedCation = catPool[Math.floor(Math.random() * catPool.length)];
+        selectedAnion = aniPool[Math.floor(Math.random() * aniPool.length)];
+        calculatedFormula = buildBalancedFormula(selectedCation, selectedAnion);
+        attempts += 1;
+      } while (calculatedFormula === lastFormulaRef.current && attempts < 10);
 
-      const calculatedFormula = buildBalancedFormula(selectedCation, selectedAnion);
       const calculatedName = `${selectedCation.name} ${selectedAnion.name}`;
 
-      setCurrentProblem({
+      nextProblem = {
         qDisplay: isFromFormula ? calculatedFormula : calculatedName,
         targetCat: selectedCation.formula,
         targetCatVal: selectedCation.charge,
         targetAni: selectedAnion.formula,
         targetAniVal: selectedAnion.charge,
         rawFormula: calculatedFormula,
-        rawName: calculatedName,
-        isCovalent: false
-      });
+        rawName: calculatedName
+      };
     }
+
+    lastFormulaRef.current = nextProblem.rawFormula;
+    setCurrentProblem(nextProblem);
 
     setCatText('');
     setCatChargeVal(1);
@@ -195,22 +214,6 @@ const FormulaMaster = ({ onComplete }) => {
   const executeAnswerAudit = () => {
     if (!currentProblem) return;
     setFeedback({ message: null, status: '' });
-
-    if (currentProblem.isCovalent && currentProblem.neutralOnly) {
-      setFeedback({
-        status: 'success',
-        message: (
-          <div className="space-y-1">
-            <span className="block font-black text-xs text-[#326fa0]">ℹ️ Simple Covalent Molecule</span>
-            <p className="text-slate-600 font-medium text-[11px]">
-              <strong>{currentProblem.rawName} ({currentProblem.rawFormula})</strong> is a simple covalent molecule composed of neutral atoms sharing electrons, not discrete ions.
-            </p>
-          </div>
-        )
-      });
-      onComplete?.(currentProblem.rawFormula);
-      return;
-    }
 
     const cleanCatUser = catText.replace(/[\s()]+/g, '');
     const cleanAniUser = aniText.replace(/[\s()]+/g, '');
@@ -280,7 +283,7 @@ const FormulaMaster = ({ onComplete }) => {
         )}
       </div>
 
-      <div className="w-full max-w-md mx-auto my-4 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex gap-2 items-end">
+      <div className="w-full max-w-2xl mx-auto my-4 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex gap-3 items-end">
         <div className="flex-1">
           <label className="block text-[10px] font-black text-slate-400 tracking-wider mb-1">Practice Mode</label>
           <select
@@ -297,60 +300,60 @@ const FormulaMaster = ({ onComplete }) => {
         <button
           type="button"
           onClick={triggerRandomModeSwap}
-          className="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition-colors h-[34px] tracking-wider shrink-0"
+          className="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition-colors h-[34px] tracking-wider shrink-0"
         >
           🎲 Random
         </button>
       </div>
 
-      <div className="w-full max-w-md mx-auto my-4 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm text-center">
-        <div className="text-xl font-black text-slate-800 tracking-tight font-mono p-4 bg-slate-50 border border-slate-100 rounded-2xl inline-block min-w-[220px]">
+      <div className="w-full max-w-3xl mx-auto my-4 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-center">
+        <div className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight font-mono px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl inline-block min-w-[260px]">
           {activeMode.includes('formula') ? formatChemicalTextHtml(currentProblem.qDisplay) : currentProblem.qDisplay}
         </div>
 
-        <div className="mt-6 border-t border-slate-100 pt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col justify-between">
+        <div className="mt-6 border-t border-slate-100 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-5 text-left">
+          <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
             <div>
-              <span className="block text-[9px] font-black tracking-wider text-slate-400 mb-2 text-center">Cation Formula</span>
-              <div className="flex gap-2 items-center w-full justify-center">
+              <span className="block text-[10px] font-black tracking-wider text-slate-500 mb-2.5 text-center">Cation Formula</span>
+              <div className="flex gap-2.5 items-center w-full justify-center">
                 <input
                   ref={catInputRef}
                   type="text" value={catText} onChange={(e) => { setCatText(e.target.value); setFeedback({ message: null, status: '' }); }}
                   onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
                   placeholder="e.g., Na"
-                  className="w-24 px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-xs outline-none focus:border-[#326fa0]"
+                  className="w-32 sm:w-40 px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-sm sm:text-base outline-none focus:border-[#326fa0]"
                 />
-                <div className="flex flex-col items-center bg-white px-1.5 py-1 rounded-xl border border-slate-200 select-none">
-                  <button type="button" onClick={() => setCatChargeVal(p => Math.min(p + 1, 4))} className="text-[10px] text-slate-300 hover:text-slate-600 px-1">▲</button>
-                  <span className="text-[10px] font-black text-blue-600 font-mono my-0.5">{getChargeString(catChargeVal, '+')}</span>
-                  <button type="button" onClick={() => setCatChargeVal(p => Math.max(p - 1, 1))} className="text-[10px] text-slate-300 hover:text-slate-600 px-1">▼</button>
+                <div className="flex flex-col items-center bg-white px-2 py-1 rounded-xl border border-slate-200 select-none">
+                  <button type="button" onClick={() => setCatChargeVal(p => Math.min(p + 1, 4))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Increase cation charge">▲</button>
+                  <span className="text-xs font-black text-blue-600 font-mono my-0.5">{getChargeString(catChargeVal, '+')}</span>
+                  <button type="button" onClick={() => setCatChargeVal(p => Math.max(p - 1, 1))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Decrease cation charge">▼</button>
                 </div>
               </div>
             </div>
-            <div className="mt-3 bg-white/70 border border-slate-100 text-center py-1.5 px-2 rounded-xl font-mono text-sm font-black text-slate-700 relative min-h-[32px] flex items-center justify-center">
+            <div className="mt-3 bg-white/80 border border-slate-100 text-center py-2 px-3 rounded-xl font-mono text-base sm:text-lg font-black text-slate-700 relative min-h-[42px] flex items-center justify-center">
               <span>{formatChemicalTextHtml(catText)}</span>
               {catText && <sup className="text-[0.75em] text-blue-600 font-black relative top-[-0.6em] left-[0.1em]">{getChargeString(catChargeVal, '+')}</sup>}
             </div>
           </div>
 
-          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col justify-between">
+          <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
             <div>
-              <span className="block text-[9px] font-black tracking-wider text-slate-400 mb-2 text-center">Anion Formula</span>
-              <div className="flex gap-2 items-center w-full justify-center">
+              <span className="block text-[10px] font-black tracking-wider text-slate-500 mb-2.5 text-center">Anion Formula</span>
+              <div className="flex gap-2.5 items-center w-full justify-center">
                 <input
                   type="text" value={aniText} onChange={(e) => { setAniText(e.target.value); setFeedback({ message: null, status: '' }); }}
                   onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblemInstance(activeMode) : executeAnswerAudit())}
                   placeholder="e.g., SO4"
-                  className="w-24 px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-xs outline-none focus:border-rose-500"
+                  className="w-32 sm:w-40 px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono font-bold text-center text-sm sm:text-base outline-none focus:border-rose-500"
                 />
-                <div className="flex flex-col items-center bg-white px-1.5 py-1 rounded-xl border border-slate-200 select-none">
-                  <button type="button" onClick={() => setAniChargeVal(p => Math.min(p + 1, 4))} className="text-[10px] text-slate-300 hover:text-slate-600 px-1">▲</button>
-                  <span className="text-[10px] font-black text-rose-600 font-mono my-0.5">{getChargeString(aniChargeVal, '-')}</span>
-                  <button type="button" onClick={() => setAniChargeVal(p => Math.max(p - 1, 1))} className="text-[10px] text-slate-300 hover:text-slate-600 px-1">▼</button>
+                <div className="flex flex-col items-center bg-white px-2 py-1 rounded-xl border border-slate-200 select-none">
+                  <button type="button" onClick={() => setAniChargeVal(p => Math.min(p + 1, 4))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Increase anion charge">▲</button>
+                  <span className="text-xs font-black text-rose-600 font-mono my-0.5">{getChargeString(aniChargeVal, '-')}</span>
+                  <button type="button" onClick={() => setAniChargeVal(p => Math.max(p - 1, 1))} className="text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer" aria-label="Decrease anion charge">▼</button>
                 </div>
               </div>
             </div>
-            <div className="mt-3 bg-white/70 border border-slate-100 text-center py-1.5 px-2 rounded-xl font-mono text-sm font-black text-slate-700 relative min-h-[32px] flex items-center justify-center">
+            <div className="mt-3 bg-white/80 border border-slate-100 text-center py-2 px-3 rounded-xl font-mono text-base sm:text-lg font-black text-slate-700 relative min-h-[42px] flex items-center justify-center">
               <span>{formatChemicalTextHtml(aniText)}</span>
               {aniText && <sup className="text-[0.75em] text-rose-600 font-black relative top-[-0.6em] left-[0.1em]">{getChargeString(aniChargeVal, '-')}</sup>}
             </div>

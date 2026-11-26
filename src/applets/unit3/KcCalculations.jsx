@@ -296,7 +296,7 @@ const KcCalculations = ({ onComplete }) => {
 
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -342,41 +342,41 @@ const KcCalculations = ({ onComplete }) => {
       </div>
 
       {mode === 'predict_units' ? (
-        <div className="w-full max-w-sm mx-auto my-6 bg-slate-50 border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center gap-4" style={{ textTransform: 'none' }}>
+        <div className="w-full max-w-2xl mx-auto my-6 bg-slate-50 border border-slate-200 p-5 sm:p-6 rounded-2xl shadow-sm flex flex-col items-center gap-4" style={{ textTransform: 'none' }}>
           <span className="text-[10px] font-black tracking-wider text-slate-400">Select Power Indexes</span>
 
-          <div className="grid grid-cols-3 gap-4 w-full">
-            <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
-              <span className="text-xs font-black font-mono text-slate-500 mb-1">mol</span>
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setMolIdx(prev => prev - 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
-                <span className="font-mono font-black text-sm w-4 text-center text-slate-800">{molIdx}</span>
-                <button type="button" onClick={() => setMolIdx(prev => prev + 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <div className="flex flex-col items-center bg-white p-3 border border-slate-200/80 rounded-xl shadow-inner">
+              <span className="text-xs font-black font-mono text-slate-500 mb-1.5">mol</span>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => setMolIdx(prev => prev - 1)} className="w-8 h-8 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer">⁻</button>
+                <span className="font-mono font-black text-base w-6 text-center text-slate-800">{molIdx}</span>
+                <button type="button" onClick={() => setMolIdx(prev => prev + 1)} className="w-8 h-8 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer">⁺</button>
               </div>
             </div>
 
-            <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
-              <span className="text-xs font-black font-mono text-slate-500 mb-1">dm</span>
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setDmIdx(prev => prev - 3)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
-                <span className="font-mono font-black text-sm w-5 text-center text-slate-800">{dmIdx}</span>
-                <button type="button" onClick={() => setDmIdx(prev => prev + 3)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
+            <div className="flex flex-col items-center bg-white p-3 border border-slate-200/80 rounded-xl shadow-inner">
+              <span className="text-xs font-black font-mono text-slate-500 mb-1.5">dm</span>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => setDmIdx(prev => prev - 3)} className="w-8 h-8 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer">⁻</button>
+                <span className="font-mono font-black text-base w-7 text-center text-slate-800">{dmIdx}</span>
+                <button type="button" onClick={() => setDmIdx(prev => prev + 3)} className="w-8 h-8 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer">⁺</button>
               </div>
             </div>
 
-            <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
-              <span className="text-xs font-black font-mono text-slate-500 mb-1">s</span>
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setSIdx(prev => prev - 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
-                <span className="font-mono font-black text-sm w-4 text-center text-slate-800">{sIdx}</span>
-                <button type="button" onClick={() => setSIdx(prev => prev + 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
+            <div className="flex flex-col items-center bg-white p-3 border border-slate-200/80 rounded-xl shadow-inner">
+              <span className="text-xs font-black font-mono text-slate-500 mb-1.5">s</span>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => setSIdx(prev => prev - 1)} className="w-8 h-8 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer">⁻</button>
+                <span className="font-mono font-black text-base w-6 text-center text-slate-800">{sIdx}</span>
+                <button type="button" onClick={() => setSIdx(prev => prev + 1)} className="w-8 h-8 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer">⁺</button>
               </div>
             </div>
           </div>
 
-          <div className="w-full bg-white border border-slate-200/60 rounded-xl p-2.5 text-center mt-1 flex flex-col items-center gap-0.5">
-            <span className="text-[9px] font-extrabold text-slate-400 tracking-wider">Current Sorted Selection</span>
-            <div className="h-6 flex items-center justify-center">{renderSortedUnitsPreview()}</div>
+          <div className="w-full bg-white border border-slate-200/60 rounded-xl p-3 text-center mt-1 flex flex-col items-center gap-1">
+            <span className="text-[10px] font-extrabold text-slate-400 tracking-wider">Current Sorted Selection</span>
+            <div className="min-h-[28px] text-base flex items-center justify-center">{renderSortedUnitsPreview()}</div>
           </div>
         </div>
       ) : (

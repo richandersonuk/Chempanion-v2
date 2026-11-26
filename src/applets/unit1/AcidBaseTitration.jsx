@@ -309,7 +309,7 @@ const AcidBaseTitration = ({ onComplete }) => {
 
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -349,7 +349,7 @@ const AcidBaseTitration = ({ onComplete }) => {
           💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
         {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
             <strong className="font-black text-amber-900">Titration Method: </strong>
             {mode === 'read_burette'
               ? 'Read burette graduations downwards from the top integer mark to the bottom of the curved meniscus, recording strictly to 2 d.p. ending in .00 or .05 cm³.'
@@ -410,7 +410,7 @@ const AcidBaseTitration = ({ onComplete }) => {
       )}
 
       {mode === 'table_practice' && (
-        <div className="w-full max-w-2xl mx-auto my-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
+        <div className="w-full max-w-4xl mx-auto my-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" style={{ textTransform: 'none' }}>
           <div className="w-full overflow-x-auto pb-1">
             <table className="w-full min-w-[340px] sm:min-w-[480px] text-center text-xs font-bold border-collapse">
               <thead>

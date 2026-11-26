@@ -258,7 +258,7 @@ const KpCalculations = ({ onComplete }) => {
 
   return (
     <div className="applet-container">
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>

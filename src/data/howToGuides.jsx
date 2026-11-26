@@ -90,7 +90,7 @@ export const howToGuides = {
   'formula-master': {
     title: 'Formula Master: Reverse Ion Extraction',
     unit: 'Unit 1.1',
-    summary: 'Deconstruct ionic formulas or compound names back into discrete cation and anion identities with exact charges.',
+    summary: 'Deconstruct ionic salts and common ionisable compounds (such as HCl, H₂SO₄, and H₂O) back into discrete cation and anion identities with exact charges.',
     appletSteps: [
       <><strong>Choose Difficulty Tier:</strong> Select between <em>Ions from Formula</em> and <em>Ions from Name</em> across GCSE and Advanced modes.</>,
       <><strong>Enter Ion Formulas:</strong> Type the base formula of the cation and anion (without writing the charge sign inside the text field).</>,

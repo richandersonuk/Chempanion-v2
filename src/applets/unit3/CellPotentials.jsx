@@ -254,7 +254,7 @@ const CellPotentials = ({ onComplete }) => {
 
   return (
     <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
+      <div className="w-full max-w-2xl mx-auto mb-6 px-4">
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -262,7 +262,7 @@ const CellPotentials = ({ onComplete }) => {
           <select
             value={mode}
             onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="w-full max-w-xs bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
+            className="w-full max-w-md bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
           >
             <option value="calc_emf">Calculate Standard Cell EMF (E°cell)</option>
             <option value="cell_notation">Build Conventional Cell Notation</option>
@@ -282,7 +282,7 @@ const CellPotentials = ({ onComplete }) => {
           💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
         {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
             <strong className="font-black text-amber-900">Electrochemistry Method: </strong>
             {mode === 'calc_emf'
               ? 'Identify the more positive (or less negative) E° as the cathode (reduction) and compute E°cell = E°(cathode) − E°(anode) to 2 d.p. with an explicit + or − sign. Never multiply E° values by reaction stoichiometry!'
@@ -293,120 +293,128 @@ const CellPotentials = ({ onComplete }) => {
         )}
       </div>
 
-      <div className="question-text text-center px-4 leading-relaxed">{problem.text}</div>
+      <div className="applet-workbench">
+        {/* Left Column: Diagram & Provided Standard Electrode Potentials */}
+        <div className="applet-workbench-sticky space-y-4">
+          {mode === 'calc_emf' && problem.requiresDiagram && (
+            <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />
+          )}
 
-      {mode === 'calc_emf' && problem.requiresDiagram && (
-        <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />
-      )}
-
-      {/* Dedicated Exam-Style Standard Electrode Potentials Table (not in WJEC Data Booklet) */}
-      <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-          <span className="text-[10px] font-black tracking-widest text-slate-500">
-            Standard Electrode Potentials (298 K, 1.0 mol dm⁻³, 1 atm)
-          </span>
-          <span className="text-[10px] font-bold text-slate-400">
-            Provided in Question
-          </span>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th className="py-2 px-3 text-[11px] font-bold text-slate-500">Half-Reaction</th>
-                <th className="py-2 px-3 text-[11px] font-bold text-slate-500 text-right">E° / V</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {halfCells.map((cell) => (
-                <tr key={cell.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="py-2 px-3 text-xs font-mono font-bold text-slate-800">{cell.sys}</td>
-                  <td className="py-2 px-3 text-xs font-mono text-right text-[#326fa0] font-black whitespace-nowrap">
-                    {cell.e0 > 0 ? `+${cell.e0.toFixed(2)}` : cell.e0.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="font-bold my-6 text-center text-[0.95rem] px-3 text-[var(--chem-text-main)]">
-        {problem.question}
-      </div>
-
-      {problem.isCards && problem.choices && (
-        <div className="w-full max-w-md mx-auto flex flex-col gap-3 my-4">
-          {problem.choices.map((choice, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => { setSelectedCard(i); setFeedback({ message: '', status: '' }); }}
-              className={`w-full p-4 text-left text-sm font-bold border rounded-xl transition-all ${
-                selectedCard === i
-                  ? 'bg-[var(--chem-bg-highlight)] border-[var(--chem-primary)] text-[var(--chem-primary)] ring-1 ring-[var(--chem-primary)]'
-                  : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-main)] hover:bg-[var(--chem-bg-alt)]'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selectedCard === i ? 'border-[var(--chem-primary)] bg-[var(--chem-primary)] text-white text-[10px]' : 'border-[var(--chem-slate-300)]'}`}>
-                  {selectedCard === i && "✓"}
-                </span>
-                <span className="font-mono tracking-wide text-xs sm:text-sm break-words min-w-0">{choice.text}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {!problem.isCards && (
-        <div className="w-full flex items-center justify-center my-6 overflow-x-auto">
-          <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-3 px-6 py-4 bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-2xl shadow-sm">
-            <label className="text-sm font-black text-[var(--chem-text-main)] select-none">{problem.label}</label>
-            <input
-              type="text"
-              inputMode="decimal"
-              className={`w-32 bg-white text-center text-lg font-extrabold py-2 px-3 rounded-lg border focus:outline-none transition-colors ${feedback.status === 'error' ? 'border-red-400 text-red-600 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-[var(--chem-border)] text-[var(--chem-text-main)] focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)]'}`}
-              value={studentAnswer}
-              onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-              placeholder="+1.10"
-              onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem(mode) : checkAnswer())}
-            />
-            {problem.unit && <span className="text-sm font-black text-[var(--chem-text-muted)] select-none">{problem.unit}</span>}
+          {/* Dedicated Exam-Style Standard Electrode Potentials Table (not in WJEC Data Booklet) */}
+          <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+              <span className="text-[10px] font-black tracking-widest text-slate-500">
+                Standard Electrode Potentials (298 K, 1.0 mol dm⁻³, 1 atm)
+              </span>
+              <span className="text-[10px] font-bold text-slate-400">
+                Provided in Question
+              </span>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="py-2 px-3 text-[11px] font-bold text-slate-500">Half-Reaction</th>
+                    <th className="py-2 px-3 text-[11px] font-bold text-slate-500 text-right">E° / V</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {halfCells.map((cell) => (
+                    <tr key={cell.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-2 px-3 text-xs font-mono font-bold text-slate-800">{cell.sys}</td>
+                      <td className="py-2 px-3 text-xs font-mono text-right text-[#326fa0] font-black whitespace-nowrap">
+                        {cell.e0 > 0 ? `+${cell.e0.toFixed(2)}` : cell.e0.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      )}
 
-      <div className="button-group mt-6">
-        <button
-          className="btn btn-primary disabled:opacity-50"
-          onClick={checkAnswer}
-          disabled={problem.isCards && selectedCard === null}
-        >
-          Check Answer
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={() => generateProblem(mode)}
-        >
-          Next Problem &rarr;
-        </button>
-      </div>
+        {/* Right Column: Question, Input / Choices, Actions & Feedback */}
+        <div className="space-y-5">
+          <div className="question-text !mb-0 text-center lg:text-left px-1 leading-relaxed">{problem.text}</div>
 
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
+          <div className="font-bold text-center lg:text-left text-[0.95rem] px-1 text-[var(--chem-text-main)]">
+            {problem.question}
+          </div>
+
+          {problem.isCards && problem.choices && (
+            <div className="w-full flex flex-col gap-3">
+              {problem.choices.map((choice, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => { setSelectedCard(i); setFeedback({ message: '', status: '' }); }}
+                  className={`w-full p-4 text-left text-sm font-bold border rounded-xl transition-all cursor-pointer ${
+                    selectedCard === i
+                      ? 'bg-[var(--chem-bg-highlight)] border-[var(--chem-primary)] text-[var(--chem-primary)] ring-1 ring-[var(--chem-primary)]'
+                      : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-main)] hover:bg-[var(--chem-bg-alt)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selectedCard === i ? 'border-[var(--chem-primary)] bg-[var(--chem-primary)] text-white text-[10px]' : 'border-[var(--chem-slate-300)]'}`}>
+                      {selectedCard === i && "✓"}
+                    </span>
+                    <span className="font-mono tracking-wide text-xs sm:text-sm break-words min-w-0">{choice.text}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!problem.isCards && (
+            <div className="w-full flex items-center justify-center lg:justify-start my-4 overflow-x-auto">
+              <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-3 px-6 py-4 bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-2xl shadow-sm">
+                <label className="text-sm font-black text-[var(--chem-text-main)] select-none">{problem.label}</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className={`w-36 bg-white text-center text-lg font-extrabold py-2 px-3 rounded-lg border focus:outline-none transition-colors ${feedback.status === 'error' ? 'border-red-400 text-red-600 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-[var(--chem-border)] text-[var(--chem-text-main)] focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)]'}`}
+                  value={studentAnswer}
+                  onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                  placeholder="+1.10"
+                  onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem(mode) : checkAnswer())}
+                />
+                {problem.unit && <span className="text-sm font-black text-[var(--chem-text-muted)] select-none">{problem.unit}</span>}
+              </div>
+            </div>
+          )}
+
+          <div className="button-group">
             <button
-              type="button"
+              className="btn btn-primary disabled:opacity-50"
+              onClick={checkAnswer}
+              disabled={problem.isCards && selectedCard === null}
+            >
+              Check Answer
+            </button>
+            <button
+              className="btn btn-secondary"
               onClick={() => generateProblem(mode)}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
             >
               Next Problem &rarr;
             </button>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span>{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem(mode)}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -42,10 +42,14 @@ export const WJEC_UNIT_TITLES = {
   'Unit 1': 'The Language of Chemistry, Structure of Matter and Simple Reactions',
   'Unit 2': 'Energy, Rate and Chemistry of Carbon Compounds',
   'Unit 3': 'Physical and Inorganic Chemistry',
-  'Unit 4': 'Organic Chemistry and Analysis'
+  'Unit 4': 'Organic Chemistry and Analysis',
+  'Synoptic': 'Cross-Unit Interactive Labs, Diagrams & Games (AS & A2)'
 };
 
-export const MAIN_UNITS = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4'];
+export const MAIN_UNITS = ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4', 'Synoptic'];
+
+export const belongsToUnitSection = (applet, sectionKey) =>
+  applet.section ? applet.section === sectionKey : applet.unit.startsWith(sectionKey);
 
 export const APPLETS = [
   // Unit 1
@@ -90,7 +94,11 @@ export const APPLETS = [
   { id: 'chiral-centers', label: 'Chiral Centre Identification', short: 'Chiral Carbons', unit: 'Unit 4.1', icon: '🧬', desc: 'Audit asymmetric carbon nodes and identify stereoisomers in skeletal structures.', component: ChiralCenters, targetMastery: 16 },
   { id: 'mechanisms-masterclass', label: 'Organic Mechanisms', short: 'Mechanisms', unit: 'Unit 4.2 – 4.4', icon: '🏹', desc: 'Master carbonyl and aromatic reactions by tracking induced dipoles and curly arrows.', component: MechanismMasterclass, targetMastery: 5 },
   { id: 'organic-synthesis', label: 'Organic Synthesis Pathways', short: 'Synthesis Routes', unit: 'Unit 4.7', icon: '🗺️', desc: 'Design multi-step aliphatic and aromatic synthesis routes with exact WJEC reagents, conditions, and intermediates.', component: OrganicSynthesis, targetMastery: 8 },
-  { id: 'spectra-interpreter', label: 'Combined Spectral Interpreter', short: 'NMR, IR & MS', unit: 'Unit 4.8', icon: '📊', desc: 'Identify unknown organic structures using Mass Spectrometry, IR, ¹³C NMR, and ¹H NMR splitting.', component: SpectraInterpreter, targetMastery: 6 }
+  { id: 'spectra-interpreter', label: 'Combined Spectral Interpreter', short: 'NMR, IR & MS', unit: 'Unit 4.8', icon: '📊', desc: 'Identify unknown organic structures using Mass Spectrometry, IR, ¹³C NMR, and ¹H NMR splitting.', component: SpectraInterpreter, targetMastery: 6 },
+
+  // Synoptic & Cross-Unit Labs
+  { id: 'diagrams-lab', label: 'Chemistry Diagrams Lab', short: 'Diagrams Lab', section: 'Synoptic', unit: 'Units 1.4, 1.5, 3.3 & 3.4', icon: '📐', desc: 'Interactive VSEPR shapes, lattice structures, orbital diagrams, and inorganic geometry explorer across AS and A2.', isExternal: true, url: 'https://diagrams.chempanion.uk' },
+  { id: 'mechanism-maestro', label: 'Mechanism Maestro', short: 'Mechanism Maestro', section: 'Synoptic', unit: 'Units 2 & 4 (AS / A2)', icon: '🎮', desc: 'Curly-arrow organic mechanism mastery game spanning AS and A2 reaction pathways.', isExternal: true, url: 'https://games.alchemix.uk/mechanism-maestro/' }
 ];
 
 export const SORTED_APPLETS = [...APPLETS].sort((a, b) =>

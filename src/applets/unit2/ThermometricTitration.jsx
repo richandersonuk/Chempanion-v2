@@ -282,7 +282,7 @@ const ThermometricTitration = ({ onComplete }) => {
     }
 
     graphContent = (
-      <div className="w-full max-w-lg mx-auto my-4 flex flex-col items-center gap-4">
+      <div className="w-full max-w-2xl mx-auto my-4 flex flex-col items-center gap-4">
         <div
           className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm select-none relative cursor-w-resize touch-none overflow-hidden"
           onMouseMove={handleMouseMove}
@@ -441,7 +441,7 @@ const ThermometricTitration = ({ onComplete }) => {
 
   return (
     <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto px-4" style={{ textTransform: 'none' }}>
+      <div className="w-full max-w-2xl mx-auto px-4" style={{ textTransform: 'none' }}>
         <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1.5 text-center">
           Choose Practice Mode
         </span>
@@ -449,7 +449,7 @@ const ThermometricTitration = ({ onComplete }) => {
           <select
             value={mode}
             onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="w-full max-w-xs bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
+            className="w-full max-w-md bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
             style={{ textTransform: 'none' }}
           >
             <option value="read_graph">Identify Endpoint from Extrapolated Graph</option>
@@ -469,7 +469,7 @@ const ThermometricTitration = ({ onComplete }) => {
           💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
         </button>
         {showHint && (
-          <div className="mt-2 w-full max-w-xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <div className="mt-2 w-full max-w-2xl p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
             <strong className="font-black text-amber-900">Thermometric Method: </strong>
             {mode === 'read_graph'
               ? 'Locate the exact x-coordinate where the rising neutralisation line meets the cooling excess-alkali line. Use the ±0.1 cm³ steppers or drag on the chart to centre the amber crosshair directly on the intersection vertex.'
