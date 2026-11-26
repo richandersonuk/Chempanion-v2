@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 
 const ThermometricTitration = ({ onComplete }) => {
   const [mode, setMode] = useState('read_graph');
@@ -8,6 +9,7 @@ const ThermometricTitration = ({ onComplete }) => {
 
   const [userVol, setUserVol] = useState(1.0);
   const [isDragging, setIsDragging] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const svgRef = useRef(null);
   const prevXRef = useRef(0);
@@ -42,7 +44,7 @@ const ThermometricTitration = ({ onComplete }) => {
     if (selection === 'read_graph') {
       newProb = {
         title: "Thermometric Titration: Graphical Interpretation",
-        text: <>A student titrated 25.0 cm³ of hydrochloric acid against sodium hydroxide solution. Click or tap near the intersection vertex; the <b>main graph paper grid will scale up</b> automatically to keep the lines centered as you adjust your positioning.</>,
+        text: <>A student titrated 25.0 cm³ of hydrochloric acid against sodium hydroxide solution. Click or tap near the intersection vertex; the <b>main graph paper grid will scale up</b> automatically to keep the lines centred as you adjust your positioning.</>,
         question: "State the precise volume of sodium hydroxide required to reach the maximum temperature equivalence point to the nearest 0.1 cm³.",
         label: "Endpoint Volume =",
         unit: "cm³",
@@ -62,6 +64,7 @@ const ThermometricTitration = ({ onComplete }) => {
         unit: "kJ mol⁻¹",
         correct: enthalpyKJ.toPrecision(3),
         instanceId: `enthalpy_${volAcid}_${concAcid}_${deltaT}_${endpointVol}`,
+        calorimetryData: { volAcid, concAcid, endpointVol, deltaT },
         isGraph: false
       };
     }
@@ -70,6 +73,15 @@ const ThermometricTitration = ({ onComplete }) => {
     setStudentAnswer('');
     setUserVol(1.0);
     setFeedback({ message: '', status: '' });
+    setShowHint(false);
+  };
+
+  const nudgeVol = (delta) => {
+    setFeedback({ message: '', status: '' });
+    setUserVol((prev) => {
+      const clamped = Math.min(49.0, Math.max(1.0, Math.round((prev + delta) * 10) / 10));
+      return clamped;
+    });
   };
 
   useEffect(() => {
@@ -272,9 +284,9 @@ const ThermometricTitration = ({ onComplete }) => {
     }
 
     graphContent = (
-      <div className="w-full max-w-lg mx-auto my-4 flex flex-col items-center gap-4">
+      <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-4">
         <div
-          className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm select-none relative cursor-w-resize touch-none overflow-hidden"
+          className="w-full bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-sm select-none relative cursor-w-resize touch-none overflow-hidden"
           onMouseMove={handleMouseMove}
           onMouseUp={() => setIsDragging(false)}
           onMouseLeave={() => setIsDragging(false)}
@@ -315,15 +327,15 @@ const ThermometricTitration = ({ onComplete }) => {
             {[0, 10, 20, 30, 40, 50].map((v) => (
               <g key={v}>
                 <line x1={getX(v)} y1={yBottom} x2={getX(v)} y2={yBottom + 3} stroke="#94a3b8" />
-                <text x={getX(v)} y={yBottom + 11} textAnchor="middle" className="text-[8px] font-mono font-black fill-slate-400">{v}</text>
+                <text x={getX(v)} y={yBottom + 11.5} textAnchor="middle" className="text-[9.5px] font-mono font-black fill-slate-400">{v}</text>
               </g>
             ))}
-            <text x="160" y="154" textAnchor="middle" className="text-[9px] font-black fill-slate-400 uppercase tracking-wider">Volume of NaOH added (cm³)</text>
+            <text x="160" y="155" textAnchor="middle" className="text-[9.5px] font-black fill-slate-400 tracking-wider">Volume of NaOH added (cm³)</text>
 
             {[Math.floor(tStart), Math.ceil(tMax)].map((t) => (
               <g key={t}>
                 <line x1={xStart - 3} y1={getY(t)} x2={xStart} y2={getY(t)} stroke="#94a3b8" />
-                <text x={xStart - 6} y={getY(t) + 2.5} textAnchor="end" className="text-[8px] font-mono font-bold fill-slate-400">{t}°C</text>
+                <text x={xStart - 6} y={getY(t) + 3} textAnchor="end" className="text-[9.5px] font-mono font-bold fill-slate-400">{t}°C</text>
               </g>
             ))}
 
@@ -346,8 +358,8 @@ const ThermometricTitration = ({ onComplete }) => {
           </svg>
         </div>
 
-        <div className="w-full bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-inner flex flex-col items-center select-none">
-          <span className="text-[8px] font-black tracking-widest uppercase text-amber-400 mb-2.5">Magnified Tracking Lens (0.1 cm³ subdivisions)</span>
+        <div className="w-full bg-slate-900 text-white rounded-2xl p-3 sm:p-4 border border-slate-800 shadow-inner flex flex-col items-center select-none">
+          <span className="text-[9.5px] font-black tracking-widest text-amber-400 mb-2.5 text-center">Magnified Tracking Lens (0.1 cm³ subdivisions)</span>
 
           <svg viewBox="0 0 300 45" className="w-full h-auto overflow-hidden">
             <rect x="0" y="0" width="300" height="35" fill="#1e293b" opacity="0.4" />
@@ -370,7 +382,7 @@ const ThermometricTitration = ({ onComplete }) => {
                     strokeWidth={isInteger ? "1.5" : "1"}
                   />
                   {isInteger && (
-                    <text x="0" y="29" textAnchor="middle" className="text-[9px] font-mono font-black fill-slate-400">
+                    <text x="0" y="29" textAnchor="middle" className="text-[9.5px] font-mono font-black fill-slate-400">
                       {v.toFixed(0)}.0
                     </text>
                   )}
@@ -381,78 +393,220 @@ const ThermometricTitration = ({ onComplete }) => {
             <line x1="150" y1="0" x2="150" y2="35" stroke="#f59e0b" strokeWidth="2" />
             <circle cx="150" cy="2" r="3" className="fill-amber-400" />
           </svg>
+
+          {/* Touch-Friendly Fine Stepper Controls */}
+          <div className="mt-3 pt-3 border-t border-slate-800 w-full flex flex-wrap items-center justify-center gap-1.5">
+            {[
+              { label: '−1.0', delta: -1.0 },
+              { label: '−0.1', delta: -0.1 },
+            ].map((btn) => (
+              <button
+                key={btn.label}
+                type="button"
+                onClick={() => nudgeVol(btn.delta)}
+                className="min-h-[38px] px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs font-black cursor-pointer transition-colors"
+              >
+                {btn.label}
+              </button>
+            ))}
+            <span className="min-h-[38px] inline-flex items-center px-2.5 py-1.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono text-xs font-black">
+              {userVol.toFixed(1)} cm³
+            </span>
+            {[
+              { label: '+0.1', delta: 0.1 },
+              { label: '+1.0', delta: 1.0 },
+            ].map((btn) => (
+              <button
+                key={btn.label}
+                type="button"
+                onClick={() => nudgeVol(btn.delta)}
+                className="min-h-[38px] px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs font-black cursor-pointer transition-colors"
+              >
+                {btn.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                setStudentAnswer(userVol.toFixed(1));
+                if (feedback.message) setFeedback({ message: '', status: '' });
+              }}
+              className="min-h-[38px] px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans text-xs font-black cursor-pointer transition-colors"
+            >
+              Use Reading
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center justify-center" style={{ textTransform: 'none' }}>
-          <select
-            value={mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="w-full max-w-xs bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-            style={{ textTransform: 'none' }}
-          >
-            <option value="read_graph">Identify Endpoint from Extrapolated Graph</option>
-            <option value="calc_enthalpy">Calculate Enthalpy of Neutralisation (ΔH)</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="applet-header" style={{ textTransform: 'none' }}>{problem.title}</div>
-      <div className="question-text text-center px-4 leading-relaxed" style={{ textTransform: 'none' }}>{problem.text}</div>
-
-      {graphContent}
-
-      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center', fontSize: '0.95rem', textTransform: 'none' }} className="px-2 text-slate-700">
-        {problem.question}
-      </div>
-
-      <div className="w-full flex items-center justify-center my-6 overflow-x-auto" style={{ textTransform: 'none' }}>
-        <div
-          className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-2 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
-          style={{ textTransform: 'none' }}
-        >
-          <label className="text-sm font-black text-slate-600 select-none" style={{ textTransform: 'none' }}>{problem.label}</label>
-          <input
-            type="text"
-            inputMode="decimal"
-            className={`chem-input ${feedback.status}`}
-            value={studentAnswer}
-            onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-            placeholder={mode === 'read_graph' ? "0.0" : "-57.0"}
-            onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem(mode) : checkAnswer())}
-            style={{ maxWidth: '10rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: '800', textTransform: 'none' }}
-          />
-          {problem.unit && <span className="text-sm font-black text-slate-500 select-none" style={{ textTransform: 'none' }}>{problem.unit}</span>}
-        </div>
-      </div>
-
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem(mode)}>Next Problem &rarr;</button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem(mode)}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
-          )}
+  const hintDrawer = (
+    <div className="flex flex-col items-center md:items-start">
+      <button
+        type="button"
+        onClick={() => setShowHint((prev) => !prev)}
+        className="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+      >
+        💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+      </button>
+      {showHint && (
+        <div className="mt-2 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+          <strong className="font-black text-amber-900">Thermometric Method: </strong>
+          {mode === 'read_graph'
+            ? 'Locate the exact x-coordinate where the rising neutralisation line meets the cooling excess-alkali line. Use the ±0.1 cm³ steppers or drag on the chart to centre the amber crosshair directly on the intersection vertex.'
+            : 'Sum both solution volumes (V_acid + V_NaOH) for total mass m (assuming 1.00 g cm⁻³). Compute Q = m × 4.18 × ΔT ÷ 1000 in kJ, then divide by moles of limiting acid (HCl) with a negative (−) sign to 3 significant figures.'}
         </div>
       )}
+    </div>
+  );
+
+  return (
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0" style={{ textTransform: 'none' }}>{problem.title}</div>
+
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={[
+          {
+            value: 'read_graph',
+            label: 'Identify Endpoint from Extrapolated Graph',
+            shortLabel: 'Endpoint Graph',
+          },
+          {
+            value: 'calc_enthalpy',
+            label: 'Calculate Enthalpy of Neutralisation (ΔH)',
+            shortLabel: 'Calculate ΔH',
+          },
+        ]}
+        value={mode}
+        onChange={(val) => {
+          setMode(val);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          const modes = ['read_graph', 'calc_enthalpy'];
+          const picked = modes[Math.floor(Math.random() * modes.length)];
+          setMode(picked);
+          generateProblem(picked);
+        }}
+        className="max-w-2xl"
+      />
+
+      <div className="applet-workbench">
+        {mode === 'read_graph' ? (
+          <div className="applet-workbench-sticky">
+            {graphContent}
+          </div>
+        ) : (
+          <div className="applet-workbench-sticky space-y-4">
+            {problem.calorimetryData && (
+              <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+                <div className="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+                  <span className="text-[10px] font-black tracking-widest text-[#326fa0]">
+                    Experimental Calorimetry Data
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-slate-500">
+                    c = 4.18 J g⁻¹ K⁻¹
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="bg-white border border-slate-200 rounded-xl p-2.5 text-center">
+                    <span className="block text-[10px] font-bold text-slate-400">HCl Volume</span>
+                    <span className="font-mono font-black text-sm text-slate-800">
+                      {problem.calorimetryData.volAcid.toFixed(1)} cm³
+                    </span>
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-xl p-2.5 text-center">
+                    <span className="block text-[10px] font-bold text-slate-400">HCl Concentration</span>
+                    <span className="font-mono font-black text-sm text-slate-800">
+                      {problem.calorimetryData.concAcid.toFixed(2)} mol dm⁻³
+                    </span>
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-xl p-2.5 text-center">
+                    <span className="block text-[10px] font-bold text-slate-400">NaOH Endpoint</span>
+                    <span className="font-mono font-black text-sm text-[#326fa0]">
+                      {problem.calorimetryData.endpointVol.toFixed(1)} cm³
+                    </span>
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-xl p-2.5 text-center">
+                    <span className="block text-[10px] font-bold text-slate-400">Temp. Rise (ΔT)</span>
+                    <span className="font-mono font-black text-sm text-rose-600">
+                      +{problem.calorimetryData.deltaT.toFixed(1)} °C
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="question-text !mb-0 text-center md:text-left px-1 leading-relaxed" style={{ textTransform: 'none' }}>
+              {problem.text}
+            </div>
+
+            <div style={{ fontWeight: 'bold', fontSize: '0.95rem', textTransform: 'none' }} className="px-1 text-slate-700 text-center md:text-left">
+              {problem.question}
+            </div>
+
+            {hintDrawer}
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {mode === 'read_graph' && (
+            <>
+              <div className="question-text !mb-0 text-center md:text-left px-1 leading-relaxed" style={{ textTransform: 'none' }}>
+                {problem.text}
+              </div>
+
+              <div style={{ fontWeight: 'bold', fontSize: '0.95rem', textTransform: 'none' }} className="px-1 text-slate-700 text-center md:text-left">
+                {problem.question}
+              </div>
+
+              {hintDrawer}
+            </>
+          )}
+
+          <div className="w-full flex items-center justify-center md:justify-start" style={{ textTransform: 'none' }}>
+            <div
+              className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 px-3 sm:px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm max-w-full"
+              style={{ textTransform: 'none' }}
+            >
+              <label className="text-sm font-black text-slate-600 select-none whitespace-nowrap" style={{ textTransform: 'none' }}>{problem.label}</label>
+              <input
+                type="text"
+                inputMode="decimal"
+                className={`chem-input ${feedback.status}`}
+                value={studentAnswer}
+                onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                placeholder={mode === 'read_graph' ? "0.0" : "-57.0"}
+                onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem(mode) : checkAnswer())}
+                style={{ maxWidth: '8.5rem', textAlign: 'center', fontSize: '1.15rem', fontWeight: '800', textTransform: 'none' }}
+              />
+              {problem.unit && <span className="text-sm font-black text-slate-500 select-none whitespace-nowrap" style={{ textTransform: 'none' }}>{problem.unit}</span>}
+            </div>
+          </div>
+
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+            <button className="btn btn-secondary" onClick={() => generateProblem(mode)}>Next Problem &rarr;</button>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
+              <span>{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem(mode)}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

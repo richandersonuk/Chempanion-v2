@@ -4,7 +4,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "butan2ol",
     svgWidth: 240,
     svgHeight: 140,
-    explanation: "Carbon 2 is the sole asymmetric chiral center. It is bonded to four completely unique environments: -H, -OH, a methyl group (-CH₃), and an ethyl group (-CH₂CH₃). All other aliphatic carbons are bonded to multiple identical hydrogen atoms.",
+    explanation: "Carbon 2 is the sole asymmetric chiral centre. It is bonded to four completely unique environments: -H, -OH, a methyl group (-CH₃), and an ethyl group (-CH₂CH₃). All other aliphatic carbons are bonded to multiple identical hydrogen atoms.",
     correct: [2],
     lines: [
       { x1: 40, y1: 100, x2: 90, y2: 60 },
@@ -27,7 +27,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "hydroxypropanal",
     svgWidth: 240,
     svgHeight: 150,
-    explanation: "Carbon 2 is a chiral center attached to -H, -OH, an aldehyde group (-CHO), and a methyl group (-CH₃). Carbon 1 contains a planar double bond to oxygen (=O) and lacks four single bonds, disqualifying it from asymmetry.",
+    explanation: "Carbon 2 is a chiral centre attached to -H, -OH, an aldehyde group (-CHO), and a methyl group (-CH₃). Carbon 1 contains a planar double bond to oxygen (=O) and lacks four single bonds, disqualifying it from asymmetry.",
     correct: [2],
     lines: [
       { x1: 52.5, y1: 52.5, x2: 27.5, y2: 27.5 },
@@ -51,7 +51,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "threonine",
     svgWidth: 280,
     svgHeight: 160,
-    explanation: "This amino acid contains MULTIPLE chiral centers (Carbon 2 and Carbon 3). Carbon 2 is asymmetric because it binds to -H, -NH₂, -COOH, and the side chain. Carbon 3 is also asymmetric, binding to -H, -OH, -CH₃, and the amino acid backbone.",
+    explanation: "This amino acid contains MULTIPLE chiral centres (Carbon 2 and Carbon 3). Carbon 2 is asymmetric because it binds to -H, -NH₂, -COOH, and the side chain. Carbon 3 is also asymmetric, binding to -H, -OH, -CH₃, and the amino acid backbone.",
     correct: [2, 3],
     lines: [
       { x1: 42.5, y1: 57.5, x2: 17.5, y2: 32.5 },
@@ -81,7 +81,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "mandelic_asymmetric",
     svgWidth: 320,
     svgHeight: 180,
-    explanation: "Carbon 2 is a benzylic chiral center bonded to -H, -OH, -COOH, and the aromatic ring. Note that the benzene ring itself is asymmetric due to the chlorine atom attached at C5, meaning the pathways tracing clockwise or counter-clockwise around the ring from C3 are completely different. All ring carbons (C3-C8) remain flat, sp² hybridised nodes and cannot be chiral.",
+    explanation: "Carbon 2 is a benzylic chiral centre bonded to -H, -OH, -COOH, and the aromatic ring. Note that the benzene ring itself is asymmetric due to the chlorine atom attached at C5, meaning the pathways tracing clockwise or anticlockwise around the ring from C3 are completely different. All ring carbons (C3-C8) remain flat, sp² hybridised nodes and cannot be chiral.",
     correct: [2],
     lines: [
       { x1: 252.5, y1: 57.5, x2: 227.5, y2: 32.5 },
@@ -122,7 +122,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "chlorobutane",
     svgWidth: 240,
     svgHeight: 140,
-    explanation: "Carbon 2 is a chiral center bonded to four unique groups: -H, -Cl, a methyl group (-CH₃), and an ethyl group (-CH₂CH₃). All other aliphatic carbons are symmetric.",
+    explanation: "Carbon 2 is a chiral centre bonded to four unique groups: -H, -Cl, a methyl group (-CH₃), and an ethyl group (-CH₂CH₃). All other aliphatic carbons are symmetric.",
     correct: [2],
     lines: [
       { x1: 40, y1: 100, x2: 90, y2: 60 },
@@ -171,7 +171,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "methylhexane",
     svgWidth: 280,
     svgHeight: 160,
-    explanation: "Carbon 3 is a true chiral center. It binds to an implicit hydrogen, a small methyl group (-CH₃), an ethyl group (-CH₂CH₃), and a longer propyl group (-CH₂CH₂CH₃). Even though all branches are hydrocarbons, their differing lengths create four asymmetric configurations.",
+    explanation: "Carbon 3 is a true chiral centre. It binds to an implicit hydrogen, a small methyl group (-CH₃), an ethyl group (-CH₂CH₃), and a longer propyl group (-CH₂CH₂CH₃). Even though all branches are hydrocarbons, their differing lengths create four asymmetric configurations.",
     correct: [3],
     lines: [
       { x1: 30, y1: 100, x2: 70, y2: 60 },
@@ -197,7 +197,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "pentan3ol",
     svgWidth: 260,
     svgHeight: 150,
-    explanation: "This molecule has NO chiral centers. Carbon 3 is attached to two identical, symmetrical ethyl chains (-CH₂CH₃), breaking the requirement for four unique substituent sets.",
+    explanation: "This molecule has NO chiral centres. Carbon 3 is attached to two identical, symmetrical ethyl chains (-CH₂CH₃), breaking the requirement for four unique substituent sets.",
     correct: [],
     lines: [
       { x1: 30, y1: 90,  x2: 80, y2: 50 },
@@ -222,7 +222,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "propan2ol",
     svgWidth: 200,
     svgHeight: 140,
-    explanation: "Propan-2-ol has no chiral center because Carbon 2 is attached to two completely identical methyl groups (-CH₃).",
+    explanation: "Propan-2-ol has no chiral centre because Carbon 2 is attached to two completely identical methyl groups (-CH₃).",
     correct: [],
     lines: [
       { x1: 40, y1: 90, x2: 90, y2: 50 },
@@ -243,7 +243,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "alanine",
     svgWidth: 240,
     svgHeight: 160,
-    explanation: "Carbon 2 is a chiral center attached to -H, -NH₂, -COOH, and -CH₃. Carbon 1 contains planar double bonds.",
+    explanation: "Carbon 2 is a chiral centre attached to -H, -NH₂, -COOH, and -CH₃. Carbon 1 contains planar double bonds.",
     correct: [2],
     lines: [
       { x1: 52.5, y1: 52.5, x2: 27.5, y2: 27.5 },
@@ -295,7 +295,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "bromobutane",
     svgWidth: 240,
     svgHeight: 140,
-    explanation: "Carbon 2 is a chiral center bonded to -H, -Br, -CH₃, and -CH₂CH₃.",
+    explanation: "Carbon 2 is a chiral centre bonded to -H, -Br, -CH₃, and -CH₂CH₃.",
     correct: [2],
     lines: [
       { x1: 40, y1: 100, x2: 90, y2: 60 },
@@ -343,7 +343,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "methylbutanoic",
     svgWidth: 240,
     svgHeight: 160,
-    explanation: "Carbon 2 is a chiral center attached to -H, -CH₃, -COOH, and -CH₂CH₃.",
+    explanation: "Carbon 2 is a chiral centre attached to -H, -CH₃, -COOH, and -CH₂CH₃.",
     correct: [2],
     lines: [
       { x1: 52.5, y1: 52.5, x2: 27.5, y2: 27.5 },
@@ -436,7 +436,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "phenylalanine",
     svgWidth: 320,
     svgHeight: 180,
-    explanation: "Carbon 2 is asymmetric, binding to -H, -NH₂, -COOH, and the benzyl side chain. Ring carbons are entirely planar and flat, meaning they break the criteria for chiral centers.",
+    explanation: "Carbon 2 is asymmetric, binding to -H, -NH₂, -COOH, and the benzyl side chain. Ring carbons are entirely planar and flat, meaning they break the criteria for chiral centres.",
     correct: [2],
     lines: [
       { x1: 252.5, y1: 57.5, x2: 227.5, y2: 32.5 },
@@ -498,7 +498,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "pentanediol",
     svgWidth: 260,
     svgHeight: 150,
-    explanation: "Contains multiple independent chiral centers (C2 and C3), each hosting four unique substituent domains.",
+    explanation: "Contains multiple independent chiral centres (C2 and C3), each hosting four unique substituent domains.",
     correct: [2, 3],
     lines: [
       { x1: 30, y1: 90,  x2: 80, y2: 50 },
@@ -552,7 +552,7 @@ export const CHIRAL_MOLECULES_POOL = [
     id: "dichlorobutane",
     svgWidth: 240,
     svgHeight: 140,
-    explanation: "Both C2 and C3 are asymmetrical chiral centers matching identical substituted parameter sets.",
+    explanation: "Both C2 and C3 are asymmetrical chiral centres matching identical substituted parameter sets.",
     correct: [2, 3],
     lines: [
       { x1: 40, y1: 100, x2: 90, y2: 60 },

@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'acidic_buffer', label: 'Standard Acidic Buffer pH', shortLabel: 'Acidic Buffer pH' },
+  { value: 'salt_addition', label: 'Buffer Salt Mass Additions', shortLabel: 'Salt Mass Addition' },
+  { value: 'buffer_addition', label: 'Buffer Action (+NaOH / +HCl)', shortLabel: 'Buffer Action' },
+];
 
 const BufferSolutions = ({ onComplete }) => {
   const [mode, setMode] = useState('acidic_buffer');
+  const [isRandomMode, setIsRandomMode] = useState(false);
   const [problem, setProblem] = useState(null);
   const [coeff, setCoeff] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const bufferSystems = [
     { acid: 'ethanoic acid', salt: 'sodium ethanoate', ka: 1.74e-5, kaMantissa: '1.74', kaExp: -5, saltMr: 82.0 },
@@ -16,9 +25,11 @@ const BufferSolutions = ({ onComplete }) => {
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['acidic_buffer', 'salt_addition', 'buffer_addition'];
-    const selection = forcedMode || mode;
+    const selection = forcedMode || (isRandomMode ? 'random' : mode);
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
     setMode(targetMode);
+    setShowHint(false);
+
     let newProb = {};
     const sys = bufferSystems[Math.floor(Math.random() * bufferSystems.length)];
     const pKa = -Math.log10(sys.ka);
@@ -127,82 +138,104 @@ const BufferSolutions = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container">
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm"
-          >
-            <option value="acidic_buffer">Standard Acidic Buffer pH</option>
-            <option value="salt_addition">Buffer Salt Mass Additions</option>
-            <option value="buffer_addition">Buffer Action (+NaOH / +HCl)</option>
-          </select>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">{problem.title}</div>
 
-          <button
-            type="button"
-            onClick={() => { setMode('random'); generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
-              mode === 'random'
-                ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm'
-                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        isRandomActive={isRandomMode}
+        onChange={(val) => {
+          setIsRandomMode(false);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setIsRandomMode(true);
+          generateProblem('random');
+        }}
+        collapseBelow="sm"
+      />
+
+      <div className="applet-workbench">
+        {/* Left Column: Buffer Composition Scenario & Hint */}
+        <div className="applet-workbench-sticky space-y-3.5">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
+            <div className="question-text !mb-0 text-center md:text-left leading-relaxed text-sm sm:text-base">
+              {problem.text}
+            </div>
+
+            <div className="flex flex-col items-center md:items-start">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[34px] px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed space-y-1.5">
+                  <p>
+                    <strong className="font-black text-amber-900">Buffer Equation: </strong>
+                    [H<sup>+</sup>] = K<sub>a</sub> &times; (n<sub>acid</sub> &divide; n<sub>salt</sub>) in the same total volume, then pH = &minus;log<sub>10</sub>[H<sup>+</sup>].
+                  </p>
+                  <p>
+                    For <strong>+NaOH</strong>: OH<sup>&minus;</sup> neutralises the weak acid, so n<sub>acid</sub> decreases and n<sub>salt</sub> increases by n(OH<sup>&minus;</sup>). For <strong>+HCl</strong>: H<sup>+</sup> protonates the conjugate base, so n<sub>salt</sub> decreases and n<sub>acid</sub> increases by n(H<sup>+</sup>).
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="applet-header">{problem.title}</div>
-      <div className="question-text text-center">{problem.text}</div>
+        {/* Right Column: Question, pH Input, Actions & Feedback */}
+        <div className="space-y-4">
+          <div className="font-bold text-center md:text-left text-[0.95rem] px-1 text-slate-700">
+            {problem.question}
+          </div>
 
-      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center' }}>
-        {problem.question}
-      </div>
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs">
+            <div className="input-group !mb-0">
+              <label className="font-bold text-[var(--chem-text-main)]">pH =</label>
+              <input
+                type="number"
+                step="any"
+                inputMode="decimal"
+                onWheel={(e) => e.currentTarget.blur()}
+                className={`chem-input min-h-[40px] bg-white !max-w-[12rem] ${feedback.status}`}
+                value={coeff}
+                onChange={(e) => { setCoeff(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+                placeholder="0.00"
+              />
+            </div>
+          </div>
 
-      <div className="input-group">
-        <label style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>pH = </label>
-        <input
-          type="number"
-          step="any"
-          inputMode="decimal"
-          onWheel={(e) => e.currentTarget.blur()}
-          className={`chem-input ${feedback.status}`}
-          value={coeff}
-          onChange={(e) => { setCoeff(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-          onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
-          placeholder="0.00"
-          style={{ maxWidth: '12rem', textAlign: 'center' }}
-        />
-      </div>
-
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>
-          Check Answer
-        </button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>
-          Next Problem &rarr;
-        </button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={checkAnswer}>
+              Check Answer
+            </button>
+            <button className="btn btn-secondary" onClick={() => generateProblem()}>
               Next Problem &rarr;
             </button>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span>{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

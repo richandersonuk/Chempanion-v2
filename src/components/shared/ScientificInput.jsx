@@ -7,7 +7,8 @@ const ScientificInput = ({
   onExponentChange, 
   label, 
   status = '',
-  placeholder = '0.00'
+  placeholder = '0.00',
+  className = ''
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -44,29 +45,29 @@ const ScientificInput = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto mb-2 px-2">
-      <div className="flex items-center justify-center bg-white border-2 border-slate-200 rounded-xl px-4 py-2.5 focus-within:border-[#326fa0] transition-colors shadow-sm w-full max-w-[16rem]">
+    <div className={`flex flex-col items-center justify-center w-full ${className}`}>
+      <div className="flex items-center justify-center bg-white border-2 border-slate-200 rounded-xl px-3 py-1.5 focus-within:border-[#326fa0] transition-colors shadow-sm w-full max-w-[18.5rem]">
         
         {label && (
-          <span className="font-black text-[#326fa0] text-lg mr-2 leading-none select-none">
+          <span className="font-black text-[#326fa0] text-base sm:text-lg mr-1.5 leading-none select-none shrink-0">
             {label}
           </span>
         )}
         
-        <div className="flex items-baseline gap-1 leading-none w-full justify-center">
+        <div className="flex items-center gap-1 leading-none flex-1 min-w-0 justify-center">
           <input
             type="number"
             step="any"
             inputMode="decimal"
             onWheel={(e) => e.currentTarget.blur()}
-            className={`scientific-inner-input w-20 text-lg font-mono outline-none bg-transparent border-none m-0 p-0 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${status}`}
+            className={`scientific-inner-input w-20 text-base sm:text-lg font-mono outline-none bg-transparent border-none m-0 p-0 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${status}`}
             value={value}
             onChange={(e) => onValueChange(e.target.value)}
             placeholder={placeholder}
           />
           
           {exponent !== '' && (
-            <span className="text-lg font-mono font-bold text-slate-800 ml-0.5 select-none leading-none">
+            <span className="text-base sm:text-lg font-mono font-bold text-slate-800 ml-0.5 select-none leading-none shrink-0">
               &times;10<sup className="text-xs">{exponent}</sup>
             </span>
           )}
@@ -74,7 +75,7 @@ const ScientificInput = ({
           <button 
             type="button"
             onClick={() => { if (exponent === '') onExponentChange('-5'); setShowModal(true); }}
-            className="ml-3 bg-slate-100 text-[#326fa0] text-[10px] font-black px-2 py-1 rounded border border-slate-300 transition-colors hover:bg-slate-200 cursor-pointer"
+            className="ml-2 bg-slate-100 text-[#326fa0] text-xs font-black px-2.5 py-1.5 min-h-[36px] rounded-lg border border-slate-300 transition-colors hover:bg-slate-200 cursor-pointer shrink-0"
           >
             &times;10<sup>x</sup>
           </button>
@@ -105,7 +106,7 @@ const ScientificInput = ({
               </div>
 
               <div 
-                className="flex flex-col items-center cursor-ns-resize select-none translate-x-4"
+                className="flex flex-col items-center cursor-ns-resize select-none touch-none translate-x-4"
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={() => setIsDragging(false)}

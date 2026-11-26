@@ -1,10 +1,10 @@
 import './App.css';
-import React, { useState, useEffect, useTransition, Suspense } from 'react';
+import React, { useState, useEffect, useTransition, useRef, Suspense } from 'react';
 import { Logo, HeaderBrand } from './components/shared/Branding';
 import DataBooklet from './components/shared/DataBooklet';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { howToGuides } from './data/howToGuides';
-import { SORTED_APPLETS, MAIN_UNITS, WJEC_UNIT_TITLES } from './data/appletRegistry';
+import { SORTED_APPLETS, MAIN_UNITS, WJEC_UNIT_TITLES, belongsToUnitSection } from './data/appletRegistry';
 import { useProgress } from './hooks/useProgress';
 
 // Resolve initial applet ID from URL (?applet=<id> or #<id>)
@@ -56,10 +56,10 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
             <span className="text-2xl shrink-0 mt-0.5">💡</span>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-0.5">
-                <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-black tracking-widest bg-white/20 px-2 py-0.5 rounded-full">
                   {currentGuide.unit}
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider opacity-90">
+                <span className="text-[10px] font-black tracking-wider opacity-90">
                   Applet &amp; WJEC Exam Guide
                 </span>
               </div>
@@ -74,14 +74,14 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           <button
             onClick={onClose}
             aria-label="Close guide"
-            className="w-8 h-8 shrink-0 flex items-center justify-center bg-black/15 hover:bg-black/25 rounded-full font-black text-base transition-colors cursor-pointer"
+            className="w-10 h-10 shrink-0 flex items-center justify-center bg-black/15 hover:bg-black/25 rounded-full font-black text-lg transition-colors cursor-pointer"
           >
             &times;
           </button>
         </div>
 
         {/* Tab Strip */}
-        <div className="bg-slate-50 border-b border-slate-200 px-3 sm:px-5 pt-2.5 flex items-center gap-1.5 overflow-x-auto shrink-0">
+        <div className="bg-slate-50 border-b border-slate-200 px-3 sm:px-5 pt-2.5 pb-2 sm:pb-0 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 shrink-0">
           {GUIDE_TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -89,9 +89,9 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-3.5 py-2 rounded-t-xl text-xs font-extrabold whitespace-nowrap border border-b-0 transition-all cursor-pointer ${
+                className={`min-h-[38px] px-3 py-2 rounded-xl sm:rounded-b-none sm:rounded-t-xl text-xs font-extrabold whitespace-nowrap border sm:border-b-0 transition-all cursor-pointer text-center ${
                   isActive
-                    ? 'bg-white text-slate-900 border-slate-200 shadow-xs -mb-px'
+                    ? 'bg-white text-slate-900 border-slate-200 shadow-xs sm:shadow-[0_1px_0_0_white]'
                     : 'bg-transparent text-slate-500 border-transparent hover:text-slate-800 hover:bg-slate-100/70'
                 }`}
               >
@@ -105,7 +105,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
         <div className="p-5 sm:p-6 overflow-y-auto space-y-4 text-left text-xs sm:text-sm text-slate-700 leading-relaxed flex-1">
           {activeTab === 'applet' && (
             <div className="space-y-3">
-              <div className="text-[11px] font-black uppercase tracking-widest text-amber-600">
+              <div className="text-[11px] font-black tracking-widest text-amber-600">
                 Using the Interactive Applet
               </div>
               <ol className="space-y-2.5">
@@ -129,7 +129,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           {activeTab === 'exam' && (
             <div className="space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-blue-600">
+                <div className="text-[11px] font-black tracking-widest text-blue-600">
                   Key Equations &amp; Core Rules
                 </div>
                 <div className="space-y-1.5">
@@ -145,7 +145,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="space-y-2.5">
-                <div className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                <div className="text-[11px] font-black tracking-widest text-slate-500">
                   Step-by-Step WJEC Exam Strategy
                 </div>
                 <ol className="space-y-2">
@@ -168,7 +168,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           {activeTab === 'example' && (
             <div className="space-y-4">
               <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4">
-                <div className="text-[11px] font-black uppercase tracking-widest text-indigo-600 mb-1.5">
+                <div className="text-[11px] font-black tracking-widest text-indigo-600 mb-1.5">
                   Representative Exam Question
                 </div>
                 <p className="font-bold text-indigo-950 text-xs sm:text-sm leading-relaxed">
@@ -177,7 +177,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                <div className="text-[11px] font-black tracking-widest text-slate-500">
                   Method &amp; Full ECF Working
                 </div>
                 <ol className="space-y-2">
@@ -196,7 +196,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700">
+                <span className="text-[11px] font-black tracking-widest text-emerald-700">
                   Final Mark-Scheme Answer
                 </span>
                 <span className="font-mono font-black text-sm text-emerald-950 bg-white px-3 py-1.5 rounded-xl border border-emerald-200">
@@ -209,7 +209,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           {activeTab === 'pitfalls' && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-rose-600">
+                <div className="text-[11px] font-black tracking-widest text-rose-600">
                   Common Examiner Pitfalls
                 </div>
                 <ul className="space-y-2">
@@ -226,7 +226,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
               </div>
 
               <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-widest text-emerald-700">
+                <div className="text-[11px] font-black tracking-widest text-emerald-700">
                   Quick Mark-Scheme Checklist
                 </div>
                 <ul className="space-y-1.5">
@@ -251,7 +251,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
             <button
               type="button"
               onClick={onOpenDataBooklet}
-              className="px-4 py-2 bg-white hover:bg-blue-50 text-[#326fa0] border border-slate-200 hover:border-blue-300 font-black text-xs uppercase tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="px-4 py-2 bg-white hover:bg-blue-50 text-[#326fa0] border border-slate-200 hover:border-blue-300 font-black text-xs tracking-wider rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               📚 Open Data Booklet
             </button>
@@ -261,7 +261,7 @@ const HowToGuideModal = ({ isOpen, onClose, appletId, onOpenDataBooklet }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
+            className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs tracking-wider rounded-xl shadow-sm transition-colors cursor-pointer"
           >
             Got It ✓
           </button>
@@ -276,15 +276,19 @@ export default function App() {
   const [isDataBookletOpen, setIsDataBookletOpen] = useState(false);
   const [isHowToGuideOpen, setIsHowToGuideOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [quickJumpOpen, setQuickJumpOpen] = useState(false);
+  const [mobileUpdatesOpen, setMobileUpdatesOpen] = useState(false);
+  const quickJumpRef = useRef(null);
   const [isPending, startTransition] = useTransition();
   const { progress, recordSuccess } = useProgress();
 
   const [categoryStates, setCategoryStates] = useState(() => {
+    const defaults = { 'Unit 1': true, 'Unit 2': true, 'Unit 3': true, 'Unit 4': true, 'Synoptic': true };
     const saved = localStorage.getItem('wjec_companion_collapsed_units');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { return { ...defaults, ...JSON.parse(saved) }; } catch (e) { console.error(e); }
     }
-    return { 'Unit 1': true, 'Unit 2': true, 'Unit 3': true, 'Unit 4': true };
+    return defaults;
   });
 
   useEffect(() => {
@@ -307,6 +311,24 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!quickJumpOpen) return undefined;
+    const handlePointerDown = (e) => {
+      if (quickJumpRef.current && !quickJumpRef.current.contains(e.target)) {
+        setQuickJumpOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setQuickJumpOpen(false);
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [quickJumpOpen]);
+
   const toggleCategory = (unitName) => {
     setCategoryStates(prev => ({ ...prev, [unitName]: !prev[unitName] }));
   };
@@ -324,6 +346,7 @@ export default function App() {
     startTransition(() => {
       setCurrentApplet(id);
       setMobileMenuOpen(false);
+      setQuickJumpOpen(false);
     });
     window.scrollTo(0, 0);
   };
@@ -335,27 +358,40 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       {/* Header Banner */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <button onClick={() => handleNav('dashboard')} className="hover:opacity-80 transition-opacity text-left cursor-pointer">
+        <div className="max-w-[82rem] mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+          <button onClick={() => handleNav('dashboard')} className="hover:opacity-80 transition-opacity text-left cursor-pointer min-w-0">
             <HeaderBrand />
           </button>
 
-          <nav className="hidden md:flex items-center gap-2">
+          <nav className="hidden md:flex items-center gap-1.5 lg:gap-2">
             <button 
               onClick={() => handleNav('dashboard')}
-              className={`px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${currentApplet === 'dashboard' ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`px-2.5 lg:px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${currentApplet === 'dashboard' ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'}`}
             >
               Home Dashboard
             </button>
-            <div className="relative group">
-              <button className="px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100 flex items-center gap-1 cursor-pointer">
-                Quick Jump Menu ▾
+            <div ref={quickJumpRef} className="relative">
+              <button
+                type="button"
+                aria-expanded={quickJumpOpen}
+                onClick={() => setQuickJumpOpen((prev) => !prev)}
+                className={`px-2.5 lg:px-3 py-2 text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer transition-all whitespace-nowrap ${
+                  quickJumpOpen ? 'bg-blue-50 text-[#326fa0]' : 'text-slate-500 hover:bg-slate-100'
+                }`}
+              >
+                Quick Jump <span className="hidden lg:inline">Menu</span> <span className={`transition-transform duration-150 ${quickJumpOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
-              <div className="absolute right-0 top-full w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 opacity-0 pointer-events-none scale-95 origin-top-right group-hover:opacity-100 group-hover:scale-100 group-hover:!pointer-events-auto transition-all duration-100 ease-out z-50 space-y-1 before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:block">
+              <div
+                className={`absolute right-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-xl shadow-xl max-h-96 overflow-y-auto p-2 transition-all duration-100 ease-out z-50 space-y-1 ${
+                  quickJumpOpen
+                    ? 'opacity-100 scale-100 pointer-events-auto'
+                    : 'opacity-0 pointer-events-none scale-95 origin-top-right'
+                }`}
+              >
                 {MAIN_UNITS.map(unitRow => {
-                  const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
+                  const unitApplets = SORTED_APPLETS.filter(a => belongsToUnitSection(a, unitRow));
                   if (unitApplets.length === 0) return null;
-                  const isCatOpen = categoryStates[unitRow];
+                  const isCatOpen = categoryStates[unitRow] ?? true;
                   return (
                     <div key={unitRow} className="border border-slate-100/80 rounded-lg bg-slate-50/50 overflow-hidden">
                       <button
@@ -363,8 +399,8 @@ export default function App() {
                         onClick={(e) => { e.stopPropagation(); toggleCategory(unitRow); }}
                         className="w-full flex items-center justify-between px-2.5 py-1.5 bg-slate-100/50 hover:bg-slate-100 text-[10px] font-black text-slate-500 tracking-wide transition-colors cursor-pointer"
                       >
-                        <span>{unitRow.toUpperCase()}</span>
-                        <span className="text-[9px] text-slate-400 font-bold">{isCatOpen ? 'HIDE' : 'SHOW'}</span>
+                        <span>{unitRow === 'Synoptic' ? 'Synoptic & Cross-Unit Labs' : unitRow}</span>
+                        <span className="text-[9px] text-slate-400 font-bold">{isCatOpen ? 'Hide' : 'Show'}</span>
                       </button>
                       {isCatOpen && (
                         <div className="p-0.5 bg-white space-y-0.5">
@@ -410,7 +446,7 @@ export default function App() {
             </div>
           </nav>
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {currentApplet !== 'dashboard' && (
               <>
                 <button
@@ -423,22 +459,25 @@ export default function App() {
                 </button>
                 <button 
                   onClick={() => setIsHowToGuideOpen(true)}
-                  className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-2.5 sm:px-3 md:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer"
+                  className="border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-bold h-9 px-2.5 lg:px-4 rounded-full shadow-sm transition-all flex items-center gap-1.5 text-xs cursor-pointer"
+                  aria-label="How-To Guide"
                 >
                   <span>💡</span>
-                  <span className="hidden sm:inline">How-To Guide</span>
+                  <span className="hidden lg:inline">How-To Guide</span>
                 </button>
               </>
             )}
 
             <button 
               onClick={() => setIsDataBookletOpen(true)}
-              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-3 sm:px-4 md:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 sm:gap-2 text-xs cursor-pointer"
+              className="bg-[#326fa0] hover:bg-[#255580] text-white font-bold h-9 px-2.5 sm:px-3.5 lg:px-5 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 text-xs cursor-pointer"
+              aria-label="Data Booklet"
             >
               <span>📚</span>
-              <span className="hidden sm:inline">Data Booklet</span>
+              <span className="hidden lg:inline">Data Booklet</span>
+              <span className="hidden sm:inline lg:hidden">Data</span>
             </button>
-            <button className="md:hidden p-2 text-slate-600 focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Navigation Menu">
+            <button className="md:hidden min-w-[40px] min-h-[40px] flex items-center justify-center p-2 text-slate-600 focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Navigation Menu">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"} />
               </svg>
@@ -451,14 +490,14 @@ export default function App() {
           <div className="md:hidden bg-white border-t border-slate-100 max-h-[calc(100vh-4rem)] overflow-y-auto p-4 space-y-2 shadow-inner">
             <button
               onClick={() => handleNav('dashboard')}
-              className="w-full text-left px-4 py-3 rounded-xl font-black text-xs text-[#326fa0] uppercase tracking-wider bg-blue-50 mb-3 block"
+              className="w-full text-left px-4 py-3 rounded-xl font-black text-xs text-[#326fa0] tracking-wider bg-blue-50 mb-3 block"
             >
               🏠 Go to Home Dashboard
             </button>
             {MAIN_UNITS.map(unitRow => {
-              const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
+              const unitApplets = SORTED_APPLETS.filter(a => belongsToUnitSection(a, unitRow));
               if (unitApplets.length === 0) return null;
-              const isCatOpen = categoryStates[unitRow];
+              const isCatOpen = categoryStates[unitRow] ?? true;
               return (
                 <div key={unitRow} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
                   <button
@@ -466,7 +505,7 @@ export default function App() {
                     onClick={() => toggleCategory(unitRow)}
                     className="w-full flex items-center justify-between p-3 bg-slate-100 text-xs font-black text-slate-600"
                   >
-                    <span>{unitRow} Assignments</span>
+                    <span>{unitRow === 'Synoptic' ? 'Synoptic & Cross-Unit Labs' : `${unitRow} Assignments`}</span>
                     <span className="text-[10px] text-slate-400 font-bold">{isCatOpen ? 'Collapse ▴' : 'Expand ▾'}</span>
                   </button>
                   {isCatOpen && (
@@ -486,7 +525,7 @@ export default function App() {
                                 <span className="text-xs text-white">{app.label}</span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] bg-slate-600 text-slate-300 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
+                                <span className="text-[9px] bg-slate-600 text-slate-300 font-extrabold px-2 py-0.5 rounded-md tracking-wider">{app.unit}</span>
                                 <svg className="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                               </div>
                             </div>
@@ -502,7 +541,7 @@ export default function App() {
                                 <span className="mr-3 text-lg">{app.icon}</span>
                                 <span className="text-xs">{app.label}</span>
                               </div>
-                              <span className="text-[9px] bg-slate-100 text-slate-400 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">{app.unit}</span>
+                              <span className="text-[9px] bg-slate-100 text-slate-400 font-extrabold px-2 py-0.5 rounded-md tracking-wider">{app.unit}</span>
                             </div>
                           </button>
                         )
@@ -517,7 +556,7 @@ export default function App() {
       </header>
 
       {/* Main Workspace Frame */}
-      <main className="max-w-7xl mx-auto p-4 md:p-8 flex-grow w-full">
+      <main className="max-w-[84rem] mx-auto px-2.5 sm:px-4 md:px-6 py-2.5 sm:py-4 flex-grow w-full">
         {isPending && (
           <div className="fixed top-16 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-emerald-500 animate-[pulse_1s_infinite] z-50" />
         )}
@@ -533,18 +572,31 @@ export default function App() {
                 <p className="md:hidden text-slate-500 font-semibold text-xs mt-2">
                   WJEC A-Level Chemistry Interactive Practice &amp; Data Suite
                 </p>
+                <div className="md:hidden mt-3 w-full text-left">
+                  <button
+                    type="button"
+                    aria-expanded={mobileUpdatesOpen}
+                    onClick={() => setMobileUpdatesOpen((prev) => !prev)}
+                    className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-black text-slate-700 cursor-pointer"
+                  >
+                    <span>✨ Platform Updates &amp; Status</span>
+                    <span className="text-[11px] text-[#326fa0]">{mobileUpdatesOpen ? 'Hide ▴' : 'Show ▾'}</span>
+                  </button>
+                  {mobileUpdatesOpen && (
+                    <div className="mt-2 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 font-semibold leading-relaxed">
+                      Latest Updates: Site-wide adaptive mobile, tablet &amp; HD desktop workbench layouts across all 30 applets, CSS-styled selectors, plus the interactive <strong>Hess Cycle Builder</strong> &amp; <strong>Synoptic Labs</strong>.
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="hidden md:flex col-span-7 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-sm">✨</span>
-                    <h3 className="font-black text-xs uppercase tracking-wider text-slate-700">Platform Updates & Status</h3>
+                    <h3 className="font-black text-xs tracking-wider text-slate-700">Platform Updates &amp; Status</h3>
                   </div>
                   <p className="text-slate-600 font-bold text-sm leading-relaxed mb-3">
-                    New Update: Added Qualitative Inorganic Analysis (Unit 1.6), Half-Equation Balancing (Unit 3.2), Born-Haber Cycles (Unit 3.6), and Combined Spectral Interpreter (Unit 4.8), plus Unit-Conversion Gates and Mastery Tracking! Also explore P-Block Chemistry at{' '}
-                    <a href="https://pblock.chempanion.uk" target="_blank" rel="noopener noreferrer" className="text-[#326fa0] underline hover:text-[#255580]">
-                      pblock.chempanion.uk
-                    </a>.
+                    Latest Updates: Site-wide adaptive mobile, tablet &amp; HD desktop workbench layouts across all 30 applets, CSS-styled selectors, plus the interactive <strong>Hess Cycle Builder</strong> &amp; <strong>Synoptic Labs</strong>.
                   </p>
                 </div>
               </div>
@@ -553,18 +605,18 @@ export default function App() {
             {/* Matrix layout */}
             <div className="w-full max-w-7xl mx-auto text-left space-y-10">
               {MAIN_UNITS.map(unitRow => {
-                const unitApplets = SORTED_APPLETS.filter(a => a.unit.startsWith(unitRow));
+                const unitApplets = SORTED_APPLETS.filter(a => belongsToUnitSection(a, unitRow));
                 if (unitApplets.length === 0) return null;
-                const isUnitOpen = categoryStates[unitRow];
+                const isUnitOpen = categoryStates[unitRow] ?? true;
 
                 return (
                   <div key={unitRow} className="animate-fade-in">
                     <div className="border-b-2 border-slate-200 pb-2 mb-5 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <span className="inline-flex items-center justify-center text-center bg-slate-800 text-white text-xs font-black h-7 px-3 rounded-md tracking-wider shadow-sm uppercase shrink-0 min-w-[4.8rem]">
+                        <span className="inline-flex items-center justify-center text-center bg-slate-800 text-white text-xs font-black h-7 px-3 rounded-md tracking-wider shadow-sm shrink-0 min-w-[4.8rem]">
                           {unitRow}
                         </span>
-                        <h2 className="text-xs sm:text-sm font-black text-slate-500 tracking-wide uppercase leading-tight">
+                        <h2 className="text-xs sm:text-sm font-black text-slate-500 tracking-wide leading-tight">
                           {WJEC_UNIT_TITLES[unitRow]}
                         </h2>
                       </div>
@@ -575,7 +627,7 @@ export default function App() {
                           isUnitOpen ? 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-sm'
                         }`}
                       >
-                        {isUnitOpen ? 'Hide Unit' : 'Expand Unit'}
+                        {isUnitOpen ? (unitRow === 'Synoptic' ? 'Hide Section' : 'Hide Unit') : (unitRow === 'Synoptic' ? 'Expand Section' : 'Expand Unit')}
                       </button>
                     </div>
 
@@ -589,7 +641,7 @@ export default function App() {
                                 href={app.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-5 bg-slate-700 border border-slate-600 rounded-2xl text-left hover:bg-slate-800 hover:border-slate-500 hover:shadow-lg transition-all group flex flex-col justify-between h-44 w-full"
+                                className="p-4 sm:p-5 bg-slate-700 border border-slate-600 rounded-2xl text-left hover:bg-slate-800 hover:border-slate-500 hover:shadow-lg transition-all group flex flex-col justify-between min-h-[8.75rem] sm:h-44 w-full"
                               >
                                 <div className="w-full">
                                   <div className="flex items-center justify-between mb-2">
@@ -597,7 +649,7 @@ export default function App() {
                                       {app.icon}
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                      <span className="text-[10px] bg-slate-600 text-slate-300 font-bold px-2 py-0.5 rounded uppercase tracking-wider">{app.unit}</span>
+                                      <span className="text-[10px] bg-slate-600 text-slate-300 font-bold px-2 py-0.5 rounded tracking-wider">{app.unit}</span>
                                       <svg className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                       </svg>
@@ -625,14 +677,14 @@ export default function App() {
                             <button 
                               key={app.id}
                               onClick={() => handleNav(app.id)}
-                              className="p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between h-44 w-full cursor-pointer"
+                              className="p-4 sm:p-5 bg-white border border-slate-200 rounded-2xl text-left hover:border-[#326fa0] hover:shadow-md transition-all group flex flex-col justify-between min-h-[8.75rem] sm:h-44 w-full cursor-pointer"
                             >
                               <div className="w-full">
                                 <div className="flex items-center justify-between mb-2">
                                   <div className="w-10 h-10 bg-slate-50 text-[#326fa0] rounded-xl flex items-center justify-center text-2xl group-hover:bg-[#326fa0] group-hover:text-white transition-colors">
                                     {app.icon}
                                   </div>
-                                  <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all uppercase tracking-wider">{app.unit}</span>
+                                  <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded group-hover:bg-blue-50 group-hover:text-[#326fa0] transition-all tracking-wider">{app.unit}</span>
                                 </div>
                                 <div className="font-black text-base text-slate-800 leading-snug mb-1 group-hover:text-[#326fa0] transition-colors line-clamp-1">
                                   {app.label}
@@ -642,7 +694,7 @@ export default function App() {
                                 </p>
                               </div>
                               <div className="w-full pt-2 border-t border-slate-100 flex items-center justify-between">
-                                <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                                <span className={`text-[10px] font-black tracking-wider px-2 py-0.5 rounded-full border ${
                                   solvedCount >= targetCount
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                                     : solvedCount > 0
@@ -676,12 +728,12 @@ export default function App() {
         {/* Active view */}
         <div className="animate-fade-in">
           {currentApplet !== 'dashboard' && (
-            <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2 max-w-5xl mx-auto">
+            <div className="hidden md:flex mb-3 flex-wrap items-center gap-2 max-w-[82rem] mx-auto">
               <button onClick={() => handleNav('dashboard')} className="text-xs sm:text-sm font-bold text-[#326fa0] hover:underline flex items-center gap-1 cursor-pointer">
                 &larr; Back to Dashboard Menu
               </button>
               <span className="text-slate-300">/</span>
-              <span className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">
+              <span className="text-xs sm:text-sm font-bold text-slate-400 tracking-widest">
                 {activeAppletObj?.unit} &bull; {activeAppletObj?.label || currentApplet}
               </span>
             </div>
@@ -695,7 +747,7 @@ export default function App() {
               <Suspense fallback={
                 <div className="flex flex-col items-center justify-center py-20 bg-white border border-slate-200 rounded-3xl">
                   <div className="w-10 h-10 border-4 border-slate-200 border-t-[#326fa0] rounded-full animate-spin mb-4" />
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Compiling Reagent Metrics...</p>
+                  <p className="text-xs font-bold text-slate-400 tracking-widest">Compiling Reagent Metrics...</p>
                 </div>
               }>
                 <ActiveComponent onComplete={(scenarioId) => recordSuccess(currentApplet, scenarioId)} />

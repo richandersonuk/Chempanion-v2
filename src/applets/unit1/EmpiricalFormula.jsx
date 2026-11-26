@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import FormulaInput from '../../components/shared/FormulaInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'empirical_pct', label: 'Empirical Formula: Percentages', shortLabel: 'Percentages' },
+  { value: 'empirical_mass', label: 'Empirical Formula: Reacting Masses', shortLabel: 'Reacting Masses' },
+  { value: 'molecular_mr', label: 'Molecular Formula via Mᵣ', shortLabel: 'Molecular via Mᵣ' },
+  { value: 'hydrated_salt', label: 'Water of Crystallisation (x)', shortLabel: 'Hydrated Salt (x)' },
+];
 
 const EmpiricalFormula = ({ onComplete }) => {
   const [mode, setMode] = useState('empirical_pct');
   const [problem, setProblem] = useState(null);
   const [studentAnswer, setStudentAnswer] = useState('');
   const [feedback, setFeedback] = useState({ message: '', status: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const normalizeSubscripts = (str) => {
     const reverseMap = {'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9'};
@@ -146,6 +155,7 @@ const EmpiricalFormula = ({ onComplete }) => {
     setProblem(newProb);
     setStudentAnswer('');
     setFeedback({ message: '', status: '' });
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -178,98 +188,111 @@ const EmpiricalFormula = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2" style={{ textTransform: 'none' }}>
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-            style={{ textTransform: 'none' }}
-          >
-            <option value="empirical_pct">Empirical Formula: Percentages</option>
-            <option value="empirical_mass">Empirical Formula: Reacting Masses</option>
-            <option value="molecular_mr">Molecular Formula via Mr</option>
-            <option value="hydrated_salt">Water of Crystallisation (x)</option>
-          </select>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0" style={{ textTransform: 'none' }}>{problem.title}</div>
 
-          <button
-            type="button"
-            onClick={() => { generateProblem('random'); }}
-            className={`px-4 py-2.5 text-xs font-black uppercase rounded-xl transition-all border shrink-0 ${
-              mode === 'random' ? 'bg-blue-50 border-[#326fa0] text-[#326fa0] shadow-sm' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            Random 🎲
-          </button>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        onChange={(val) => { setMode(val); generateProblem(val); }}
+        onRandom={() => generateProblem('random')}
+        isRandomActive={mode === 'random'}
+        collapseBelow="md"
+      />
+
+      <div className="applet-workbench">
+        <div className="applet-workbench-sticky space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="text-sm sm:text-base text-slate-700 leading-relaxed">
+              {problem.text}
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 font-bold text-sm text-slate-800">
+              {problem.question}
+            </div>
+
+            <div className="flex flex-col items-start pt-1">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[36px] px-3.5 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed space-y-1.5">
+                  <p>
+                    <strong className="font-black text-amber-900">Empirical &amp; Molecular Steps: </strong>
+                    % or mass ÷ Aᵣ → divide all by smallest ratio → scale to whole numbers (e.g. ×2 for .5, ×3 for .33/.67).
+                  </p>
+                  <p>
+                    For molecular formula: multiply subscripts by (Mᵣ ÷ empirical unit mass). For hydrated salts: find moles of anhydrous salt and moles of H₂O separately, then divide moles of H₂O by moles of salt.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="applet-header" style={{ textTransform: 'none' }}>{problem.title}</div>
-      <div className="question-text text-center px-4 leading-relaxed" style={{ textTransform: 'none' }}>
-        {problem.text}
-      </div>
+        <div className="space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+            <div className="w-full flex items-center justify-center">
+              <div
+                className="w-full flex flex-row items-center justify-center flex-wrap gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
+                style={{ textTransform: 'none' }}
+              >
+                <label className="text-sm font-black text-slate-600 select-none" style={{ textTransform: 'none' }}>{problem.label}</label>
 
-      <div style={{ fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center', fontSize: '0.95rem', textTransform: 'none' }} className="px-2 text-slate-700">
-        {problem.question}
-      </div>
+                {problem.isFormula ? (
+                  <FormulaInput
+                    value={studentAnswer}
+                    onChange={(val) => { setStudentAnswer(val); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                    status={feedback.status}
+                    placeholder={problem.placeholder}
+                    onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+                    wrapped={false}
+                    style={{ fontSize: '1.2rem', fontWeight: '800', letterSpacing: '0.05em', width: '100%', maxWidth: '12rem', textAlign: 'center', textTransform: 'none' }}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    className={`chem-input ${feedback.status}`}
+                    value={studentAnswer}
+                    onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                    placeholder={problem.placeholder}
+                    onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+                    style={{ maxWidth: '6rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: '800', textTransform: 'none' }}
+                  />
+                )}
 
-      <div className="w-full flex items-center justify-center my-6 overflow-x-auto" style={{ textTransform: 'none' }}>
-        <div
-          className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-2 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm"
-          style={{ textTransform: 'none' }}
-        >
-          <label className="text-sm font-black text-slate-600 select-none" style={{ textTransform: 'none' }}>{problem.label}</label>
+                {problem.unit && <span className="text-sm font-black text-slate-500 select-none" style={{ textTransform: 'none' }}>{problem.unit}</span>}
+              </div>
+            </div>
 
-          {problem.isFormula ? (
-            <FormulaInput
-              value={studentAnswer}
-              onChange={(val) => { setStudentAnswer(val); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-              status={feedback.status}
-              placeholder={problem.placeholder}
-              onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
-              wrapped={false}
-              style={{ fontSize: '1.2rem', fontWeight: '800', letterSpacing: '0.05em', width: '100%', maxWidth: '12rem', textAlign: 'center', textTransform: 'none' }}
-            />
-          ) : (
-            <input
-              type="text"
-              inputMode="decimal"
-              className={`chem-input ${feedback.status}`}
-              value={studentAnswer}
-              onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-              placeholder={problem.placeholder}
-              onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
-              style={{ maxWidth: '6rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: '800', textTransform: 'none' }}
-            />
+            <div className="button-group">
+              <button type="button" className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+              <button type="button" className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
+            </div>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box !mt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
+              <span className="text-xs sm:text-sm font-semibold">{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
-
-          {problem.unit && <span className="text-sm font-black text-slate-500 select-none" style={{ textTransform: 'none' }}>{problem.unit}</span>}
         </div>
       </div>
-
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
-          )}
-        </div>
-      )}
     </div>
   );
 };

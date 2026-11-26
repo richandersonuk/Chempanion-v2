@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import ScientificInput from '../../components/shared/ScientificInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'ice_table', label: 'Initial Moles + Volume → Kc', shortLabel: 'ICE Table → Kc' },
+  { value: 'direct_kc', label: 'Equilibrium Concentrations → Kc', shortLabel: 'Concentrations → Kc' },
+  { value: 'find_missing', label: 'Kc + Rearrangement → Concentration', shortLabel: 'Find Concentration' },
+  { value: 'predict_units', label: 'Deduce Equilibrium Units Practice', shortLabel: 'Kc Units' },
+];
 
 const KcCalculations = ({ onComplete }) => {
   const [mode, setMode] = useState('ice_table');
+  const [isRandomMode, setIsRandomMode] = useState(false);
   const [problem, setProblem] = useState(null);
   const [coeff, setCoeff] = useState('');
   const [exp, setExp] = useState('');
   const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const [molIdx, setMolIdx] = useState(0);
   const [dmIdx, setDmIdx] = useState(0);
@@ -59,10 +69,11 @@ const KcCalculations = ({ onComplete }) => {
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['ice_table', 'direct_kc', 'find_missing', 'predict_units'];
-    const selection = forcedMode || mode;
+    const selection = forcedMode || (isRandomMode ? 'random' : mode);
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
     setMode(targetMode);
+    setShowHint(false);
 
     const rxn = reactions[Math.floor(Math.random() * reactions.length)];
     let text = '';
@@ -295,129 +306,154 @@ const KcCalculations = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto mb-6 px-4" style={{ textTransform: 'none' }}>
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2" style={{ textTransform: 'none' }}>
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-            style={{ textTransform: 'none' }}
-          >
-            <option value="ice_table">Initial Moles + Volume → Kc</option>
-            <option value="direct_kc">Equilibrium Concentrations → Kc</option>
-            <option value="find_missing">Kc + Rearrangement → Concentration</option>
-            <option value="predict_units">Deduce Equilibrium Units Practice</option>
-          </select>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0" style={{ textTransform: 'none' }}>Kc Equilibrium Constants</div>
 
-          <button
-            type="button"
-            onClick={() => generateProblem('random')}
-            className="px-4 py-2.5 text-xs font-black uppercase bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl transition-all shrink-0"
-          >
-            Random 🎲
-          </button>
-        </div>
-      </div>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        isRandomActive={isRandomMode}
+        onChange={(val) => {
+          setIsRandomMode(false);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setIsRandomMode(true);
+          generateProblem('random');
+        }}
+        collapseBelow="sm"
+      />
 
-      <div className="applet-header" style={{ textTransform: 'none' }}>Kc Equilibrium Constants</div>
-
-      <div className="question-text text-center px-4 leading-relaxed whitespace-pre-line" style={{ textTransform: 'none' }}>
-        {problem.text}
-        {mode === 'predict_units' ? (
-          <div className="my-3 font-mono font-black text-sm bg-slate-100 border border-slate-200 px-4 py-2 rounded-xl inline-block whitespace-nowrap">
-            {problem.eq}
-          </div>
-        ) : (
-          <>
-            {' '}
-            <span className="inline-block whitespace-nowrap font-mono font-black text-slate-800 bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/50">
-              {problem.eq}
-            </span>
-          </>
-        )}
-      </div>
-
-      {mode === 'predict_units' ? (
-        <div className="w-full max-w-sm mx-auto my-6 bg-slate-50 border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center gap-4" style={{ textTransform: 'none' }}>
-          <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Select Power Indexes</span>
-
-          <div className="grid grid-cols-3 gap-4 w-full">
-            <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
-              <span className="text-xs font-black font-mono text-slate-500 mb-1">mol</span>
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setMolIdx(prev => prev - 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
-                <span className="font-mono font-black text-sm w-4 text-center text-slate-800">{molIdx}</span>
-                <button type="button" onClick={() => setMolIdx(prev => prev + 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
-              </div>
+      <div className="applet-workbench">
+        {/* Left Column: Equilibrium Scenario, Reaction Card & Hint */}
+        <div className="applet-workbench-sticky space-y-3.5">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
+            <div className="question-text !mb-0 text-center md:text-left leading-relaxed text-sm sm:text-base whitespace-pre-line">
+              {problem.text}
             </div>
 
-            <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
-              <span className="text-xs font-black font-mono text-slate-500 mb-1">dm</span>
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setDmIdx(prev => prev - 3)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
-                <span className="font-mono font-black text-sm w-5 text-center text-slate-800">{dmIdx}</span>
-                <button type="button" onClick={() => setDmIdx(prev => prev + 3)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
-              </div>
+            <div className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-center shadow-2xs">
+              <span className="block text-[10px] font-black tracking-widest text-slate-400 mb-1">
+                Equilibrium Equation
+              </span>
+              <span className="font-mono font-black text-sm sm:text-base text-slate-800 whitespace-normal sm:whitespace-nowrap break-words">
+                {problem.eq}
+              </span>
             </div>
 
-            <div className="flex flex-col items-center bg-white p-2 border border-slate-200/80 rounded-xl shadow-inner">
-              <span className="text-xs font-black font-mono text-slate-500 mb-1">s</span>
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setSIdx(prev => prev - 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁻</button>
-                <span className="font-mono font-black text-sm w-4 text-center text-slate-800">{sIdx}</span>
-                <button type="button" onClick={() => setSIdx(prev => prev + 1)} className="w-6 h-6 bg-slate-100 rounded-lg text-xs font-black hover:bg-slate-200 text-slate-600">⁺</button>
-              </div>
+            <div className="flex flex-col items-center md:items-start">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[34px] px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed space-y-1.5">
+                  <p>
+                    <strong className="font-black text-amber-900">Equilibrium Method: </strong>
+                    Write K<sub>c</sub> = [products]<sup>coeff</sup> &divide; [reactants]<sup>coeff</sup> using stoichiometric coefficients as powers.
+                  </p>
+                  {mode === 'ice_table' && (
+                    <p>Build an ICE table (Initial, Change, Equilibrium) in moles using the equation stoichiometry, then divide every equilibrium mole quantity by the vessel volume in dm³ to get concentration in mol dm⁻³.</p>
+                  )}
+                  {mode === 'predict_units' && (
+                    <p>Substitute (mol dm⁻³) for each concentration bracket in the K<sub>c</sub> expression, cancel identical numerator and denominator brackets, and simplify powers.</p>
+                  )}
+                  {mode === 'find_missing' && (
+                    <p>Rearrange the K<sub>c</sub> expression algebraically for the missing species before substituting numbers; remember to take a square root if the unknown term is squared.</p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-
-          <div className="w-full bg-white border border-slate-200/60 rounded-xl p-2.5 text-center mt-1 flex flex-col items-center gap-0.5">
-            <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Current Sorted Selection</span>
-            <div className="h-6 flex items-center justify-center">{renderSortedUnitsPreview()}</div>
-          </div>
         </div>
-      ) : (
-        <div className="w-full flex flex-col items-center justify-center my-6" style={{ textTransform: 'none' }}>
-          <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
-            <ScientificInput
-              value={coeff}
-              exponent={exp}
-              onValueChange={setCoeff}
-              onExponentChange={setExp}
-              label={problem.targetLabel}
-              status={feedback.type}
-            />
+
+        {/* Right Column: Input / Stepper Card, Actions & Feedback */}
+        <div className="space-y-4">
+          {mode === 'predict_units' ? (
+            <div className="w-full bg-slate-50 border border-slate-200 p-4 sm:p-5 rounded-2xl shadow-sm flex flex-col items-center gap-4">
+              <span className="text-[10px] font-black tracking-wider text-slate-400">Select Power Indexes</span>
+
+              <div className="grid grid-cols-3 gap-2 w-full">
+                <div className="flex flex-col items-center bg-white p-2.5 sm:p-3 border border-slate-200/80 rounded-xl shadow-inner">
+                  <span className="text-xs font-black font-mono text-slate-500 mb-1.5">mol</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <button type="button" onClick={() => setMolIdx(prev => prev - 1)} className="w-9 h-9 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer flex items-center justify-center">⁻</button>
+                    <span className="font-mono font-black text-base w-6 text-center text-slate-800">{molIdx}</span>
+                    <button type="button" onClick={() => setMolIdx(prev => prev + 1)} className="w-9 h-9 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer flex items-center justify-center">⁺</button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center bg-white p-2.5 sm:p-3 border border-slate-200/80 rounded-xl shadow-inner">
+                  <span className="text-xs font-black font-mono text-slate-500 mb-1.5">dm</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <button type="button" onClick={() => setDmIdx(prev => prev - 3)} className="w-9 h-9 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer flex items-center justify-center">⁻</button>
+                    <span className="font-mono font-black text-base w-7 text-center text-slate-800">{dmIdx}</span>
+                    <button type="button" onClick={() => setDmIdx(prev => prev + 3)} className="w-9 h-9 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer flex items-center justify-center">⁺</button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center bg-white p-2.5 sm:p-3 border border-slate-200/80 rounded-xl shadow-inner">
+                  <span className="text-xs font-black font-mono text-slate-500 mb-1.5">s</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <button type="button" onClick={() => setSIdx(prev => prev - 1)} className="w-9 h-9 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer flex items-center justify-center">⁻</button>
+                    <span className="font-mono font-black text-base w-6 text-center text-slate-800">{sIdx}</span>
+                    <button type="button" onClick={() => setSIdx(prev => prev + 1)} className="w-9 h-9 bg-slate-100 rounded-lg text-sm font-black hover:bg-slate-200 text-slate-600 cursor-pointer flex items-center justify-center">⁺</button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full bg-white border border-slate-200/60 rounded-xl p-3 text-center mt-1 flex flex-col items-center gap-1">
+                <span className="text-[10px] font-extrabold text-slate-400 tracking-wider">Current Sorted Selection</span>
+                <div className="min-h-[28px] text-base flex items-center justify-center">{renderSortedUnitsPreview()}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full flex flex-col items-center justify-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs">
+              <div className="w-full flex justify-center">
+                <ScientificInput
+                  value={coeff}
+                  exponent={exp}
+                  onValueChange={setCoeff}
+                  onExponentChange={setExp}
+                  label={problem.targetLabel}
+                  status={feedback.type}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-1.5 select-none">
+                <span className="text-xs font-extrabold text-slate-400 tracking-widest">Units:</span>
+                <span className="text-sm font-black text-slate-600 font-mono inline-block bg-white border border-slate-200/80 px-2.5 py-0.5 rounded-lg shadow-2xs">
+                  {problem.unitExpectation}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+            <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
           </div>
 
-          <div className="mt-3 text-center select-none whitespace-nowrap" style={{ textTransform: 'none' }}>
-            <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mr-1">Units:</span>
-            <span className="text-sm font-black text-slate-500 font-mono inline-block bg-white border border-slate-200/60 px-2.5 py-0.5 rounded-lg shadow-sm">{problem.unitExpectation}</span>
-          </div>
-        </div>
-      )}
-
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`} style={{ textTransform: 'none' }}>
-          <span>{feedback.message}</span>
-          {feedback.type === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
+          {feedback.message && (
+            <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span>{feedback.message}</span>
+              {feedback.type === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

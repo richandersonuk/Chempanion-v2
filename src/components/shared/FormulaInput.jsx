@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FormulaInput = ({ value, onChange, placeholder, status = '', onKeyDown, disabled = false, wrapped = true }) => {
+const FormulaInput = ({ value, onChange, placeholder, status = '', onKeyDown, disabled = false, wrapped = true, className = '', style = {} }) => {
   // Mapping standard digits to Unicode subscripts for chemical formulas
   const subMap = {
     '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
@@ -19,7 +19,7 @@ const FormulaInput = ({ value, onChange, placeholder, status = '', onKeyDown, di
   const inputElement = (
     <input
       type="text"
-      className={`chem-input ${status}`}
+      className={`chem-input w-full max-w-[16rem] sm:max-w-[18rem] text-lg sm:text-xl font-extrabold tracking-wider text-center ${status} ${className}`}
       value={value}
       onChange={handleChange}
       onKeyDown={onKeyDown}
@@ -27,14 +27,7 @@ const FormulaInput = ({ value, onChange, placeholder, status = '', onKeyDown, di
       disabled={disabled}
       spellCheck="false"
       autoComplete="off"
-      style={{ 
-        fontSize: '1.3rem', 
-        fontWeight: '800',
-        letterSpacing: '0.05em', 
-        textAlign: 'center', 
-        maxWidth: '14rem',
-        textTransform: 'none'
-      }}
+      style={{ textTransform: 'none', ...style }}
     />
   );
 

@@ -90,7 +90,7 @@ export const howToGuides = {
   'formula-master': {
     title: 'Formula Master: Reverse Ion Extraction',
     unit: 'Unit 1.1',
-    summary: 'Deconstruct ionic formulas or compound names back into discrete cation and anion identities with exact charges.',
+    summary: 'Deconstruct ionic salts and common ionisable compounds (such as HCl, H₂SO₄, and H₂O) back into discrete cation and anion identities with exact charges.',
     appletSteps: [
       <><strong>Choose Difficulty Tier:</strong> Select between <em>Ions from Formula</em> and <em>Ions from Name</em> across GCSE and Advanced modes.</>,
       <><strong>Enter Ion Formulas:</strong> Type the base formula of the cation and anion (without writing the charge sign inside the text field).</>,
@@ -179,9 +179,9 @@ export const howToGuides = {
     unit: 'Unit 1.3',
     summary: 'Deduce simplest whole-number empirical ratios from mass/% data, scale to molecular formulas via Mᵣ, and find water of crystallisation.',
     appletSteps: [
-      <><strong>Choose Question Type:</strong> Switch between <em>% Composition</em>, <em>Mass Data</em>, <em>Molecular Formula (with Mᵣ)</em>, and <em>Hydrated Salt (·xH₂O)</em>, or click <em>Random 🎲</em>.</>,
+      <><strong>Choose Question Type:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch between <em>Percentages</em>, <em>Reacting Masses</em>, <em>Molecular Formula via Mᵣ</em>, and <em>Water of Crystallisation (x)</em>.</>,
       <><strong>Solve Ratio Table:</strong> Divide each mass or percentage by atomic mass Aᵣ (from the Data Booklet) and normalise against the smallest value.</>,
-      <><strong>Enter Answer:</strong> Type the final formula into the auto-subscripting input box (use a dot like <code>MgSO4.7H2O</code> for hydrated salts).</>,
+      <><strong>Enter Answer:</strong> Type formulas into the auto-subscripting input box (or enter the integer <code>x</code> directly for hydrated salt problems) and press <em>Check Answer</em>.</>,
     ],
     examMethod: {
       formulas: [
@@ -264,14 +264,104 @@ export const howToGuides = {
     },
   },
 
+  'vsepr-shapes': {
+    title: 'VSEPR Shapes, Bond Angles & Polarity',
+    unit: 'Unit 1.4',
+    summary: 'Determine bonding regions and lone pairs on a central atom to deduce 3D molecular geometry, lone-pair compression angles, coordinate ions, and whole-molecule polarity.',
+    appletSteps: [
+      <><strong>Filter &amp; Select Species:</strong> Use the tier pills (<em>Core Shapes</em>, <em>Coordinate Ions</em>, <em>Polarity &amp; Stretch</em>) or pick any numbered molecule/ion chip.</>,
+      <><strong>Count Electron Regions:</strong> Dial in <em>Bonding Regions (BP)</em> (counting double/triple bonds as one region) and <em>Lone Pairs (LP)</em> using the central atom’s Group number and any ionic charge.</>,
+      <><strong>Predict Geometry &amp; Polarity:</strong> Choose the 3D molecular shape and bond angle, then decide whether dipoles cancel (or identify the coordinate-bonding behaviour for ions).</>,
+      <><strong>Unlock 3D Diagram &amp; Explorer:</strong> Check your answer to reveal the wedge-dash 3D visualiser and WJEC mark scheme, or browse any species freely in the <em>3D Geometry Explorer</em> tab.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Total valence e⁻ on central atom = Group number − (+ve charge) OR + (|−ve charge|)',
+        'Repulsion hierarchy:  Lone Pair–Lone Pair  >  Lone Pair–Bonding Pair  >  Bonding Pair–Bonding Pair',
+      ],
+      steps: [
+        'Find valence electrons around the central atom (adjust −1 per +1 charge, +1 per −1 charge).',
+        'Subtract 1 electron per single bond (or 2 per double bond) to find leftover unshared electrons, then divide by 2 for Lone Pairs (LP).',
+        'Use total regions (BP + LP) for the base geometry (2 linear 180°, 3 trigonal planar 120°, 4 tetrahedral 109.5°, 5 trigonal bipyramidal 90° & 120°, 6 octahedral 90°), reducing tetrahedral angles by ~2.5° per lone pair (107°, 104.5°).',
+        'Check whole-molecule polarity: if all outer groups are identical and arranged symmetrically with 0 lone pairs (e.g. CO₂, BF₃, CCl₄, SF₆, plus trans-square-planar XeF₄), bond dipoles cancel → non-polar.',
+      ],
+    },
+    workedExample: {
+      question: 'Deduce the shape, bond angle, and polarity of H₃O⁺ and CHCl₃, explaining the angle in H₃O⁺.',
+      steps: [
+        'For H₃O⁺: O is in Group 6 (6 e⁻); +1 charge leaves 5 e⁻. Forming 3 O–H bonds (including 1 coordinate bond) leaves 2 e⁻ = 1 lone pair → 3 BP + 1 LP.',
+        'Four electron regions arrange tetrahedrally, but greater LP–BP repulsion compresses the H–O–H angle to ~107°; shape is trigonal pyramidal.',
+        'For CHCl₃: C (Group 4) forms 4 single bonds (4 BP, 0 LP) → tetrahedral (~109.5°). Because H differs from the three electronegative Cl atoms, dipoles do not cancel → polar.',
+      ],
+      answer: 'H₃O⁺: Trigonal pyramidal (~107°)  |  CHCl₃: Tetrahedral (109.5°), Polar',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Naming the electron-pair arrangement (“tetrahedral”) instead of the molecular shape formed by ATOMS (“trigonal pyramidal” for NH₃/H₃O⁺, “bent” for H₂O).',
+        'Treating a C=O double bond in CO₂ as 2 separate bonding regions or giving CO₂ a bent shape.',
+        'Writing “lone pairs are present” without stating the mark-scheme reason: lone pairs repel MORE strongly than bonding pairs.',
+      ],
+      checklist: [
+        'Exact BP and LP counts stated on the central atom',
+        'Relative repulsion (LP–LP > LP–BP > BP–BP) stated whenever lone pairs compress an angle',
+        'Individual bond polarity distinguished from whole-molecule symmetry cancellation',
+      ],
+    },
+  },
+
+  'bonding-imf-lab': {
+    title: 'Bonding Continuum, Potential Wells & IMFs',
+    unit: 'Unit 1.4 / 1.5',
+    summary: 'Explore the transition across covalent, polar, intermediate, ionic, and metallic bonding, trace potential energy curves, compare boiling-point trends, and solve WJEC mark-scheme challenges.',
+    appletSteps: [
+      <><strong>Bonding Continuum &amp; Energy Well:</strong> Select a WJEC preset (such as <em>AlCl₃</em>, <em>HCl</em>, <em>NaCl</em>, or <em>Mg</em>) or pick any custom element pair and adjust Pauling electronegativity (<code>χ</code>) to observe electron cloud shift and bonding classification.</>,
+      <><strong>Potential Curve Interaction:</strong> Drag the separation slider or click directly on the <em>V vs r</em> graph to compare nuclear repulsion (<code>r &lt; r₀</code>), the equilibrium well (<code>F_net ≈ 0</code>), and separated atoms.</>,
+      <><strong>IMF &amp; Boiling Point Explorer:</strong> Switch between Group 7 halogens, Group 6 hydrides, hydrogen halides, and giant lattices; slide the temperature control to watch physical states switch across melting and boiling points.</>,
+      <><strong>WJEC Exam Challenges:</strong> Classify the bonding or intermolecular force and select the matching WJEC mark-scheme statements (use <em>Need a Hint?</em> whenever you want a conceptual clue) to earn dashboard mastery.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Δχ = |χ_B − χ_A|     (covalent Δχ < 0.5  |  polar Δχ ≈ 0.5–1.6  |  ionic metal+non-metal Δχ ≥ 1.7)',
+        'Ionic lattice attraction increases with higher ionic charges (q₁ × q₂) and smaller ionic radii',
+      ],
+      steps: [
+        'Decide first whether the substance is a GIANT lattice (ionic, metallic, or giant covalent) or SIMPLE MOLECULAR: giant lattices overcome strong electrostatic/covalent bonds on melting, whereas simple molecules only overcome weak intermolecular forces.',
+        'For simple molecules, list ALL intermolecular forces present: all molecules have London dispersion forces; polar unsymmetrical molecules also have permanent dipole–dipole forces; molecules with H covalently bonded to N, O, or F also form hydrogen bonds.',
+        'Compare electron counts when London forces dominate (e.g. F₂ → I₂, HCl → HI, H₂S → H₂Te): more electrons = larger, more polarisable electron cloud = stronger London forces.',
+        'For intermediate character (e.g. AlCl₃, BeCl₂), invoke high cation charge density strongly polarising a large anion electron cloud.',
+      ],
+    },
+    workedExample: {
+      question: 'Explain why water (H₂O, Mᵣ = 18, bp 100 °C) has a much higher boiling point than hydrogen sulfide (H₂S, Mᵣ = 34, bp −60 °C), whereas H₂Te (bp −2 °C) boils higher than H₂S.',
+      steps: [
+        'H₂O forms intermolecular hydrogen bonds (H bonded to highly electronegative O attracted to a lone pair on an adjacent O), which are much stronger than the permanent dipole–dipole and London forces in H₂S.',
+        'Neither H₂S nor H₂Te can form hydrogen bonds (S and Te are insufficiently electronegative). Both have permanent dipole–dipole and London dispersion forces.',
+        'From H₂S (18 e⁻) to H₂Te (54 e⁻), the total number of electrons increases substantially, strengthening London dispersion forces more than dipole–dipole strength decreases.',
+      ],
+      answer: 'H₂O: intermolecular hydrogen bonds  |  H₂S → H₂Te: more electrons → stronger London forces',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Claiming covalent bonds (such as O–H or I–I) break when molecular liquids boil — ONLY intermolecular forces are overcome.',
+        'Saying H₂S / HBr / HI have "permanent dipole forces only" — ALL molecules possess London forces, and London forces cause the downward group rise.',
+        'Referring to "molecules" or "intermolecular forces" in giant ionic lattices (NaCl, MgO) or metals (Na, Mg).',
+      ],
+      checklist: [
+        'Simple molecular vs giant lattice explicitly identified',
+        'Correct intermolecular force named cleanly (London dispersion vs permanent dipole–dipole vs hydrogen bonding)',
+        'Total electron count / polarisability linked to London strength; charge density & ion size linked to lattice strength',
+      ],
+    },
+  },
+
   'inorganic-tests': {
     title: 'Qualitative Inorganic Analysis',
     unit: 'Unit 1.6',
     summary: 'Use the virtual test-tube rack to run sequential cation, anion, and flame tests and write balanced ionic precipitation equations.',
     appletSteps: [
-      <><strong>Load Unknown Sample:</strong> Select a mystery salt from the dropdown or click <em>Random 🎲</em>.</>,
-      <><strong>Run Virtual Reagents:</strong> Click reagent buttons (<em>Flame Test</em>, <em>NaOH(aq)</em>, <em>SO₄²⁻</em>, <em>H⁺</em>, <em>Ba²⁺</em>, <em>Ag⁺ + HNO₃</em>, <em>dilute NH₃</em>, <em>conc NH₃</em>) to inspect test-tube observations.</>,
-      <><strong>Deduce Salt &amp; Equation:</strong> Select the matching cation and anion from the identification menus, then verify the ionic precipitation equation.</>,
+      <><strong>Load Unknown Sample:</strong> Practise with freshly generated samples from the <strong>33-salt procedural generator</strong> (via <em>Random Unknown Salt</em>) or choose any classic preset <em>A–H</em> from the dropdown.</>,
+      <><strong>Run Virtual Reagents:</strong> Click reagent buttons (<em>Flame Test</em>, <em>NaOH(aq) &amp; Warm</em>, <em>Dilute HCl + Limewater</em>, <em>Acidified BaCl₂</em>, <em>Acidified AgNO₃ + NH₃</em>) to inspect test-tube observations.</>,
+      <><strong>Deduce Salt &amp; Equation:</strong> Select the matching cation and anion from the identification menus, then verify the balanced ionic precipitation equations.</>,
     ],
     examMethod: {
       formulas: [
@@ -361,9 +451,9 @@ export const howToGuides = {
     unit: 'Unit 2.1',
     summary: 'Use the magnified lens on heating/cooling graphs to extrapolate ΔT_max and equivalence volume, then calculate ΔH_neut.',
     appletSteps: [
-      <><strong>Choose Mode:</strong> Toggle between <em>Read Graph &amp; Extrapolate</em> and <em>Calculate Enthalpy</em>.</>,
-      <><strong>Use Magnified Lens:</strong> Hover across the SVG temperature curve to inspect 0.1 cm³ grid ticks and pinpoint where the rising and cooling lines intersect.</>,
-      <><strong>Read &amp; Solve:</strong> Enter the extrapolated equivalence volume V_eq and ΔT_max (corrected for heat loss), or calculate ΔH using total solution mass.</>,
+      <><strong>Choose Mode:</strong> Toggle between <em>Identify Endpoint from Extrapolated Graph</em> and <em>Calculate Enthalpy of Neutralisation (ΔH)</em>.</>,
+      <><strong>Use Magnified Lens &amp; Steppers:</strong> Drag on the chart or tap the fine <code>−0.1</code> / <code>+0.1 cm³</code> steppers beneath the magnified tracking lens to align the crosshair on the extrapolated intersection vertex, then tap <em>Use Reading</em>.</>,
+      <><strong>Calculate ΔH:</strong> Combine total solution volume (<code>V_acid + V_NaOH</code>) in <code>q = mcΔT</code>, convert J to kJ, and divide by limiting moles with an explicit negative sign.</>,
     ],
     examMethod: {
       formulas: [
@@ -407,16 +497,16 @@ export const howToGuides = {
     unit: 'Unit 2.1',
     summary: 'Simulate spirit-burner calorimetry experiments, pass the kJ/mol Unit Trap Gate, and apply Hess cycles and bond enthalpies accurately.',
     appletSteps: [
-      <><strong>Run Burner Simulation:</strong> Click <em>Run Simulation 🧪</em> to heat the copper calorimeter and harvest experimental readings (<em>Mass of Fuel Burned</em> and <em>ΔT</em>).</>,
-      <><strong>Unlock Unit Trap Gate:</strong> Convert thermal energy <em>Q</em> into <strong>kJ</strong> (not Joules) and calculate fuel moles <em>n</em> to unlock Step 2.</>,
-      <><strong>Enter ΔH_c:</strong> Submit final enthalpy of combustion in kJ mol⁻¹ (including its negative sign!) via <em>ScientificInput</em>.</>,
+      <><strong>Choose Practice Mode:</strong> Switch between <em>Experimental Calorimetry (q = mcΔT)</em>, <em>Mean Bond Enthalpies (Calculate ΔH)</em>, and <em>Unknown Bond Enthalpy from ΔH</em> (or click <em>Random 🎲</em>).</>,
+      <><strong>Run Burner or Count Bonds:</strong> Ignite the calorimeter simulation or inspect the displayed reaction equation and Mean Bond Enthalpies table on the left workbench.</>,
+      <><strong>Pass Step 1 Gate &amp; Solve:</strong> Confirm Q (kJ) and fuel moles (or known ΣE(broken) and ΣE(formed)), then calculate ΔH or the missing mean bond enthalpy via <em>ScientificInput</em>.</>,
     ],
     examMethod: {
       formulas: [
-        'q (J) = m_water × 4.18 × ΔT       |       ΔH_c = −q(kJ) ÷ n(fuel burned)',
+        <>q (J) = m<sub>water</sub> × 4.18 × ΔT &nbsp;&nbsp;|&nbsp;&nbsp; ΔH<sub>c</sub> = −q(kJ) ÷ n(fuel burned)</>,
         'Bond enthalpies: ΔH = ∑E(bonds broken) − ∑E(bonds formed)',
-        'Hess (ΔH°_f): ΔH_rxn = ∑ΔH°_f(products) − ∑ΔH°_f(reactants)',
-        'Hess (ΔH°_c): ΔH_rxn = ∑ΔH°_c(reactants) − ∑ΔH°_c(products)',
+        <>Hess (ΔH<sub>f</sub>°): ΔH<sub>rxn</sub> = ∑ΔH<sub>f</sub>°(products) − ∑ΔH<sub>f</sub>°(reactants)</>,
+        <>Hess (ΔH<sub>c</sub>°): ΔH<sub>rxn</sub> = ∑ΔH<sub>c</sub>°(reactants) − ∑ΔH<sub>c</sub>°(products)</>,
       ],
       steps: [
         'In calorimetry, ALWAYS insert mass of WATER heated into q = mcΔT, and use mass of FUEL burned strictly for n = m ÷ Mᵣ.',
@@ -426,12 +516,12 @@ export const howToGuides = {
       ],
     },
     workedExample: {
-      question: 'Burning 0.600 g of propan-1-ol (Mᵣ = 60.0) heats 150.0 g of water from 19.5 °C to 51.0 °C. Calculate the experimental enthalpy of combustion, ΔH_c.',
+      question: <>Burning 0.600 g of propan-1-ol (Mᵣ = 60.0) heats 150.0 g of water from 19.5 °C to 51.0 °C. Calculate the experimental enthalpy of combustion, ΔH<sub>c</sub>.</>,
       steps: [
         'ΔT = 51.0 − 19.5 = 31.5 °C.',
         'Heat absorbed by water: q = 150.0 × 4.18 × 31.5 = 19,750.5 J = 19.7505 kJ.',
         'Moles of propan-1-ol burned: n = 0.600 ÷ 60.0 = 0.0100 mol.',
-        'ΔH_c = −19.7505 ÷ 0.0100 = −1,975 kJ mol⁻¹ (−1.98 × 10³ kJ mol⁻¹).',
+        <>ΔH<sub>c</sub> = −19.7505 ÷ 0.0100 = −1,975 kJ mol⁻¹ (−1.98 × 10³ kJ mol⁻¹).</>,
       ],
       answer: '−1975 kJ mol⁻¹',
     },
@@ -442,7 +532,7 @@ export const howToGuides = {
         'Forgetting the negative sign on exothermic combustion reactions or forgetting to divide J by 1000.',
       ],
       checklist: [
-        'm_water used in q = mcΔT ; m_fuel used in n = m ÷ Mᵣ',
+        <>m<sub>water</sub> used in q = mcΔT ; m<sub>fuel</sub> used in n = m ÷ Mᵣ</>,
         'J converted cleanly to kJ (÷ 1000) before dividing by n',
         'Exothermic combustion ΔH carries an explicit minus (−) sign',
       ],
@@ -488,6 +578,137 @@ export const howToGuides = {
         'Dipoles δ⁺ and δ⁻ labelled accurately on polarised/induced bonds',
         'Curly arrows originate strictly on lone pairs or π/σ bond lines',
         'Major carbocation intermediate reflects +I alkyl stabilisation (3° > 2° > 1°)',
+      ],
+    },
+  },
+
+  'hess-cycles': {
+    title: 'Hess’s Law Enthalpy Cycles',
+    unit: 'Unit 2.1',
+    summary: <>Construct ΔH<sub>f</sub>° and ΔH<sub>c</sub>° Hess cycles from scratch in Hess Cycle Builder, apply the zero-enthalpy rule for standard elements, and solve ΔH<sub>r</sub>° or unknown species enthalpies.</>,
+    appletSteps: [
+      <><strong>Pick Cycle Mode:</strong> Start in <em>Hess Cycle Builder</em> to assemble full cycles, or switch to <em>ΔH<sub>f</sub>° Cycles</em>, <em>ΔH<sub>c</sub>° Cycles</em>, or <em>Unknown ΔH° from ΔH<sub>r</sub>°</em> (or <em>Random 🎲</em>).</>,
+      <><strong>Construct &amp; Orient the Cycle:</strong> In Builder mode, select the balanced intermediate box (elements or combustion oxides) from the dropdown directly on the cycle diagram, tap both diagonal legs on the diagram to orient the enthalpy arrows, and assign stoichiometric multipliers (setting standard elements to <em>0</em> for ΔH<sub>f</sub>°).</>,
+      <><strong>Deduce Route Signs &amp; Solve:</strong> Follow the indirect path from Reactants → Intermediate → Products (+ with an arrow, − against an arrow) to verify the route equation and compute ΔH<sub>r</sub>° or the unknown compound’s enthalpy.</>,
+    ],
+    examMethod: {
+      formulas: [
+        <>Formation Cycle (arrows UP from elements): ΔH<sub>r</sub>° = ∑ΔH<sub>f</sub>°(products) − ∑ΔH<sub>f</sub>°(reactants)</>,
+        <>Combustion Cycle (arrows DOWN to CO₂ + H₂O): ΔH<sub>r</sub>° = ∑ΔH<sub>c</sub>°(reactants) − ∑ΔH<sub>c</sub>°(products)</>,
+      ],
+      steps: [
+        <>Identify whether provided data are ΔH<sub>f</sub>° (formation) or ΔH<sub>c</sub>° (combustion) — never mix the arrow or subtraction direction!</>,
+        'Multiply every tabulated enthalpy by its exact stoichiometric coefficient in the balanced chemical equation.',
+        <>Treat any pure element in its standard state (e.g. O₂(g), H₂(g), Fe(s), C(s)) as ΔH<sub>f</sub>° = 0 kJ mol⁻¹ (note: in combustion cycles elements still burn with ΔH<sub>c</sub>° ≠ 0 unless the element is O₂(g)).</>,
+        'When solving for an unknown compound X whose coefficient is n > 1, divide the algebraic difference by n at the final step.',
+      ],
+    },
+    workedExample: {
+      question: <>Use ΔH<sub>c</sub>° data to calculate ΔH<sub>f</sub>°(C₂H₆): C(s) = −394, H₂(g) = −286, C₂H₆(g) = −1560 kJ mol⁻¹.</>,
+      steps: [
+        'Balanced target equation: 2C(s) + 3H₂(g) → C₂H₆(g).',
+        <>Combustion arrows point DOWN to 2CO₂ + 3H₂O: ∑ΔH<sub>c</sub>°(reactants) = 2(−394) + 3(−286) = −1646 kJ mol⁻¹.</>,
+        <>ΔH<sub>f</sub>° = ∑ΔH<sub>c</sub>°(reactants) − ∑ΔH<sub>c</sub>°(products) = −1646 − (−1560) = −86 kJ mol⁻¹.</>,
+      ],
+      answer: '−86 kJ mol⁻¹',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Using (products − reactants) with combustion data instead of (reactants − products).',
+        'Forgetting to multiply C(s) or H₂(g) combustion enthalpies by 2 or 3 when balancing hydrocarbon formation equations.',
+        <>Assuming an element in a combustion cycle is zero (elements burn exothermically: ΔH<sub>c</sub>° ≠ 0, even though ΔH<sub>f</sub>° = 0).</>,
+      ],
+      checklist: [
+        <>Correct arrow orientation checked (UP for ΔH<sub>f</sub>°, DOWN for ΔH<sub>c</sub>°)</>,
+        'Every enthalpy multiplied by equation balancing coefficients',
+        'Final answer divided by stoichiometric coefficient n if solving for 1 mole of an unknown compound',
+      ],
+    },
+  },
+
+  'maxwell-boltzmann': {
+    title: 'Maxwell–Boltzmann & Collision Theory',
+    unit: 'Unit 2.2',
+    summary: 'Analyse temperature shifts, catalysts, and concentration changes on kinetic energy distribution curves and master WJEC collision-theory mark schemes.',
+    appletSteps: [
+      <><strong>Examine the Distribution Curve:</strong> In <em>Exam Question Trainer</em>, inspect how peak E_mp, total curve area, and the shaded E ≥ Eₐ tail respond to T, catalysts, or concentration.</>,
+      <><strong>Answer Two-Part Exam Prompts:</strong> Select the matching curve behaviour and WJEC collision-theory explanation, using <em>Need a Hint?</em> whenever needed.</>,
+      <><strong>Simulate Variables Live:</strong> Switch to the <em>Interactive Curve Explorer</em> tab to adjust temperature, Eₐ, catalyst threshold, and 2× concentration sliders in real time.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Peak height corresponds to Most Probable Energy (E_mp)  |  Mean Energy Ē > E_mp',
+        'Total area under curve = Total number of molecules in the sample',
+      ],
+      steps: [
+        'Always verify boundary conditions when sketching: starts at (0,0), peaks smoothly at E_mp, and approaches the x-axis asymptotically without ever touching zero.',
+        'On raising temperature: E_mp shifts right and peak drops lower (constant area), leaving a far larger shaded area with E ≥ Eₐ.',
+        'On adding a catalyst: the Maxwell–Boltzmann curve itself stays completely unchanged; only Eₐ moves left to E_cat via an alternative reaction pathway.',
+        'Always conclude rate explanations using WJEC phrasing: "greater proportion/fraction of molecules have E ≥ Eₐ, so more collisions are successful per unit time".',
+      ],
+    },
+    workedExample: {
+      question: 'Explain why increasing temperature by 10 °C causes a large increase in reaction rate, even though collision frequency rises only slightly.',
+      steps: [
+        'At higher temperature, the peak shifts right and lowers while total area stays unchanged.',
+        'Far more molecules possess kinetic energy greater than or equal to the activation energy (E ≥ Eₐ).',
+        'Consequently, the frequency of successful collisions increases dramatically.',
+      ],
+      answer: 'Many more molecules have E ≥ Eₐ → much higher proportion of successful collisions',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Writing that a catalyst "gives molecules more kinetic energy" or shifts the curve to the right (it only lowers Eₐ).',
+        'Claiming higher temperature "lowers the activation energy Eₐ" (Eₐ is unchanged unless a catalyst is added).',
+        'Letting a sketched distribution curve touch the x-axis at high energy or failing to pass through (0,0).',
+      ],
+      checklist: [
+        'Curve starts strictly at (0,0) and never touches the x-axis on the right',
+        'Total area stays identical when only temperature or a catalyst changes',
+        'Explanation contrasts E ≥ Eₐ frequency rather than total collision speed alone',
+      ],
+    },
+  },
+
+  'iupac-isomerism': {
+    title: 'IUPAC Naming & E/Z Isomerism',
+    unit: 'Unit 2.4',
+    summary: 'Practise systematic IUPAC nomenclature, chain/position/functional-group isomer classification, and Cahn–Ingold–Prelog E/Z stereochemistry.',
+    appletSteps: [
+      <><strong>Choose Practice Mode:</strong> Switch between <em>E/Z Stereoisomerism &amp; CIP Priority</em>, <em>Systematic IUPAC Naming</em>, and <em>Structural Isomer Classification</em> (or click <em>Random 🎲</em>).</>,
+      <><strong>Inspect Displayed Structures:</strong> Note that E/Z ligands shuffle vertically on each load so you must inspect priority relative to C=C directly rather than memorising names.</>,
+      <><strong>Apply Naming &amp; Priority Rules:</strong> Select the longest carbon chain or higher-atomic-number CIP groups, then check your classification or systematic name.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Z (zusammen) = higher-priority groups on SAME side of C=C  |  E (entgegen) = OPPOSITE sides',
+        'Structural isomer types: Chain (branching) | Position (locant) | Functional group (family)',
+      ],
+      steps: [
+        'For E/Z isomerism: check that BOTH carbons of the C=C bond have two different attached groups (if either carbon has two identical groups, no E/Z stereoisomerism exists).',
+        'Assign Cahn–Ingold–Prelog (CIP) priority on each carbon separately using atomic number Z (Br 35 > Cl 17 > O 8 > N 7 > C 6 > H 1; break carbon ties by moving outward).',
+        'For IUPAC naming: pick the longest carbon chain containing the principal functional group, number for the lowest locant of the principal group, and list substituent prefixes alphabetically with commas between numbers and hyphens before letters.',
+      ],
+    },
+    workedExample: {
+      question: 'Why does 1-bromo-1-chloroprop-1-ene show E/Z stereoisomerism while propene does not, and how is priority assigned?',
+      steps: [
+        'Propene (CH₃CH=CH₂) has two identical —H atoms on C1, so swapping them produces the same structure (no E/Z isomers).',
+        'In CBrCl=CHCH₃, C1 carries Br and Cl (different) and C2 carries H and CH₃ (different), and restricted rotation about the C=C π-bond locks them in place.',
+        'By CIP atomic number: on C1, Br (Z=35) > Cl (Z=17); on C2, C (Z=6) > H (Z=1).',
+      ],
+      answer: 'Z when Br & CH₃ are on the same side; E when Br & CH₃ are on opposite sides',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Calling cis/trans or E/Z on alkenes with two identical groups on one carbon (e.g. CH₃CH=CH₂ or (CH₃)₂C=CH₂).',
+        'Claiming E/Z isomerism arises from a chiral carbon instead of restricted rotation about the C=C π-bond.',
+        'Ordering prefixes numerically instead of alphabetically (e.g. writing 3-methyl-2-bromobutane instead of 2-bromo-3-methylbutane).',
+      ],
+      checklist: [
+        'Both C=C carbons verified to carry two different groups',
+        'CIP priority based on atomic number Z applied independently on C1 and C2',
+        'IUPAC numbers separated by commas, hyphens placed strictly between numbers and letters',
       ],
     },
   },
@@ -766,8 +987,8 @@ export const howToGuides = {
     unit: 'Unit 3.8',
     summary: 'Build ICE tables, divide equilibrium moles by container volume V, solve Kc/missing concentrations, and determine composite units.',
     appletSteps: [
-      <><strong>Pick Kc Task:</strong> Switch across <em>ICE Table</em>, <em>Direct Kc</em>, <em>Find Missing Species</em>, and <em>Predict Units</em>, or click <em>Random 🎲</em>.</>,
-      <><strong>Predict Units Stepper:</strong> In <em>Predict Units</em> mode, use the <code>mol</code>, <code>dm</code>, and <code>s</code> power steppers to match the sorted equilibrium unit preview.</>,
+      <><strong>Pick Kc Task:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch across <em>Initial Moles + Volume → Kc</em>, <em>Equilibrium Concentrations → Kc</em>, <em>Kc + Rearrangement → Concentration</em>, and <em>Deduce Equilibrium Units</em>.</>,
+      <><strong>Predict Units Stepper:</strong> In <em>Deduce Equilibrium Units</em> mode, use the <code>mol</code>, <code>dm</code>, and <code>s</code> power steppers to match the sorted equilibrium unit preview.</>,
       <><strong>Enter Answer:</strong> Always convert moles to concentrations (÷ volume V in dm³) before inputting Kc into <em>ScientificInput</em>.</>,
     ],
     examMethod: {
@@ -811,7 +1032,7 @@ export const howToGuides = {
     unit: 'Unit 3.8',
     summary: 'Track total gas moles, compute mole fractions (x_i) and partial pressures (p_i), and evaluate Kp including degree-of-dissociation α problems.',
     appletSteps: [
-      <><strong>Choose Kp Mode:</strong> Toggle between <em>Direct Kp</em>, <em>Mole Fractions</em>, and <em>Dissociation (α)</em>, or press <em>Random 🎲</em>.</>,
+      <><strong>Choose Kp Mode:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch between <em>Partial Pressures → Kp</em>, <em>Equilibrium Moles + P(total) → Kp</em>, and <em>Percentage Dissociation (%) → Kp</em>.</>,
       <><strong>Compute Partial Pressures:</strong> Sum ONLY gaseous equilibrium moles for n_total, compute x_i = n_i ÷ n_total, then multiply by total pressure P.</>,
       <><strong>Verify Kp:</strong> Enter Kp via <em>ScientificInput</em> (using <em>×10ˣ</em> for extreme constants).</>,
     ],
@@ -857,9 +1078,9 @@ export const howToGuides = {
     unit: 'Unit 3.9',
     summary: 'Calculate pH for strong acids/bases, weak acids via Ka, pure water at varied temperatures via Kw, and convert smoothly between Ka and pKa.',
     appletSteps: [
-      <><strong>Generate Variant:</strong> Click <em>🎲 New Variant</em> or select modes covering <em>Strong Acid/Base</em>, <em>Weak Acid (Ka)</em>, <em>Buffer</em>, <em>Kw vs Temperature</em>, and <em>Ka ↔ pKa Conversions</em>.</>,
-      <><strong>Match Formula to Species:</strong> Identify whether the solute dissociates fully (strong) or partially (weak Ka) before finding [H⁺].</>,
-      <><strong>Input Precision:</strong> Report pH to 2 decimal places, and enter small Ka / [H⁺] values cleanly with <em>ScientificInput</em> (<em>×10ˣ</em>).</>,
+      <><strong>Choose Acid/Base Mode:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to practise <em>Strong Acids</em>, <em>Weak Acids (Kₐ)</em>, <em>Acidic Buffers</em>, <em>K_w &amp; Temperature</em>, or <em>Kₐ ↔ pKₐ Conversions</em>.</>,
+      <><strong>Match Formula &amp; Hints:</strong> Identify whether the solute dissociates fully (strong) or partially (weak Kₐ) before finding [H⁺], using the collapsible <em>Need a Hint?</em> drawer if needed.</>,
+      <><strong>Input Precision:</strong> Report pH to 2 decimal places, and enter small Kₐ / [H⁺] values cleanly with <em>ScientificInput</em> (<em>×10ˣ</em>).</>,
     ],
     examMethod: {
       formulas: [
@@ -903,8 +1124,8 @@ export const howToGuides = {
     unit: 'Unit 3.9',
     summary: 'Compute buffer pH from acid/conjugate-salt mixtures, solid salt additions, and small strong-acid or strong-alkali perturbations.',
     appletSteps: [
-      <><strong>Choose Buffer Scenario:</strong> Switch between <em>Acid + Salt Mixture</em>, <em>Solid Salt Mass</em>, and <em>+NaOH / +HCl Perturbation</em>, or click <em>Random 🎲</em>.</>,
-      <><strong>Track Exact Moles:</strong> Work directly with moles of weak acid <em>n(HA)</em> and conjugate base <em>n(A⁻)</em> so mixing dilution cancels cleanly.</>,
+      <><strong>Choose Buffer Scenario:</strong> Use the adaptive mode selector (or <em>Random 🎲</em>) to switch between <em>Standard Acidic Buffer pH</em>, <em>Buffer Salt Mass Additions</em>, and <em>Buffer Action (+NaOH / +HCl)</em>.</>,
+      <><strong>Track Exact Moles &amp; Hints:</strong> Work directly with moles of weak acid <em>n(HA)</em> and conjugate base <em>n(A⁻)</em> so mixing dilution cancels cleanly, opening the collapsible <em>Need a Hint?</em> drawer if stuck.</>,
       <><strong>Verify pH:</strong> Enter final pH to 2 decimal places and check the feedback ratio if needed.</>,
     ],
     examMethod: {
@@ -1029,14 +1250,58 @@ export const howToGuides = {
     },
   },
 
+  'organic-synthesis': {
+    title: 'Organic Synthesis Pathways & Reagents Map',
+    unit: 'Unit 4.7',
+    summary: 'Plan two-step aliphatic and aromatic syntheses linking halogenoalkanes, nitriles, carbonyls, acyl chlorides, benzene, phenylamine, and azo dyes with Unit 4.7(b) practical purification methods.',
+    appletSteps: [
+      <><strong>Choose Synthesis Tier:</strong> Filter between <em>Aliphatic &amp; Chain Extension</em> and <em>Aromatic &amp; Azo</em> challenges, or pick any numbered transformation chip.</>,
+      <><strong>Build the Two-Step Route:</strong> Select Step 1 reagents and conditions, the resulting intermediate compound, and Step 2 reagents while watching the live synthesis schematic update.</>,
+      <><strong>Verify &amp; Review Pitfalls:</strong> Click <em>Need a Hint?</em> for conceptual prompts before submitting; full accuracy unlocks official WJEC mark-scheme equations and common examiner traps.</>,
+      <><strong>Search the Reagent Map:</strong> Switch to the <em>Interactive Reagent &amp; Pathway Map</em> tab to filter AS/A2 reactions by functional group or reagent and review Unit 4.7(b) reflux, distillation, drying, and recrystallisation checks.</>,
+    ],
+    examMethod: {
+      formulas: [
+        'Chain extension (+1 C):  R–X + KCN(aq/EtOH, reflux) → R–CN  ⇒  LiAlH₄ → R–CH₂NH₂  OR  H⁺(aq)/reflux → R–COOH',
+        'Aromatic amine & azo route:  C₆H₆ → C₆H₅NO₂ (50–55 °C) → C₆H₅NH₂ (Sn/HCl, then NaOH) → C₆H₅N₂⁺ (< 5 °C)',
+      ],
+      steps: [
+        'Compare carbon chain length first: if the target has ONE extra carbon, plan immediately through a nitrile (KCN/aq EtOH reflux for halogenoalkanes, or HCN/KCN for aldehydes/ketones).',
+        'For C-1 → C-2 substituent shifts (e.g. propan-1-ol → 2-bromopropane), dehydrate to the alkene (conc. H₂SO₄, ~170 °C) and add HX electrophilically via the more stable carbocation.',
+        'Keep strict reagent/solvent/temperature pairs together: aqueous NaOH (alcohol) vs ethanolic KOH (alkene); distillation (aldehyde) vs vertical reflux (carboxylic acid); < 5–10 °C for diazonium coupling; 50–55 °C for benzene nitration; NaOH(aq) work-up after Sn/conc. HCl.',
+        'Practise Unit 4.7(b) purification steps: dissolving crude solid in minimum hot solvent → hot filtration → slow cooling → Buchner filtration → washing cold → drying & melting point range.',
+      ],
+    },
+    workedExample: {
+      question: 'Outline a two-step synthesis of propylamine (CH₃CH₂CH₂NH₂) starting from bromoethane (CH₃CH₂Br), naming all reagents and conditions.',
+      steps: [
+        'Chain length increases from 2 carbons to 3 carbons, so use nucleophilic substitution with cyanide ion: heat bromoethane under reflux with KCN dissolved in aqueous ethanol → propanenitrile (CH₃CH₂CN).',
+        'Reduce propanenitrile completely using LiAlH₄ in dry ether (or H₂ with a nickel catalyst and heat) → propylamine (CH₃CH₂CH₂NH₂).',
+      ],
+      answer: '1) KCN in aqueous ethanol, heat under reflux (→ CH₃CH₂CN)   2) LiAlH₄ in dry ether',
+    },
+    examinerTips: {
+      pitfalls: [
+        'Forgetting NaOH(aq) after reducing nitrobenzene with Sn + conc. HCl (leaving phenylammonium chloride salt instead of free phenylamine).',
+        'Using ethanolic KOH when an alcohol was wanted, or aqueous NaOH when an alkene was wanted.',
+        'Omitting “below 5 °C / 10 °C” in diazotisation, omitting “anhydrous AlCl₃” in Friedel–Crafts acylation, or using NaBH₄ on nitriles instead of LiAlH₄.',
+      ],
+      checklist: [
+        'Carbon chain count checked between start and target (nitrile needed if +1 C?)',
+        'Exact solvent, catalyst, temperature (< 5 °C, 50–55 °C, 170 °C), and work-up (NaOH(aq)) included',
+        'Reflux vs immediate distillation matched cleanly to complete vs partial oxidation',
+      ],
+    },
+  },
+
   'spectra-interpreter': {
     title: 'Combined Spectroscopy Interpreter (IR, MS & NMR)',
     unit: 'Unit 4.8',
     summary: 'Cross-reference Infrared, Mass Spec, ¹³C NMR, and ¹H NMR splitting spectra with the WJEC Data Booklet to deduce unknown structures.',
     appletSteps: [
-      <><strong>Pick Unknown Sample:</strong> Select any spectrum dataset and inspect all <strong>4 technique tabs</strong> (<em>1. IR</em>, <em>2. MS</em>, <em>3. ¹³C NMR</em>, <em>4. ¹H NMR</em>).</>,
+      <><strong>Pick Unknown Sample:</strong> Use the adaptive sample selector (or <em>Random Unknown</em>) to inspect all <strong>4 technique tabs</strong> (<em>1. IR</em>, <em>2. MS</em>, <em>3. ¹³C NMR</em>, <em>4. ¹H NMR</em>).</>,
       <><strong>Click Interactive Peaks:</strong> Select bars/signals on each spectrum plot to log exact wavenumbers (cm⁻¹), m/z fragments, chemical shifts (δ ppm), integration, and splitting patterns.</>,
-      <><strong>Submit 3-Step Deduction:</strong> Pick the deduced <em>Functional Group</em>, <em>Molecular Formula</em>, and exact <em>Compound Identity</em> and verify.</>,
+      <><strong>Submit 3-Step Deduction:</strong> Pick the deduced <em>Functional Group</em>, <em>¹³C Environment Count</em>, and exact <em>Compound Identity</em> and verify.</>,
     ],
     examMethod: {
       formulas: [

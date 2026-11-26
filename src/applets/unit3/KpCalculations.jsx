@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import ScientificInput from '../../components/shared/ScientificInput';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
+
+const MODE_OPTIONS = [
+  { value: 'direct_kp', label: 'Partial Pressures → Kp' },
+  { value: 'mole_fractions', label: 'Equilibrium Moles + P(total) → Kp', shortLabel: 'Moles + P(total) → Kp' },
+  { value: 'dissociation_alpha', label: 'Percentage Dissociation (%) → Kp', shortLabel: '% Dissociation → Kp' },
+];
 
 const KpCalculations = ({ onComplete }) => {
   const [mode, setMode] = useState('mole_fractions');
+  const [isRandomMode, setIsRandomMode] = useState(false);
   const [problem, setProblem] = useState(null);
   const [coeff, setCoeff] = useState('');
   const [exp, setExp] = useState('');
   const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const reactions = [
     {
@@ -43,10 +52,11 @@ const KpCalculations = ({ onComplete }) => {
 
   const generateProblem = (forcedMode = null) => {
     const modes = ['direct_kp', 'mole_fractions', 'dissociation_alpha'];
-    const selection = forcedMode || mode;
+    const selection = forcedMode || (isRandomMode ? 'random' : mode);
     const targetMode = selection === 'random' ? modes[Math.floor(Math.random() * modes.length)] : selection;
 
     setMode(targetMode);
+    setShowHint(false);
 
     const rxn = reactions[Math.floor(Math.random() * reactions.length)];
     const useAtm = Math.random() > 0.5;
@@ -257,73 +267,99 @@ const KpCalculations = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container">
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center gap-2">
-          <select
-            value={mode === 'random' ? '' : mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="flex-1 min-w-0 bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
-          >
-            <option value="direct_kp">Partial Pressures → Kp</option>
-            <option value="mole_fractions">Equilibrium Moles + P(total) → Kp</option>
-            <option value="dissociation_alpha">Percentage Dissociation (%) → Kp</option>
-          </select>
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">Kp Equilibrium Constants</div>
 
-          <button
-            type="button"
-            onClick={() => { generateProblem('random'); }}
-            className="px-4 py-2.5 text-xs font-black uppercase bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl transition-all shrink-0"
-          >
-            Random 🎲
-          </button>
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        isRandomActive={isRandomMode}
+        onChange={(val) => {
+          setIsRandomMode(false);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setIsRandomMode(true);
+          generateProblem('random');
+        }}
+        collapseBelow="sm"
+      />
+
+      <div className="applet-workbench">
+        {/* Left Column: Gas Equilibrium Scenario & Hint */}
+        <div className="applet-workbench-sticky space-y-3.5">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
+            <div className="question-text !mb-0 text-center md:text-left leading-relaxed text-sm sm:text-base">
+              {problem.questionText}
+            </div>
+
+            <div className="flex flex-col items-center md:items-start">
+              <button
+                type="button"
+                onClick={() => setShowHint((prev) => !prev)}
+                className="min-h-[34px] px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
+              >
+                💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+              </button>
+              {showHint && (
+                <div className="mt-2.5 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed space-y-1">
+                  <p>
+                    <strong className="font-black text-amber-900">Partial Pressure Method: </strong>
+                    First find total gas moles at equilibrium (gases only), compute each gas&apos;s mole fraction x<sub>i</sub> = n<sub>i</sub> &divide; n<sub>total(gases only)</sub>, then p<sub>i</sub> = x<sub>i</sub> &times; P<sub>total</sub>.
+                  </p>
+                  <p>
+                    Substitute partial pressures into K<sub>p</sub> = &Pi; p(products)<sup>coeff</sup> &divide; &Pi; p(reactants)<sup>coeff</sup> (never use square brackets [ ] for K<sub>p</sub>).
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="applet-header">Kp Equilibrium Constants</div>
+        {/* Right Column: ScientificInput, Unit Badge Row, Actions & Feedback */}
+        <div className="space-y-4">
+          <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col items-center justify-center gap-3">
+            <div className="w-full flex justify-center">
+              <ScientificInput
+                value={coeff}
+                exponent={exp}
+                onValueChange={setCoeff}
+                onExponentChange={setExp}
+                label={problem.targetLabel}
+                status={feedback.type}
+              />
+            </div>
 
-      <div className="question-text text-center px-2 leading-relaxed">
-        {problem.questionText}
-      </div>
+            <div className="flex flex-wrap items-center justify-center gap-2 select-none">
+              <span className="text-xs font-extrabold text-slate-400 tracking-widest">Units:</span>
+              <span className="text-sm font-black text-slate-600 font-mono bg-white border border-slate-200/80 px-2.5 py-0.5 rounded-lg shadow-2xs">
+                {problem.unitExpectation}
+              </span>
+            </div>
+          </div>
 
-      <div className="w-full flex items-center justify-center my-6 overflow-x-auto">
-        <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
-          <ScientificInput
-            value={coeff}
-            exponent={exp}
-            onValueChange={setCoeff}
-            onExponentChange={setExp}
-            label={problem.targetLabel}
-            status={feedback.type}
-          />
-          <span className="text-sm font-bold text-slate-500 ml-1 select-none">
-            {problem.unitExpectation}
-          </span>
-        </div>
-      </div>
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
+            <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
+          </div>
 
-      <div className="button-group">
-        <button className="btn btn-primary" onClick={checkAnswer}>Check Answer</button>
-        <button className="btn btn-secondary" onClick={() => generateProblem()}>Next Problem &rarr;</button>
-      </div>
-
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.type === 'success' && (
-            <button
-              type="button"
-              onClick={() => generateProblem()}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
-            >
-              Next Problem &rarr;
-            </button>
+          {feedback.message && (
+            <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.type === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span>{feedback.message}</span>
+              {feedback.type === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

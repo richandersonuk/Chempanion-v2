@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { AdaptivePicker } from '../../components/shared/AdaptivePicker';
 
 const CellDiagram = ({ anode, cathode }) => (
-  <svg viewBox="0 0 400 220" className="w-full h-auto max-w-md mx-auto my-6 stroke-[var(--chem-text-main)] fill-none stroke-2">
+  <svg viewBox="0 0 400 220" className="w-full h-auto max-w-md mx-auto my-2 stroke-[var(--chem-text-main)] fill-none stroke-2">
     <path d="M 60 100 L 60 200 L 160 200 L 160 100" />
     <path d="M 240 100 L 240 200 L 340 200 L 340 100" />
 
@@ -27,12 +28,20 @@ const CellDiagram = ({ anode, cathode }) => (
   </svg>
 );
 
+const MODE_OPTIONS = [
+  { value: 'calc_emf', label: 'Calculate Standard Cell EMF (E°cell)', shortLabel: 'Standard EMF (E°cell)' },
+  { value: 'cell_notation', label: 'Build Conventional Cell Notation', shortLabel: 'Cell Notation' },
+  { value: 'feasibility_shifts', label: 'Predict Non-Standard Condition Shifts', shortLabel: 'Non-Standard Shifts' },
+];
+
 const CellPotentials = ({ onComplete }) => {
   const [mode, setMode] = useState('calc_emf');
+  const [isRandomMode, setIsRandomMode] = useState(false);
   const [problem, setProblem] = useState(null);
   const [studentAnswer, setStudentAnswer] = useState('');
   const [selectedCard, setSelectedCard] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', status: '' });
+  const [showHint, setShowHint] = useState(false);
 
   const halfCells = [
     { id: 'al', sys: <>Al<sup>3+</sup>(aq) + 3e<sup>&minus;</sup> &#x21CC; Al(s)</>, e0: -1.66, solid: true, electrons: 3, name: 'aluminium' },
@@ -48,11 +57,17 @@ const CellPotentials = ({ onComplete }) => {
   ];
 
   const generateProblem = (forcedMode = null) => {
-    const selection = forcedMode || mode;
+    const modes = ['calc_emf', 'cell_notation', 'feasibility_shifts'];
+    const rawSelection = forcedMode || (isRandomMode ? 'random' : mode);
+    const selection = rawSelection === 'random'
+      ? modes[Math.floor(Math.random() * modes.length)]
+      : rawSelection;
+
     setMode(selection);
     setStudentAnswer('');
     setSelectedCard(null);
     setFeedback({ message: '', status: '' });
+    setShowHint(false);
 
     let cellA = halfCells[Math.floor(Math.random() * halfCells.length)];
     let cellB = halfCells[Math.floor(Math.random() * halfCells.length)];
@@ -69,7 +84,7 @@ const CellPotentials = ({ onComplete }) => {
     if (selection === 'calc_emf') {
       newProb = {
         title: "Standard Cell Potential Calculation (E°cell)",
-        text: <>An electrochemical cell is constructed under standard laboratory conditions using the <b>{cellA.name}</b> and <b>{cellB.name}</b> half-cells (see the Standard Electrode Potentials table below):</>,
+        text: <>An electrochemical cell is constructed under standard laboratory conditions using the <b>{cellA.name}</b> and <b>{cellB.name}</b> half-cells (see the Standard Electrode Potentials table):</>,
         halfCellData: [cellA, cellB],
         question: "Calculate the overall standard cell potential (E°cell) in volts.",
         label: "E°cell =",
@@ -116,7 +131,7 @@ const CellPotentials = ({ onComplete }) => {
 
       newProb = {
         title: "Conventional Cell Diagrams",
-        text: <>Consider a standard cell comprising a <b>{cellA.name}</b> half-cell joined across a salt bridge to a standard <b>{cellB.name}</b> half-cell (refer to the Standard Electrode Potentials table below).</>,
+        text: <>Consider a standard cell comprising a <b>{cellA.name}</b> half-cell joined across a salt bridge to a standard <b>{cellB.name}</b> half-cell (refer to the Standard Electrode Potentials table).</>,
         question: "Select the correct, standard conventional representation notation layout string for this operational cell matrix.",
         choices: choices.sort(() => Math.random() - 0.5),
         meta: { anode, cathode },
@@ -124,22 +139,45 @@ const CellPotentials = ({ onComplete }) => {
       };
     } else if (selection === 'feasibility_shifts') {
       const conditionOptions = [
-        { desc: `increasing the concentration of the reactant ions in the cathode compartment`, effect: 'increase', hint: 'This shifts the cathode equilibrium to the right, making its electrode potential more positive.' },
-        { desc: `increasing the concentration of the product ions generated in the anode compartment`, effect: 'decrease', hint: 'This shifts the anode equilibrium to the left, making its electrode potential more positive, which narrows the EMF gap.' },
-        { desc: `using larger metal electrode sheets with double the surface area under standard concentration boundaries`, effect: 'unchanged', hint: 'Electrode surface area scales current capacity but leaves intensive potential voltages completely unchanged.' }
+        {
+          key: 'cathode_reactant',
+          desc: `increasing the concentration of the oxidised (left-hand) species in the ${cathode.name} cathode half-cell`,
+          effect: 'increase',
+          hint: `Increasing reactant concentration in the ${cathode.name} reduction equilibrium shifts it to the right, making E(cathode) more positive and widening E°cell.`
+        },
+        {
+          key: 'cathode_dilute',
+          desc: `diluting the aqueous reactant ions in the ${cathode.name} cathode compartment with distilled water`,
+          effect: 'decrease',
+          hint: `Decreasing reactant ion concentration in the ${cathode.name} cathode shifts its reduction equilibrium left, lowering E(cathode) and narrowing E°cell.`
+        },
+        {
+          key: 'anode_product',
+          desc: `increasing the concentration of the oxidised (left-hand) species in the ${anode.name} anode half-cell`,
+          effect: 'decrease',
+          hint: `Increasing left-hand ion concentration in the ${anode.name} anode equilibrium shifts it right, making E(anode) less negative and shrinking E(cathode) − E(anode).`
+        },
+        {
+          key: 'electrode_area',
+          desc: `doubling the physical surface area of the solid electrode strips in a cell built with ${anode.name} and ${cathode.name}`,
+          effect: 'unchanged',
+          hint: 'Electrode surface area affects reaction rate / maximum current, NOT the thermodynamic equilibrium position or intensive electrode potential.'
+        }
       ];
       const activeCondition = conditionOptions[Math.floor(Math.random() * conditionOptions.length)];
 
       newProb = {
         title: "Non-Standard Equilibrium Conditions",
-        text: <>A functional cell is setup under standard guidelines. A lab technician modifies the parameters by <b>{activeCondition.desc}</b>.</>,
-        question: "Predict how the measured operational cell potential (Ecell) responds compared to the standard E°cell baseline value.",
+        text: <>A functional cell combining <b>{anode.name}</b> (anode) and <b>{cathode.name}</b> (cathode) is set up under standard conditions. A technician modifies the system by <b>{activeCondition.desc}</b>.</>,
+        question: "Predict how the measured cell potential (Ecell) responds compared to the standard E°cell baseline.",
         choices: [
-          { text: "Cell potential increases (+Ecell expands)", id: 'increase' },
+          { text: "Cell potential increases (Ecell becomes more positive)", id: 'increase' },
           { text: "Cell potential decreases (EMF gap narrows)", id: 'decrease' },
           { text: "Cell potential remains completely unchanged", id: 'unchanged' }
         ],
         correctId: activeCondition.effect,
+        condKey: activeCondition.key,
+        meta: { anode, cathode },
         hint: activeCondition.hint,
         isCards: true
       };
@@ -218,9 +256,9 @@ const CellPotentials = ({ onComplete }) => {
       const selected = problem.choices[selectedCard];
       if (selected.id === problem.correctId) {
         setFeedback({ message: `Correct! ${problem.hint}`, status: 'success' });
-        onComplete?.(`shift_${problem.correctId}`);
+        onComplete?.(`shift_${problem.meta.anode.id}_${problem.meta.cathode.id}_${problem.condKey}`);
       } else {
-        setFeedback({ message: `Incorrect. Consider Le Chatelier's equilibrium effects: ${problem.hint}`, status: 'error' });
+        setFeedback({ message: "Incorrect. Apply Le Chatelier's principle to the half-cell reduction equilibrium and check how E(cathode) − E(anode) responds.", status: 'error' });
       }
     }
   };
@@ -228,139 +266,175 @@ const CellPotentials = ({ onComplete }) => {
   if (!problem) return null;
 
   return (
-    <div className="applet-container" style={{ textTransform: 'none' }}>
-      <div className="w-full max-w-md mx-auto mb-6 px-4">
-        <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 text-center">
-          Choose Practice Mode
-        </span>
-        <div className="flex items-center justify-center">
-          <select
-            value={mode}
-            onChange={(e) => { setMode(e.target.value); generateProblem(e.target.value); }}
-            className="w-full max-w-xs bg-white border border-slate-200 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-bold outline-none focus:border-[#326fa0] focus:ring-1 focus:ring-[#326fa0] transition-all cursor-pointer shadow-sm text-center"
+    <div className="applet-container space-y-5" style={{ textTransform: 'none' }}>
+      <div className="applet-header !mb-0">{problem.title}</div>
+
+      <AdaptivePicker
+        label="Choose Practice Mode"
+        options={MODE_OPTIONS}
+        value={mode}
+        isRandomActive={isRandomMode}
+        onChange={(val) => {
+          setIsRandomMode(false);
+          generateProblem(val);
+        }}
+        onRandom={() => {
+          setIsRandomMode(true);
+          generateProblem('random');
+        }}
+        collapseBelow="sm"
+      />
+
+      {/* Scenario Prompt & Collapsible Hint above workbench so mobile users read the question first */}
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-xs">
+        <div className="question-text !mb-0 text-center md:text-left leading-relaxed text-sm sm:text-base">
+          {problem.text}
+        </div>
+        <div className="flex flex-col items-center md:items-start">
+          <button
+            type="button"
+            onClick={() => setShowHint((prev) => !prev)}
+            className="min-h-[34px] px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-black transition-colors cursor-pointer"
           >
-            <option value="calc_emf">Calculate Standard Cell EMF (E°cell)</option>
-            <option value="cell_notation">Build Conventional Cell Notation</option>
-            <option value="feasibility_shifts">Predict Non-Standard Condition Shifts</option>
-          </select>
+            💡 {showHint ? 'Hide Hint' : 'Need a Hint?'}
+          </button>
+          {showHint && (
+            <div className="mt-2 w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-950 text-left leading-relaxed">
+              <strong className="font-black text-amber-900">Electrochemistry Method: </strong>
+              {mode === 'calc_emf'
+                ? 'Identify the more positive (or less negative) E° as the cathode (reduction) and compute E°cell = E°(cathode) − E°(anode) to 2 d.p. with an explicit + or − sign. Never multiply E° values by reaction stoichiometry!'
+                : mode === 'cell_notation'
+                ? 'Place the oxidation half-cell (more negative E°) on the left and the reduction half-cell on the right separated by a salt bridge (||). Include Pt(s) whenever a half-cell has no solid metal electrode.'
+                : 'Half-cell equations are written as reductions (oxidised + ne⁻ ⇌ reduced). Shifting a half-cell right raises its electrode potential E; shifting left lowers E.'}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="applet-header">{problem.title}</div>
-      <div className="question-text text-center px-4 leading-relaxed">{problem.text}</div>
+      <div className="applet-workbench">
+        {/* Left Column: Diagram & Provided Standard Electrode Potentials */}
+        <div className="applet-workbench-sticky space-y-3.5">
+          {mode === 'calc_emf' && problem.requiresDiagram && (
+            <div className="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs">
+              <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />
+            </div>
+          )}
 
-      {mode === 'calc_emf' && problem.requiresDiagram && (
-        <CellDiagram anode={problem.meta.anode} cathode={problem.meta.cathode} />
-      )}
-
-      {/* Dedicated Exam-Style Standard Electrode Potentials Table (not in WJEC Data Booklet) */}
-      <div className="w-full max-w-xl mx-auto my-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-            Standard Electrode Potentials (298 K, 1.0 mol dm⁻³, 1 atm)
-          </span>
-          <span className="text-[10px] font-bold text-slate-400">
-            Provided in Question
-          </span>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th className="py-2 px-3 text-[11px] font-bold text-slate-500 uppercase">Half-Reaction</th>
-                <th className="py-2 px-3 text-[11px] font-bold text-slate-500 text-right">E° / V</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {halfCells.map((cell) => (
-                <tr key={cell.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="py-2 px-3 text-xs font-mono font-bold text-slate-800">{cell.sys}</td>
-                  <td className="py-2 px-3 text-xs font-mono text-right text-[#326fa0] font-black whitespace-nowrap">
-                    {cell.e0 > 0 ? `+${cell.e0.toFixed(2)}` : cell.e0.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="font-bold my-6 text-center text-[0.95rem] px-3 text-[var(--chem-text-main)]">
-        {problem.question}
-      </div>
-
-      {problem.isCards && problem.choices && (
-        <div className="w-full max-w-md mx-auto flex flex-col gap-3 my-4">
-          {problem.choices.map((choice, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => { setSelectedCard(i); setFeedback({ message: '', status: '' }); }}
-              className={`w-full p-4 text-left text-sm font-bold border rounded-xl transition-all ${
-                selectedCard === i
-                  ? 'bg-[var(--chem-bg-highlight)] border-[var(--chem-primary)] text-[var(--chem-primary)] ring-1 ring-[var(--chem-primary)]'
-                  : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-main)] hover:bg-[var(--chem-bg-alt)]'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selectedCard === i ? 'border-[var(--chem-primary)] bg-[var(--chem-primary)] text-white text-[10px]' : 'border-[var(--chem-slate-300)]'}`}>
-                  {selectedCard === i && "✓"}
-                </span>
-                <span className="font-mono tracking-wide text-xs sm:text-sm break-words min-w-0">{choice.text}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {!problem.isCards && (
-        <div className="w-full flex items-center justify-center my-6 overflow-x-auto">
-          <div className="flex flex-row items-center justify-center flex-nowrap whitespace-nowrap gap-3 px-6 py-4 bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-2xl shadow-sm">
-            <label className="text-sm font-black text-[var(--chem-text-main)] select-none">{problem.label}</label>
-            <input
-              type="text"
-              inputMode="decimal"
-              className={`w-32 bg-white text-center text-lg font-extrabold py-2 px-3 rounded-lg border focus:outline-none transition-colors ${feedback.status === 'error' ? 'border-red-400 text-red-600 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-[var(--chem-border)] text-[var(--chem-text-main)] focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)]'}`}
-              value={studentAnswer}
-              onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
-              placeholder="+1.10"
-              onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem(mode) : checkAnswer())}
-            />
-            {problem.unit && <span className="text-sm font-black text-[var(--chem-text-muted)] select-none">{problem.unit}</span>}
+          {/* Dedicated Exam-Style Standard Electrode Potentials Table (not in WJEC Data Booklet) */}
+          <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+              <span className="text-[10px] font-black tracking-widest text-slate-500">
+                Standard Electrode Potentials (298 K, 1.0 mol dm⁻³, 1 atm)
+              </span>
+              <span className="text-[10px] font-bold text-slate-400">
+                Provided in Question
+              </span>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-200">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="py-2 px-2.5 sm:px-3 text-[11px] font-bold text-slate-500 rounded-tl-xl">Half-Reaction</th>
+                    <th className="py-2 px-2.5 sm:px-3 text-[11px] font-bold text-slate-500 text-right rounded-tr-xl whitespace-nowrap">E° / V</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {halfCells.map((cell) => (
+                    <tr key={cell.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-mono font-bold text-slate-800 break-words leading-snug">
+                        {cell.sys}
+                      </td>
+                      <td className="py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-mono text-right text-[#326fa0] font-black whitespace-nowrap">
+                        {cell.e0 > 0 ? `+${cell.e0.toFixed(2)}` : cell.e0.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      )}
 
-      <div className="button-group mt-6">
-        <button
-          className="btn btn-primary disabled:opacity-50"
-          onClick={checkAnswer}
-          disabled={problem.isCards && selectedCard === null}
-        >
-          Check Answer
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={() => generateProblem(mode)}
-        >
-          Next Problem &rarr;
-        </button>
-      </div>
+        {/* Right Column: Question, Input / Choices, Actions & Feedback */}
+        <div className="space-y-4">
+          <div className="font-bold text-center md:text-left text-[0.95rem] px-1 text-[var(--chem-text-main)]">
+            {problem.question}
+          </div>
 
-      {feedback.message && (
-        <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
-          <span>{feedback.message}</span>
-          {feedback.status === 'success' && (
+          {problem.isCards && problem.choices && (
+            <div className="w-full flex flex-col gap-3">
+              {problem.choices.map((choice, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => { setSelectedCard(i); setFeedback({ message: '', status: '' }); }}
+                  className={`w-full min-h-[44px] p-3.5 sm:p-4 text-left text-sm font-bold border rounded-xl transition-all cursor-pointer ${
+                    selectedCard === i
+                      ? 'bg-[var(--chem-bg-highlight)] border-[var(--chem-primary)] text-[var(--chem-primary)] ring-1 ring-[var(--chem-primary)]'
+                      : 'bg-[var(--chem-bg-main)] border-[var(--chem-border)] text-[var(--chem-text-main)] hover:bg-[var(--chem-bg-alt)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selectedCard === i ? 'border-[var(--chem-primary)] bg-[var(--chem-primary)] text-white text-[10px]' : 'border-[var(--chem-slate-300)]'}`}>
+                      {selectedCard === i && "✓"}
+                    </span>
+                    <span className="font-mono tracking-wide text-xs sm:text-sm break-words min-w-0">{choice.text}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!problem.isCards && (
+            <div className="w-full flex items-center justify-center md:justify-start my-2">
+              <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-3.5 bg-[var(--chem-bg-alt)] border border-[var(--chem-border)] rounded-2xl shadow-sm w-full sm:w-auto">
+                <label className="text-sm font-black text-[var(--chem-text-main)] select-none">{problem.label}</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className={`w-32 sm:w-36 min-h-[40px] bg-white text-center text-lg font-extrabold py-2 px-3 rounded-lg border focus:outline-none transition-colors ${feedback.status === 'error' ? 'border-red-400 text-red-600 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-[var(--chem-border)] text-[var(--chem-text-main)] focus:border-[var(--chem-primary)] focus:ring-1 focus:ring-[var(--chem-primary)]'}`}
+                  value={studentAnswer}
+                  onChange={(e) => { setStudentAnswer(e.target.value); if (feedback.message) setFeedback({ message: '', status: '' }); }}
+                  placeholder="+1.10"
+                  onKeyDown={(e) => e.key === 'Enter' && (feedback.status === 'success' ? generateProblem() : checkAnswer())}
+                />
+                {problem.unit && <span className="text-sm font-black text-[var(--chem-text-muted)] select-none">{problem.unit}</span>}
+              </div>
+            </div>
+          )}
+
+          <div className="button-group">
             <button
-              type="button"
-              onClick={() => generateProblem(mode)}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+              className="btn btn-primary disabled:opacity-50"
+              onClick={checkAnswer}
+              disabled={problem.isCards && selectedCard === null}
+            >
+              Check Answer
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => generateProblem()}
             >
               Next Problem &rarr;
             </button>
+          </div>
+
+          {feedback.message && (
+            <div className={`feedback-box flex flex-col sm:flex-row sm:items-center justify-between gap-3 !text-left ${feedback.status === 'success' ? 'feedback-success' : 'feedback-error'}`}>
+              <span>{feedback.message}</span>
+              {feedback.status === 'success' && (
+                <button
+                  type="button"
+                  onClick={() => generateProblem()}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shrink-0 transition-colors cursor-pointer"
+                >
+                  Next Problem &rarr;
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
